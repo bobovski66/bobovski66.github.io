@@ -118,7 +118,23 @@
         } else {
             element.style.display = "none";
         }
+        // Refresh the iframe content to ensure it loads properly
+        var iframes = element.getElementsByTagName('iframe');
+        for (var i = 0; i < iframes.length; i++) {
+            iframes[i].src = iframes[i].src;
+        }
     }
+
+
+function toggleMusic(id) {
+    var element = document.getElementById(id);
+    if (element.style.display === "none" || element.style.display === "") {
+        element.style.display = "block";
+    } else {
+        element.style.display = "none";
+    }
+}
+
 </script>
 </head>
 <body>
@@ -160,6 +176,30 @@
             </div>
         </div>
     </div>
+
+<div class="section">
+    <h2>Music</h2>
+
+    
+            <p class="essay-title" onclick="toggleAbstract('musicKvasir')">Kvasir <span class="click-info">(click to expand)</span></p>
+            <div class="abstract" id="musicKvasir">
+                <iframe style="border: 0; width: 100%; height: 120px;" src="https://bandcamp.com/EmbeddedPlayer/album=2770401978/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/artwork=small/transparent=true/" seamless><a href="https://kvasirpdx.bandcamp.com/album/sagittarius-a-star">Sagittarius A* Star by Kvasir</a></iframe>
+                <a href="https://kvasirpdx.bandcamp.com/">Kvasir on Bandcamp</a>
+            </div>
+        
+            <p class="essay-title" onclick="toggleAbstract('musicOneGoodEye')">One Good Eye <span class="click-info">(click to expand)</span></p>
+            <div class="abstract" id="musicOneGoodEye">
+                <iframe style="border: 0; width: 100%; height: 120px;" src="https://bandcamp.com/EmbeddedPlayer/album=41401532/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/artwork=small/track=2082994664/transparent=true/" seamless><a href="https://onegoodeyecasper.bandcamp.com/album/let-go-my-e-g-o">Let Go My E.G.O. by One Good Eye</a></iframe>
+                <a href="https://onegoodeyecasper.bandcamp.com/album/let-go-my-e-g-o" target="_blank">One Good Eye on Bandcamp</a>
+            </div>
+        
+            <p class="essay-title" onclick="toggleAbstract('musicLeviathanRise')">Leviathan Rise <span class="click-info">(click to expand)</span></p>
+            <div class="abstract" id="musicLeviathanRise">
+                <iframe style="border: 0; width: 100%; height: 120px;" src="https://bandcamp.com/EmbeddedPlayer/album=2328323263/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/artwork=small/transparent=true/" seamless><a href="https://leviathanrise.bandcamp.com/album/season-of-the-father-ii-nursery-rhymes-and-lullabies-for-lenfant-terrible">Season of the Father II - Nursery Rhymes and Lullabies for L&#39;enfant Terrible by Leviathan Rise</a></iframe>
+                <a href="https://leviathanrise.bandcamp.com/">Leviathan Rise on Bandcamp</a>
+            </div>
+      </div>
+
 
     <div class="section">
         <h2>Publications</h2>
@@ -260,15 +300,9 @@
         <!-- Add more essays as needed -->
     </div>
 
-    <div class="section">
-        <h2>Music</h2>
-        <p>Explore Christopher Lee-Jenkins' musical projects:</p>
-        <ul>
-            <li><a href="https://kvasirpdx.bandcamp.com/" target="_blank">Kvasir</a></li>
-            <li><a href="https://onegoodeyecasper.bandcamp.com/" target="_blank">One Good Eye</a></li>
-            <li><a href="https://leviathanrise.bandcamp.com/" target="_blank">Leviathan Rise</a></li>
-        </ul>
-    </div>
+
+
+
 
     <div class="footer">
         <p>&copy; 2024 Christopher Lee-Jenkins</p>
