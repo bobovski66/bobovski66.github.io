@@ -125,15 +125,14 @@
         }
     }
 
-
-function toggleMusic(id) {
-    var element = document.getElementById(id);
-    if (element.style.display === "none" || element.style.display === "") {
-        element.style.display = "block";
-    } else {
-        element.style.display = "none";
+    function toggleMusic(id) {
+        var element = document.getElementById(id);
+        if (element.style.display === "none" || element.style.display === "") {
+            element.style.display = "block";
+        } else {
+            element.style.display = "none";
+        }
     }
-}
 
 </script>
 </head>
@@ -141,7 +140,7 @@ function toggleMusic(id) {
 <div class="container">
     <div class="header">
         <div class="title">Christopher Lee-Jenkins</div>
-        <img src="https://dl.dropboxusercontent.com/s/o9pftdmdkxuil4ge5ky7n/image.png?rlkey=6m72ekc2ous985cjfkj92ivbk" alt="Christopher Lee-Jenkins" class="image">
+        <img src="Images/image.png" alt="Christopher Lee-Jenkins" class="image">
     </div>
 
     <div class="section">
@@ -160,19 +159,20 @@ function toggleMusic(id) {
         <p>Instagram: <a href="https://www.instagram.com/trismegistus_bob/" target="_blank">trismegistus_bob</a></p>
         <p>YouTube: <a href="https://www.youtube.com/channel/UCGj_D58prjEd1G9BMgtoAyg" target="_blank">Christopher Lee-Jenkins</a></p>
         <p>LinkedIn: <a href="https://www.linkedin.com/in/christopher-lee-jenkins-9ab028225/" target="_blank">Christopher Lee-Jenkins</a></p>
+        <p>Email: <a href="mailto:christopher@christopherleejenkins.com">Christopher Lee-Jenkins</a></p>
     </div>
 
     <div class="section gallery">
         <h2>Gallery</h2>
         <div style="display: flex; gap: 10px; justify-content: center;">
             <div style="flex: 0 0 30%;">
-                <img src="https://dl.dropboxusercontent.com/s/nl73184ozcd7kajeum8ph/C_Lee_biopic2.jpg?rlkey=wsr3ntcw6ys7fp6utrq6mk61y" alt="Christopher Lee-Jenkins" style="width: 100%; height: auto; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
+                <img src="Images/C_Lee_biopic2.jpg" alt="Christopher Lee-Jenkins" style="width: 100%; height: auto; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
             </div>
             <div style="flex: 0 0 30%;">
-                <img src="https://dl.dropboxusercontent.com/s/5nahotv8pxndb0zaj0x4j/C_Lee_biopic3.jpg?rlkey=9ltzag17c2n2d9x50x4wavzcu" alt="Christopher Lee-Jenkins" style="width: 100%; height: auto; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
+                <img src="Images/C_Lee_biopic3.jpg" alt="Christopher Lee-Jenkins" style="width: 100%; height: auto; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
             </div>
             <div style="flex: 0 0 30%;">
-                <img src="https://dl.dropboxusercontent.com/s/6kwv0c02yyn47hi3vhe5f/C_Lee_biopic1.jpg?rlkey=t2tr7uo82cqdn5scdtbtwa1ye" alt="Christopher Lee-Jenkins" style="width: 100%; height: auto; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
+                <img src="Images/C_Lee_biopic1.jpg" alt="Christopher Lee-Jenkins" style="width: 100%; height: auto; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
             </div>
         </div>
     </div>
@@ -240,69 +240,65 @@ function toggleMusic(id) {
         <div>
             <p class="essay-title" onclick="toggleAbstract('summary1')">The Alchemy of Choice: How the Axiom of Choice Transmutes Mathematical Reality <span class="click-info">(click for GPT Summary)</span></p>
             <div class="summary" id="summary1">
-                In this essay, Christopher Lee-Jenkins explores the profound implications of the Axiom of Choice (AoC) in mathematics, likening it to a philosophical catalyst that transmutes mathematical reality. The essay delves into the Banach-Tarski Paradox, constructivist objections to the AoC, and its scientific and philosophical implications. The AoC is portrayed as a principle that challenges our understanding of mathematical reality, blending the infinite and finite, and raising questions about the nature of existence and human agency in mathematics. <a href="https://www.linkedin.com/pulse/alchemy-choice-how-axiom-transmutes-mathematical-lee-jenkins-vjwzc" target="_blank">Read more</a>
+                In this essay, Christopher Lee-Jenkins explores the profound implications of the Axiom of Choice (AoC) in mathematics, likening it to a philosophical catalyst that transmutes mathematical reality. The essay delves into the Banach-Tarski Paradox, constructivist objections to the AoC, and its scientific and philosophical implications. The AoC is portrayed as a principle that challenges our understanding of mathematical reality, blending the infinite and finite, and raising questions about the nature of existence and human agency in mathematics. <a href="Articles/alchemy-choice-how-axiom-transmutes-mathematical-lee-jenkins-vjwzc.html" target="_blank">Read more</a>
             </div>
         </div>
         <div>
             <p class="essay-title" onclick="toggleAbstract('summary2')">Unraveling the Complexity of Food Webs: A Topological Approach <span class="click-info">(click for GPT Summary)</span></p>
             <div class="summary" id="summary2">
-                In this essay, Christopher Lee-Jenkins explores the application of topological methods to the study of food web robustness. By reviewing two recent preprints, he highlights how algebraic topology and discrete Morse theory can offer new insights into the stability and resilience of ecological communities. The essay discusses the limitations of traditional graph-theoretic approaches and presents novel frameworks such as the directed forest complex and the food web simplicial complex. These frameworks capture higher-order relationships and critical simplices, shedding light on the role of redundancy and the importance of topological features in maintaining ecosystem stability. <a href="https://www.linkedin.com/pulse/unraveling-complexity-food-webs-topological-approach-lee-jenkins-gez2c" target="_blank">Read more</a>
+                In this essay, Christopher Lee-Jenkins explores the application of topological methods to the study of food web robustness. By reviewing two recent preprints, he highlights how algebraic topology and discrete Morse theory can offer new insights into the stability and resilience of ecological communities. The essay discusses the limitations of traditional graph-theoretic approaches and presents novel frameworks such as the directed forest complex and the food web simplicial complex. These frameworks capture higher-order relationships and critical simplices, shedding light on the role of redundancy and the importance of topological features in maintaining ecosystem stability. <a href="Articles/unraveling-complexity-food-webs-topological-approach-lee-jenkins-gez2c.html" target="_blank">Read more</a>
             </div>
         </div>
         <div>
             <p class="essay-title" onclick="toggleAbstract('summary3')">Why is π? <span class="click-info">(click for GPT Summary)</span></p>
             <div class="summary" id="summary3">
-                In this essay, Christopher Lee-Jenkins celebrates π Day by exploring the significance and constancy of the mathematical constant π. The essay discusses how π is defined as the ratio of the circumference to the diameter of any circle and the method of exhaustion used to approximate it. Lee-Jenkins questions why π is constant and highlights that proving its constancy requires the concept of limits. He also points out that π is not constant in non-Euclidean geometries, adding a layer of complexity to our understanding of this fundamental constant. <a href="https://www.linkedin.com/pulse/why-%25CF%2580-christopher-lee-zerkf/" target="_blank">Read more</a>
+                In this essay, Christopher Lee-Jenkins celebrates π Day by exploring the significance and constancy of the mathematical constant π. The essay discusses how π is defined as the ratio of the circumference to the diameter of any circle and the method of exhaustion used to approximate it. Lee-Jenkins questions why π is constant and highlights that proving its constancy requires the concept of limits. He also points out that π is not constant in non-Euclidean geometries, adding a layer of complexity to our understanding of this fundamental constant. <a href="Articles/why-π-christopher-lee-zerkf.html" target="_blank">Read more</a>
             </div>
         </div>
         <div>
             <p class="essay-title" onclick="toggleAbstract('summary4')">Mathematics Out of Reach: Math’s hardest problem is impossibly easy to understand <span class="click-info">(click for GPT Summary)</span></p>
             <div class="summary" id="summary4">
-                In this essay, Christopher Lee-Jenkins discusses the Collatz Conjecture, a deceptively simple yet unsolved problem in mathematics. He contrasts it with more complex and less accessible problems like the Millennium Prize Problems, highlighting the Collatz Conjecture's unique position as both easy to state and incredibly challenging to solve. The essay explains the conjecture's process, where any positive integer is iteratively halved if even or tripled and increased by one if odd, eventually reaching the number one. Despite extensive computational verification for large numbers, a general proof remains elusive. Lee-Jenkins explores the broader implications and theoretical frameworks surrounding this intriguing mathematical mystery. <a href="https://www.linkedin.com/pulse/mathematics-out-reach-maths-hardest-problem-impossibly-lee-jim1c" target="_blank">Read more</a>
+                In this essay, Christopher Lee-Jenkins discusses the Collatz Conjecture, a deceptively simple yet unsolved problem in mathematics. He contrasts it with more complex and less accessible problems like the Millennium Prize Problems, highlighting the Collatz Conjecture's unique position as both easy to state and incredibly challenging to solve. The essay explains the conjecture's process, where any positive integer is iteratively halved if even or tripled and increased by one if odd, eventually reaching the number one. Despite extensive computational verification for large numbers, a general proof remains elusive. Lee-Jenkins explores the broader implications and theoretical frameworks surrounding this intriguing mathematical mystery. <a href="Articles/mathematics-out-reach-maths-hardest-problem-impossibly-lee-jim1c.html" target="_blank">Read more</a>
             </div>
         </div>
         <div>
             <p class="essay-title" onclick="toggleAbstract('summary5')">Morse Theory and the Geometry of Bioelectric Morphology <span class="click-info">(click for GPT Summary)</span></p>
             <div class="summary" id="summary5">
-                In this essay, Christopher Lee-Jenkins draws parallels between Morse Theory in mathematics and the concepts of bioelectric morphology described by biologist Michael Levin. Inspired by Levin's discussion on the Lex Fridman Podcast, the essay explores how biological systems function as a hierarchy of goal-oriented systems without centralized control, similar to the topological problem of "Local to Global" in mathematics. Using examples from Morse Theory, Lee-Jenkins illustrates how local changes can dictate the global shape and behavior of systems, proposing that similar principles may underlie the organization and evolution of biological structures. <a href="https://www.linkedin.com/pulse/morse-theory-geometry-bioelectric-morphology-christopher-lee-9iftc" target="_blank">Read more</a>
+                In this essay, Christopher Lee-Jenkins draws parallels between Morse Theory in mathematics and the concepts of bioelectric morphology described by biologist Michael Levin. Inspired by Levin's discussion on the Lex Fridman Podcast, the essay explores how biological systems function as a hierarchy of goal-oriented systems without centralized control, similar to the topological problem of "Local to Global" in mathematics. Using examples from Morse Theory, Lee-Jenkins illustrates how local changes can dictate the global shape and behavior of systems, proposing that similar principles may underlie the organization and evolution of biological structures. <a href="Articles/morse-theory-geometry-bioelectric-morphology-christopher-lee-9iftc.html" target="_blank">Read more</a>
             </div>
         </div>
         <div>
             <p class="essay-title" onclick="toggleAbstract('summary6')">Exotic Cosmos, Exotic Spacetime <span class="click-info">(click for GPT Summary)</span></p>
             <div class="summary" id="summary6">
-                In this essay, Christopher Lee-Jenkins delves into the construction of exotic 4D spacetimes, based on the work of Asselmeyer-Maluga et al. The essay explains the concept of cobordism, a manifold representing a topological or smooth transition between two other manifolds, and its role in building exotic spacetimes. Starting with the Einstein Cosmos as a standard 3D sphere, the authors construct an exotic spacetime by selecting a homological sphere, specifically a Brieskorn sphere, and introducing an Akbulut cork, a 4-manifold that is topologically trivial. The exotic properties of the resulting spacetime are concentrated near the cork, affecting the global structure and potentially leading to different physical behaviors. <a href="https://www.linkedin.com/pulse/exotic-cosmos-spacetime-christopher-lee-1mvjc" target="_blank">Read more</a>
+                In this essay, Christopher Lee-Jenkins delves into the construction of exotic 4D spacetimes, based on the work of Asselmeyer-Maluga et al. The essay explains the concept of cobordism, a manifold representing a topological or smooth transition between two other manifolds, and its role in building exotic spacetimes. Starting with the Einstein Cosmos as a standard 3D sphere, the authors construct an exotic spacetime by selecting a homological sphere, specifically a Brieskorn sphere, and introducing an Akbulut cork, a 4-manifold that is topologically trivial. The exotic properties of the resulting spacetime are concentrated near the cork, affecting the global structure and potentially leading to different physical behaviors. <a href="Articles/exotic-cosmos-spacetime-christopher-lee-1mvjc.html" target="_blank">Read more</a>
             </div>
         </div>
         <div>
             <p class="essay-title" onclick="toggleAbstract('summary7')">Technical Interlude II: Coordinate Boogaloo <span class="click-info">(click for GPT Summary)</span></p>
             <div class="summary" id="summary7">
-                In this essay, Christopher Lee-Jenkins explains the concept of coordinates in the context of manifolds, particularly focusing on how they apply to both standard and exotic spaces. He discusses the importance of coordinates as tools for doing calculations on manifolds, using the Earth's surface as an example of a 2D manifold that locally resembles a plane. The essay highlights the unique properties of 4D Euclidean space (\(R^4\)), which has uncountably infinite non-equivalent smooth structures, unlike other dimensions. This "exotic-ness" of \(R^4\) introduces complex and intriguing behaviors that differ from standard calculus expectations. <a href="https://www.linkedin.com/pulse/technical-interlude-ii-coordinate-boogaloo-christopher-lee-nh6pc/" target="_blank">Read more</a>
+                In this essay, Christopher Lee-Jenkins explains the concept of coordinates in the context of manifolds, particularly focusing on how they apply to both standard and exotic spaces. He discusses the importance of coordinates as tools for doing calculations on manifolds, using the Earth's surface as an example of a 2D manifold that locally resembles a plane. The essay highlights the unique properties of 4D Euclidean space (\(R^4\)), which has uncountably infinite non-equivalent smooth structures, unlike other dimensions. This "exotic-ness" of \(R^4\) introduces complex and intriguing behaviors that differ from standard calculus expectations. <a href="Articles/technical-interlude-ii-coordinate-boogaloo-christopher-lee-nh6pc.html" target="_blank">Read more</a>
             </div>
         </div>
         <div>
             <p class="essay-title" onclick="toggleAbstract('summary8')">An Exotic Interlude: Witten’s Construction <span class="click-info">(click for GPT Summary)</span></p>
             <div class="summary" id="summary8">
-                In this essay, Christopher Lee-Jenkins explores the construction of exotic spheres through Witten’s procedure outlined in “Global Gravitational Anomalies”. The essay describes how Witten constructs an exotic (D+1)-dimensional sphere by removing the equator, transforming it via a diffeomorphism, and re-inserting it. This results in a manifold that is topologically the same but may possess an exotic smooth structure. Lee-Jenkins explains the significance of topology in understanding these transformations and highlights the challenges in finding examples of exotic 4-spheres. The essay underscores the intriguing differences in the non-compact case, such as exotic \(R^4\), and foreshadows further discussions on their unique properties. <a href="https://www.linkedin.com/pulse/exotic-interlude-wittens-construction-christopher-lee-b1bqc" target="_blank">Read more</a>
+                In this essay, Christopher Lee-Jenkins explores the construction of exotic spheres through Witten’s procedure outlined in “Global Gravitational Anomalies”. The essay describes how Witten constructs an exotic (D+1)-dimensional sphere by removing the equator, transforming it via a diffeomorphism, and re-inserting it. This results in a manifold that is topologically the same but may possess an exotic smooth structure. Lee-Jenkins explains the significance of topology in understanding these transformations and highlights the challenges in finding examples of exotic 4-spheres. The essay underscores the intriguing differences in the non-compact case, such as exotic \(R^4\), and foreshadows further discussions on their unique properties. <a href="Articles/exotic-interlude-wittens-construction-christopher-lee-b1bqc.html" target="_blank">Read more</a>
             </div>
         </div>
         <div>
             <p class="essay-title" onclick="toggleAbstract('summary9')">Physics & 4D Exotic Smoothness <span class="click-info">(click for GPT Summary)</span></p>
             <div class="summary" id="summary9">
-                In this essay, Christopher Lee-Jenkins discusses the impact of exotic smooth structures on 4D spacetime and their implications for physics. He explains how different smooth structures affect the way calculus is performed on manifolds, and highlights the significance of diffeomorphisms in determining whether two manifolds are equivalent. The essay traces the origins of exotic smooth structures to John Milnor's work and explores their role in physics through Edward Witten's concept of "gravitational instantons." Lee-Jenkins also examines the mysterious nature of exotic \(R^4\) spaces and their potential to influence our understanding of gravity. <a href="https://www.linkedin.com/pulse/physics-4d-exotic-smoothness-christopher-lee-ajwzc/" target="_blank">Read more</a>
+                In this essay, Christopher Lee-Jenkins discusses the impact of exotic smooth structures on 4D spacetime and their implications for physics. He explains how different smooth structures affect the way calculus is performed on manifolds, and highlights the significance of diffeomorphisms in determining whether two manifolds are equivalent. The essay traces the origins of exotic smooth structures to John Milnor's work and explores their role in physics through Edward Witten's concept of "gravitational instantons." Lee-Jenkins also examines the mysterious nature of exotic \(R^4\) spaces and their potential to influence our understanding of gravity. <a href="Articles/physics-4d-exotic-smoothness-christopher-lee-ajwzc.html" target="_blank">Read more</a>
             </div>
         </div>
         <div>
             <p class="essay-title" onclick="toggleAbstract('summary10')">Is Mathematics Physical in 4D? <span class="click-info">(click for GPT Summary)</span></p>
             <div class="summary" id="summary10">
-                In this essay, Christopher Lee-Jenkins investigates the relationship between mathematics and physical reality, particularly in the context of four-dimensional space. He explores the implications of exotic smooth structures in 4D and their impact on calculus and physics. Lee-Jenkins explains that while in most dimensions, there is a unique way to define smooth structures, 4D space is unique with infinitely many incompatible smooth structures. This introduces the possibility of infinitely many different physical realities in 4D. The essay raises questions about the nature of mathematics and its physical manifestations, inviting readers to consider the profound implications of exotic smoothness in higher dimensions. <a href="https://www.linkedin.com/pulse/mathematics-physical-4d-christopher-lee-diztc/" target="_blank">Read more</a>
+                In this essay, Christopher Lee-Jenkins investigates the relationship between mathematics and physical reality, particularly in the context of four-dimensional space. He explores the implications of exotic smooth structures in 4D and their impact on calculus and physics. Lee-Jenkins explains that while in most dimensions, there is a unique way to define smooth structures, 4D space is unique with infinitely many incompatible smooth structures. This introduces the possibility of infinitely many different physical realities in 4D. The essay raises questions about the nature of mathematics and its physical manifestations, inviting readers to consider the profound implications of exotic smoothness in higher dimensions. <a href="Articles/mathematics-physical-4d-christopher-lee-diztc.html" target="_blank">Read more</a>
             </div>
         </div>
         <!-- Add more essays as needed -->
     </div>
-
-
-
-
 
     <div class="footer">
         <p>&copy; 2024 Christopher Lee-Jenkins</p>
