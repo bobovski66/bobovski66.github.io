@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Calculus Matching Game - Partial Derivatives</title>
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+#gameBoard {
+  display: flex;
+  flex-wrap: wrap;
+  width: 80%;
+  margin: 20px auto;
+  justify-content: center;
+}
+.tile {
+  width: 150px;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px;
+  font-size: 20px;
+  border: 3px solid #000;
+  color: #000;
+  cursor: pointer;
+  user-select: none;
+  border-radius: 15px;
+}
+.func {
+  background-color: blue;
+  border: 3px solid darkblue;
+  color: white;
+}
+.partial-x {
+  background-color: green;
+  border: 3px solid darkgreen;
+  color: white;
+}
+.partial-y {
+  background-color: orange;
+  border: 3px solid darkorange;
+  color: white;
+}
+button {
+  margin: 20px auto;
+  display: block;
+}
+.instruction {
+  width: 80%;
+  margin: 20px auto;
+  text-align: center;
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <h2>Match each function with its partial derivatives. Drag and drop to make pairs!</h2>
+  <div class="instruction">
+    <p><span class="func">Functions (Blue)</span> - <span class="partial-x">Partial Derivatives with respect to x (Green)</span> - <span class="partial-y">Partial Derivatives with respect to y (Orange)</span></p>
+  </div>
+  <div id="gameBoard">
+    <div v-for="tile in tiles" 
+         :key="tile.id" 
+         :class="['tile', tile.type]" 
+         :data-pair="tile.pair" 
+         :data-type="tile.type" 
+         @dragstart="dragStart(tile)" 
+         @dragover.prevent 
+         @drop="drop(tile)"
+         @touchstart="touchStart(tile, $event)" 
+         @touchmove.prevent="touchMove($event)" 
+         @touchend="touchEnd(tile, $event)"
+         draggable="true"
+         v-show="!tile.matched">
+      <span v-html="tile.content"></span>
+    </div>
+  </div>
+  <button @click="resetGame">Reset Game</button>
+</div>
+
+<script>
+new Vue({
+  el: '#app',
+  data: {
+    allPairs: [
+      { id: 1, func: 'x^2 + y^2', partial_x: '2x', partial_y: '2y' },
+      { id: 2, func: 'xy', partial_x: 'y', partial_y: 'x' },
+      { id: 3, func: 'x^3 + 3xy', partial_x: '3x^2 + 3y', partial_y: '3x' },
+      { id: 4, func: 'e^x + y', partial_x: 'e^x', partial_y: '1' },
+      { id: 5, func: '\\sin(x) + \\cos(y)', partial_x: '\\cos(x)', partial_y: '-\\sin(y)' },
+      { id: 6, func: 'x^4 + y^4', partial_x: '4x^3', partial_y: '4y^3' },
+      { id: 7, func: 'x^2y + y^2', partial_x: '2xy', partial_y: 'x^2 + 2y' },
+      { id: 8, func: 'e^y + x^2', partial_x: '2x', partial_y: 'e^y' },
+      { id: 9, func: 'x\\sin(y)', partial_x: '\\sin(y)', partial_y: 'x\\cos(y)' },
+      { id: 10, func: '\\cos(x) + y^3', partial_x: '-\\sin(x)', partial_y: '3y^2' },
+      { id: 11, func: 'x^2 + y^3', partial_x: '2x', partial_y: '3y^2' },
+      { id: 12, func: 'e^x + xy', partial_x: 'e^x + y', partial_y: 'x' },
+      { id: 13, func: '\\ln(x) + y^2', partial_x: '\\frac{1}{x}', partial_y: '2y' },
+      { id: 14, func: '\\sin(xy)', partial_x: 'y\\cos(xy)', partial_y: 'x\\cos(xy)' },
+      { id: 15, func: 'x^2y + y', partial_x: '2xy', partial_y: 'x^2 + 1' },
+      { id: 16, func: 'e^{xy}', partial_x: 'ye^{xy}', partial_y: 'xe^{xy}' },
+      { id: 17, func: '\\cos(x) + \\sin(y)', partial_x: '-\\sin(x)', partial_y: '\\cos(y)' },
+      { id: 18, func: '\\ln(xy)', partial_x: '\\frac{1}{x}', partial_y: '\\frac{1}{y}' },
+      { id: 19, func: 'x^3y + y^3', partial_x: '3x^2y', partial_y: 'x^3 + 3y^2' },
+      { id: 20, func: 'x\\cos(y)', partial_x: '\\cos(y)', partial_y: '-x\\sin(y)' }
+    ],
+    tiles: [],
+    draggedTile: null,
+    touchStartX: 0,
+    touchStartY: 0
+  },
+  methods: {
+    initializeTiles() {
+      this.tiles = [];
+      const selectedPairs = this.getRandomPairs(4);
+      selectedPairs.forEach(pair => {
+        this.tiles.push({ id: pair.id + '-func', pair: pair.id, content: `\\(${pair.func}\\)`, type: 'func', matched: false });
+        this.tiles.push({ id: pair.id + '-partial-x', pair: pair.id, content: `\\(${pair.partial_x}\\)`, type: 'partial-x', matched: false });
+        this.tiles.push({ id: pair.id + '-partial-y', pair: pair.id, content: `\\(${pair.partial_y}\\)`, type: 'partial-y', matched: false });
+      });
+      this.shuffleTiles();
+    },
+    getRandomPairs(n) {
+      const shuffled = this.allPairs.sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, n);
+    },
+    shuffleTiles() {
+      this.tiles.sort(() => 0.5 - Math.random());
+    },
+    dragStart(tile) {
+      this.draggedTile = tile;
+    },
+    drop(targetTile) {
+      if (this.draggedTile && this.draggedTile.pair === targetTile.pair) {
+        if (targetTile.type === 'func') {
+          if (this.draggedTile.type === 'partial-x' && !targetTile.matched_x) {
+            targetTile.matched_x = true;
+            this.draggedTile.matched = true;
+          }
+          if (this.draggedTile.type === 'partial-y' && !targetTile.matched_y) {
+            targetTile.matched_y = true;
+            this.draggedTile.matched = true;
+          }
+          if (targetTile.matched_x && targetTile.matched_y) {
+            targetTile.matched = true;
+          }
+        }
+        this.draggedTile = null;
+      }
+      this.updateMathJax();
+    },
+    touchStart(tile, event) {
+      this.touchStartX = event.touches[0].clientX;
+      this.touchStartY = event.touches[0].clientY;
+      this.draggedTile = tile;
+    },
+    touchMove(event) {
+      event.preventDefault();
+      const touch = event.touches[0];
+      const elem = document.elementFromPoint(touch.clientX, touch.clientY);
+      if (elem && elem.classList.contains('tile')) {
+        this.drop(this.tiles.find(t => t.id === elem.getAttribute('key')));
+      }
+    },
+    touchEnd(tile, event) {
+      const touchEndX = event.changedTouches[0].clientX;
+      const touchEndY = event.changedTouches[0].clientY;
+      const deltaX = Math.abs(this.touchStartX - touchEndX);
+      const deltaY = Math.abs(this.touchStartY - touchEndY);
+
+      if (deltaX < 10 && deltaY < 10) {
+        const elem = document.elementFromPoint(touchEndX, touchEndY);
+        if (elem && elem.classList.contains('tile')) {
+          this.drop(this.tiles.find(t => t.id === elem.getAttribute('key')));
+        }
+      }
+      this.draggedTile = null;
+    },
+    resetGame() {
+      this.initializeTiles();
+      this.updateMathJax();
+    },
+    updateMathJax() {
+      this.$nextTick(() => MathJax.typesetPromise());
+    }
+  },
+  mounted() {
+    this.resetGame();
+  }
+});
+</script>
+</body>
+</html>
