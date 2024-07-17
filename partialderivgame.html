@@ -113,7 +113,7 @@ new Vue({
   methods: {
     initializeTiles() {
       this.tiles = [];
-      const selectedPairs = this.getRandomPairs(4);
+      const selectedPairs = this.getUniqueRandomPairs(4);
       selectedPairs.forEach(pair => {
         this.tiles.push({ id: pair.id + '-func', pair: pair.id, content: `\\(${pair.func}\\)`, type: 'func', matched: false });
         this.tiles.push({ id: pair.id + '-partial-x', pair: pair.id, content: `\\(${pair.partial_x}\\)`, type: 'partial-x', matched: false });
@@ -121,9 +121,21 @@ new Vue({
       });
       this.shuffleTiles();
     },
-    getRandomPairs(n) {
+    getUniqueRandomPairs(n) {
       const shuffled = this.allPairs.sort(() => 0.5 - Math.random());
-      return shuffled.slice(0, n);
+      const selectedPairs = [];
+      const partialsSet = new Set();
+      
+      for (const pair of shuffled) {
+        if (!partialsSet.has(pair.partial_x) && !partialsSet.has(pair.partial_y)) {
+          selectedPairs.push(pair);
+          partialsSet.add(pair.partial_x);
+          partialsSet.add(pair.partial_y);
+        }
+        if (selectedPairs.length >= n) break;
+      }
+      
+      return selectedPairs;
     },
     shuffleTiles() {
       this.tiles.sort(() => 0.5 - Math.random());
