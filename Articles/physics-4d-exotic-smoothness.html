@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Physics & 4D Exotic Smoothness</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            line-height: 1.6;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            background: #292929;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        .header {
+            text-align: center;
+            padding: 1em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #444;
+        }
+        .title {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #00aaff;
+            font-family: 'Cinzel', serif;
+        }
+        .image {
+            width: 150px;
+            height: auto;
+            border-radius: 50%;
+            border: 3px solid #00aaff;
+        }
+        .section {
+            margin-bottom: 2em;
+        }
+        h1, h2 {
+            color: #ff6600;
+            font-family: 'Cinzel', serif;
+        }
+        p {
+            font-family: 'Open Sans', sans-serif;
+            margin: 32px 0;
+        }
+        a {
+            color: #00aaff;
+            text-decoration: none;
+        }
+        a:visited {
+            color: #00aaff;
+        }
+        .footer {
+            position: relative;
+            height: 100px;
+            color: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            margin-top: 50px;
+            background: #444;
+            border-radius: 15px;
+        }
+        .footer p {
+            margin: 5px 0;
+            font-weight: bold;
+        }
+    </style>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="title">Physics & 4D Exotic Smoothness</div>
+            <img src="../Images/image.png" alt="Christopher Lee-Jenkins" class="image">
+        </div>
+
+
+<div class="section">
+    <p>Last time, I gave some indication of how physics in 4 spatial dimensions might be affected by different <em>smooth structures</em> on spacetime. A smooth structure on a <em>manifold</em>, or a model of a spacetime, is, informally, a way of doing calculus. Calculus is the study of motion, and a smooth structure tells us which movements are <em>smooth</em>, in the sense that they aren’t broken nor do they have corners, sharp points or cusps and so on.</p>
+    <p>Two manifolds are <em>diffeomorphic</em> if they have a correspondence between them that says doing calculus on one is equivalent to doing calculus on the other. Manifolds that are diffeomorphic are, for our purposes, the same. If two manifolds are in a (continuous) correspondence that doesn’t identify their respective methods of calculus, one of them is said to be <em>exotic</em> with respect to the other.</p>
+    <p>Physics since the emergence of General Relativity has considered physical structures to at least be invariant, or essentially unchanged, by a change of coordinates. For example, a collection of concentric circles in a 2D plane might correspond to different energy levels of a pendulum or a spring. If we were to describe these circles using the standard <em>(x,y)</em> coordinates on a plane or the <em>polar</em> coordinates <em>(radius, angle)</em>, we should expect the underlying physical system to be the same. In fact, we often think about diffeomorphisms in terms of changes in coordinate systems on a manifold.</p>
+    <figure>
+        <img src="https://media.licdn.com/dms/image/D5612AQHbnTIVoXEAjg/article-inline_image-shrink_1000_1488/0/1706076142197?e=1726704000&amp;v=beta&amp;t=XMkRBO9ohE6r_iSEx90IkJTD_BZBuEysC0EzF8xSGLI" alt="The Riemann Sphere" width="600">
+        <figcaption>The Riemann Sphere, credit Tom Apostol</figcaption>
+    </figure>
+</div>
+
+<div class="section">
+    <p>Exotic smooth structures have their origins in a paper by John Milnor, “On Manifolds Homeomorphic to the 7-sphere” (1956). In this paper, Milnor shows that there are 28 mutually non-diffeomorphic (but otherwise “the same”) spheres in dimension 7. That means that the set of points equidistant from a fixed point in 7-dimensional space has 28 different ways of doing calculus on it!</p>
+    <p>In contrast, there are <em>no</em> exotic structures on spheres of dimension 1, 2, 3, 5, and 6. Notice the conspicuous lack of 4 in that list. In fact, there are either no exotic smooth structures on the 4-sphere or infinitely many; we just don’t know which. This is the famous “Smooth Poincare Conjecture” in dimension 4.</p>
+    <p>Renowned physicist Edward Witten examined this in his 1985 paper “Global Gravitational Anomalies” in which he asserts that exotic spheres as “gravitational instantons” are the only then-supported framework for quantizing gravity. Indeed, he goes on to show that exotic spheres are <em>tunneling events</em>, wherein particles pass through potential energy barriers from one spacetime to another (interpreted as a change of spacetime metric). Exotic spheres are vacuum solutions to Einstein’s Equations.</p>
+</div>
+
+<div class="section">
+    <p>But what about exotic spaces that don’t contain a finite volume? Real Euclidean space, flat space, is normally what we think of when we think of our 3D landscape (or 2D projections). Looking into a corner of a room, one can see that three mutually perpendicular directions are all that is necessary to locate any point in the room itself.</p>
+    <figure>
+        <img src="https://media.licdn.com/dms/image/D5612AQHO1g2N37hN8w/article-inline_image-shrink_400_744/0/1706076074529?e=1726704000&amp;v=beta&amp;t=B0SO53OCdRNzlLIuZL-ci5SO-6sOYmECuoQax__IByU" alt="Euclidean/Cartesian 2D and 3D spaces" width="600">
+        <figcaption>Euclidean/Cartesian 2D and 3D spaces</figcaption>
+    </figure>
+    <p>These are the famous coordinate spaces of Descartes, which unified algebra and geometry for Westerners in the 17th century. It’s very difficult to imagine how one might extend this to <em>four</em> mutually perpendicular directions, but that’s what 4D Euclidean space is.</p>
+</div>
+
+<div class="section">
+    <p>Denoted \( \mathbb{R}^4 \), four-dimensional Euclidean space is an (uncountable) zoo of exotic structures. In the mid-1990s, physicists began to take seriously the notion that, if spacetime were 4-dimensional, would an exotic smooth structure be <em>physical</em>? Since Witten’s paper, there has been much progress on the role of smooth structures in physics, but it’s fair to say that it is a subject that’s not well understood. In particular, the role of exotic \( \mathbb{R}^4 \)'s is still very mysterious. Sladkowski, in “Gravity on Exotic \( \mathbb{R}^4 \)’s with Few Symmetries” constructs situations in which exotic 4D Euclidean spaces arise as solutions of Einstein’s equations in a vacuum. As these spaces evolve, they are gravitational, and hence exotic 4D Euclidean space forms a model for gravitation. In “Exotic Smoothness and Quantum Gravity”, Asselmeyer-Maluga further develops these ideas, constructing two observables, one of them volume, in dimension 4 that should “detect” this gravity-generating feature of an exotic \( \mathbb{R}^4 \).</p>
+    <figure>
+        <img src="https://media.licdn.com/dms/image/D5612AQEMEbds8jtc8g/article-inline_image-shrink_1000_1488/0/1706076202851?e=1726704000&amp;v=beta&amp;t=9ivc-qMctYAealw_S-Bd17qQApt2_YILmaYIR4XAf9E" alt="Exotic 4D Spaces" width="600">
+        <figcaption>Exotic 4D Spaces</figcaption>
+    </figure>
+    <p>The appearance is that exotic structures should have physical content and that content is intimately tied to gravitation. Next up is a closer look at some of the specific properties of exotic \( \mathbb{R}^4 \)'s that would make corresponding spacetimes very interesting indeed. In particular, we will discuss the curious properties of attempting to “extend smooth coordinates” from local to global, from below to above. Thank you for reading!</p>
+</div>
+
+
+
+<div class="footer">
+    <p>&copy; 2024 Christopher Lee-Jenkins. All rights reserved.</p>
+</div>
+
