@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Christopher Lee-Jenkins</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@400;700&display=swap');
+    
+    body { 
+        font-family: 'Montserrat', sans-serif; 
+        line-height: 1.6; 
+        background: #1a1a1a; 
+        color: #e0e0e0; 
+    }
+    .container { 
+        width: 80%; 
+        margin: 0 auto; 
+        background: #292929; 
+        padding: 20px; 
+        border-radius: 15px; 
+        box-shadow: 0 0 20px rgba(0,0,0,0.5); 
+    }
+    .header {
+        text-align: center;
+        padding: 1em;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid #444;
+    }
+    .title {
+        font-size: 2.5em;
+        font-weight: bold;
+        color: #00aaff;
+        font-family: 'Cinzel', serif;
+    }
+    .image {
+        width: 150px;
+        height: auto;
+        border-radius: 50%;
+        border: 3px solid #00aaff;
+    }
+    .section { 
+        margin-bottom: 2em; 
+    }
+    h1, h2 { 
+        color: #ff6600; 
+        font-family: 'Cinzel', serif; 
+    }
+    p { 
+        font-family: 'Open Sans', sans-serif; 
+    }
+    a { 
+        color: #00aaff; 
+        text-decoration: none; 
+    }
+    a:visited { 
+        color: #00aaff; 
+    }
+    .gallery img {
+        width: 30%;
+        margin: 0 10px 10px 0;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    .footer {
+        position: relative;
+        height: 100px; /* Adjust height as necessary */
+        color: #e0e0e0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        margin-top: 50px; /* Spacer between content and footer */
+        background: #444;
+        border-radius: 15px;
+    }
+    .footer p {
+        margin: 5px 0;
+        font-weight: bold; /* Bold the text in the footer */
+    }
+    .paper-title, .essay-title {
+        cursor: pointer;
+        color: #00aaff;
+        text-decoration: underline;
+    }
+    .abstract, .summary {
+        display: none;
+        margin-top: 10px;
+        font-style: italic;
+    }
+    .click-info {
+        font-size: 0.9em;
+        color: #cccccc;
+    }
+    .paper-title::before, .essay-title::before {
+        content: "• ";
+        color: #ff6600;
+    }
+    @media print {
+        body, .container {
+            width: 100%;
+            max-width: 800px; /* Set a max-width that fits typical print paper */
+            margin: 0 auto; /* Center the content on the page */
+            padding: 0;
+            overflow: hidden; /* Prevent content from spilling over the width */
+        }
+        .header, .footer {
+            background-color: transparent; /* Optional: adjust based on your design needs */
+        }
+    }
+</style>
+<script>
+    function toggleAbstract(id) {
+        var element = document.getElementById(id);
+        if (element.style.display === "none" || element.style.display === "") {
+            element.style.display = "block";
+        } else {
+            element.style.display = "none";
+        }
+        // Refresh the iframe content to ensure it loads properly
+        var iframes = element.getElementsByTagName('iframe');
+        for (var i = 0; i < iframes.length; i++) {
+            iframes[i].src = iframes[i].src;
+        }
+    }
+
+    function toggleMusic(id) {
+        var element = document.getElementById(id);
+        if (element.style.display === "none" || element.style.display === "") {
+            element.style.display = "block";
+        } else {
+            element.style.display = "none";
+        }
+    }
+
+</script>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="title">Christopher Lee-Jenkins</div>
+        <img src="Images/image.png" alt="Christopher Lee-Jenkins" class="image">
+    </div>
+
+    <div class="section">
+        <h2>About</h2>
+        <p><strong>Christopher Lee-Jenkins</strong> is a Washington State-based academic with a uniquely varied background. Originally from Wyoming, his journey has taken him across the United States as a student, teacher, and perpetual seeker of knowledge. With a PhD in mathematics earned in 2009, Christopher's dissertation delved into generalizations of Hamiltonian dynamics in four dimensions. His teaching career has spanned multiple academic levels and institutions, culminating in a tenured position that he left to explore broader vocations while maintaining deep connections with his students, now both in person and online.</p>
+        <p>Christopher's research is a fascinating blend of mathematics and natural phenomena. He is particularly interested in chain complexes, which describe interactions across different system levels, often conceptualized as dimensions. Using Morse Theory and Graph Theory, he investigates equilibria in both smooth and discrete dynamical systems. His work spans the realms of pure mathematics and biodynamics, including studies on ecosystems and the evolution of conscious experiences.</p>
+        <p>A lifelong fascination with esotericism and ufology was sparked by mysterious childhood experiences, including visions and encounters that defied conventional explanation. These formative events inspired Christopher to explore various perspectives on these phenomena in his research.</p>
+        <p>In his writings, Christopher examines topics such as the emergence of gravitation from exotic four-dimensional spacetimes and other anomalous phenomena in math and physics. He enjoys unraveling mathematical curiosities like the Banach-Tarski paradox, inviting others to explore the stranger corners of mathematical thought.</p>
+        <p>Beyond his academic pursuits, Christopher is an accomplished musician. He is currently touring and releasing albums with Portland's Kvasir and Wyoming's One Good Eye, and he has solo projects like Leviathan Rise, with more music on the horizon.</p>
+        <p>Christopher advocates for a shift from mere knowledge acquisition to the cultivation of wisdom. He emphasizes understanding the "whys" of our systems and analyzing their meta-properties to guide us toward innovative thinking. Through his teaching, research, and writing, Christopher aims to share his boundless curiosity, helping others see the world through unique and surprising lenses.</p>
+    </div>
+
+    <div class="section">
+        <h2>Connect with Christopher</h2>
+        <p>Facebook: <a href="https://www.facebook.com/ChristopherRaeLee/" target="_blank">ChristopherRaeLee</a></p>
+        <p>Instagram: <a href="https://www.instagram.com/trismegistus_bob/" target="_blank">trismegistus_bob</a></p>
+        <p>YouTube: <a href="https://www.youtube.com/channel/UCGj_D58prjEd1G9BMgtoAyg" target="_blank">Christopher Lee-Jenkins</a></p>
+        <p>LinkedIn: <a href="https://www.linkedin.com/in/christopher-lee-jenkins-9ab028225/" target="_blank">Christopher Lee-Jenkins</a></p>
+        <p>Email: <a href="mailto:christopher@christopherleejenkins.com">Christopher Lee-Jenkins</a></p>
+    </div>
+
+    <div class="section gallery">
+        <h2>Gallery</h2>
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <div style="flex: 0 0 30%;">
+                <img src="Images/C_Lee_biopic2.jpg" alt="Christopher Lee-Jenkins" style="width: 100%; height: auto; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
+            </div>
+            <div style="flex: 0 0 30%;">
+                <img src="Images/C_Lee_biopic3.jpg" alt="Christopher Lee-Jenkins" style="width: 100%; height: auto; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
+            </div>
+            <div style="flex: 0 0 30%;">
+                <img src="Images/C_Lee_biopic1.jpg" alt="Christopher Lee-Jenkins" style="width: 100%; height: auto; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
+            </div>
+        </div>
+    </div>
+
+<div class="section">
+    <h2>Music</h2>
+
+    
+            <p class="essay-title" onclick="toggleAbstract('musicKvasir')">Kvasir <span class="click-info">(click to expand)</span></p>
+            <div class="abstract" id="musicKvasir">
+                <iframe style="border: 0; width: 100%; height: 120px;" src="https://bandcamp.com/EmbeddedPlayer/album=2770401978/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/artwork=small/transparent=true/" seamless><a href="https://kvasirpdx.bandcamp.com/album/sagittarius-a-star">Sagittarius A* Star by Kvasir</a></iframe>
+                <a href="https://kvasirpdx.bandcamp.com/">Kvasir on Bandcamp</a>
+            </div>
+        
+            <p class="essay-title" onclick="toggleAbstract('musicOneGoodEye')">One Good Eye <span class="click-info">(click to expand)</span></p>
+            <div class="abstract" id="musicOneGoodEye">
+                <iframe style="border: 0; width: 100%; height: 120px;" src="https://bandcamp.com/EmbeddedPlayer/album=41401532/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/artwork=small/track=2082994664/transparent=true/" seamless><a href="https://onegoodeyecasper.bandcamp.com/album/let-go-my-e-g-o">Let Go My E.G.O. by One Good Eye</a></iframe>
+                <a href="https://onegoodeyecasper.bandcamp.com/album/let-go-my-e-g-o" target="_blank">One Good Eye on Bandcamp</a>
+            </div>
+        
+            <p class="essay-title" onclick="toggleAbstract('musicLeviathanRise')">Leviathan Rise <span class="click-info">(click to expand)</span></p>
+            <div class="abstract" id="musicLeviathanRise">
+                <iframe style="border: 0; width: 100%; height: 120px;" src="https://bandcamp.com/EmbeddedPlayer/album=2328323263/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/artwork=small/transparent=true/" seamless><a href="https://leviathanrise.bandcamp.com/album/season-of-the-father-ii-nursery-rhymes-and-lullabies-for-lenfant-terrible">Season of the Father II - Nursery Rhymes and Lullabies for L&#39;enfant Terrible by Leviathan Rise</a></iframe>
+                <a href="https://leviathanrise.bandcamp.com/">Leviathan Rise on Bandcamp</a>
+            </div>
+      </div>
+
+
+<div class="section">
+    <h2>Publications</h2>
+    <div>
+        <p class="paper-title" onclick="toggleAbstract('abstract1')">The Topology of Awareness: Mapping the Holographic Terrain of Conscious Experience <span class="click-info">(click for abstract)</span></p>
+        <div class="abstract" id="abstract1">
+            We propose a mathematical model of consciousness based on the theory of chain complexes and simplicial topology, in which the structure and dynamics of conscious experience are understood as a kind of emergent hologram that arises from the integration and correlation of many different observations or measurements of an underlying potentiality field. This model is inspired by the holographic paradigm proposed by David Bohm and others, and seeks to provide a rigorous and computable framework for describing the way in which the apparent separateness and locality of conscious phenomena emerge from a deeper, non-local and non-dual order. We argue that this framework has the potential to unify and shed new light on a wide range of topics in consciousness studies, from the binding problem and the neural correlates of consciousness to the nature of qualia and the possibility of panpsychism. However, it is crucial to acknowledge that our model does not claim to solve the hard problem of consciousness or to assert the computability of subjective experience. Rather, it provides a novel mathematical lens through which to view and analyze the complex topological structure of consciousness, without reducing it to purely computational processes. <a href="https://www.academia.edu/117446294/The_Topology_of_Awareness_Mapping_the_Holographic_Terrain_of_Conscious_Experience" target="_blank">Read more</a>
+        </div>
+    </div>
+    <div>
+        <p class="paper-title" onclick="toggleAbstract('abstract2')">The Rank of Recurrence Matrices <span class="click-info">(click for abstract)</span></p>
+        <div class="abstract" id="abstract2">
+            A recurrence matrix is defined as a matrix whose entries (read left-to-right, row-by-row) are sequential elements generated by a linear recurrence relation. The maximal rank of this matrix is determined by the order of the corresponding recurrence. In the case of an order-two recurrence, the associated matrix fails to have full rank whenever the ratio of the two initial values of the sequence is an eigenvalue of the relation. <a href="https://www.academia.edu/110144201/The_Rank_of_Recurrence_Matrices" target="_blank">Read more</a>
+        </div>
+    </div>
+    <div>
+        <p class="paper-title" onclick="toggleAbstract('abstract3')">Toric Integrable Geodesic Flows in Odd Dimensions <span class="click-info">(click for abstract)</span></p>
+        <div class="abstract" id="abstract3">
+            Let Q be a compact, connected n-dimensional Riemannian manifold, and assume that the geodesic flow is toric integrable. If n = 3 is odd, or if π<sub>1</sub>(Q) is infinite, we show that the cosphere bundle of Q is equivariantly contactomorphic to the cosphere bundle of the torus T<sup>n</sup>. As a consequence, Q is homeomorphic to T<sup>n</sup>. <a href="https://www.academia.edu/110144062/TORIC_INTEGRABLE_GEODESIC_FLOWS_IN_ODD_DIMENSIONS" target="_blank">Read more</a>
+        </div>
+    </div>
+    <div>
+        <p class="paper-title" onclick="toggleAbstract('abstract4')">Obstructions to Toric Integrable Geodesic Flows in Dimension 3 <span class="click-info">(click for abstract)</span></p>
+        <div class="abstract" id="abstract4">
+            The geodesic flow of a Riemannian metric on a compact manifold Q is said to be toric integrable if it is completely integrable and the first integrals of motion generate a homogeneous torus action on the punctured cotangent bundle T*Q \ Q. If the geodesic flow is toric integrable, the cosphere bundle admits the structure of a contact toric manifold. By comparing the Betti numbers of contact toric manifolds and cosphere bundles, we are able to provide necessary conditions for the geodesic flow on a compact, connected 3-dimensional Riemannian manifold to be toric integrable. <a href="https://www.academia.edu/110143847/Obstructions_to_toric_integrable_geodesic_flows_in_dimension_3" target="_blank">Read more</a>
+        </div>
+    </div>
+    <div>
+        <p class="paper-title" onclick="toggleAbstract('abstract5')">Folded Symplectic Toric Four-Manifolds <span class="click-info">(click for abstract)</span></p>
+        <div class="abstract" id="abstract5">
+            We show that two orientable, four-dimensional folded symplectic toric manifolds are isomorphic provided that their orbit spaces have trivial degree-two integral cohomology and there exists a diffeomorphism of the orbit spaces (as manifolds with corners) preserving orbital moment maps. <a href="https://www.academia.edu/110143702/Folded_Symplectic_Toric_Four_Manifolds" target="_blank">Read more</a>
+        </div>
+    </div>
+    <div>
+        <p class="paper-title" onclick="toggleAbstract('abstract6')">A Primer for Undergraduate Research: From Groups and Tiles to Frames and Vaccines (Editor) <span class="click-info">(click for abstract)</span></p>
+        <div class="abstract" id="abstract6">
+            A pioneering text providing state-of-the-art resources for faculty looking to mentor in undergraduate research and students looking to participate. Contains a wide range of topics, not normally addressed by the undergraduate curriculum, appropriate for student-faculty exploration that are from pure and applied math. A completely self-contained and accessible text with pre-requisites, specific open problems, directions for new research and a carefully selected bibliography included in every chapter. Equips readers to tackle the many challenges of starting undergraduate research. <a href="https://link.springer.com/book/10.1007/978-3-319-66065-3" target="_blank">Read more</a>
+        </div>
+    </div>
+</div>
+
+    <div class="section">
+        <h2>Essays</h2>
+        <div>
+            <p class="essay-title" onclick="toggleAbstract('summary1')">The Alchemy of Choice: How the Axiom of Choice Transmutes Mathematical Reality <span class="click-info">(click for GPT Summary)</span></p>
+            <div class="summary" id="summary1">
+                In this essay, Christopher Lee-Jenkins explores the profound implications of the Axiom of Choice (AoC) in mathematics, likening it to a philosophical catalyst that transmutes mathematical reality. The essay delves into the Banach-Tarski Paradox, constructivist objections to the AoC, and its scientific and philosophical implications. The AoC is portrayed as a principle that challenges our understanding of mathematical reality, blending the infinite and finite, and raising questions about the nature of existence and human agency in mathematics. <a href="Articles/alchemy-choice-how-axiom-transmutes-mathematical-truth.html" target="_blank">Read more</a>
+            </div>
+        </div>
+        <div>
+            <p class="essay-title" onclick="toggleAbstract('summary2')">Unraveling the Complexity of Food Webs: A Topological Approach <span class="click-info">(click for GPT Summary)</span></p>
+            <div class="summary" id="summary2">
+                In this essay, Christopher Lee-Jenkins explores the application of topological methods to the study of food web robustness. By reviewing two recent preprints, he highlights how algebraic topology and discrete Morse theory can offer new insights into the stability and resilience of ecological communities. The essay discusses the limitations of traditional graph-theoretic approaches and presents novel frameworks such as the directed forest complex and the food web simplicial complex. These frameworks capture higher-order relationships and critical simplices, shedding light on the role of redundancy and the importance of topological features in maintaining ecosystem stability. <a href="Articles/unraveling-complexity-food-webs-topological-approach.html" target="_blank">Read more</a>
+            </div>
+        </div>
+        <div>
+            <p class="essay-title" onclick="toggleAbstract('summary3')">Why is π? <span class="click-info">(click for GPT Summary)</span></p>
+            <div class="summary" id="summary3">
+                In this essay, Christopher Lee-Jenkins celebrates π Day by exploring the significance and constancy of the mathematical constant π. The essay discusses how π is defined as the ratio of the circumference to the diameter of any circle and the method of exhaustion used to approximate it. Lee-Jenkins questions why π is constant and highlights that proving its constancy requires the concept of limits. He also points out that π is not constant in non-Euclidean geometries, adding a layer of complexity to our understanding of this fundamental constant. <a href="Articles/why-π-is-not-constant.html" target="_blank">Read more</a>
+            </div>
+        </div>
+        <div>
+            <p class="essay-title" onclick="toggleAbstract('summary4')">Mathematics Out of Reach: Math’s hardest problem is impossibly easy to understand <span class="click-info">(click for GPT Summary)</span></p>
+            <div class="summary" id="summary4">
+                In this essay, Christopher Lee-Jenkins discusses the Collatz Conjecture, a deceptively simple yet unsolved problem in mathematics. He contrasts it with more complex and less accessible problems like the Millennium Prize Problems, highlighting the Collatz Conjecture's unique position as both easy to state and incredibly challenging to solve. The essay explains the conjecture's process, where any positive integer is iteratively halved if even or tripled and increased by one if odd, eventually reaching the number one. Despite extensive computational verification for large numbers, a general proof remains elusive. Lee-Jenkins explores the broader implications and theoretical frameworks surrounding this intriguing mathematical mystery. <a href="Articles/mathematics-out-reach-maths-hardest-problem.html" target="_blank">Read more</a>
+            </div>
+        </div>
+        <div>
+            <p class="essay-title" onclick="toggleAbstract('summary5')">Morse Theory and the Geometry of Bioelectric Morphology <span class="click-info">(click for GPT Summary)</span></p>
+            <div class="summary" id="summary5">
+                In this essay, Christopher Lee-Jenkins draws parallels between Morse Theory in mathematics and the concepts of bioelectric morphology described by biologist Michael Levin. Inspired by Levin's discussion on the Lex Fridman Podcast, the essay explores how biological systems function as a hierarchy of goal-oriented systems without centralized control, similar to the topological problem of "Local to Global" in mathematics. Using examples from Morse Theory, Lee-Jenkins illustrates how local changes can dictate the global shape and behavior of systems, proposing that similar principles may underlie the organization and evolution of biological structures. <a href="Articles/morse-theory-geometry-bioelectric-morphology.html" target="_blank">Read more</a>
+            </div>
+        </div>
+        <div>
+            <p class="essay-title" onclick="toggleAbstract('summary6')">Exotic Cosmos, Exotic Spacetime <span class="click-info">(click for GPT Summary)</span></p>
+            <div class="summary" id="summary6">
+                In this essay, Christopher Lee-Jenkins delves into the construction of exotic 4D spacetimes, based on the work of Asselmeyer-Maluga et al. The essay explains the concept of cobordism, a manifold representing a topological or smooth transition between two other manifolds, and its role in building exotic spacetimes. Starting with the Einstein Cosmos as a standard 3D sphere, the authors construct an exotic spacetime by selecting a homological sphere, specifically a Brieskorn sphere, and introducing an Akbulut cork, a 4-manifold that is topologically trivial. The exotic properties of the resulting spacetime are concentrated near the cork, affecting the global structure and potentially leading to different physical behaviors. <a href="Articles/exotic-cosmos-spacetime.html" target="_blank">Read more</a>
+            </div>
+        </div>
+        <div>
+            <p class="essay-title" onclick="toggleAbstract('summary7')">Technical Interlude II: Coordinate Boogaloo <span class="click-info">(click for GPT Summary)</span></p>
+            <div class="summary" id="summary7">
+                In this essay, Christopher Lee-Jenkins explains the concept of coordinates in the context of manifolds, particularly focusing on how they apply to both standard and exotic spaces. He discusses the importance of coordinates as tools for doing calculations on manifolds, using the Earth's surface as an example of a 2D manifold that locally resembles a plane. The essay highlights the unique properties of 4D Euclidean space (\(R^4\)), which has uncountably infinite non-equivalent smooth structures, unlike other dimensions. This "exotic-ness" of \(R^4\) introduces complex and intriguing behaviors that differ from standard calculus expectations. <a href="Articles/technical-interlude-ii-coordinate-boogaloo.html" target="_blank">Read more</a>
+            </div>
+        </div>
+        <div>
+            <p class="essay-title" onclick="toggleAbstract('summary8')">An Exotic Interlude: Witten’s Construction <span class="click-info">(click for GPT Summary)</span></p>
+            <div class="summary" id="summary8">
+                In this essay, Christopher Lee-Jenkins explores the construction of exotic spheres through Witten’s procedure outlined in “Global Gravitational Anomalies”. The essay describes how Witten constructs an exotic (D+1)-dimensional sphere by removing the equator, transforming it via a diffeomorphism, and re-inserting it. This results in a manifold that is topologically the same but may possess an exotic smooth structure. Lee-Jenkins explains the significance of topology in understanding these transformations and highlights the challenges in finding examples of exotic 4-spheres. The essay underscores the intriguing differences in the non-compact case, such as exotic \(R^4\), and foreshadows further discussions on their unique properties. <a href="Articles/exotic-interlude-wittens-construction.html" target="_blank">Read more</a>
+            </div>
+        </div>
+        <div>
+            <p class="essay-title" onclick="toggleAbstract('summary9')">Physics & 4D Exotic Smoothness <span class="click-info">(click for GPT Summary)</span></p>
+            <div class="summary" id="summary9">
+                In this essay, Christopher Lee-Jenkins discusses the impact of exotic smooth structures on 4D spacetime and their implications for physics. He explains how different smooth structures affect the way calculus is performed on manifolds, and highlights the significance of diffeomorphisms in determining whether two manifolds are equivalent. The essay traces the origins of exotic smooth structures to John Milnor's work and explores their role in physics through Edward Witten's concept of "gravitational instantons." Lee-Jenkins also examines the mysterious nature of exotic \(R^4\) spaces and their potential to influence our understanding of gravity. <a href="Articles/physics-4d-exotic-smoothness.html" target="_blank">Read more</a>
+            </div>
+        </div>
+        <div>
+            <p class="essay-title" onclick="toggleAbstract('summary10')">Is Mathematics Physical in 4D? <span class="click-info">(click for GPT Summary)</span></p>
+            <div class="summary" id="summary10">
+                In this essay, Christopher Lee-Jenkins investigates the relationship between mathematics and physical reality, particularly in the context of four-dimensional space. He explores the implications of exotic smooth structures in 4D and their impact on calculus and physics. Lee-Jenkins explains that while in most dimensions, there is a unique way to define smooth structures, 4D space is unique with infinitely many incompatible smooth structures. This introduces the possibility of infinitely many different physical realities in 4D. The essay raises questions about the nature of mathematics and its physical manifestations, inviting readers to consider the profound implications of exotic smoothness in higher dimensions. <a href="Articles/mathematics-physical-4d.html" target="_blank">Read more</a>
+            </div>
+        </div>
+        <!-- Add more essays as needed -->
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2024 Christopher Lee-Jenkins</p>
+    </div>
+</div>
+</body>
+</html>
