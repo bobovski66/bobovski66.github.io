@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Classical Causal Networks - Foundations and Insights</title>
+    <title>Classical Causal Networks - Introduction and Basic Definitions</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@400;700&display=swap');
         
@@ -89,16 +89,13 @@
 
         <div class="section">
             <h1>Introduction</h1>
-            <p><strong>Opening Hook:</strong></p>
-            <p>Causal relationships are all around us, from how information spreads in social networks to the chain reactions in scientific processes. Understanding these relationships can give us deep insights into the complex systems that shape our world. Imagine not just mapping out the web of cause and effect in an ecosystem or a technological network, but understanding how to control these systems from a local to global perspective. This is the power of causal networks.</p>
+            <p>Causal relationships help form the consensus reality that envelops us, from how information spreads in social networks to the chain reactions in scientific processes. Understanding these relationships can give us deep insights into the complex systems that shape our understanding of reality. Mapping out the web of cause and effect in an ecosystem or a technological network and understanding how to control these systems from a local to global perspective yields effective models for other isomorphic systems. There is power in deep understanding of causal networks.</p>
 
-            <p><strong>Introduction to Causal Networks:</strong></p>
-            <p>So, what are causal networks? They’re mathematical structures used to represent and analyze cause-and-effect relationships. They consist of nodes (representing entities or events) and directed edges (showing causal influences). By examining these structures, we can understand how different components of a system interact, predict outcomes, and identify critical points needing intervention.</p>
+            <p>So, what are causal networks? They’re mathematical structures used to represent and analyze cause-and-effect relationships. They consist of nodes (representing entities or events) and directed edges (showing causal influences). By examining these structures, we can understand how different components of a system interact, predict outcomes, and identify critical points representing situations for which small changes might have big outcomes.</p>
             <p>Causal networks are crucial in various fields. In ecology, they help us understand food webs and energy flow between species. In sociology, they map out social influences and information spread. In computer science, they’re used in algorithms and machine learning models to predict future states based on current data. Essentially, wherever there are systems with interdependent components, causal networks offer valuable insights.</p>
-            <p>As discussed in the article by Lee, Jenkins, and Gez on the topological approach to food webs, understanding these networks from a topological perspective can reveal higher-dimensional insights into the complexity and stability of these systems. This approach captures not just pairwise interactions but also the intricate web of higher-order relationships that contribute to the robustness of ecological communities.</p>
+            <p>As discussed in <a href="https://bobovski66.github.io/Articles/unraveling-complexity-food-webs-topological-approach.html" target="blank"> a previous AI essay on the topological approach to food webs </a>, understanding these networks from a topological perspective can reveal higher-dimensional insights into the complexity and stability of these systems. This approach captures not just pairwise interactions but also the intricate web of higher-order relationships that contribute to the robustness of ecological communities.</p>
 
-            <p><strong>Purpose of the Article:</strong></p>
-            <p>In this article, I’ll explore the basics of classical causal networks, highlighting their fundamental properties and how they represent causal relationships. We’ll also check out some simple examples to illustrate these concepts. By the end, you’ll have a solid understanding of classical causal networks and be ready for more advanced topics in future articles.</p>
+            <p>In this article, I’ll explore the basics of classical causal networks, highlighting their fundamental properties and how they represent causal relationships. We’ll also check out some simple examples to illustrate these concepts. By the end, we will develop understanding of classical causal networks and be ready to apply them to more advanced topics in future articles.</p>
             <p>We’ll cover:</p>
             <ul>
                 <li>The definition and components of a classical causal network</li>
@@ -106,18 +103,17 @@
                 <li>Methods for analyzing these networks</li>
                 <li>Examples to illustrate these concepts</li>
             </ul>
-            <p>This journey will set the stage for understanding higher-dimensional relationships and how they reveal deeper layers of information, leading us toward the fascinating realm of quantum networks and the phenomenon of non-locality. Let’s dive in!</p>
+            <p>This essay sets the stage for understanding higher-dimensional relationships and how they reveal deeper layers of information, eventually leading us toward the realm of quantum networks and the phenomenon of non-locality. Let's get entangled!</p>
         </div>
 
         <div class="section">
             <h2>Understanding Classical Causal Networks</h2>
-            <p><strong>Definition and Components:</strong></p>
-            <p>A classical causal network is a directed graph used to represent causal relationships. The nodes in the graph represent entities or events, and the directed edges represent causal influences from one node to another. This structure helps us understand how different components of a system interact, predict outcomes, and identify critical points that might need intervention.</p>
+            <p>A classical causal network is a directed graph used to represent causal relationships. The nodes in the graph represent entities or events, and the directed edges represent causal influences from one node to another. This structure helps us understand how different components of a system interact, predict outcomes, and identify critical points that might need investigation.</p>
 
             <p><strong>Properties of Classical Causal Networks:</strong></p>
             <p><em>Unique Root:</em> This property indicates the presence of a single source node from which all paths originate. The unique root is crucial for modeling causal relationships because it represents the primary source of influence in the network.</p>
             <p><em>Reachability:</em> This property ensures that every node in the network is reachable from the root. Reachability is important for ensuring the completeness of the causal network, allowing us to trace the influence of the root throughout the entire network.</p>
-            <p><em>Analysis of Causal Networks:</em> Methods for analyzing causal networks include examining path lengths, dependencies, and feedback loops. These analyses help us understand the dynamics of the network and identify potential points of intervention.</p>
+            <p><em>Analysis of Causal Networks:</em> Methods for analyzing causal networks include examining path lengths, dependencies, and feedback loops. These analyses help us understand the dynamics of the network and identify potential points of intervention. Later on, we will build from a classical causal netowrk a larger-dimensional space that links cause-and-effect through higher relationships, leading to entanglements of events.</p>
 
             <p><strong>Examples of Causal Networks:</strong></p>
             <p><em>Example 1: Simple Classical Causal Network</em></p>
@@ -126,7 +122,9 @@
                 <li>Vertices: \( R \) (root), \( A \), \( B \), \( C \)</li>
                 <li>Edges: \( R \rightarrow A \), \( R \rightarrow B \), \( A \rightarrow C \), \( B \rightarrow C \)</li>
             </ul>
-            <p>This network can be analyzed for its causal properties and reachability. The root \( R \) influences all other nodes directly or indirectly, demonstrating the flow of influence in the network.</p>
+            <p>This network can be analyzed for its causal properties and reachability. The root \( R \) influences all other nodes directly or indirectly, demonstrating the flow of influence in the network:</p>
+            <p><img src="images/simple_causal_1.png"></p>
+            <p>One can imagine this causal network describing the flow of information in a social media network, or the distribution of energy in a collectionof food chains, etc. The power of these networks is in their wide 	  	    applicabillity.</p>
 
             <p><em>Example 2: More Complex Causal Network</em></p>
             <p>Consider a more complex causal network with vertices \(\{R, A, B, C\}\) and additional edges \(\{(B, A), (C, B)\}\), creating a cycle but without the edge \( B \rightarrow C \).</p>
@@ -134,23 +132,17 @@
                 <li>Vertices: \( R \) (root), \( A \), \( B \), \( C \)</li>
                 <li>Edges: \( R \rightarrow A \), \( R \rightarrow B \), \( A \rightarrow C \), \( C \rightarrow B \), \( B \rightarrow A \)</li>
             </ul>
-            <p>This network introduces additional complexity with cycles, which can be analyzed using more advanced techniques. The visual representation helps in understanding the flow and interaction within the network:</p>
-            <img src="Images/complex_network.png" alt="Complex Causal Network">
+            <p>This network introduces additional complexity with cycles, which can be analyzed using more advanced techniques to quantify and qualify the differences between this network and the first, for example. The visual representation helps in understanding the flow and interaction within the network:</p>           	    <p><img src="images/simple_causal_2.png" alt="Complex Causal Network"></p>
+            <p> Once can certainly begin to imagine that these types of networks can get very complicated indeed. </p>
+            
 
-            <p><strong>Importance of Causal Networks:</strong></p>
-            <p>Causal networks play a vital role in understanding system dynamics and predicting outcomes. They are used in various fields such as epidemiology, economics, and engineering. By analyzing these networks, we can identify critical points of intervention and optimize system performance.</p>
-        </div>
+
+                   </div>
         <div class="section">
-            <h2>Future Directions and Conclusion</h2>
-            <p><strong>Introduction to Higher-Dimensional Relationships:</strong></p>
-            <p>Understanding the relationships between nodes in a network can reveal deeper insights. In future articles, we will explore how higher-dimensional relationships can uncover more complex interactions and structures within causal networks.</p>
+            <h2>Future Directions</h2>
+            <p>Understanding the relationships between nodes in a causal system represented by a directed graph can reveal deeper insights. In future articles, we will explore how higher-dimensional relationships can uncover more complex interactions and structures within causal networks. This approach will present a synthesis of combinatorial, topological, and discrete differential-geometric techniques. In understanding classical causal networks, we set the stage for exploring quantum networks. Higher-dimensional structures can lead to phenomena such as non-locality in quantum networks, offering a richer understanding of these systems.</p>
 
-            <p><strong>From Classical to Quantum Networks:</strong></p>
-            <p>By understanding classical causal networks, we set the stage for exploring quantum networks. Higher-dimensional structures can lead to phenomena such as non-locality in quantum networks, offering a richer understanding of these systems.</p>
-
-            <p><strong>Conclusion:</strong></p>
-            <p>In this article, we explored the basics of classical causal networks, their properties, and their applications. We also provided examples to illustrate these concepts. This foundation will help us dive into more advanced topics in future articles, revealing deeper layers of information and leading us toward the fascinating realm of quantum networks and the phenomenon of non-locality. Stay tuned!</p>
-        </div>
+                   </div>
 
         <div class="footer">
             <p>&copy; 2024 Christopher Lee-Jenkins. All rights reserved.</p>
