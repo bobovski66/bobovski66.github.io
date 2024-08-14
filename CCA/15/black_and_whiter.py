@@ -17,8 +17,8 @@ for filename in os.listdir('.'):
         # Convert to grayscale
         gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         
-        # Apply binary thresholding to create a black and white image
-        _, bw_image = cv2.threshold(gray_image, 127, 255, cv2.THRESH_BINARY)
+        # Modified: Apply binary thresholding with inversion to create a black and white image
+        _, bw_image = cv2.threshold(gray_image, 127, 255, cv2.THRESH_BINARY_INV)
         
         # Save the black and white image as imagenN.png
         cv2.imwrite(output_path, bw_image)
