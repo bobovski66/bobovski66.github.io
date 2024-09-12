@@ -233,6 +233,31 @@ saveButton.addEventListener('click', () => {
   link.href = canvas.toDataURL('image/png'); // Get the image data URL
   link.click(); // Trigger the download
 });
+function resizeCanvas() {
+  // Set the canvas size dynamically based on the viewport size
+  canvas.width = window.innerWidth * 0.9; // 90% of the screen width
+  canvas.height = window.innerHeight * 0.6; // 60% of the screen height
+
+  adjustZoomForMobile(); // Adjust zoom for mobile screens
+  drawGrid(rotationAngle, rows, cols, dotRadius, stationaryColor, rotatedColor, zoomLevel);
+}
+
+// Adjust the zoom factor for mobile screens
+function adjustZoomForMobile() {
+  if (window.innerWidth < 600) { // Adjust for smaller screens
+    zoomLevel = 0.8; // Apply smaller zoom for mobile
+  } else {
+    zoomLevel = 1; // Default zoom for larger screens
+  }
+}
+
+// Call resizeCanvas on page load to set the initial size
+resizeCanvas();
+
+// Add event listener to resize the canvas dynamically when the window is resized
+window.addEventListener('resize', resizeCanvas);
+
+// Initial grid draw and event listener setup remain unchanged
 
   </script>
 </body>
