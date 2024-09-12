@@ -114,6 +114,7 @@
     </div>
   </div>
 
+  <button id="playButton">Play</button>
   <button id="snapshotButton">Take Snapshot</button>
   <button id="saveButton">Save Snapshot</button>
 
@@ -122,143 +123,164 @@
 
   <script>
     const canvas = document.getElementById('dotCanvas');
-const ctx = canvas.getContext('2d');
-const rotationSlider = document.getElementById('rotationSlider');
-const densitySlider = document.getElementById('densitySlider');
-const sizeSlider = document.getElementById('sizeSlider');
-const zoomSlider = document.getElementById('zoomSlider');
-const stationaryColorPicker = document.getElementById('stationaryColor');
-const rotatedColorPicker = document.getElementById('rotatedColor');
-const snapshotButton = document.getElementById('snapshotButton');
-const saveButton = document.getElementById('saveButton');
-const snapshotImage = document.getElementById('snapshot');
+    const ctx = canvas.getContext('2d');
+    const rotationSlider = document.getElementById('rotationSlider');
+    const densitySlider = document.getElementById('densitySlider');
+    const sizeSlider = document.getElementById('sizeSlider');
+    const zoomSlider = document.getElementById('zoomSlider');
+    const stationaryColorPicker = document.getElementById('stationaryColor');
+    const rotatedColorPicker = document.getElementById('rotatedColor');
+    const playButton = document.getElementById('playButton');
+    const snapshotButton = document.getElementById('snapshotButton');
+    const saveButton = document.getElementById('saveButton');
+    const snapshotImage = document.getElementById('snapshot');
 
-let dotRadius = 5; // Size of the individual dot
-let rotationAngle = 0; // Rotation angle
-let rows = 10; // Number of rows (adjusted by density)
-let cols = 10; // Number of columns (adjusted by density)
-let zoomLevel = 1; // Scale factor for the whole grid
-let stationaryColor = '#000000';
-let rotatedColor = '#FF0000';
+    let dotRadius = 5; // Size of the individual dot
+    let rotationAngle = 0; // Rotation angle
+    let rows = 10; // Number of rows (adjusted by density)
+    let cols = 10; // Number of columns (adjusted by density)
+    let zoomLevel = 1; // Scale factor for the whole grid
+    let stationaryColor = '#000000';
+    let rotatedColor = '#FF0000';
+    let isPlaying = false; // Variable to track if the animation is playing
+    let animationFrameId; // Variable to store the animation frame ID
 
-// Draw the grid of dots
-function drawGrid(angle, rows, cols, dotRadius, stationaryColor, rotatedColor, zoom) {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Draw the grid of dots
+    function drawGrid(angle, rows, cols, dotRadius, stationaryColor, rotatedColor, zoom) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Calculate spacing based on dot radius and zoom level
-  const spacing = dotRadius * 3 * zoom;
-  const gridWidth = (cols - 1) * spacing;
-  const gridHeight = (rows - 1) * spacing;
+      // Calculate spacing based on dot radius, independent of zoom level
+      const spacing = dotRadius * 3; // Keep spacing fixed regardless of zoom
+      const gridWidth = (cols - 1) * spacing;
+      const gridHeight = (rows - 1) * spacing;
 
-  // Calculate the center of the canvas
-  const canvasCenterX = canvas.width / 2;
-  const canvasCenterY = canvas.height / 2;
+      // Calculate the center of the canvas
+      const canvasCenterX = canvas.width / 2;
+      const canvasCenterY = canvas.height / 2;
 
-  // Calculate the top-left corner of the grid (to center the grid)
-  const startX = canvasCenterX - gridWidth / 2;
-  const startY = canvasCenterY - gridHeight / 2;
+      // Calculate the top-left corner of the grid (to center the grid)
+      const startX = canvasCenterX - gridWidth / 2 * zoom;
+      const startY = canvasCenterY - gridHeight / 2 * zoom;
 
-  // Draw the first stationary grid
-  drawDotArray(startX, startY, rows, cols, dotRadius, spacing, stationaryColor);
+      // Draw the first stationary grid (apply zoom when drawing)
+      drawDotArray(startX, startY, rows, cols, dotRadius, spacing, stationaryColor, zoom);
 
-  // Now rotate and draw the second grid
-  ctx.save(); // Save the current state before rotating
-  ctx.translate(canvasCenterX, canvasCenterY); // Move the origin to the center of the canvas
-  ctx.rotate((angle * Math.PI) / 180); // Apply the rotation
-  ctx.translate(-canvasCenterX, -canvasCenterY); // Move back to the top-left corner
-  drawDotArray(startX, startY, rows, cols, dotRadius, spacing, rotatedColor);
-  ctx.restore(); // Restore the canvas state
-}
-
-// Function to draw dots array
-function drawDotArray(startX, startY, rows, cols, dotRadius, spacing, color) {
-  ctx.fillStyle = color;
-  for (let i = 0; i < rows; i++) {
-    for (let j = 0; j < cols; j++) {
-      ctx.beginPath();
-      const x = startX + j * spacing;
-      const y = startY + i * spacing;
-      ctx.arc(x, y, dotRadius, 0, 2 * Math.PI);
-      ctx.fill();
+      // Now rotate and draw the second grid
+      ctx.save(); // Save the current state before rotating
+      ctx.translate(canvasCenterX, canvasCenterY); // Move the origin to the center of the canvas
+      ctx.rotate((angle * Math.PI) / 180); // Apply the rotation
+      ctx.translate(-canvasCenterX, -canvasCenterY); // Move back to the top-left corner
+      drawDotArray(startX, startY, rows, cols, dotRadius, spacing, rotatedColor, zoom);
+      ctx.restore(); // Restore the canvas state
     }
-  }
-}
 
-// Event listeners for sliders
-rotationSlider.addEventListener('input', (e) => {
-  rotationAngle = e.target.value;
-  drawGrid(rotationAngle, rows, cols, dotRadius, stationaryColor, rotatedColor, zoomLevel);
-});
+    // Function to draw dots array (apply zoom when drawing the position, but not dot size)
+    function drawDotArray(startX, startY, rows, cols, dotRadius, spacing, color, zoom) {
+      ctx.fillStyle = color;
+      for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
+          ctx.beginPath();
+          const x = startX + j * spacing * zoom; // Apply zoom to the position
+          const y = startY + i * spacing * zoom; // Apply zoom to the position
+          ctx.arc(x, y, dotRadius, 0, 2 * Math.PI); // Dot size remains unaffected by zoom
+          ctx.fill();
+        }
+      }
+    }
 
-densitySlider.addEventListener('input', (e) => {
-  rows = e.target.value; // Adjust both rows and cols based on density
-  cols = e.target.value;
-  drawGrid(rotationAngle, rows, cols, dotRadius, stationaryColor, rotatedColor, zoomLevel);
-});
+    // Event listeners for sliders
+    rotationSlider.addEventListener('input', (e) => {
+      rotationAngle = e.target.value;
+      drawGrid(rotationAngle, rows, cols, dotRadius, stationaryColor, rotatedColor, zoomLevel);
+    });
 
-sizeSlider.addEventListener('input', (e) => {
-  dotRadius = e.target.value; // Adjust the size of each dot
-  drawGrid(rotationAngle, rows, cols, dotRadius, stationaryColor, rotatedColor, zoomLevel);
-});
+    densitySlider.addEventListener('input', (e) => {
+      rows = e.target.value; // Adjust both rows and cols based on density
+      cols = e.target.value;
+      drawGrid(rotationAngle, rows, cols, dotRadius, stationaryColor, rotatedColor, zoomLevel);
+    });
 
-zoomSlider.addEventListener('input', (e) => {
-  zoomLevel = e.target.value; // Adjust the zoom (scale of the entire grid)
-  drawGrid(rotationAngle, rows, cols, dotRadius, stationaryColor, rotatedColor, zoomLevel);
-});
+    sizeSlider.addEventListener('input', (e) => {
+      dotRadius = e.target.value; // Adjust the size of each dot
+      drawGrid(rotationAngle, rows, cols, dotRadius, stationaryColor, rotatedColor, zoomLevel);
+    });
 
-// Event listeners for color pickers
-stationaryColorPicker.addEventListener('input', (e) => {
-  stationaryColor = e.target.value;
-  drawGrid(rotationAngle, rows, cols, dotRadius, stationaryColor, rotatedColor, zoomLevel);
-});
+    zoomSlider.addEventListener('input', (e) => {
+      zoomLevel = e.target.value; // Adjust the zoom (scale of the entire grid)
+      drawGrid(rotationAngle, rows, cols, dotRadius, stationaryColor, rotatedColor, zoomLevel);
+    });
 
-rotatedColorPicker.addEventListener('input', (e) => {
-  rotatedColor = e.target.value;
-  drawGrid(rotationAngle, rows, cols, dotRadius, stationaryColor, rotatedColor, zoomLevel);
-});
+    // Event listeners for color pickers
+    stationaryColorPicker.addEventListener('input', (e) => {
+      stationaryColor = e.target.value;
+      drawGrid(rotationAngle, rows, cols, dotRadius, stationaryColor, rotatedColor, zoomLevel);
+    });
 
-// Initial draw
-drawGrid(rotationAngle, rows, cols, dotRadius, stationaryColor, rotatedColor, zoomLevel);
+    rotatedColorPicker.addEventListener('input', (e) => {
+      rotatedColor = e.target.value;
+      drawGrid(rotationAngle, rows, cols, dotRadius, stationaryColor, rotatedColor, zoomLevel);
+    });
 
-// Snapshot and Save functionality
-snapshotButton.addEventListener('click', () => {
-  drawGrid(rotationAngle, rows, cols, dotRadius, stationaryColor, rotatedColor, zoomLevel); // Ensure the latest grid state is drawn
-  const dataURL = canvas.toDataURL('image/png'); // Get the image data URL from the canvas
-  snapshotImage.src = dataURL; // Display the snapshot in the img element
-});
+    // Function to start/stop the animation
+    function toggleAnimation() {
+      if (isPlaying) {
+        cancelAnimationFrame(animationFrameId); // Stop the animation
+        playButton.textContent = 'Play'; // Change button text to "Play"
+      } else {
+        animateRotation(); // Start the animation
+        playButton.textContent = 'Pause'; // Change button text to "Pause"
+      }
+      isPlaying = !isPlaying; // Toggle the play state
+    }
 
-saveButton.addEventListener('click', () => {
-  const link = document.createElement('a');
-  link.download = 'dot_grid_snapshot.png'; // Name for the saved image
-  link.href = canvas.toDataURL('image/png'); // Get the image data URL
-  link.click(); // Trigger the download
-});
-function resizeCanvas() {
-  // Set the canvas size dynamically based on the viewport size
-  canvas.width = window.innerWidth * 0.9; // 90% of the screen width
-  canvas.height = window.innerHeight * 0.6; // 60% of the screen height
+    // Function to animate the rotation
+    function animateRotation() {
+      rotationAngle = (rotationAngle + 1) % 360; // Increment the angle and loop back to 0 after 360
+      rotationSlider.value = rotationAngle; // Update the rotation slider
+      drawGrid(rotationAngle, rows, cols, dotRadius, stationaryColor, rotatedColor, zoomLevel);
+      animationFrameId = requestAnimationFrame(animateRotation); // Continue the animation
+    }
 
-  adjustZoomForMobile(); // Adjust zoom for mobile screens
-  drawGrid(rotationAngle, rows, cols, dotRadius, stationaryColor, rotatedColor, zoomLevel);
-}
+    // Event listener for the Play button
+    playButton.addEventListener('click', toggleAnimation);
 
-// Adjust the zoom factor for mobile screens
-function adjustZoomForMobile() {
-  if (window.innerWidth < 600) { // Adjust for smaller screens
-    zoomLevel = 0.8; // Apply smaller zoom for mobile
-  } else {
-    zoomLevel = 1; // Default zoom for larger screens
-  }
-}
+    // Snapshot and Save functionality
+    snapshotButton.addEventListener('click', () => {
+      drawGrid(rotationAngle, rows, cols, dotRadius, stationaryColor, rotatedColor, zoomLevel); // Ensure the latest grid state is drawn
+      const dataURL = canvas.toDataURL('image/png'); // Get the image data URL from the canvas
+      snapshotImage.src = dataURL; // Display the snapshot in the img element
+    });
 
-// Call resizeCanvas on page load to set the initial size
-resizeCanvas();
+    saveButton.addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = 'dot_grid_snapshot.png'; // Name for the saved image
+      link.href = canvas.toDataURL('image/png'); // Get the image data URL
+      link.click(); // Trigger the download
+    });
 
-// Add event listener to resize the canvas dynamically when the window is resized
-window.addEventListener('resize', resizeCanvas);
+    function resizeCanvas() {
+      // Set the canvas size dynamically based on the viewport size
+      canvas.width = window.innerWidth * 0.9; // 90% of the screen width
+      canvas.height = window.innerHeight * 0.6; // 60% of the screen height
 
-// Initial grid draw and event listener setup remain unchanged
+      adjustZoomForMobile(); // Adjust zoom for mobile screens
+      drawGrid(rotationAngle, rows, cols, dotRadius, stationaryColor, rotatedColor, zoomLevel);
+    }
 
+    // Adjust the zoom factor for mobile screens
+    function adjustZoomForMobile() {
+      if (window.innerWidth < 600) { // Adjust for smaller screens
+        zoomLevel = 0.8; // Apply smaller zoom for mobile
+      } else {
+        zoomLevel = 1; // Default zoom for larger screens
+      }
+    }
+
+    // Call resizeCanvas on page load to set the initial size
+    resizeCanvas();
+
+    // Add event listener to resize the canvas dynamically when the window is resized
+    window.addEventListener('resize', resizeCanvas);
   </script>
 </body>
 </html>
