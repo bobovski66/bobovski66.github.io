@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dot Grid Rotator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle, #0d0d0d, #1a1a1a);
+      color: #e0e0e0;
+      font-family: 'Orbitron', sans-serif;
+      min-height: 100vh;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: #00FFBF;
+      margin-bottom: 10px;
+    }
+
+    canvas {
+      border: 2px solid #00FFBF;
+      box-shadow: 0px 0px 15px rgba(0, 255, 191, 0.75);
+      margin-bottom: 20px;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      width: 80%;
+      max-width: 600px;
+      margin-bottom: 20px;
+    }
+
+    .control-group {
+      background-color: #111;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px rgba(0, 255, 191, 0.5);
+    }
+
+    label {
+      color: #00FFBF;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+    }
+
+    button {
+      background-color: #111;
+      color: #00FFBF;
+      border: 2px solid #00FFBF;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      box-shadow: 0px 0px 10px rgba(0, 255, 191, 0.75);
+    }
+
+    button:hover {
+      background-color: #00FFBF;
+      color: #111;
+    }
+
+    #snapshot {
+      display: block;
+      margin-top: 15px;
+      border: 2px solid #00FFBF;
+      box-shadow: 0px 0px 10px rgba(0, 255, 191, 0.5);
+    }
+  </style>
+</head>
+<body>
+  <h1>Dot Grid Rotator</h1>
+  <canvas id="dotCanvas" width="500" height="500"></canvas>
+
+  <div class="controls">
+    <div class="control-group">
+      <label for="rotationSlider">Rotation: </label>
+      <input type="range" id="rotationSlider" min="0" max="360" value="0">
+    </div>
+
+    <div class="control-group">
+      <label for="densitySlider">Dot Density: </label>
+      <input type="range" id="densitySlider" min="5" max="100" value="10">
+    </div>
+
+    <div class="control-group">
+      <label for="sizeSlider">Dot Size: </label>
+      <input type="range" id="sizeSlider" min="0.1" max="15" value="5">
+    </div>
+
+    <div class="control-group">
+      <label for="zoomSlider">Zoom: </label>
+      <input type="range" id="zoomSlider" min="1" max="5" step="0.1" value="1">
+    </div>
+
+    <div class="control-group">
+      <label for="stationaryColor">Stationary Grid Color: </label>
+      <input type="color" id="stationaryColor" value="#000000">
+    </div>
+
+    <div class="control-group">
+      <label for="rotatedColor">Rotated Grid Color: </label>
+      <input type="color" id="rotatedColor" value="#FF0000">
+    </div>
+  </div>
+
+  <button id="snapshotButton">Take Snapshot</button>
+  <button id="saveButton">Save Snapshot</button>
+
+  <h2>Snapshot</h2>
+  <img id="snapshot" alt="Snapshot will appear here">
+
+  <script>
+    const canvas = document.getElementById('dotCanvas');
+    const ctx = canvas.getContext('2d');
+    const rotationSlider = document.getElementById('rotationSlider');
+    const densitySlider = document.getElementById('densitySlider');
+    const sizeSlider = document.getElementById('sizeSlider');
+    const zoomSlider = document.getElementById('zoomSlider');
+    const stationaryColorPicker = document.getElementById('stationaryColor');
+    const rotatedColorPicker = document.getElementById('rotatedColor');
+    const snapshotButton = document.getElementById('snapshotButton');
+    const saveButton = document.getElementById('saveButton');
+    const snapshotImage = document.getElementById('snapshot');
+
+    let dotRadius = 5;
+    let rotationAngle = 0;
+    let rows = 10;
+    let cols = 10;
+    let zoomLevel = 1;
+    let stationaryColor = '#000000';
+    let rotatedColor = '#FF0000';
+
+    // Draw the grid of dots
+    function drawGrid(angle, rows, cols, dotRadius, stationaryColor, rotatedColor, zoom) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Center the canvas and apply zoom
+      ctx.save();
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.scale(zoom, zoom);
+      ctx.translate(-canvas.width / 2, -canvas.height / 2);
+
+      // First grid (stationary)
+      drawDotArray((canvas.width - 400) / 2, (canvas.height - 400) / 2, rows, cols, dotRadius, stationaryColor);
+
+      // Second grid (rotated)
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate((angle * Math.PI) / 180);
+      ctx.translate(-canvas.width / 2, -canvas.height / 2);
+      drawDotArray((canvas.width - 400) / 2, (canvas.height - 400) / 2, rows, cols, dotRadius, rotatedColor);
+
+      ctx.restore(); // Restore transformation state
+    }
+
+    // Draw a grid of dots with rows, columns, dot size, and color
+    function drawDotArray(startX, startY, rows, cols, dotRadius, color) {
+      const gridWidth = 400;
+      const gridHeight = 400;
+      const spacingX = gridWidth / cols;
+      const spacingY = gridHeight / rows;
+
+      ctx.fillStyle = color;
+      for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
+          ctx.beginPath();
+          const x = startX + j * spacingX;
+          const y = startY + i * spacingY;
+          ctx.arc(x, y, dotRadius, 0, 2 * Math.PI);
+          ctx.fill();
+        }
+      }
+    }
+
+    // Snapshot and Save functionality
+    snapshotButton.addEventListener('click', () => {
+      const dataURL = canvas.toDataURL('image/png');
+      snapshotImage.src = dataURL;
+    });
+
+    saveButton.addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = 'dot_grid_snapshot.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+
+    // Event listeners for sliders
+    rotationSlider.addEventListener('input', (e) => {
+      rotationAngle = e.target.value;
+      drawGrid(rotationAngle, rows, cols, dotRadius, stationaryColor, rotatedColor, zoomLevel);
+    });
+
+    densitySlider.addEventListener('input', (e) => {
+      rows = e.target.value;
+      cols = e.target.value;
+      drawGrid(rotationAngle, rows, cols, dotRadius, stationaryColor, rotatedColor, zoomLevel);
+    });
+
+    sizeSlider.addEventListener('input', (e) => {
+      dotRadius = e.target.value;
+      drawGrid(rotationAngle, rows, cols, dotRadius, stationaryColor, rotatedColor, zoomLevel);
+    });
+
+    zoomSlider.addEventListener('input', (e) => {
+      zoomLevel = e.target.value;
+      drawGrid(rotationAngle, rows, cols, dotRadius, stationaryColor, rotatedColor, zoomLevel);
+    });
+
+    // Event listeners for color pickers
+    stationaryColorPicker.addEventListener('input', (e) => {
+      stationaryColor = e.target.value;
+      drawGrid(rotationAngle, rows, cols, dotRadius, stationaryColor, rotatedColor, zoomLevel);
+    });
+
+    rotatedColorPicker.addEventListener('input', (e) => {
+      rotatedColor = e.target.value;
+      drawGrid(rotationAngle, rows, cols, dotRadius, stationaryColor, rotatedColor, zoomLevel);
+    });
+
+    // Initial draw
+    drawGrid(rotationAngle, rows, cols, dotRadius, stationaryColor, rotatedColor, zoomLevel);
+  </script>
+
+</body>
+</html>
