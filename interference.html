@@ -145,43 +145,44 @@
     let isPlaying = false; // Variable to track if the animation is playing
     let animationFrameId; // Variable to store the animation frame ID
 
+    const gridSize = 400; // Fixed grid size in pixels
+
     // Draw the grid of dots
     function drawGrid(angle, rows, cols, dotRadius, stationaryColor, rotatedColor, zoom) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Calculate spacing based on dot radius, independent of zoom level
-      const spacing = dotRadius * 3; // Keep spacing fixed regardless of zoom
-      const gridWidth = (cols - 1) * spacing;
-      const gridHeight = (rows - 1) * spacing;
+      // Calculate spacing based on fixed grid size and rows/cols
+      const spacingX = gridSize / (cols - 1); // Space between columns
+      const spacingY = gridSize / (rows - 1); // Space between rows
 
       // Calculate the center of the canvas
       const canvasCenterX = canvas.width / 2;
       const canvasCenterY = canvas.height / 2;
 
       // Calculate the top-left corner of the grid (to center the grid)
-      const startX = canvasCenterX - gridWidth / 2 * zoom;
-      const startY = canvasCenterY - gridHeight / 2 * zoom;
+      const startX = canvasCenterX - gridSize / 2 * zoom;
+      const startY = canvasCenterY - gridSize / 2 * zoom;
 
       // Draw the first stationary grid (apply zoom when drawing)
-      drawDotArray(startX, startY, rows, cols, dotRadius, spacing, stationaryColor, zoom);
+      drawDotArray(startX, startY, rows, cols, dotRadius, spacingX, spacingY, stationaryColor, zoom);
 
       // Now rotate and draw the second grid
       ctx.save(); // Save the current state before rotating
       ctx.translate(canvasCenterX, canvasCenterY); // Move the origin to the center of the canvas
       ctx.rotate((angle * Math.PI) / 180); // Apply the rotation
       ctx.translate(-canvasCenterX, -canvasCenterY); // Move back to the top-left corner
-      drawDotArray(startX, startY, rows, cols, dotRadius, spacing, rotatedColor, zoom);
+      drawDotArray(startX, startY, rows, cols, dotRadius, spacingX, spacingY, rotatedColor, zoom);
       ctx.restore(); // Restore the canvas state
     }
 
     // Function to draw dots array (apply zoom when drawing the position, but not dot size)
-    function drawDotArray(startX, startY, rows, cols, dotRadius, spacing, color, zoom) {
+    function drawDotArray(startX, startY, rows, cols, dotRadius, spacingX, spacingY, color, zoom) {
       ctx.fillStyle = color;
       for (let i = 0; i < rows; i++) {
         for (let j = 0; j < cols; j++) {
           ctx.beginPath();
-          const x = startX + j * spacing * zoom; // Apply zoom to the position
-          const y = startY + i * spacing * zoom; // Apply zoom to the position
+          const x = startX + j * spacingX * zoom; // Apply zoom to the position
+          const y = startY + i * spacingY * zoom; // Apply zoom to the position
           ctx.arc(x, y, dotRadius, 0, 2 * Math.PI); // Dot size remains unaffected by zoom
           ctx.fill();
         }
