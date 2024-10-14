@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Event Game Simulation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        h1 {
+            margin-top: 20px;
+        }
+        table {
+            width: 80%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        td {
+            background-color: #f2f2f2;
+        }
+        button {
+            margin: 20px;
+            padding: 12px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #finalProfitRow {
+            background-color: #e0f7fa;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Business Event Game Simulation</h1>
+
+    <button onclick="simulateDay()">Simulate Day</button>
+    
+
+    <table>
+        <thead>
+            <tr>
+                <th>Day #</th>
+                <th>Starting Balance($)</th>
+                <th>Card Effects</th>
+                <th>Daily Cost ($)</th>
+                <th>Daily Revenue ($)</th>
+                <th>Daily Profit ($)</th>
+                <th>Cumulative Balance ($)</th>
+            </tr>
+        </thead>
+        <tbody id="gameTable">
+            <tr>
+                <td>1</td>
+                <td id="balanceDay1">500</td>
+                <td id="cardEffect1"></td>
+                <td id="costDay1"></td>
+                <td id="revenueDay1"></td>
+                <td id="profitDay1"></td>
+                <td id="cumulativeDay1"></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td id="balanceDay2"></td>
+                <td id="cardEffect2"></td>
+                <td id="costDay2"></td>
+                <td id="revenueDay2"></td>
+                <td id="profitDay2"></td>
+                <td id="cumulativeDay2"></td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td id="balanceDay3"></td>
+                <td id="cardEffect3"></td>
+                <td id="costDay3"></td>
+                <td id="revenueDay3"></td>
+                <td id="profitDay3"></td>
+                <td id="cumulativeDay3"></td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td id="balanceDay4"></td>
+                <td id="cardEffect4"></td>
+                <td id="costDay4"></td>
+                <td id="revenueDay4"></td>
+                <td id="profitDay4"></td>
+                <td id="cumulativeDay4"></td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td id="balanceDay5"></td>
+                <td id="cardEffect5"></td>
+                <td id="costDay5"></td>
+                <td id="revenueDay5"></td>
+                <td id="profitDay5"></td>
+                <td id="cumulativeDay5"></td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td id="balanceDay6"></td>
+                <td id="cardEffect6"></td>
+                <td id="costDay6"></td>
+                <td id="revenueDay6"></td>
+                <td id="profitDay6"></td>
+                <td id="cumulativeDay6"></td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td id="balanceDay7"></td>
+                <td id="cardEffect7"></td>
+                <td id="costDay7"></td>
+                <td id="revenueDay7"></td>
+                <td id="profitDay7"></td>
+                <td id="cumulativeDay7"></td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr id="finalProfitRow">
+                <td colspan="6">Final Profit</td>
+                <td id="finalProfit"></td>
+            </tr>
+        </tfoot>
+    </table>
+<button onclick="resetGame()">Reset Game</button>
+    <script>
+        let cards = [
+    {type: "Cost", effect: "Machine repair cost: +$47", cost: 47, revenue: 0},
+    {type: "Cost", effect: "Rent increase: +$27", cost: 27, revenue: 0},
+    {type: "Cost", effect: "Unexpected tax bill: Costs increase by $32", cost: 32, revenue: 0},
+    {type: "Cost", effect: "Insurance premium goes up: +$17", cost: 17, revenue: 0},
+    {type: "Cost", effect: "Minor equipment breakdown: +$37", cost: 37, revenue: 0},
+    {type: "Cost", effect: "Unexpected legal fees: +$47", cost: 47, revenue: 0},
+    {type: "Cost", effect: "Charitable donation: +$22", cost: 22, revenue: 0},
+    {type: "Cost", effect: "Supplier increase: +$17", cost: 17, revenue: 0},
+    {type: "Cost", effect: "Staff bonuses: +$32", cost: 32, revenue: 0},
+    {type: "Cost", effect: "Inventory restocking: +$47", cost: 47, revenue: 0},
+    {type: "Revenue", effect: "Sales boom! Revenue increases by $84", cost: 0, revenue: 84},
+    {type: "Revenue", effect: "Competitor undercuts you! Revenue drops by $40", cost: 0, revenue: -40},
+    {type: "Revenue", effect: "New customer base! Revenue increases by $64", cost: 0, revenue: 64},
+    {type: "Revenue", effect: "Supply chain issues! Revenue drops by $15", cost: 0, revenue: -15},
+    {type: "Revenue", effect: "Local promotion! Revenue increases by $84", cost: 0, revenue: 84},
+    {type: "Revenue", effect: "Customer complaints! Revenue drops by $30", cost: 0, revenue: -30},
+    {type: "Revenue", effect: "You secure a big order! Revenue increases by $84", cost: 0, revenue: 84},
+    {type: "Revenue", effect: "Market downturn! Revenue drops by $40", cost: 0, revenue: -40},
+    {type: "Revenue", effect: "Successful campaign! Revenue increases by $64", cost: 0, revenue: 64},
+    {type: "Revenue", effect: "Order cancellation! Revenue drops by $50", cost: 0, revenue: -50},
+    {type: "Random", effect: "Market surge: Revenue increases by $59 and costs increase by $14", cost: 14, revenue: 59},
+    {type: "Random", effect: "Economic recession: Revenue drops by $50, and costs increase by $29", cost: 29, revenue: -50},
+    {type: "Random", effect: "You lose a major client: Revenue drops by $40, and costs increase by $29", cost: 29, revenue: -40},
+    {type: "Random", effect: "Positive media coverage: Revenue increases by $59, costs increase by $14", cost: 14, revenue: 59},
+    {type: "Random", effect: "Supply chain disruptions: Revenue drops by $30, and costs increase by $29", cost: 29, revenue: -30},
+    {type: "Random", effect: "Unexpected tax relief: Costs remain stable, revenue increases by $44", cost: 0, revenue: 44},
+    {type: "Random", effect: "New competitor: Revenue drops by $50, but costs remain stable", cost: 0, revenue: -50},
+    {type: "Random", effect: "Major order delay: Revenue increases by $59, but costs increase by $14", cost: 14, revenue: 59},
+    {type: "Revenue", effect: "Huge online sales boost! Revenue increases by $70", cost: 0, revenue: 70},
+    {type: "Revenue", effect: "Endorsement deal secures more customers! Revenue increases by $75", cost: 0, revenue: 75},
+    {type: "Revenue", effect: "International expansion success! Revenue increases by $90", cost: 0, revenue: 90},
+    {type: "Revenue", effect: "New partnership announced! Revenue increases by $65", cost: 0, revenue: 65},
+    {type: "Revenue", effect: "Record-breaking quarter! Revenue increases by $95", cost: 0, revenue: 95}
+];
+
+let currentBalance = 500;
+        let day = 1;
+
+        function simulateDay() {
+            if (day <= 7) {
+                let randomCard = cards[Math.floor(Math.random() * cards.length)];
+                let dailyCost = 48 + randomCard.cost;
+                let dailyRevenue = 52 + randomCard.revenue;
+                let dailyProfit = dailyRevenue - dailyCost;
+
+                let startingBalance = currentBalance;
+                currentBalance += dailyProfit;
+
+                document.getElementById(`balanceDay${day}`).innerHTML = startingBalance;
+                document.getElementById(`cardEffect${day}`).innerHTML = randomCard.effect;
+                document.getElementById(`costDay${day}`).innerHTML = dailyCost;
+                document.getElementById(`revenueDay${day}`).innerHTML = dailyRevenue;
+                document.getElementById(`profitDay${day}`).innerHTML = dailyProfit;
+                document.getElementById(`cumulativeDay${day}`).innerHTML = currentBalance;
+
+                if (day === 7) {
+                    let finalProfit = currentBalance - 500;
+                    document.getElementById("finalProfit").innerHTML = finalProfit;
+                }
+
+                day++;
+            } else {
+                alert("Game Over! All days are simulated.");
+            }
+        }
+
+        function resetGame() {
+            currentBalance = 500;
+            day = 1;
+            for (let i = 1; i <= 7; i++) {
+                document.getElementById(`balanceDay${i}`).innerHTML = i === 1 ? '500' : '';
+                document.getElementById(`cardEffect${i}`).innerHTML = '';
+                document.getElementById(`costDay${i}`).innerHTML = '';
+                document.getElementById(`revenueDay${i}`).innerHTML = '';
+                document.getElementById(`profitDay${i}`).innerHTML = '';
+                document.getElementById(`cumulativeDay${i}`).innerHTML = '';
+            }
+            document.getElementById("finalProfit").innerHTML = '';
+        }
+    </script>
+</body>
+</html>
