@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Genealogy Tree</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 24px;
+            margin: 20px 0;
+            color: #343a40;
+        }
+
+        svg {
+            display: block;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .node circle {
+            fill: #6c757d;
+            stroke: #343a40;
+            stroke-width: 1.5px;
+        }
+
+        .node text {
+            font: 14px 'Arial', sans-serif;
+            fill: #343a40;
+            cursor: pointer;
+        }
+
+        .link {
+            fill: none;
+            stroke: #6c757d;
+            stroke-width: 2px;
+        }
+
+        .summary {
+            font: 12px 'Arial', sans-serif;
+            fill: #495057;
+        }
+
+        a {
+            fill: #007bff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            fill: #0056b3;
+        }
+
+        .summary-container {
+            background-color: #f1f3f5;
+            border-radius: 4px;
+            padding: 8px;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Mathematical Genealogy Tree</h2>
+<svg width="1000" height="1000"></svg>
+
+<script>
+// Tree data for your math genealogy with summaries
+var treeData = {
+  "name": "Leonhard Euler (1726)",
+  "summary": "Swiss mathematician, one of the greatest of all time. Made pivotal contributions to calculus, graph theory, and topology.",
+  "link": "https://mathshistory.st-andrews.ac.uk/Biographies/Euler/",
+  "children": [
+    {
+      "name": "Joseph Lagrange",
+      "summary": "Italian-French mathematician who made significant contributions to analysis, number theory, and both classical and celestial mechanics.",
+      "link": "https://mathshistory.st-andrews.ac.uk/Biographies/Lagrange/",
+      "children": [
+        {
+          "name": "Siméon Poisson (1800)",
+          "summary": "French mathematician and physicist, known for Poisson brackets in mechanics and his work in probability theory.",
+          "link": "https://mathshistory.st-andrews.ac.uk/Biographies/Poisson/",
+          "children": [
+            {
+              "name": "Michel Chasles (1814)",
+              "summary": "French mathematician known for contributions to geometry and the history of mathematics.",
+              "link": "https://mathshistory.st-andrews.ac.uk/Biographies/Chasles/",
+              "children": [
+                {
+                  "name": "H.A. Newton (1850)",
+                  "summary": "American astronomer and mathematician known for his work on meteors and comets.",
+                  "link": "https://mathshistory.st-andrews.ac.uk/Biographies/Newton_HA/",
+                  "children": [
+                    {
+                      "name": "E.H. Moore (1885)",
+                      "summary": "American mathematician, known for his work on abstract algebra and the founding of the University of Chicago's mathematics department.",
+                      "link": "https://mathshistory.st-andrews.ac.uk/Biographies/Moore/",
+                      "children": [
+                        {
+                          "name": "George Birkhoff (1907)",
+                          "summary": "American mathematician, known for his ergodic theorem and contributions to dynamical systems.",
+                          "link": "https://mathshistory.st-andrews.ac.uk/Biographies/Birkhoff/",
+                          "children": [
+                            {
+                              "name": "David Bourgin (1926)",
+                              "summary": "American mathematician and professor with a focus on analysis. No biography available.",
+                              "link": "#",
+                              "children": [
+                                {
+                                  "name": "Richard Duffin (1935)",
+                                  "summary": "American mathematician and electrical engineer, co-developed the Duffin-Schaeffer conjecture in number theory.",
+                                  "link": "https://mathshistory.st-andrews.ac.uk/Biographies/Duffin/",
+                                  "children": [
+                                    {
+                                      "name": "Raul Bott (1949)",
+                                      "summary": "Hungarian-American mathematician, known for his work in topology and differential geometry, especially Bott periodicity.",
+                                      "link": "https://mathshistory.st-andrews.ac.uk/Biographies/Bott/",
+                                      "children": [
+                                        {
+                                          "name": "Susan Tolman (1993)",
+                                          "summary": "American mathematician specializing in symplectic geometry and topology.",
+                                          "link": "#",
+                                          "children": [
+                                            {
+                                              "name": "Christopher R. Lee (2009)",
+                                              "summary": "Your own biography summary here.",
+                                              "link": "#"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+};
+
+// Set up dimensions
+var margin = {top: 20, right: 90, bottom: 30, left: 90},
+    width = 1000 - margin.left - margin.right,
+    height = 1000 - margin.top - margin.bottom;
+
+var svg = d3.select("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+// Create a tree layout with a vertical orientation
+var treemap = d3.tree().size([width, height]);
+
+// Create a hierarchy from the tree data
+var nodes = d3.hierarchy(treeData, function(d) {
+    return d.children;
+});
+
+nodes = treemap(nodes);
+
+// Links (edges) between nodes
+var link = svg.selectAll(".link")
+    .data(nodes.descendants().slice(1))
+    .enter().append("path")
+    .attr("class", "link")
+    .attr("d", function(d) {
+        return "M" + d.x + "," + d.y
+            + "C" + (d.x + d.parent.x) / 2 + "," + d.y
+            + " " + (d.x + d.parent.x) / 2 + "," + d.parent.y
+            + " " + d.parent.x + "," + d.parent.y;
+    });
+
+// Nodes (points) in the tree
+var node = svg.selectAll(".node")
+    .data(nodes.descendants())
+    .enter().append("g")
+    .attr("class", "node")
+    .attr("transform", function(d) {
+        return "translate(" + d.x + "," + d.y + ")";
+    });
+
+// Append circles to the nodes
+node.append("circle")
+    .attr("r", 10);
+
+// Append text labels with clickable behavior to show summaries
+node.append("text")
+    .attr("dy", ".35em")
+    .attr("x", function(d) {
+        return d.children ? -13 : 13;
+    })
+    .attr("text-anchor", function(d) {
+        return d.children ? "end" : "start";
+    })
+    .text(function(d) { return d.data.name; })
+    .on("click", function(event, d) {
+        // Toggle the display of summary text
+        var currentNode = d3.select(this);
+        var summaryExists = currentNode.data()[0].data.showSummary;
+
+        if (summaryExists) {
+            d3.selectAll(".summary-container").remove();
+            currentNode.data()[0].data.showSummary = false;
+        } else {
+            // Remove any existing summaries
+            d3.selectAll(".summary-container").remove();
+            currentNode.data()[0].data.showSummary = true;
+            
+            // Add summary below the node
+            d3.select(this.parentNode).append("foreignObject")
+                .attr("class", "summary-container")
+                .attr("width", 350) // Increase width for the container
+                .attr("height", 100) // Increase height for the container
+                .attr("x", 20) // Shift position to the right
+                .attr("y", 10)
+                .append("xhtml:div")
+                .style("width", "340px") // Adjust internal width
+                .style("padding", "5px")
+                .style("background-color", "#f8f9fa")
+                .style("border-radius", "5px")
+                .html('<div>' + d.data.summary + ' <a href="' + d.data.link + '" target="_blank">[More]</a></div>');
+        }
+    });
+
+</script>
+
+</body>
+</html>
