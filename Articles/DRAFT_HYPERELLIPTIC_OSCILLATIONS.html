@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coupled Oscillatory Dynamics and Hyperelliptic Geometry</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        p {
+            margin-bottom: 1em;
+        }
+        .math {
+            text-align: center;
+            margin: 20px 0;
+        }
+        img {
+            display: block;
+            margin: 10px auto;
+            max-width: 80%; /* Scaled down image width */
+            height: auto;
+        }
+        figure {
+            text-align: center;
+            margin: 20px 0;
+        }
+        figcaption {
+            font-style: italic;
+            color: #555;
+        }
+        .side-by-side {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .side-by-side figure {
+            flex: 1;
+            max-width: 45%;
+        }
+        .side-by-side img {
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Coupled Oscillatory Dynamics and Hyperelliptic Geometry</h1>
+    <p>
+        This article explores the elegant interplay between physics, geometry, and topology through the dynamics of a charged particle moving through a potential energy landscape. By combining the oscillatory behavior of the particle with the magnetic field it generates, we uncover deep connections to hyperelliptic curves and their branched double covers, revealing the hidden structure of coupled dynamics.
+    </p>
+
+    <h2>1. Introduction</h2>
+    <p>
+        Consider a charged particle moving along the \( x \)-axis through a potential energy landscape \( P(x) \). Conservation of energy dictates:
+    </p>
+    <div class="math">
+        \( H = \frac{1}{2}m(x')^2 + P(x), \quad \text{or } y^2 = P(x), \)
+    </div>
+    <p>
+        where \( y = x' \) is the velocity and \( P(x) \) is the potential energy function. As the particle moves, it generates a magnetic field perpendicular to its motion. Introducing \( z = ix' \) to represent this perpendicular motion, we obtain the Hamiltonian:
+    </p>
+    <div class="math">
+        \( y^2 - z^2 = P(x). \)
+    </div>
+    <figure>
+        <img src="images/oscillating_surface.gif" alt="Particle oscillating in potential landscape">
+        <figcaption>Figure 1: A particle oscillating in a potential \( P(x) \) with an orthogonal magnetic field.</figcaption>
+    </figure>
+
+    <h2>2. 1D Potential Landscape as a Polynomial</h2>
+    <p>
+        To model the potential energy landscape, we use a polynomial function:
+    </p>
+    <div class="math">
+        \( P(x) = (x - r_1)(x - r_2)\cdots(x - r_d), \)
+    </div>
+    <p>
+        where the roots \( r_1, r_2, \ldots, r_d \) are the turning points where the particle reverses direction. For example:
+    </p>
+    <ul>
+        <li>A quadratic potential \( P(x) = ax^2 + bx + c \) models a harmonic oscillator.</li>
+        <li>Higher-degree polynomials, such as \( P(x) = x(x - 1)(x + 2) \), represent multi-well landscapes with multiple oscillatory regions.</li>
+    </ul>
+    <p>
+        The regions where \( P(x) > 0 \) define the accessible states of the particle, while \( P(x) \leq 0 \) are energetically forbidden.
+    </p>
+    <figure>
+        <img src="images/polynomial_well.png" alt="Polynomial energy landscape">
+        <figcaption>Figure 2: A polynomial potential \( P(x) \), showing multiple turning points and oscillatory regions.</figcaption>
+    </figure>
+
+    <h2>3. Hyperelliptic Curves in Phase Space</h2>
+    <p>
+        The equation \( y^2 = P(x) \) describes a <strong>hyperelliptic curve</strong> in the \( (x, y) \)-plane. At the roots of \( P(x) \), \( y = 0 \), creating branch points where the trajectory transitions between sheets. The genus \( g \) of the hyperelliptic curve is:
+    </p>
+    <div class="math">
+        \( g = \lfloor (d - 1) / 2 \rfloor, \)
+    </div>
+    <p>
+        where \( d \) is the degree of \( P(x) \). The particle’s trajectory forms loops in phase space, oscillating between turning points.
+    </p>
+    <figure>
+        <img src="images/hyperelliptic_curve.png" alt="Hyperelliptic curve in phase space">
+        <figcaption>Figure 3: A hyperelliptic curve \( y^2 = P(x) \), with loops in phase space corresponding to oscillatory motion.</figcaption>
+    </figure>
+
+    <h2>4. Adding a Perpendicular Direction</h2>
+    <p>
+        Introducing \( z = ix' \) extends the system into 3D phase space. The equation:
+    </p>
+    <div class="math">
+        \( y^2 - z^2 = P(x), \)
+    </div>
+    <p>
+        describes a branched double cover, where \( y^2 = P(x) \) and \( z^2 = y^2 - P(x) \) represent coupled dynamics. The total energy oscillates between the real motion (\( y^2 \)) and the perpendicular magnetic-like motion (\( z^2 \)).
+    </p>
+    <div class="side-by-side">
+        <figure>
+            <img src="images/branched_double1.png" alt="Branched double cover example">
+            <figcaption>Figure 4: A branched double cover with loops in phase space, showing coupled oscillatory dynamics.</figcaption>
+        </figure>
+       
+    </div>
+
+    <h2>5. Topology and Geometry of Branched Double Covers</h2>
+    <p>
+        The branched double cover reveals the system’s topological structure. The roots of \( P(x) = 0 \) define branch points, and the genus determines the number of independent oscillatory modes. The surface can be decomposed into tubes, each representing an oscillatory region where energy flows between real and perpendicular components.
+    </p>
+    <div class="side-by-side">
+ <figure>
+            <img src="images/branched_double2.png" alt="Second branched double cover example">
+            <figcaption>Figure 5: Another branched double cover highlighting additional oscillatory regions and genus.</figcaption>
+        </figure>
+        <figure>
+            <img src="images/tubes.png" alt="Coupled dynamics illustrated with tubes">
+            <figcaption>Figure 7: Coupled dynamics illustrated with tubes representing energy flows.</figcaption>
+        </figure>
+        <figure>
+            <img src="images/tube_deomp.png" alt="Tube decomposition of double cover">
+            <figcaption>Figure 6: Tube decomposition of the branched double cover into oscillatory regions.</figcaption>
+        </figure>
+        
+    </div>
