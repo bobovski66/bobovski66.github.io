@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>From Quantum to Classical in the Integrable Regime</title>
+  
+  <!-- MathJax configuration -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      },
+      options: {
+        skipHtmlTags: ["script", "noscript", "style", "textarea", "pre"]
+      }
+    };
+  </script>
+  <script id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+  
+  <style>
+    /* Base styles */
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f7f7f7;
+      color: #333;
+      line-height: 1.6;
+    }
+    header, footer {
+      background: #2c3e50;
+      color: #fff;
+      text-align: center;
+      padding: 1rem;
+    }
+    header a.pdf-link {
+      color: #fff;
+      text-decoration: underline;
+      font-size: 0.9rem;
+    }
+    main {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    h1, h2, h3, h4 {
+      color: #2c3e50;
+    }
+    /* Collapsible sections */
+    .collapsible {
+      background-color: #2c3e50;
+      color: #fff;
+      cursor: pointer;
+      padding: 12px;
+      width: 100%;
+      border: none;
+      text-align: left;
+      outline: none;
+      font-size: 1rem;
+      border-radius: 4px;
+      margin: 0.5rem 0;
+    }
+    .active, .collapsible:hover {
+      background-color: #1a252f;
+    }
+    .content {
+      padding: 0 18px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+      background-color: #f1f1f1;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+    }
+    .top {
+    color: #ffffff;
+     }
+    .content p {
+      margin: 1rem 0;
+    }
+    ul, ol {
+      margin: 1rem 0 1rem 2rem;
+    }
+    /* Style for math blocks */
+    .math-block {
+      text-align: center;
+      margin: 1rem 0;
+      font-size: 1.1rem;
+    }
+    /* Responsive PDF link */
+    .pdf-link-container {
+      text-align: right;
+      margin-top: 0.5rem;
+    }
+    /* Responsive YouTube link */
+    .vid-link-container {
+      text-align: right;
+      margin-top: 0.5rem;
+    }
+
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1 class="top">From Quantum to Classical in the Integrable Regime</h1>
+    <div class="pdf-link-container">
+      <a class="pdf-link" href="DimQTwo.pdf" target="_blank">View Full PDF</a>
+    </div>
+   <div class="vid-link-container">
+      <a class="pdf-link" href="https://youtu.be/-Lrvqke3ckk" target="_blank">Listen to AI-gen podcast (experimental)</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- Summary Section -->
+    <section id="summary">
+      <h2>Summary</h2>
+      <p>
+        This paper offers a geometric exposition on the relationship between classical and quantum mechanics in integrable systems, with a focus on toric integrable geodesic flows. At its core, integrability ensures the existence of enough conserved quantities to organize phase space into invariant tori, a structure that persists from the classical regime into its quantum counterpart.
+      </p>
+      <p>
+        A central theme is the cosphere bundle, the natural phase space for geodesic flows, which carries a canonical contact structure. This structure not only governs classical dynamics but also provides a foundation for understanding how quantum states localize in the semiclassical limit. By lifting this contact geometry into a symplectic bulk via symplectization, the authors establish a geometric bridge between classical trajectories and quantum eigenfunctions.
+      </p>
+      <p>
+        A striking consequence of this perspective is its resonance with holographic principles. The cosphere bundle, a contact manifold, encodes semiclassical quantum information through Legendrian submanifolds, which then lift to Lagrangian cones in the full symplectic setting. This suggests that quantum eigenfunctions are not arbitrary but reflect deeper classical structures—a duality that invites comparison with boundary–bulk correspondences in physics.
+      </p>
+      <p>
+        The paper also places this discussion within the broader framework of Symplectic Field Theory (SFT), using pseudoholomorphic curve techniques to extract algebraic invariants that further clarify the interplay between quantum and classical mechanics. The implications range from spectral geometry to questions in quantum gravity, hinting at how integrability constrains quantum behavior in ways that extend beyond standard semiclassical intuition.
+      </p>
+      <p>
+        This exposition does not claim to resolve these questions but instead aims to lay down a geometric foundation for further exploration. It presents a viewpoint where classical and quantum descriptions arise from a common symplectic structure, mediated through contact geometry, and where quantum states can be understood as projections of a richer classical phase space. The results suggest new avenues for investigating quantum spectral properties, integrable dynamics, and their possible ties to broader structures in mathematical physics.
+      </p>
+    </section>
+
+    <!-- Content Sections -->
+
+    <!-- Introduction -->
+    <button type="button" class="collapsible">Introduction</button>
+    <div class="content">
+      <p>
+        Classical and quantum mechanics have long been viewed through different lenses, yet their interplay is rich with geometric insights. One of the unifying ideas in this interplay is the notion of <em>integrability</em>, which allows the intricate dynamics of a system to be decomposed into simpler, well-organized structures. In the classical setting, integrable systems are characterized by the presence of sufficient conserved quantities to foliate the phase space into invariant tori—a perspective elegantly captured by the Liouville–Arnold theorem and underpinned by Noether's theorem <a href="#guillemin_sternberg">[Guillemin &amp; Sternberg]</a>. Noether's theorem is the cornerstone of this picture: it ensures that every continuous symmetry of the action corresponds to a conserved quantity, which in turn defines invariant submanifolds essential for integrability.
+      </p>
+      <p>
+        In our previous work <a href="#lee_tolman">[Lee &amp; Tolman]</a>, <a href="#lee">[Lee]</a>, we developed obstruction results for toric integrable geodesic flows in odd dimensions. In particular, it was shown that if a compact Riemannian manifold admits a toric integrable geodesic flow (with either \( n\neq 3 \) odd or infinite fundamental group), then its cosphere bundle must be equivariantly contactomorphic to that of a torus. These results not only supply strong topological restrictions but also provide a framework for understanding the semiclassical correspondence in integrable systems.
+      </p>
+      <p>
+        In the quantum realm, integrability takes on a subtler character. Quantum completely integrable (QCI) systems display spectral properties and eigenfunction localizations that mirror the underlying classical invariant structures. As the semiclassical limit is approached, quantum eigenfunctions often concentrate along these classical trajectories, revealing a deep correspondence between the two regimes <a href="#toth_zelditch">[Toth &amp; Zelditch]</a>.
+      </p>
+      <p>
+        A particularly compelling setting for these ideas is provided by compact 2-dimensional Riemann surfaces. Here, the cosphere bundle emerges as a natural phase space endowed with a canonical contact structure. This structure not only governs the classical geodesic flow but also hints at the seeds of quantum behavior. Moreover, the process of <em>symplectization</em>—which extends the contact manifold into a full symplectic manifold—bridges the gap between the “quantum boundary” and the “classical bulk.”
+      </p>
+      <p>
+        This article is devoted to developing a geometric perspective that unifies classical mechanics, quantum mechanics, and even aspects of gravitational dynamics by focusing on the bundle structure of the cosphere bundle and its symplectization. By drawing an analogy with holographic principles, we suggest that the contact geometry on the cosphere bundle not only orchestrates the classical dynamics of geodesic flows but also underpins the localization properties of quantum eigenfunctions. In doing so, we open a window toward understanding how quantum and classical descriptions might emerge from a common geometric foundation.
+      </p>
+      <p>
+        In the sections that follow, we first review classical dynamics and toric integrability, then describe the symplectization process that lifts these dynamics into the symplectic bulk. We next explain how quantum mechanics on the base manifold is encoded in this geometry, and finally, we present a holographic perspective that synthesizes these ideas.
+      </p>
+    </div>
+
+    <!-- Classical Dynamics and Toric Integrability -->
+    <button type="button" class="collapsible">Classical Dynamics and Toric Integrability</button>
+    <div class="content">
+      <p>
+        For a 2-dimensional compact Riemannian manifold \( Q \), one of the most natural dynamical systems to study is the <em>geodesic flow</em>. This flow describes the motion of a free particle along geodesics on \( Q \), and it is generated by the Hamiltonian
+      </p>
+      <p class="math-block">
+        $$H(q,p) = \frac{1}{2}\, g^{ij}(q)p_i p_j$$
+      </p>
+      <p>
+        where \( (q,p) \) are local coordinates on the cotangent bundle \( T^*Q \). Here, we focus on the punctured cotangent bundle \( T^*Q \setminus \{0\} \), since excluding the zero section avoids trivial or singular behavior and highlights the nonzero momenta that drive the dynamics.
+      </p>
+      <p>
+        The geometric foundation for integrability is provided by Noether's theorem, which asserts that every continuous symmetry of the action of a physical system corresponds to a conserved quantity. In the context of geodesic flows, these conserved quantities are responsible for the existence of invariant submanifolds in phase space. When the system exhibits additional symmetry, it can be described as <strong>integrable</strong>. More precisely, the geodesic flow is said to be <strong>toric integrable</strong> if there exists an effective Hamiltonian torus action on \( T^*Q \setminus \{0\} \) that preserves the symplectic form and commutes with the flow. This symmetry guarantees, via Noether's theorem, the existence of enough independent conserved quantities so that the joint level sets form invariant tori in phase space—an embodiment of the Liouville–Arnold theorem <a href="#guillemin_sternberg">[Guillemin &amp; Sternberg]</a>.
+      </p>
+      <p>
+        Our earlier results in <a href="#lee_tolman">[Lee &amp; Tolman]</a>, <a href="#lee">[Lee]</a> establish that under these toric integrability assumptions (in the odd-dimensional or infinite fundamental group cases), the topological and contact-geometric structure of the cosphere bundle is severely restricted. In particular, it was proved that the cosphere bundle must be equivariantly contactomorphic to \( T^n \times S^{n-1} \), which, as we will see, forces \( Q \) to be homeomorphic to \( T^n \).
+      </p>
+      <p>
+        In the 2-dimensional setting, the requirement for toric integrability is particularly stringent, and only two canonical cases emerge:
+      </p>
+      <ul>
+        <li><strong>The round 2-sphere \( S^2 \)</strong> with its standard metric, where the high degree of symmetry ensures that geodesics are great circles and the flow can be expressed in terms of rotational invariants.</li>
+        <li><strong>The flat 2-torus \( T^2 \)</strong>, where geodesics are represented by straight lines with constant speed, and the periodic structure naturally supports a toric action.</li>
+      </ul>
+      <p>
+        A striking aspect of these examples is that their cosphere bundles, \( S(T^*S^2) \) and \( S(T^*T^2) \), are more than just phase spaces for the geodesic flow—they also carry intrinsic contact structures. The unit cotangent bundle is endowed with the canonical contact form
+      </p>
+      <p class="math-block">
+        $$\lambda = \sum_i p_i\, dq^i$$
+      </p>
+      <p>
+        which induces a contact structure that organizes the dynamics in a way that is amenable both to classical analysis and to semiclassical quantization. In toric integrable systems, this contact structure is augmented by the torus symmetry, making \( S(T^*Q) \) a <em>contact toric manifold</em> <a href="#lerman">[Lerman]</a>, <a href="#lerman_shirokova">[Lerman &amp; Shirokova]</a>.
+      </p>
+      <p>
+        More concretely:
+      </p>
+      <ul>
+        <li>For the round 2-sphere, the cosphere bundle \( S(T^*S^2) \) is diffeomorphic to the 3-sphere \( S^3 \). The standard contact structure on \( S^3 \), often introduced via the Hopf fibration, aligns with the rotational symmetry of the sphere, and the associated Reeb flow captures the essence of the geodesic dynamics.</li>
+        <li>For the flat 2-torus, \( S(T^*T^2) \) is diffeomorphic to the 3-torus \( T^3 \). Here, the natural toric fibration endows the cosphere bundle with a canonical contact structure, and the straight-line geodesics lift to orbits of the Reeb flow on \( T^3 \).</li>
+      </ul>
+      <p>
+        The Reeb flow, defined as the flow of the unique vector field associated with a given contact form, plays a central role in connecting the geometric structure with the dynamics. Its orbits correspond to the classical trajectories of the geodesic flow, and the toric symmetry ensures that these orbits are confined to invariant tori. This structure not only simplifies the dynamical picture but also lays the groundwork for a clear semiclassical correspondence.
+      </p>
+    </div>
+
+    <!-- Symplectization and Lagrangian Cones -->
+    <button type="button" class="collapsible">Symplectization and Lagrangian Cones</button>
+    <div class="content">
+      <p>
+        The notion of <em>symplectization</em> serves as a powerful bridge between the dynamics encoded on the contact boundary of the cosphere bundle and the richer, full-scale classical evolution in the bulk. In our context, symplectization is achieved by considering the punctured cotangent bundle \( T^*Q \setminus \{0\} \) equipped with its natural symplectic form
+      </p>
+      <p class="math-block">
+        $$\omega = d\lambda$$
+      </p>
+      <p>
+        where \( \lambda = \sum_i p_i\, dq^i \) is the canonical Liouville one-form. This construction effectively extends the contact structure of \( S(T^*Q) \) into a symplectic cone, with the fibers scaling under the natural \( \mathbb{R}_+ \)-action.
+      </p>
+      <p>
+        Within this framework, <em>Legendrian submanifolds</em> on the contact boundary—which, as we have seen, encode the semiclassical localization of quantum states—lift naturally to form <em>Lagrangian cones</em> in the symplectization. A Lagrangian cone is a conic (i.e., scale-invariant) Lagrangian submanifold on which the symplectic form vanishes. This lifting not only preserves the intrinsic geometric properties of the Legendrian but also embeds it into a setting where classical Hamiltonian dynamics are more transparently visible.
+      </p>
+      <p>
+        This picture can be viewed as a geometric incarnation of the holographic principle. Here, the contact boundary (home to quantum states and observables) encapsulates sufficient information to reconstruct the bulk symplectic dynamics. In essence, the data on \( S(T^*Q) \)—through the structure of its Legendrian submanifolds—acts as a “shadow” from which the full Lagrangian geometry in \( T^*Q \setminus \{0\} \) emerges <a href="#lerman_shirokova">[Lerman &amp; Shirokova]</a>.
+      </p>
+      <p>
+        Furthermore, the homogeneous nature of the symplectization under the \( \mathbb{R}_+ \)-action aids in the analysis of scaling properties and invariants within the system. This link to broader themes in symplectic topology enriches our understanding of integrability, suggesting that the study of Lagrangian cones may reveal new aspects of both classical trajectories and quantum spectral features.
+      </p>
+    </div>
+
+    <!-- Quantum Encoding and Projection -->
+    <button type="button" class="collapsible">Quantum Encoding and Projection in the Integrable Regime</button>
+    <div class="content">
+      <p>
+        Having set the stage with the classical and symplectic structures, we now clarify the quantum perspective underlying this framework. In the integrable regime, quantum mechanics on the base manifold \( Q \) is not isolated; rather, it becomes encoded in the geometry of the cosphere bundle \( S(T^*Q) \), which acts as a repository for the semiclassical data of quantum states.
+      </p>
+      <p>
+        <strong>Remark:</strong> Although the quantum system is defined on \( Q \) (with wavefunctions and spectral data emerging from operators on \( Q \)), in the integrable regime the conserved quantities provided by Noether's theorem induce a moment map that organizes the classical dynamics into invariant tori. In the semiclassical limit, the eigenvalues of the quantum Hamiltonian can often be identified with lattice points in the image of this moment map, thereby bridging the quantum description on \( Q \) with the classical structure encoded by the moment map.
+      </p>
+      <p>
+        More concretely, consider a quantum Hamiltonian defined on \( Q \). In the semiclassical limit, the eigenfunctions of this operator tend to concentrate along invariant subsets of \( S(T^*Q) \)—typically manifesting as Legendrian submanifolds <a href="#toth_zelditch">[Toth &amp; Zelditch]</a>. These submanifolds capture the “quantum fingerprints” of the underlying classical dynamics, reflecting the integrable structure imposed by the toric symmetries and the conserved quantities of Noether's theorem.
+      </p>
+      <p>
+        The process of <em>symplectization</em> then plays a crucial role: it lifts the Legendrian submanifolds from the contact boundary \( S(T^*Q) \) into Lagrangian cones within the full symplectic bulk \( T^*Q \setminus \{0\} \). In this way, the quantum information encoded on \( Q \) is projected into the symplectic spacetime, thus establishing a direct correspondence between quantum states and classical invariant structures.
+      </p>
+      <p>
+        Although a full semiclassical analysis—detailing the precise mechanisms of eigenfunction localization, Bohr–Sommerfeld quantization, and the spectral implications of these geometric structures—is beyond the scope of this exposition, this perspective lays the groundwork for future studies. In subsequent work, one may rigorously explore how these quantum signatures on \( S(T^*Q) \) determine spectral invariants and influence quantum dynamics in the integrable setting.
+      </p>
+    </div>
+
+    <!-- Holographic Perspective -->
+    <button type="button" class="collapsible">Holographic Perspective</button>
+    <div class="content">
+      <p>
+        The study of integrable systems through the lens of contact and symplectic geometry naturally invites a holographic viewpoint. Much like the celebrated AdS/CFT correspondence—where a conformal field theory on the boundary encodes the gravitational dynamics of the bulk—the duality we explore posits that the quantum dynamics, encoded in the cosphere bundle, are inextricably linked to the classical evolution taking place in the symplectic bulk.
+      </p>
+      <p>
+        In our framework, the cosphere bundle \( S(T^*Q) \) serves as the boundary where quantum states reside. This contact boundary, endowed with its canonical contact structure, not only governs the phase-space restrictions that quantum observables must satisfy but also manifests as the stage where eigenfunctions of quantum Hamiltonians tend to localize along Legendrian submanifolds. These submanifolds act as the “fingerprints” of the underlying classical dynamics and carry crucial information about the spectral properties of the system <a href="#toth_zelditch">[Toth &amp; Zelditch]</a>.
+      </p>
+      <p>
+        Conversely, the full punctured cotangent bundle \( T^*Q \setminus \{0\} \) plays the role of the symplectic bulk. Here, the classical trajectories—governed by Hamiltonian mechanics—unfold on a richer canvas equipped with the symplectic form \( \omega = d\lambda \). The classical invariants, which emerge as a consequence of integrability and Noether's theorem, manifest themselves in the geometry of this bulk space. Notably, the process of symplectization lifts Legendrian submanifolds from the contact boundary into Lagrangian cones in the bulk, thereby cementing the link between the quantum and classical descriptions.
+      </p>
+      <p>
+        This boundary–bulk duality is more than a mere analogy. It suggests that the spectral data of quantum Hamiltonians is a direct reflection of the classical invariants encoded in the symplectic geometry. In other words, the quantum eigenfunctions—which cluster along specific regions of the contact boundary—can be viewed as shadows cast by deeper classical structures in the bulk. This idea resonates with the general holographic principle, where boundary information is sufficient to reconstruct bulk dynamics.
+      </p>
+      <p>
+        The holographic perspective also opens up a host of thought-provoking questions. For instance, might subtle alterations in the contact structure on the boundary lead to novel quantum phenomena? Could a deeper investigation into the spectral invariants of the symplectic bulk reveal unexpected connections with quantum chaos or even aspects of quantum gravity? Such inquiries point towards an exciting interplay between symplectic topology, microlocal analysis, and modern theoretical physics.
+      </p>
+    </div>
+
+    <!-- Symplectic Field Theory Perspective -->
+    <button type="button" class="collapsible">Symplectic Field Theory Perspective</button>
+    <div class="content">
+      <p>
+        In this section, we integrate the framework of symplectic field theory (SFT) into our discussion to provide a deeper understanding of the interplay between the contact geometry of the cosphere bundle and the symplectic dynamics of the bulk. SFT offers powerful analytic and algebraic tools to study pseudoholomorphic curves in symplectizations, and here we explore these methods in detail.
+      </p>
+      <h3>Holomorphic Curves in the Symplectization</h3>
+      <p>
+        Consider the symplectization of the cosphere bundle, namely the manifold
+      </p>
+      <p class="math-block">
+        $$\Bigl(\mathbb{R} \times S(T^*Q),\, d(e^s\lambda)\Bigr)$$
+      </p>
+      <p>
+        where \( s \in \mathbb{R} \) parametrizes the symplectization direction and \( \lambda \) is the canonical contact form on \( S(T^*Q) \). In SFT, one studies the moduli spaces of pseudoholomorphic curves \( u: (\Sigma,j) \to (\mathbb{R} \times S(T^*Q), J) \), where \( (\Sigma,j) \) is a Riemann surface (possibly with punctures) and \( J \) is an almost complex structure compatible with \( d(e^s\lambda) \). The curves are required to have finite energy and are asymptotically cylindrical near punctures, converging to Reeb orbits in \( S(T^*Q) \).
+      </p>
+      <p>
+        In the integrable regime, the toric symmetry implies a highly structured set of Reeb orbits. These orbits serve as the asymptotic limits for our pseudoholomorphic curves and encode significant information about the underlying dynamics. The analysis of such curves involves:
+      </p>
+      <ul>
+        <li>Establishing <em>transversality</em> for the moduli space to ensure it is a smooth manifold (or an orbifold) of the expected dimension.</li>
+        <li>Understanding the <em>compactness</em> properties via SFT compactness theorems, which allow one to describe the limits of sequences of pseudoholomorphic curves, often resulting in <em>holomorphic buildings</em>.</li>
+        <li>Analyzing <em>index formulas</em> that relate the Fredholm index of the linearized Cauchy–Riemann operator to topological invariants of the curves.</li>
+      </ul>
+      <p>
+        These analytic results provide refined invariants that capture both local and global features of the contact structure on \( S(T^*Q) \) and, by extension, of the integrable dynamics on \( Q \).
+      </p>
+      
+      <h3>Legendrian Invariants and Algebraic Structures</h3>
+      <p>
+        Legendrian submanifolds of \( S(T^*Q) \) play a pivotal role in encoding the quantum fingerprints of our integrable system. In the SFT framework, one associates algebraic invariants to these submanifolds by considering counts of pseudoholomorphic curves with boundaries on the Legendrian. More specifically, one constructs a differential graded algebra (DGA) where:
+      </p>
+      <ul>
+        <li>The generators correspond to Reeb chords connecting points on the Legendrian.</li>
+        <li>The differential counts rigid pseudoholomorphic disks (or curves) with boundary on the Legendrian, with asymptotic conditions dictated by the Reeb chords.</li>
+      </ul>
+      <p>
+        In our setting, the toric symmetry and the presence of conserved quantities from Noether's theorem constrain these counts, potentially leading to explicit algebraic descriptions. The resulting DGA encapsulates rich information about the contact topology and provides a bridge to the spectral properties of the quantum Hamiltonian. For example, homological invariants derived from the DGA (such as linearized contact homology) may correspond to quantum invariants that emerge in the semiclassical limit.
+      </p>
+      
+      <h3>Gluing, Compactness, and Analytical Aspects</h3>
+      <p>
+        One of the technical cornerstones of SFT is the gluing theory, which allows one to reconstruct pseudoholomorphic curves from broken configurations (holomorphic buildings) arising in the compactification of the moduli space. This process is crucial for:
+      </p>
+      <ul>
+        <li>Proving invariance results of the algebraic structures under deformations of the contact form.</li>
+        <li>Establishing relations between invariants defined on the boundary and those in the bulk.</li>
+        <li>Analyzing the effect of perturbations in the integrable system on the holomorphic curve counts.</li>
+      </ul>
+      <p>
+        The rigorous analysis of gluing and compactness involves sophisticated techniques in nonlinear analysis and elliptic PDE theory. In the integrable regime, where additional symmetries simplify certain aspects of the moduli problem, one still encounters delicate issues such as bubbling and multiple cover contributions. Overcoming these challenges provides a more robust connection between the geometry of \( S(T^*Q) \) and the spectral properties of the quantum system.
+      </p>
+      
+      <h3>Boundary–Bulk Duality and Holography</h3>
+      <p>
+        A striking aspect of SFT is its natural expression of a boundary–bulk duality reminiscent of holographic principles in theoretical physics. In our framework, the contact boundary \( S(T^*Q) \) serves as the repository of quantum data, where eigenfunctions of quantum Hamiltonians are seen to concentrate along Legendrian submanifolds. The holomorphic curves in the symplectization, whose asymptotics are determined by Reeb orbits on the boundary, carry information that bridges this quantum description with the classical symplectic dynamics in the bulk.
+      </p>
+      <p>
+        This duality suggests that:
+      </p>
+      <ul>
+        <li>The algebraic invariants computed from SFT on the boundary can be used to reconstruct aspects of the bulk dynamics.</li>
+        <li>Deformations in the contact structure (and hence the SFT invariants) could correspond to quantum corrections or modifications of classical trajectories.</li>
+        <li>There exists a precise correspondence between the structure of holomorphic curve moduli spaces and the spectral data of the underlying quantum Hamiltonian.</li>
+      </ul>
+      <p>
+        Thus, the SFT perspective not only provides analytic and algebraic tools for studying integrable systems but also offers a conceptual framework that unifies the quantum and classical pictures through holography.
+      </p>
+      
+      <h3>Implications for Integrability and Future Directions</h3>
+      <p>
+        Embedding our integrable framework within the SFT paradigm has several profound implications:
+      </p>
+      <ol>
+        <li><strong>Refined Invariants:</strong> The SFT invariants offer a means to quantitatively measure the interplay between classical integrability and quantum spectral properties. They may provide new spectral invariants that can be compared with those arising from semiclassical analysis.</li>
+        <li><strong>Bridging to Quantum Dynamics:</strong> The algebraic structures emerging from the Legendrian DGA can be interpreted as encoding quantum corrections to the classical dynamics. This link opens up possibilities for exploring quantum chaos and the emergence of quantum gravity features in integrable systems.</li>
+        <li><strong>Holographic Reconstruction:</strong> By analyzing how holomorphic curves in the bulk encode boundary data, one can develop a holographic reconstruction of the classical phase space from quantum invariants. Such a perspective is particularly promising for studying systems where a direct semiclassical correspondence is challenging to establish.</li>
+        <li><strong>Interdisciplinary Connections:</strong> The techniques and ideas of SFT resonate with developments in string theory and low-dimensional topology. This interdisciplinary overlap may lead to novel applications of our framework in areas ranging from topological quantum field theory to the ADM formulation of gravitational dynamics.</li>
+      </ol>
+      <p>
+        In summary, the incorporation of SFT into our integrable framework not only enriches the theoretical landscape but also lays the groundwork for future research into the deeper connections between symplectic topology, quantum mechanics, and gravitational dynamics.
+      </p>
+    </div>
+
+    <!-- Conclusion -->
+    <button type="button" class="collapsible">Conclusion</button>
+    <div class="content">
+      <p>
+        In this paper, we have developed a unified geometric framework that interweaves classical and quantum integrability through the lens of contact and symplectic geometry. By focusing on the cosphere bundle \( S(T^*Q) \) and its natural contact structure, we demonstrated how toric integrability, underpinned by Noether’s theorem, constrains the classical dynamics to invariant tori and organizes the spectral properties of quantum systems in the semiclassical limit. The process of symplectization lifts this contact structure into a full symplectic bulk, where Legendrian submanifolds are naturally elevated to Lagrangian cones, thereby providing a concrete geometric manifestation of the correspondence between classical trajectories and quantum eigenfunctions.
+      </p>
+      <p>
+        We further extended this perspective by embedding our discussion within the framework of symplectic field theory. Through the analysis of pseudoholomorphic curves in the symplectization of \( S(T^*Q) \), we obtained refined algebraic invariants that capture the intricate interplay between the contact boundary and the symplectic interior. This SFT perspective not only reinforces the boundary–bulk duality—akin to the holographic principle—but also suggests that deformations in the contact structure may lead to new quantum phenomena and corrections in the integrable regime.
+      </p>
+      <p>
+        An intriguing aspect of our framework is the emergence of a relativistic structure in the symplectization. In the spirit of the ADM formulation of general relativity, where gravitational dynamics are recast in terms of Hamiltonian evolution on a suitably defined phase space, our construction hints at a reinterpretation of Einstein's equations as Hamiltonian equations in the integrable regime. This observation suggests that the geometry of the cosphere bundle and its symplectization might serve as a natural bridge between integrable systems and relativistic field theories, opening a potential avenue for future research into quantum gravity and the Hamiltonian formulation of general relativity.
+      </p>
+      <p>
+        Overall, the synthesis presented herein offers a robust foundation for further exploration into the interconnections between integrable systems, spectral geometry, and gravitational dynamics. By bridging classical and quantum domains via advanced geometric and topological methods, our framework paves the way for future investigations that could illuminate the deeper structure underlying both mathematical physics and symplectic topology.
+      </p>
+    </div>
+
+    <!-- Bibliography -->
+    <button type="button" class="collapsible">Bibliography</button>
+    <div class="content">
+      <ul>
+        <li id="lee_tolman">
+          C.R. Lee, S. Tolman, “Toric Integrable Geodesic Flows in Odd Dimensions,” <em>Ann. Global Anal. Geom.</em> <strong>30</strong> (2006), 397–406.
+        </li>
+        <li id="lee">
+          C.R. Lee, “Obstructions to Toric Integrable Geodesic Flows in Dimension 3,” <em>Ann. Global Anal. Geom.</em> <strong>30</strong> (2006), 397–406.
+        </li>
+        <li id="toth_zelditch">
+          J. A. Toth and S. Zelditch, “Lp norms of eigenfunctions in the completely integrable case,” <em>Ann. Henri Poincaré</em> <strong>4</strong> (2003), 343–368.
+        </li>
+        <li id="lerman">
+          E. Lerman, “Contact Toric Manifolds,” <em>J. Symplectic Geom.</em> <strong>1</strong> (2003), 785–828.
+        </li>
+        <li id="lerman_shirokova">
+          E. Lerman, N. Shirokova, “Completely Integrable Torus Actions on Symplectic Cones,” <em>Math. Res. Lett.</em> <strong>9</strong> (2002), 105–115.
+        </li>
+        <li id="guillemin_sternberg">
+          V. Guillemin and S. Sternberg, <em>Symplectic Techniques in Physics</em>, Cambridge University Press, 1984.
+        </li>
+      </ul>
+    </div>
+  </main>
+
+  <footer>
+    <p>2025 – Tris. Bob.</p>
+  </footer>
+
+  <script>
+    // Collapsible sections functionality
+    var coll = document.getElementsByClassName("collapsible");
+    for (var i = 0; i < coll.length; i++) {
+      coll[i].addEventListener("click", function () {
+        this.classList.toggle("active");
+        var content = this.nextElementSibling;
+        if (content.style.maxHeight) {
+          content.style.maxHeight = null;
+        } else {
+          content.style.maxHeight = content.scrollHeight + "px";
+        }
+      });
+    }
+  </script>
+</body>
+</html>
