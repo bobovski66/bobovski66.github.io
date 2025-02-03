@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quantum Encoding on the Torus &amp; Electromechanical Reality</title>
+  
+  <!-- MathJax configuration -->
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+      options: { skipHtmlTags: ["script", "noscript", "style", "textarea", "pre"] }
+    };
+  </script>
+  <script id="MathJax-script" async 
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+  
+  <style>
+    /* Base Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    /* Body & Overall Layout */
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #121212;
+      color: #e0e0e0;
+      line-height: 1.6;
+      scroll-behavior: smooth;
+    }
+    
+    /* Sticky Navigation Bar */
+    header {
+      position: sticky;
+      top: 0;
+      background: #1f1f1f;
+      padding: 1rem;
+      z-index: 1000;
+      border-bottom: 2px solid #00e6e6;
+    }
+    header h1 {
+      color: #00e6e6;
+      font-family: 'Orbitron', sans-serif;
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+    /* Two-row Navigation Container */
+    .nav-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    /* First Row: Section Navigation */
+    .nav-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+    }
+    .nav-row a {
+      color: #00e6e6;
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.3s ease;
+    }
+    .nav-row a:hover {
+      color: #ff66cc;
+    }
+    /* Second Row: External Links */
+    .external-row {
+      display: flex;
+      gap: 1rem;
+    }
+    .external-row a {
+      color: #00e6e6;
+      text-decoration: underline;
+      font-size: 0.9rem;
+      transition: color 0.3s ease;
+    }
+    .external-row a:hover {
+      color: #ff66cc;
+    }
+    
+    /* Main Content Area */
+    main {
+      max-width: 960px;
+      margin: 2rem auto;
+      padding: 1rem 2rem;
+    }
+    section {
+      margin-bottom: 3rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid #333;
+    }
+    section h2 {
+      margin-bottom: 1rem;
+      color: #ff66cc;
+      border-left: 4px solid #00e6e6;
+      padding-left: 0.5rem;
+    }
+    section h3 {
+      margin: 1rem 0 0.5rem;
+      color: #00e6e6;
+    }
+    section p, section li {
+      margin-bottom: 1rem;
+      text-align: justify;
+    }
+    ul {
+      list-style-type: disc;
+      margin-left: 2rem;
+    }
+    
+    /* Figures */
+    figure {
+      text-align: center;
+      margin: 1rem 0;
+    }
+    figure img {
+      max-width: 80%; /* Changed from 100% to 80% */
+      border: 2px solid #00e6e6;
+      border-radius: 4px;
+    }
+    figure figcaption {
+      margin-top: 0.5rem;
+      font-style: italic;
+      color: #a0a0a0;
+    }
+    
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background: #1f1f1f;
+      color: #00e6e6;
+      border-top: 2px solid #00e6e6;
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 600px) {
+      .nav-row a, .external-row a {
+        margin: 0.5rem;
+        font-size: 0.9rem;
+      }
+      main {
+        padding: 1rem;
+      }
+      figure img {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Quantum Encoding on the Torus &amp; the Emergence of Electromechanical Reality</h1>
+    <div class="nav-container">
+      <!-- First Row: Section Navigation -->
+      <div class="nav-row">
+        <a href="#introduction">Introduction</a>
+        <a href="#quantum-encoding">Quantum Encoding</a>
+        <a href="#legendrian">Legendrian</a>
+        <a href="#projection">Projection</a>
+        <a href="#electromechanical">Electromechanical</a>
+        <a href="#example">Example</a>
+        <a href="#perturbations">Perturbations</a>
+        <a href="#conclusions">Conclusions</a>
+      </div>
+      <!-- Second Row: External Links -->
+      <div class="external-row">
+        <a href="quant-um.pdf" target="_blank">View PDF</a>
+        <a href="https://www.youtube.com/" target="_blank">YouTube Podcast</a>
+      </div>
+    </div>
+  </header>
+  
+  <main>
+    <!-- Introduction -->
+    <section id="introduction">
+      <h2>Introduction</h2>
+      <p>
+        The interplay between quantum mechanics, topology, and classical dynamics has inspired many novel approaches in both mathematics and physics. In this work, we propose a geometric framework in which the quantum state space is encoded in the topology of a two-torus. The natural structure of the torus provides a basis for quantum bits: by representing the computational basis states via the fundamental group and first homology, we obtain an inherently topological interpretation of quantum superpositions.
+      </p>
+      <p>
+        This encoding is enriched by lifting the corresponding cycles (or their linear combinations) to Legendrian submanifolds within a cosphere bundle—a contact manifold that naturally captures both phase and momentum aspects of the system. These Legendrian lifts, endowed with a rich array of contact geometric invariants, serve as a bridge between the abstract quantum encoding and tangible classical dynamics.
+      </p>
+      <p>
+        Finally, by projecting these Legendrian structures into the punctured cotangent bundle (the classical phase space), we obtain an electromechanical reality wherein the underlying quantum information manifests as observable Hamiltonian dynamics. In what follows, we detail the construction of this framework, discuss its implications for quantum control via electromagnetic potentials, and present a concrete example to illustrate potential applications.
+      </p>
+      <figure>
+        <img src="base_torus_knot.png" alt="Base Torus Knot on T² (3D)">
+        <figcaption>Figure: Base Torus Knot on <em>T²</em>.</figcaption>
+      </figure>
+    </section>
+    
+    <!-- Quantum Encoding on the Torus -->
+    <section id="quantum-encoding">
+      <h2>Quantum Encoding on the Torus</h2>
+      
+      <h3>The Two-Torus: Geometry and Topology</h3>
+      <p>
+        The two-torus is defined as the Cartesian product of two circles:
+        $$ T^2 \cong S^1 \times S^1. $$
+        A standard parametrization is given by
+        $$ T^2 = \{ (\theta, \phi) \mid \theta, \phi \in [0,2\pi) \}, $$
+        with the natural identifications \( \theta \sim \theta + 2\pi \) and \( \phi \sim \phi + 2\pi \). This compact and orientable manifold admits a flat metric inherited from the product of metrics on \( S^1 \).
+      </p>
+      
+      <h3>Fundamental Group and the Quantum Bit</h3>
+      <p>
+        The fundamental group of \( T^2 \) is
+        $$ \pi_1(T^2) \cong \mathbb{Z} \times \mathbb{Z}. $$
+        Let \( \gamma_0 \) and \( \gamma_1 \) denote the standard generators corresponding to the two independent loops. We identify these loops with the quantum computational basis states:
+        $$ |0\rangle \longleftrightarrow \gamma_0,\qquad |1\rangle \longleftrightarrow \gamma_1. $$
+        Thus, any quantum state on the torus may be represented as a linear combination
+        $$ |\psi\rangle = \alpha\, |0\rangle + \beta\, |1\rangle, $$
+        with \( \alpha,\beta \in \mathbb{C} \) (subject to normalization).
+      </p>
+      
+      <h3>Homological Interpretation and Linear Combinations</h3>
+      <p>
+        The first homology group of the torus is
+        $$ H_1(T^2; \mathbb{Z}) \cong \mathbb{Z}^2, $$
+        generated by the homology classes of \( \gamma_0 \) and \( \gamma_1 \). A general homology class can be expressed as
+        $$ [a] = a_0 [\gamma_0] + a_1 [\gamma_1], \quad a_0,a_1 \in \mathbb{Z}. $$
+        By extending the coefficients to \( \mathbb{C} \), these classes encode both amplitude and phase:
+        $$ \psi = a_0 [\gamma_0] + a_1 [\gamma_1], \quad a_0,a_1 \in \mathbb{C}. $$
+        Thus, the qubit structure is naturally embedded in the topological features of \( T^2 \), with qubit operations corresponding to algebraic manipulations in \( H_1(T^2;\mathbb{C}) \).
+      </p>
+      
+      <h3>Visualizing the Encoding</h3>
+      <p>
+        One may visualize the torus as a square with opposite edges identified. In this picture, the two non-contractible cycles (the horizontal and vertical edges) serve as the basis loops. A quantum state is then represented as a weighted superposition of these cycles.
+      </p>
+      <figure>
+        <img src="action_angle_alignment.png" alt="Alignment of Quantum Eigenfunctions with Classical Invariant Tori">
+        <figcaption>Figure: Alignment of Quantum Eigenfunctions with Classical Invariant Tori.</figcaption>
+      </figure>
+    </section>
+    
+    <!-- Lifting to Legendrian Submanifolds -->
+    <section id="legendrian">
+      <h2>Lifting to Legendrian Submanifolds</h2>
+      
+      <h3>The Cosphere Bundle and Contact Geometry</h3>
+      <p>
+        Let \( M \) be a smooth manifold. Its cotangent bundle \( T^*M \) carries a canonical symplectic structure. In local coordinates \( (x^1, \dots, x^n) \) on \( M \) with corresponding momenta \( (p_1, \dots, p_n) \), the Liouville 1-form is defined by
+        $$ \lambda = \sum_{i=1}^n p_i\, dx^i, $$
+        and the symplectic form is
+        $$ \omega = -d\lambda. $$
+        The <em>cosphere bundle</em> is defined as
+        $$ S^*M = \{ (x,\xi) \in T^*M : \|\xi\| = 1 \}, $$
+        where the norm is taken with respect to a chosen Riemannian metric on \( M \). Importantly, the cosphere bundle inherits a natural <em>contact structure</em>.
+      </p>
+      
+      <h3>Legendrian Submanifolds</h3>
+      <p>
+        Within a contact manifold \( (C, \alpha) \), an \( (n-1) \)-dimensional submanifold \( \Lambda \subset C \) is said to be <em>Legendrian</em> if
+        $$ \alpha|_\Lambda = 0. $$
+        These Legendrian submanifolds serve as the natural analogues of Lagrangian submanifolds in the symplectization of \( C \), capturing both phase and momentum information inherent in the quantum encoding.
+      </p>
+      
+      <h3>Lifting Curves on the Torus to Legendrian Curves</h3>
+      <p>
+        Let \( \gamma: S^1 \to T^2 \) be a smooth closed curve on the torus representing a quantum state (or an element of \( H_1(T^2) \)). We lift \( \gamma \) to a curve \( \tilde{\gamma} \) in the cosphere bundle \( S^*M \) by requiring that
+        $$ \tilde{\gamma}: S^1 \to S^*M, \quad \text{with } \pi \circ \tilde{\gamma} = \gamma, $$
+        where \( \pi: S^*M \to T^2 \) is the projection. The lift is chosen so that the Legendrian condition
+        $$ \alpha(\tilde{\gamma}'(t)) = 0 \quad \text{for all } t \in S^1, $$
+        is satisfied.
+      </p>
+      <figure>
+        <img src="legendrian_lift.png" alt="Legendrian Lift">
+        <figcaption>Figure: Legendrian Lift (using projected base).</figcaption>
+      </figure>
+      
+      <h3>Interpreting Legendrian Invariants</h3>
+      <p>
+        Legendrian submanifolds come equipped with classical invariants—such as the rotation number and the Thurston–Bennequin invariant—as well as modern invariants derived from Legendrian contact homology. In our framework, these invariants are conjecturally linked to the energies of quantum eigenfunctions via semiclassical quantization conditions.
+      </p>
+      
+      <h3>Schematic Overview</h3>
+      <p>
+        The following diagram summarizes the lifting process:
+      </p>
+      <p style="text-align:center;">
+        $$ \gamma \subset T^2 \quad \xrightarrow{\text{Lifting}} \quad \tilde{\gamma} \subset S^*M $$
+      </p>
+      <p style="text-align:center;">(Quantum encoding &rarr; Legendrian structure)</p>
+    </section>
+    
+    <!-- Projection to the Punctured Cotangent Bundle -->
+    <section id="projection">
+      <h2>Projection to the Punctured Cotangent Bundle</h2>
+      
+      <h3>Cotangent Bundle as Phase Space</h3>
+      <p>
+        The cotangent bundle \( T^*M \) of a manifold \( M \) is the natural phase space for classical mechanics, endowed with the canonical symplectic form
+        $$ \omega = -d\lambda. $$
+        To focus on nonzero momentum states, we consider the punctured cotangent bundle
+        $$ T^*M \setminus 0, $$
+        obtained by removing the zero section.
+      </p>
+      <figure>
+        <img src="lagrangian_surface.png" alt="Lagrangian Surface via Symplectization">
+        <figcaption>Figure: Lagrangian Surface via Symplectization.</figcaption>
+      </figure>
+      
+      <h3>From Cosphere Bundle to Punctured Cotangent Bundle</h3>
+      <p>
+        The cosphere bundle \( S^*M \) is naturally a level set within \( T^*M \). There is a canonical inclusion:
+        $$ i: S^*M \hookrightarrow T^*M \setminus 0. $$
+        Through this inclusion, Legendrian submanifolds in \( S^*M \) are embedded into the symplectic manifold \( T^*M \setminus 0 \).
+      </p>
+      
+      <h3>Emergence of Electromechanical Dynamics</h3>
+      <p>
+        Once the Legendrian curves are embedded in \( T^*M \setminus 0 \), they can be interpreted as Lagrangian (or pre-Lagrangian) submanifolds that evolve under Hamiltonian flows. This evolution is governed by Hamilton's equations:
+        $$ \dot{x}^i = \frac{\partial H}{\partial p_i}, \quad \dot{p}_i = -\frac{\partial H}{\partial x^i}, $$
+        where \( H \) is an appropriate Hamiltonian function.
+      </p>
+      
+      <h3>Diagrammatic Summary</h3>
+      <p style="text-align:center;">
+        <em>Quantum Encoding on T²</em> &rarr; <em>Legendrian Submanifolds in S\*(M)</em> &rarr; <em>Dynamics in T\*(M)\textbackslash 0</em>
+      </p>
+    </section>
+    
+    <!-- Electromechanical Control of Quantum Dynamics -->
+    <section id="electromechanical">
+      <h2>Electromechanical Control of Quantum Dynamics</h2>
+      
+      <h3>Phase Identification with Electromagnetic Potentials</h3>
+      <p>
+        Let the coordinates on \( T^2 \) be given by \( (\theta,\phi) \) with
+        $$ \theta \in [0,2\pi), \quad \phi \in [0,2\pi). $$
+        We identify:
+        $$ \theta \longleftrightarrow \text{phase of the electric potential } A_e, $$
+        $$ \phi \longleftrightarrow \text{phase of the magnetic potential } A_m. $$
+        A quantum state expressed as a linear combination of the basis states \( |0\rangle \) and \( |1\rangle \) directly reflects the phase information of the electromagnetic potentials.
+      </p>
+      
+      <h3>Electromechanical Control via External Fields</h3>
+      <p>
+        In practice, external fields can modulate these potentials:
+      </p>
+      <ul>
+        <li><strong>Electric Control:</strong> An external electric field \( \mathbf{E}(t) \) modulates the phase \( \theta \) of \( A_e \), inducing a geometric (Berry) phase in the adiabatic regime.</li>
+        <li><strong>Magnetic Control:</strong> A time-dependent magnetic field \( \mathbf{B}(t) \) affects the phase \( \phi \) of \( A_m \), with effects analogous to the Aharonov–Bohm phenomenon.</li>
+      </ul>
+      
+      <h3>Mathematical Formulation of Dynamics</h3>
+      <p>
+        Suppose the potentials are locally given by
+        $$ A_e = A_e(\theta), \quad A_m = A_m(\phi). $$
+        Then the overall quantum state is described by the wavefunction
+        $$ \psi(\theta, \phi) = \alpha(\theta)\, |0\rangle + \beta(\phi)\, |1\rangle, $$
+        where \( \alpha \) and \( \beta \) encode the phase shifts. Under external modulation, the time evolution obeys:
+        $$ i\hbar \frac{\partial \psi}{\partial t} = H(\theta(t), \phi(t))\,\psi. $$
+      </p>
+      
+      <h3>Topological Robustness and Quantum Control</h3>
+      <p>
+        Since the state is represented by a homology class on \( T^2 \), small fluctuations in the potentials yield smooth deformations rather than abrupt changes. This topological protection is reminiscent of the robustness in topological quantum computing.
+      </p>
+    </section>
+    
+    <!-- Example: A Phase-Controlled Two-Level System -->
+    <section id="example">
+      <h2>Example: A Phase-Controlled Two-Level System</h2>
+      <p>
+        Consider a superconducting qubit modeled as a two-level system whose dynamics are governed by external electromagnetic potentials. In many superconducting circuits, such as flux qubits, the energy splitting and tunneling amplitude depend sensitively on the applied magnetic flux and electric drive.
+      </p>
+      <p>
+        <strong>Effective Hamiltonian.</strong> A toy model Hamiltonian for the qubit is given by:
+        $$ H = \Delta \cos\!\left(\frac{\phi}{2}\right)\,\sigma_x + \epsilon \cos\!\left(\frac{\theta}{2}\right)\,\sigma_z, $$
+        where:
+      </p>
+      <ul>
+        <li>\( \Delta \) represents the tunneling amplitude modulated by the magnetic phase \( \phi \),</li>
+        <li>\( \epsilon \) is the energy bias controlled by the electric potential,</li>
+        <li>\( \sigma_x \) and \( \sigma_z \) are the Pauli matrices.</li>
+      </ul>
+      <p>
+        <strong>Dynamics and Control.</strong> With external modulation, the time-dependent Hamiltonian becomes
+        $$ H(t) = \Delta \cos\!\left(\frac{\phi(t)}{2}\right)\,\sigma_x + \epsilon \cos\!\left(\frac{\theta(t)}{2}\right)\,\sigma_z, $$
+        and the state evolution is governed by
+        $$ i\hbar \frac{\partial \psi(t)}{\partial t} = H(t) \psi(t). $$
+      </p>
+      <p>
+        <strong>Geometric Interpretation.</strong> The qubit state, initially represented as a cycle on \( T^2 \), evolves smoothly under modulation. Its lift to the cosphere bundle gives it a Legendrian structure, whose projection onto the cotangent bundle yields the observable electromechanical dynamics.
+      </p>
+      <p>
+        <strong>Speculative Implications.</strong> This model suggests that controlling the electromagnetic phases may induce robust, topologically protected evolution of the qubit state—mitigating noise and decoherence.
+      </p>
+    </section>
+    
+    <!-- Perturbations and Nonlinear Dynamics on the Two-Torus -->
+    <section id="perturbations">
+      <h2>Perturbations and Nonlinear Dynamics on the Two-Torus</h2>
+      
+      <h3>Perturbing the Integrable Setup</h3>
+      <p>
+        Our starting point is the integrable Hamiltonian on \( T^*T^2 \):
+        $$ H_0(x, p) = \frac{1}{2} \|p\|^2, $$
+        governing a free particle on the flat torus \( T^2 \). To explore nonlinear effects, we introduce a small perturbation:
+        $$ H_\epsilon(x, p) = H_0(x, p) + \epsilon\, V(x, p), $$
+        where \( V(x,p) \) is a smooth, periodic potential and \( \epsilon \) is a small parameter.
+      </p>
+      
+      <h3>Analytical Framework and KAM Theory</h3>
+      <p>
+        In the perturbed regime, many invariant tori survive in deformed forms as predicted by the KAM theorem. Near resonances, however, these tori may break down, leading to chaotic dynamics. Techniques such as Melnikov methods and normal form analysis provide insight into these phenomena.
+      </p>
+      
+      <h3>Numerical Simulations and Diagnostic Tools</h3>
+      <p>
+        Numerical diagnostics help reveal the richness of the nonlinear behavior:
+      </p>
+      <ul>
+        <li><strong>Poincaré Sections:</strong> Visualize the breakup of invariant tori. <em>(See Figure below)</em></li>
+        <li><strong>Lyapunov Exponents:</strong> Quantify sensitivity to initial conditions.</li>
+        <li><strong>Spectral Analysis:</strong> Compare level spacing distributions (Poisson for integrable, Wigner–Dyson for chaotic systems).</li>
+        <li><strong>Microlocal Concentration:</strong> Identify scarring phenomena near unstable periodic orbits.</li>
+      </ul>
+      <figure>
+        <img src="poincare_section.png" alt="Poincaré Section">
+        <figcaption>Figure: Poincaré Section – Integrable vs. Chaotic Dynamics.</figcaption>
+      </figure>
+      <figure>
+        <img src="level_spacing_distribution.png" alt="Level Spacing Distribution">
+        <figcaption>Figure: Level Spacing Distribution for Integrable and Chaotic Systems.</figcaption>
+      </figure>
+      <figure>
+        <img src="microlocal_concentration_torus.png" alt="Microlocal Concentration">
+        <figcaption>Figure: Microlocal Concentration on an Invariant Torus.</figcaption>
+      </figure>
+      
+      <h3>Expected Phenomena</h3>
+      <p>
+        As \( \epsilon \) increases from zero, we expect:
+      </p>
+      <ul>
+        <li>Persistence of invariant tori in deformed forms for small \( \epsilon \).</li>
+        <li>Breakdown of tori near resonances, leading to chaotic layers and resonance islands.</li>
+        <li>Quantum signatures such as eigenvalue splitting and scarring near unstable orbits.</li>
+        <li>Formation of localized solitonic or vortex structures under nonlinear dynamics.</li>
+      </ul>
+      
+      <h3>Outlook and Future Directions</h3>
+      <p>
+        Future work may include refining analytical methods, developing high-resolution simulations, and exploring experimental realizations in superconducting circuits or optical lattices.
+      </p>
+      <figure>
+        <img src="eigenfunction_distribution_flat_torus.png" alt="Eigenfunction Distribution">
+        <figcaption>Figure: Eigenfunction Distribution Heatmap on a Flat Torus.</figcaption>
+      </figure>
+      <figure>
+        <img src="nodal_set_flat_torus.png" alt="Nodal Set">
+        <figcaption>Figure: Nodal Set of a Quantum Eigenfunction on a Flat Torus.</figcaption>
+      </figure>
+    </section>
+    
+    <!-- Conclusions -->
+    <section id="conclusions">
+      <h2>Conclusions</h2>
+      <p>
+        In this work we have developed a unified geometric framework that bridges classical and quantum integrability through the interplay of topology, contact geometry, and symplectic techniques. By encoding quantum states on the two-torus \( T^2 \) via its fundamental group and first homology, we have shown how topological structures can serve as a natural basis for quantum bits.
+      </p>
+      <p>
+        Lifting these topological cycles to Legendrian submanifolds in the cosphere bundle endows the quantum information with additional geometric content—including invariants such as the rotation number and Thurston–Bennequin invariant—that in turn influence the spectral properties of the quantum system.
+      </p>
+      <p>
+        Furthermore, by projecting the Legendrian submanifolds into the punctured cotangent bundle, we have demonstrated how the same phase-space structure gives rise to observable electromechanical dynamics. This construction naturally leads to a time-dependent, warped-product Lorentzian metric modeling an expanding, and possibly accelerating, spacetime—hinting at connections to early-universe cosmology.
+      </p>
+      <p>
+        Finally, perturbing the integrable system on \( T^2 \) reveals a rich interplay of nonlinear effects including resonances, chaos, and localized solitonic structures, with potential implications for robust quantum control.
+      </p>
+      <p>
+        Overall, our work illustrates that the quantum and classical worlds are intimately connected via their underlying geometric and topological structures, opening new avenues for both theoretical exploration and practical applications in quantum information processing and gravitational physics.
+      </p>
+    </section>
+  </main>
+  
+  <footer>
+    <p>&copy; 2025 – CRL-J</p>
+  </footer>
+</body>
+</html>
