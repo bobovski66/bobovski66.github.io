@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Normal Distribution Visualizer</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+        }
+        canvas {
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Normal Distribution Visualizer</h1>
+        <label for="mean">Mean (μ): </label>
+        <input type="range" id="mean" min="-10" max="10" step="0.1" value="0" oninput="updateChart()"> 
+        <span id="meanValue">0</span>
+        <br>
+        <label for="stddev">Standard Deviation (σ): </label>
+        <input type="range" id="stddev" min="0.1" max="5" step="0.1" value="1" oninput="updateChart()">
+        <span id="stddevValue">1</span>
+        <br><br>
+        <canvas id="normalChart"></canvas>
+    </div>
+
+    <script>
+        function gaussian(x, mean, stddev) {
+            return (1 / (stddev * Math.sqrt(2 * Math.PI))) * Math.exp(-((x - mean) ** 2) / (2 * stddev ** 2));
+        }
+
+        function generateData(mean, stddev) {
+            let xValues = [];
+            let yValues = [];
+            for (let x = -10; x <= 10; x += 0.1) {
+                xValues.push(x.toFixed(2));
+                yValues.push(gaussian(x, mean, stddev));
+            }
+            return { xValues, yValues };
+        }
+
+        let ctx = document.getElementById("normalChart").getContext("2d");
+        let mean = parseFloat(document.getElementById("mean").value);
+        let stddev = parseFloat(document.getElementById("stddev").value);
+        let data = generateData(mean, stddev);
+
+        let chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.xValues,
+                datasets: [{
+                    label: 'Normal Distribution',
+                    data: data.yValues,
+                    borderColor: 'blue',
+                    borderWidth: 2,
+                    fill: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: { title: { display: true, text: 'x' } },
+                    y: { title: { display: true, text: 'Probability Density' } }
+                }
+            }
+        });
+
+        function updateChart() {
+            mean = parseFloat(document.getElementById("mean").value);
+            stddev = parseFloat(document.getElementById("stddev").value);
+            document.getElementById("meanValue").textContent = mean.toFixed(2);
+            document.getElementById("stddevValue").textContent = stddev.toFixed(2);
+            let newData = generateData(mean, stddev);
+            chart.data.labels = newData.xValues;
+            chart.data.datasets[0].data = newData.yValues;
+            chart.update();
+        }
+    </script>
+</body>
+</html>
