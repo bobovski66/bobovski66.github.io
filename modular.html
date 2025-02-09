@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modular Multiplication Visualization</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #111;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        #canvas-container {
+            margin-top: 20px;
+            border: 1px solid white;
+        }
+        label, button {
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Modular Multiplication Visualization</h2>
+    <label>Multiplier (c): <input type="number" id="multiplier" value="2" step="0.1"></label>
+    <button onclick="togglePlayMultiplier()">Play/Pause</button>
+    <label>Divisions: <input type="number" id="divisions" value="200"></label>
+    <button onclick="togglePlayDivisions()">Play/Pause</button>
+    <label>Color: <input type="color" id="colorPicker" value="#ffffff" onchange="updateVisualization()"></label>
+    <button onclick="resetVisualization()">Reset</button>
+    <div id="canvas-container"></div>
+    <script>
+        let divisions = 200;
+        let multiplier = 2;
+        let canvas;
+        let playingMultiplier = false;
+        let playingDivisions = false;
+        let multiplierInterval;
+        let divisionsInterval;
+        let drawColor = '#ffffff';
+        
+        function setup() {
+            canvas = createCanvas(500, 500);
+            canvas.parent("canvas-container");
+            noLoop();
+            drawPattern();
+        }
+
+        function draw() {
+            drawPattern();
+        }
+
+        function drawPattern() {
+            background(0);
+            stroke(drawColor);
+            noFill();
+            let radius = width / 2 - 10;
+            let centerX = width / 2;
+            let centerY = height / 2;
+            
+            // Draw circle
+            ellipse(centerX, centerY, radius * 2);
+            
+            // Draw points and connections
+            for (let i = 0; i < divisions; i++) {
+                let angle1 = map(i, 0, divisions, 0, TWO_PI);
+                let x1 = centerX + radius * cos(angle1);
+                let y1 = centerY + radius * sin(angle1);
+                
+                let mappedIndex = (i * multiplier) % divisions;
+                let angle2 = map(mappedIndex, 0, divisions, 0, TWO_PI);
+                let x2 = centerX + radius * cos(angle2);
+                let y2 = centerY + radius * sin(angle2);
+                
+                line(x1, y1, x2, y2);
+            }
+        }
+
+        function updateVisualization() {
+            drawColor = document.getElementById('colorPicker').value;
+            redraw();
+        }
+
+        function resetVisualization() {
+            multiplier = 2;
+            divisions = 200;
+            document.getElementById('multiplier').value = multiplier;
+            document.getElementById('divisions').value = divisions;
+            document.getElementById('colorPicker').value = '#ffffff';
+            drawColor = '#ffffff';
+            redraw();
+        }
+
+        function togglePlayMultiplier() {
+            if (playingMultiplier) {
+                clearInterval(multiplierInterval);
+            } else {
+                multiplierInterval = setInterval(() => {
+                    multiplier += 0.1;
+                    document.getElementById('multiplier').value = multiplier.toFixed(1);
+                    redraw();
+                }, 100);
+            }
+            playingMultiplier = !playingMultiplier;
+        }
+
+        function togglePlayDivisions() {
+            if (playingDivisions) {
+                clearInterval(divisionsInterval);
+            } else {
+                divisionsInterval = setInterval(() => {
+                    divisions += 1;
+                    document.getElementById('divisions').value = divisions;
+                    redraw();
+                }, 100);
+            }
+            playingDivisions = !playingDivisions;
+        }
+    </script>
+</body>
+</html>
