@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Redundancy in Food Web Graphs via Filtered Entropy Phase Measure</title>
+  
+  <!-- MathJax configuration -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      },
+      options: {
+        skipHtmlTags: ["script", "noscript", "style", "textarea", "pre"]
+      }
+    };
+  </script>
+  <script id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+  
+  <style>
+    /* Base styles */
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f7f7f7;
+      color: #333;
+      line-height: 1.6;
+    }
+    header, footer {
+      background: #2c3e50;
+      color: #fff;
+      text-align: center;
+      padding: 1rem;
+    }
+    header a.pdf-link {
+      color: #fff;
+      text-decoration: underline;
+      font-size: 0.9rem;
+    }
+    main {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    h1 {
+      color: #ffffff
+    }
+    h2, h3, h4 {
+      color: #2c3e50;
+    }
+    /* Collapsible sections */
+    .collapsible {
+      background-color: #2c3e50;
+      color: #fff;
+      cursor: pointer;
+      padding: 12px;
+      width: 100%;
+      border: none;
+      text-align: left;
+      outline: none;
+      font-size: 1rem;
+      border-radius: 4px;
+      margin: 0.5rem 0;
+    }
+    .active, .collapsible:hover {
+      background-color: #1a252f;
+    }
+    .content {
+      padding: 0 18px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+      background-color: #f1f1f1;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+    }
+    .content p, .content li, .content blockquote {
+      margin: 1rem 0;
+    }
+    ul, ol {
+      margin: 1rem 0 1rem 2rem;
+    }
+    /* Math block style */
+    .math-block {
+      text-align: center;
+      margin: 1rem 0;
+      font-size: 1.1rem;
+    }
+    /* PDF and YouTube links containers */
+    .pdf-link-container, .vid-link-container {
+      text-align: right;
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Redundancy in Food Web Graphs via Filtered Entropy Phase Measure</h1>
+    <div class="pdf-link-container">
+      <a class="pdf-link" href="graph_entropy.pdf" target="_blank">View Full PDF</a>
+    </div>
+    <div class="vid-link-container">
+      <a class="pdf-link" href="https://youtu.be/your_youtube_link" target="_blank">Listen to Podcast</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- Abstract -->
+    <button type="button" class="collapsible">Abstract</button>
+    <div class="content">
+      <p>
+        This paper introduces an approach to quantify redundancy in a certain class of directed graphs by comparing the Shannon entropy of simple‐path distributions with the maximal entropy achieved by a tree structure. By defining an energy filtration based on the length of the shortest simple path from a unique root, we derive a filtered entropy measure that highlights how alternative pathways affect network uncertainty. Applications to ecological food webs are discussed.
+      </p>
+    </div>
+
+    <!-- Introduction -->
+    <button type="button" class="collapsible">Introduction</button>
+    <div class="content">
+      <p>
+        Understanding redundancy in complex networks is critical to unraveling their resilience and structural properties. In many real-world systems—such as ecological food webs, communication networks, and supply chains—redundant pathways provide alternative routes that can safeguard the system against disruptions. This paper introduces a novel approach to quantify network redundancy through a filtered Shannon entropy framework, bridging theoretical insights from information theory with tangible biological implications.
+      </p>
+      <p>
+        We consider a directed graph \( G = (V,E) \) that is finite, connected, and features a unique root vertex \( R \) (with in-degree zero) such that every other vertex in \( V \) is reachable from \( R \) via at least one simple path. The <em>energy</em> of each vertex is defined as the length of its shortest simple path from \( R \), which naturally induces a filtration of the graph:
+      </p>
+      <p class="math-block">
+        $$G(k) = \{ v \in V : \mathcal{E}(v) \leq k \}$$
+      </p>
+      <p>
+        This energy‐based perspective allows us to progressively reveal the network's structure and to investigate how alternative pathways—embodied in redundant edges—emerge as the system unfolds.
+      </p>
+      <p>
+        At each energy level \( k \), we derive a probability distribution on \( G(k) \) based on the counts of distinct simple paths from \( R \). In a tree, where each vertex is reached by a unique path, the distribution is uniform and the entropy is maximized:
+      </p>
+      <p class="math-block">
+        $$H_{\text{Tree}}(k) = \log |G(k)|$$
+      </p>
+      <p>
+        However, in the presence of redundant links, multiple paths converge on the same vertices, skewing the distribution and lowering the observed entropy \( H_G(k) \). We capture this deviation by defining the redundancy measure
+      </p>
+      <p class="math-block">
+        $$\phi_G(k) = H_{\text{Tree}}(k) - H_G(k).$$
+      </p>
+      <p>
+        Beyond its mathematical elegance, our framework has important biological implications. In ecological food webs, redundant pathways can facilitate multiple routes for energy and nutrient transfer, effectively buffering the ecosystem against species loss or environmental disturbances.
+      </p>
+    </div>
+
+    <!-- Background -->
+    <button type="button" class="collapsible">Background</button>
+    <div class="content">
+      <p>
+        In this section, we review key concepts from network theory and information theory that form the basis for our study of redundancy in food web graphs. We focus in particular on the role of redundant edges—those that do not lie on the shortest simple paths from the root vertex through its predecessors—in shaping the uncertainty and resilience of these networks.
+      </p>
+      <h3>Network Theory, Directed Graphs, and Redundancy</h3>
+      <p>
+        Graph theory offers a flexible framework for modeling complex systems such as ecological food webs. Here, a food web is represented as a directed graph \( G = (V,E) \), where vertices \( V \) denote species (or trophic groups) and directed edges \( E \) represent feeding relationships. A common special case is the <em>tree</em>, a connected acyclic graph in which each vertex (except a unique root \( R \)) is reached by a single simple (non‐repeating) path. This tree structure serves as a benchmark because it guarantees a uniform distribution of paths from the root, thereby maximizing the network's Shannon entropy.
+      </p>
+      <p>
+        In contrast, many real-world food webs contain <em>redundant edges</em>—additional connections that do not participate in the shortest simple paths from \( R \). These edges create alternative pathways between vertices, meaning that some species can be reached by more than one route.
+      </p>
+      <h3>Shannon Entropy and Path Distributions</h3>
+      <p>
+        Shannon entropy, introduced by Claude Shannon, quantifies the uncertainty in a probability distribution. In the context of a food web, we derive a probability distribution from the counts of distinct simple paths from the unique root \( R \) to each vertex \( v \). In a tree, where each vertex is accessible via a unique route, the distribution is uniform and the entropy is maximized:
+      </p>
+      <p class="math-block">
+        $$H_{\text{Tree}}(k) = \log |G(k)|.$$
+      </p>
+      <p>
+        However, when redundant edges are present, some vertices are reached via multiple distinct paths. If we denote by \( Q(v) \) the number of simple paths from \( R \) to \( v \) and by
+      </p>
+      <p class="math-block">
+        $$T(k) = \sum_{v \in G(k)} Q(v)$$
+      </p>
+      <p>
+        the total number of paths within the subgraph \( G(k) \), the probability of reaching vertex \( v \) becomes
+      </p>
+      <p class="math-block">
+        $$p_v^{(k)} = \frac{Q(v)}{T(k)}.$$
+      </p>
+      <h3>Redundancy Measure and Ecological Implications</h3>
+      <p>
+        We quantify the loss in entropy due to redundant edges by defining a redundancy measure:
+      </p>
+      <p class="math-block">
+        $$\phi_G(k) := H_{\text{Tree}}(k) - H_G(k).$$
+      </p>
+      <p>
+        A value of \( \phi_G(k) = 0 \) indicates a tree-like structure with no redundant links, while \( \phi_G(k) > 0 \) signifies that redundancy is present. In ecological terms, these redundant pathways can provide alternative routes for energy and nutrient flows, potentially conferring resilience to the ecosystem.
+      </p>
+    </div>
+
+    <!-- Theoretical Framework -->
+    <button type="button" class="collapsible">Theoretical Framework</button>
+    <div class="content">
+      <h3>Graph Model and Definitions</h3>
+      <p>
+        Let \( G = (V,E) \) be a finite, connected, directed graph with a unique vertex \( R \) of in-degree zero, such that there is at least one simple path from \( R \) to every vertex \( v \in V \). In order to analyze the structure of \( G \) progressively, we define the <em>energy</em> of a vertex \( v \), denoted \( \mathcal{E}(v) \), as the length of the shortest simple path from \( R \) to \( v \). This energy concept provides a natural filtration of the graph:
+      </p>
+      <p class="math-block">
+        $$G(k) = \{ v \in V : \mathcal{E}(v) \leq k \}.$$
+      </p>
+      <h3>Path Counting and Probability Distributions</h3>
+      <p>
+        For each vertex \( v \in G(k) \), let \( Q(v) \) denote the number of distinct simple paths from \( R \) to \( v \) that lie entirely within \( G(k) \). In a tree structure, we have \( Q(v) = 1 \) for every \( v \), as there is exactly one simple path from \( R \) to each vertex. However, in graphs with redundant links, some vertices may be reachable via multiple paths.
+      </p>
+      <p>
+        Define the total number of simple paths within \( G(k) \) as:
+      </p>
+      <p class="math-block">
+        $$T(k) = \sum_{v \in G(k)} Q(v).$$
+      </p>
+      <p>
+        This allows us to define a probability distribution on the vertices of \( G(k) \) by setting:
+      </p>
+      <p class="math-block">
+        $$p_v^{(k)} = \frac{Q(v)}{T(k)}.$$
+      </p>
+      <h3>Shannon Entropy in Graphs</h3>
+      <p>
+        Using the probability distribution \( \{p_v^{(k)}\}_{v \in G(k)} \), the Shannon entropy at energy level \( k \) is defined as:
+      </p>
+      <p class="math-block">
+        $$H_G(k) = -\sum_{v \in G(k)} p_v^{(k)} \log\left(p_v^{(k)}\right).$$
+      </p>
+      <p>
+        For a tree-like graph, where every vertex is reached by a unique path, the maximum possible entropy is:
+      </p>
+      <p class="math-block">
+        $$H_{\text{Tree}}(k) = \log |G(k)|.$$
+      </p>
+      <p>
+        Finally, the redundancy measure is given by:
+      </p>
+      <p class="math-block">
+        $$\phi_G(k) = H_{\text{Tree}}(k) - H_G(k).$$
+      </p>
+    </div>
+
+    <!-- Examples -->
+    <button type="button" class="collapsible">Examples</button>
+    <div class="content">
+      <h3>Example 1: Directed Tree</h3>
+      <div><img src="eg1.png"></div>
+      <p>
+        Consider a simple directed tree with vertices \( \{R, A, B, C\} \) and edges:
+      </p>
+      <p class="math-block">
+        $$R \to A,\quad A \to B,\quad A \to C.$$
+      </p>
+      <p>
+        In this tree, every vertex (except \( R \)) is reached by exactly one simple path, yielding a uniform distribution of paths.
+      </p>
+      <p>
+        Defining the energy as the length of the shortest path, we have:
+      </p>
+      <p class="math-block">
+        $$\mathcal{E}(R)=0,\quad \mathcal{E}(A)=1,\quad \mathcal{E}(B)=2,\quad \mathcal{E}(C)=2.$$
+      </p>
+      <p>
+        With \( G(2)=\{R,A,B,C\} \) and \( Q(v)=1 \) for all \( v \), the total number of paths is \( T(2)=4 \) and the probability is \( p_v = \frac{1}{4} \) for each vertex. Thus, the filtered Shannon entropy is:
+      </p>
+      <p class="math-block">
+        $$H_G(2) = \log 4,$$
+      </p>
+      <p>
+        matching the maximal entropy, so \( \phi_G(2)=0 \).
+      </p>
+
+      <h3>Example 2: Graph with a Redundant Link</h3>
+      <div><img src="eg2.png"></div>
+
+      <p>
+        Now consider a graph with vertices \( \{R, A, B, C\} \) and edges:
+      </p>
+      <p class="math-block">
+        $$R \to A,\quad A \to B,\quad A \to C,\quad R \to B.$$
+      </p>
+      <p>
+        Here the edge \( R \to B \) makes the path \( R \to A \to B \) redundant. For \( k=1 \) the subgraph \( G(1)=\{R, A, B\} \) has path counts \( Q(R)=1 \), \( Q(A)=1 \) (via \( R \to A \)), and \( Q(B)=2 \) (via \( R \to B \) and \( R \to A \to B \)). Thus, \( T(1)=4 \) and the probability distribution becomes:
+      </p>
+      <p class="math-block">
+        $$p_R=\frac{1}{4},\quad p_A=\frac{1}{4},\quad p_B=\frac{1}{2}.$$
+      </p>
+      <p>
+        The filtered entropy is then
+      </p>
+      <p class="math-block">
+        $$H_G(1) \approx 1.0397,$$
+      </p>
+      <p>
+        while the maximal (tree) entropy for 3 vertices is \( \log 3 \approx 1.098 \). Thus, \( \phi_G(1) \approx 1.098 - 1.0397 \).
+      </p>
+
+      <h3>Example 3: Larger Network with a Critical Hub</h3>
+      <div><img src="eg3.png"></div>
+
+      <p>
+        Consider a network with vertices \( \{R, A, B, C, D\} \) and edges:
+      </p>
+      <p class="math-block">
+        $$R \to A,\quad A \to B,\quad A \to C,\quad B \to D,\quad C \to D,\quad A \to D.$$
+      </p>
+      <p>
+        Here the edges \( B \to D \) and \( C \to D \) are redundant. With energies \( \mathcal{E}(R)=0 \), \( \mathcal{E}(A)=1 \), \( \mathcal{E}(B)=2 \), \( \mathcal{E}(C)=2 \), and \( \mathcal{E}(D)=2 \), and with \( Q(D)=3 \) from three distinct paths, the total path count is \( T(2)=7 \) and the resulting entropy is
+      </p>
+      <p class="math-block">
+        $$H_G(2) \approx 1.47.$$
+      </p>
+      <p>
+        Since the maximal entropy for 5 vertices is \( \log 5 \approx 1.609 \), the redundancy measure is \( \phi_G(2) \approx 1.609 - 1.47 \).
+      </p>
+    </div>
+
+    <!-- Entropy Analysis of a Food Web Graph -->
+    <button type="button" class="collapsible">Entropy Analysis of a Food Web Graph</button>
+    <div class="content">
+    <div><img src="Figure1.png"></div>
+
+      <p>
+        In this section, we analyze a food web graph (as in Figure~\\ref{consumer} from Allesina et al.) with vertices
+      </p>
+      <p class="math-block">
+        $$V = \{R,\, A,\, B,\, C,\, D,\, E\},$$
+      </p>
+      <p>
+        and directed edges as listed:
+      </p>
+      <ul>
+        <li>Edge 1: \( R \to A \)</li>
+        <li>Edge 2: \( R \to B \)</li>
+        <li>Edge 3: \( B \to A \) (redundant)</li>
+        <li>Edge 4: \( A \to C \)</li>
+        <li>Edge 5: \( B \to E \)</li>
+        <li>Edge 6: \( D \to B \) (redundant)</li>
+        <li>Edge 7: \( C \to D \)</li>
+        <li>Edge 8: \( C \to E \)</li>
+        <li>Edge 9: \( D \to E \) (redundant)</li>
+      </ul>
+      <p>
+        The energies are computed as:
+      </p>
+      <p class="math-block">
+        $$\mathcal{E}(R)=0,\quad \mathcal{E}(A)=1,\quad \mathcal{E}(B)=1,\quad \mathcal{E}(C)=2,\quad \mathcal{E}(E)=2,\quad \mathcal{E}(D)=3.$$
+      </p>
+      <p>
+        The number of distinct simple paths \( Q(v) \) from \( R \) to each vertex is as follows:
+      </p>
+      <ul>
+        <li>\( Q(R)=1 \)</li>
+        <li>\( Q(A)=2 \) (via \( R \to A \) and \( R \to B \to A \))</li>
+        <li>\( Q(B)=1 \) (via \( R \to B \))</li>
+        <li>\( Q(C)=2 \) (via \( R \to A \to C \) and \( R \to B \to A \to C \))</li>
+        <li>\( Q(D)=2 \) (via \( R \to A \to C \to D \) and \( R \to B \to A \to C \to D \))</li>
+        <li>\( Q(E)=6 \) (six distinct simple paths)</li>
+      </ul>
+      <p>
+        The total number of paths is:
+      </p>
+      <p class="math-block">
+        $$T = 1 + 2 + 1 + 2 + 2 + 6 = 14.$$
+      </p>
+      <p>
+        Hence, the probability for each vertex is:
+      </p>
+      <p class="math-block">
+        $$p(R)=\frac{1}{14},\quad p(A)=\frac{2}{14},\quad p(B)=\frac{1}{14},\quad p(C)=\frac{2}{14},\quad p(D)=\frac{2}{14},\quad p(E)=\frac{6}{14}.$$
+      </p>
+      <p>
+        The Shannon entropy is then computed as:
+      </p>
+      <p class="math-block">
+        $$H_G = -\sum_{v \in V} p(v) \log p(v) \approx 1.5746,$$
+      </p>
+      <p>
+        while the maximum entropy (for a tree with 6 vertices) is:
+      </p>
+      <p class="math-block">
+        $$H_{\text{Tree}} = \log 6 \approx 1.7918.$$
+      </p>
+      <p>
+        Thus, the redundancy measure is:
+      </p>
+      <p class="math-block">
+        $$\phi_G \approx 1.7918 - 1.5746 \approx 0.2172.$$
+      </p>
+      <p>
+        These calculations show that the presence of redundant links skews the probability distribution of paths and lowers the observed entropy relative to a non-redundant, tree-like network.
+      </p>
+    </div>
+
+    <!-- Bibliography -->
+    <button type="button" class="collapsible">Bibliography</button>
+    <div class="content">
+      <ul>
+        <li>Shannon, C. E. (1948). A Mathematical Theory of Communication. <em>Bell System Technical Journal</em>, 27, 379–423.</li>
+        <li>Paine, R. T. (1966). Food web complexity and species diversity. <em>American Naturalist</em>, 100(910), 65–75.</li>
+        <li>Dunne, J. A., Williams, R. J., &amp; Martinez, N. D. (2002). Food-web structure and network theory: The role of connectance and size. <em>Proceedings of the National Academy of Sciences</em>, 99(20), 12917–12922.</li>
+        <li>Allesina, S., &amp; Tang, S. (2012). Stability criteria for complex ecosystems. <em>Nature</em>, 483(7388), 205–208.</li>
+        <li>Allesina, S., Bodini, A. &amp; Pascual, M. (2009). Functional links and robustness in food webs. <em>Philosophical Transactions of the Royal Society B</em>, 364, 1701–1709.</li>
+      </ul>
+    </div>
+  </main>
+
+  <footer>
+    <p>2025 – CRL-J.</p>
+  </footer>
+
+  <script>
+    // Collapsible sections functionality
+    var coll = document.getElementsByClassName("collapsible");
+    for (var i = 0; i < coll.length; i++) {
+      coll[i].addEventListener("click", function () {
+        this.classList.toggle("active");
+        var content = this.nextElementSibling;
+        if (content.style.maxHeight){
+          content.style.maxHeight = null;
+        } else {
+          content.style.maxHeight = content.scrollHeight + "px";
+        } 
+      });
+    }
+  </script>
+</body>
+</html>
