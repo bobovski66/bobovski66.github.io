@@ -1,24 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Christopher Lee-Jenkins</title>
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@400;700&display=swap');
-    
+  <meta charset="UTF-8">
+  <base target="_blank">
+  <title>Christopher Lee-Jenkins</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Jost:wght@300;600&display=swap" rel="stylesheet">
+  <style>
     body { 
-        font-family: 'Montserrat', sans-serif; 
+        font-family: 'Jost', sans-serif;
         line-height: 1.6; 
-        background: #1a1a1a; 
+        background: linear-gradient(to right, #1c1f26, #252932); 
         color: #e0e0e0; 
+        margin: 0;
+        padding: 0;
     }
     .container { 
         width: 80%; 
-        margin: 0 auto; 
-        background: #292929; 
+        margin: 20px auto; 
+        background: rgba(28, 31, 38, 0.95); 
         padding: 20px; 
-        border-radius: 15px; 
-        box-shadow: 0 0 20px rgba(0,0,0,0.5); 
+        border-radius: 10px; 
+        box-shadow: 0 0 15px rgba(100,100,100,0.2); 
     }
     .header {
         text-align: center;
@@ -26,91 +28,90 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        border-bottom: 2px solid #444;
+        border-bottom: 2px solid rgba(150,150,150,0.3);
     }
     .title {
         font-size: 2.5em;
         font-weight: bold;
-        color: #00aaff;
-        font-family: 'Cinzel', serif;
+        color: #c6aa58;
+        font-family: 'DM Serif Display', serif;
+        text-shadow: 0 0 8px rgba(198,170,88,0.4);
     }
     .image {
         width: 150px;
         height: auto;
         border-radius: 50%;
-        border: 3px solid #00aaff;
+        border: 3px solid #c6aa58;
     }
     .section { 
         margin-bottom: 2em; 
+        background: rgba(36, 40, 50, 0.9);
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(80,80,80,0.2);
     }
     h1, h2 { 
-        color: #ff6600; 
-        font-family: 'Cinzel', serif; 
+        color: #c6aa58;
+        font-family: 'DM Serif Display', serif; 
+        text-shadow: 0 0 6px rgba(198, 170, 88, 0.4);
     }
     p { 
-        font-family: 'Open Sans', sans-serif; 
+        font-size: 1.1em;
     }
-    a { 
-        color: #00aaff; 
-        text-decoration: none; 
+a { 
+        color: #7abaff; 
+        text-decoration: underline; 
+        font-weight: bold;
+        transition: color 0.3s ease-in-out;
     }
-    a:visited { 
-        color: #00aaff; 
-    }
-    .gallery img {
+    a:hover { 
+        color: #a5d8ff;
+        text-decoration: underline;
+    }    .gallery img {
         width: 30%;
         margin: 0 10px 10px 0;
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(150,150,150,0.3);
+        transition: transform 0.3s ease-in-out;
+    }
+    .gallery img:hover {
+        transform: scale(1.05);
+    }
+    .clickable-title {
+        font-size: 1.3em;
+        font-weight: bold;
+        color: #c6aa58;
+        text-decoration: underline;
+        cursor: pointer;
+        transition: color 0.3s ease-in-out;
+    }
+    .clickable-title:hover {
+        color: #e0d4a3;
+        text-shadow: 0 0 6px rgba(198, 170, 88, 0.5);
     }
     .footer {
         position: relative;
-        height: 100px; /* Adjust height as necessary */
+        text-align: center;
+        height: 100px; 
         color: #e0e0e0;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-direction: column;
-        margin-top: 50px; /* Spacer between content and footer */
-        background: #444;
-        border-radius: 15px;
+        margin-top: 50px; 
+        background: rgba(20, 23, 28, 0.8);
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(100,100,100,0.2);
     }
     .footer p {
         margin: 5px 0;
-        font-weight: bold; /* Bold the text in the footer */
+        font-weight: bold;
     }
-    .paper-title, .essay-title {
-        cursor: pointer;
-        color: #00aaff;
-        text-decoration: underline;
-    }
-    .abstract, .summary {
+    .summary, .abstract {
         display: none;
-        margin-top: 10px;
-        font-style: italic;
     }
-    .click-info {
-        font-size: 0.9em;
-        color: #cccccc;
-    }
-    .paper-title::before, .essay-title::before {
-        content: "• ";
-        color: #ff6600;
-    }
-    @media print {
-        body, .container {
-            width: 100%;
-            max-width: 800px; /* Set a max-width that fits typical print paper */
-            margin: 0 auto; /* Center the content on the page */
-            padding: 0;
-            overflow: hidden; /* Prevent content from spilling over the width */
-        }
-        .header, .footer {
-            background-color: transparent; /* Optional: adjust based on your design needs */
-        }
-    }
-</style>
-<script>
+  </style>
+  <script>
     function toggleAbstract(id) {
         var element = document.getElementById(id);
         if (element.style.display === "none" || element.style.display === "") {
@@ -134,38 +135,36 @@
         }
     }
 
-function filterEssays() {
-    // Get selected topics from dropdown menus
-    var topic1 = document.getElementById("topic1").value;
-    var topic2 = document.getElementById("topic2").value;
-    var topic3 = document.getElementById("topic3").value;
+    function filterEssays() {
+        // Get selected topics from dropdown menus
+        var topic1 = document.getElementById("topic1").value;
+        var topic2 = document.getElementById("topic2").value;
+        var topic3 = document.getElementById("topic3").value;
 
-    // Collect all selected topics in an array
-    var selectedTopics = [topic1, topic2, topic3].filter(Boolean); // Remove empty values
+        // Collect all selected topics in an array
+        var selectedTopics = [topic1, topic2, topic3].filter(Boolean); // Remove empty values
 
-    // Get all essay containers
-    var essays = document.querySelectorAll('.essay-container');
+        // Get all essay containers
+        var essays = document.querySelectorAll('.essay-container');
 
-    // Loop through each essay to check if it matches the selected topics
-    essays.forEach(function(essay) {
-        var keywords = essay.getAttribute('data-keywords').split(',');
+        // Loop through each essay to check if it matches the selected topics
+        essays.forEach(function(essay) {
+            var keywords = essay.getAttribute('data-keywords').split(',');
 
-        // Check if the essay's keywords match all selected topics
-        var matches = selectedTopics.every(function(topic) {
-            return keywords.includes(topic);
+            // Check if the essay's keywords match all selected topics
+            var matches = selectedTopics.every(function(topic) {
+                return keywords.includes(topic);
+            });
+
+            // Show or hide the essay based on the match
+            if (matches) {
+                essay.style.display = 'block';
+            } else {
+                essay.style.display = 'none';
+            }
         });
-
-        // Show or hide the essay based on the match
-        if (matches) {
-            essay.style.display = 'block';
-        } else {
-            essay.style.display = 'none';
-        }
-    });
-}
-
-
-</script>
+    }
+  </script>
 </head>
 <body>
 <div class="container">
@@ -174,339 +173,404 @@ function filterEssays() {
         <img src="Images/image.png" alt="Christopher Lee-Jenkins" class="image">
     </div>
 
-   <div class="section">
-    <h2>About</h2>
-    <p class="essay-title" onclick="toggleAbstract('aboutContent')">Bio <span class="click-info">(click to expand)</span></p>
-    <div class="summary" id="aboutContent">
+    <div class="section">
+      <h2>About</h2>
+      <p class="essay-title clickable-title" onclick="toggleAbstract('aboutContent')">Bio <span class="click-info">(click to expand)</span></p>
+      <div class="summary" id="aboutContent">
         <p><strong>Christopher Lee-Jenkins</strong> is a Washington State-based academic with a uniquely varied background. Originally from Wyoming, his journey has taken him across the United States as a student, teacher, and perpetual seeker of knowledge. With a PhD in mathematics earned in 2009, Christopher's dissertation delved into generalizations of Hamiltonian dynamics in four dimensions. His teaching career has spanned multiple academic levels and institutions, culminating in a tenured position that he left to explore broader vocations while maintaining deep connections with his students, now both in person and online.</p>
         <p>Christopher's research is a fascinating blend of mathematics and natural phenomena. He is particularly interested in chain complexes, which describe interactions across different system levels, often conceptualized as dimensions. Using Morse Theory and Graph Theory, he investigates equilibria in both smooth and discrete dynamical systems. His work spans the realms of pure mathematics and biodynamics, including studies on ecosystems and the evolution of conscious experiences.</p>
         <p>A lifelong fascination with esotericism and ufology was sparked by mysterious childhood experiences, including visions and encounters that defied conventional explanation. These formative events inspired Christopher to explore various perspectives on these phenomena in his research.</p>
         <p>In his writings, Christopher examines topics such as the emergence of gravitation from exotic four-dimensional spacetimes and other anomalous phenomena in math and physics. He enjoys unraveling mathematical curiosities like the Banach-Tarski paradox, inviting others to explore the stranger corners of mathematical thought.</p>
         <p>Beyond his academic pursuits, Christopher is an accomplished musician. He is currently touring and releasing albums with Portland's Kvasir and Wyoming's One Good Eye, and he has solo projects like Leviathan Rise, with more music on the horizon.</p>
         <p>Christopher advocates for a shift from mere knowledge acquisition to the cultivation of wisdom. He emphasizes understanding the "whys" of our systems and analyzing their meta-properties to guide us toward innovative thinking. Through his teaching, research, and writing, Christopher aims to share his boundless curiosity, helping others see the world through unique and surprising lenses.</p>
+      </div>
     </div>
-</div>
-
 
     <div class="section">
-        <h2>Connect with Christopher</h2>
-        <p>Facebook: <a href="https://www.facebook.com/ChristopherRaeLee/" target="_blank">ChristopherRaeLee</a></p>
-        <p>Instagram: <a href="https://www.instagram.com/trismegistus_bob/" target="_blank">trismegistus_bob</a></p>
-        <p>YouTube: <a href="https://www.youtube.com/channel/UCGj_D58prjEd1G9BMgtoAyg" target="_blank">Christopher Lee-Jenkins</a></p>
-        <p>LinkedIn: <a href="https://www.linkedin.com/in/christopher-lee-jenkins-9ab028225/" target="_blank">Christopher Lee-Jenkins</a></p>    </div>
+      <h2>Connect with Christopher</h2>
+      <p>Facebook: <a href="https://www.facebook.com/ChristopherRaeLee/" target="_blank">ChristopherRaeLee</a></p>
+      <p>Instagram: <a href="https://www.instagram.com/trismegistus_bob/" target="_blank">trismegistus_bob</a></p>
+      <p>YouTube: <a href="https://www.youtube.com/channel/UCGj_D58prjEd1G9BMgtoAyg" target="_blank">Christopher Lee-Jenkins</a></p>
+      <p>LinkedIn: <a href="https://www.linkedin.com/in/christopher-lee-jenkins-9ab028225/" target="_blank">Christopher Lee-Jenkins</a></p>
+    </div>
 
     <div class="section gallery">
-        <h2>Gallery</h2>
-        <div style="display: flex; gap: 10px; justify-content: center;">
-            <div style="flex: 0 0 30%;">
-                <img src="Images/C_Lee_biopic2.jpg" alt="Christopher Lee-Jenkins" style="width: 100%; height: auto; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
-            </div>
-            <div style="flex: 0 0 30%;">
-                <img src="Images/C_Lee_biopic3.jpg" alt="Christopher Lee-Jenkins" style="width: 100%; height: auto; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
-            </div>
-            <div style="flex: 0 0 30%;">
-                <img src="Images/C_Lee_biopic1.jpg" alt="Christopher Lee-Jenkins" style="width: 100%; height: auto; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
-            </div>
-        </div>
+      <h2>Gallery</h2>
+      <div style="display: flex; gap: 10px; justify-content: center;">
+          <div style="flex: 0 0 30%;">
+              <img src="Images/C_Lee_biopic2.jpg" alt="Christopher Lee-Jenkins" style="width: 100%; height: auto; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
+          </div>
+          <div style="flex: 0 0 30%;">
+              <img src="Images/C_Lee_biopic3.jpg" alt="Christopher Lee-Jenkins" style="width: 100%; height: auto; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
+          </div>
+          <div style="flex: 0 0 30%;">
+              <img src="Images/C_Lee_biopic1.jpg" alt="Christopher Lee-Jenkins" style="width: 100%; height: auto; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
+          </div>
+      </div>
     </div>
 
-<div class="section">
-    <h2>Music</h2>
+    <div class="section">
+      <h2>Music</h2>
+      <p class="essay-title clickable-title" onclick="toggleAbstract('musicKvasir')">Kvasir <span class="click-info">(click to expand)</span></p>
+      <div class="abstract" id="musicKvasir">
+          <iframe style="border: 0; width: 100%; height: 120px;" src="https://bandcamp.com/EmbeddedPlayer/album=2770401978/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/artwork=small/transparent=true/" seamless><a href="https://kvasirpdx.bandcamp.com/album/sagittarius-a-star">Sagittarius A* Star by Kvasir</a></iframe>
+          <a href="https://kvasirpdx.bandcamp.com/">Kvasir on Bandcamp</a>
+      </div>
+      <p class="essay-title clickable-title" onclick="toggleAbstract('musicOneGoodEye')">One Good Eye <span class="click-info">(click to expand)</span></p>
+      <div class="abstract" id="musicOneGoodEye">
+          <iframe style="border: 0; width: 100%; height: 120px;" src="https://bandcamp.com/EmbeddedPlayer/album=41401532/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/artwork=small/track=2082994664/transparent=true/" seamless><a href="https://onegoodeyecasper.bandcamp.com/album/let-go-my-e-g-o">Let Go My E.G.O. by One Good Eye</a></iframe>
+          <a href="https://onegoodeyecasper.bandcamp.com/album/let-go-my-e-g-o" target="_blank">One Good Eye on Bandcamp</a>
+      </div>
+      <p class="essay-title clickable-title" onclick="toggleAbstract('musicLeviathanRise')">Leviathan Rise <span class="click-info">(click to expand)</span></p>
+      <div class="abstract" id="musicLeviathanRise">
+          <iframe style="border: 0; width: 100%; height: 120px;" src="https://bandcamp.com/EmbeddedPlayer/album=2328323263/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/artwork=small/transparent=true/" seamless><a href="https://leviathanrise.bandcamp.com/album/season-of-the-father-ii-nursery-rhymes-and-lullabies-for-lenfant-terrible">Season of the Father II - Nursery Rhymes and Lullabies for L&#39;enfant Terrible by Leviathan Rise</a></iframe>
+          <a href="https://leviathanrise.bandcamp.com/">Leviathan Rise on Bandcamp</a>
+      </div>
+    </div>
 
-    
-            <p class="essay-title" onclick="toggleAbstract('musicKvasir')">Kvasir <span class="click-info">(click to expand)</span></p>
-            <div class="abstract" id="musicKvasir">
-                <iframe style="border: 0; width: 100%; height: 120px;" src="https://bandcamp.com/EmbeddedPlayer/album=2770401978/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/artwork=small/transparent=true/" seamless><a href="https://kvasirpdx.bandcamp.com/album/sagittarius-a-star">Sagittarius A* Star by Kvasir</a></iframe>
-                <a href="https://kvasirpdx.bandcamp.com/">Kvasir on Bandcamp</a>
-            </div>
-        
-            <p class="essay-title" onclick="toggleAbstract('musicOneGoodEye')">One Good Eye <span class="click-info">(click to expand)</span></p>
-            <div class="abstract" id="musicOneGoodEye">
-                <iframe style="border: 0; width: 100%; height: 120px;" src="https://bandcamp.com/EmbeddedPlayer/album=41401532/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/artwork=small/track=2082994664/transparent=true/" seamless><a href="https://onegoodeyecasper.bandcamp.com/album/let-go-my-e-g-o">Let Go My E.G.O. by One Good Eye</a></iframe>
-                <a href="https://onegoodeyecasper.bandcamp.com/album/let-go-my-e-g-o" target="_blank">One Good Eye on Bandcamp</a>
-            </div>
-        
-            <p class="essay-title" onclick="toggleAbstract('musicLeviathanRise')">Leviathan Rise <span class="click-info">(click to expand)</span></p>
-            <div class="abstract" id="musicLeviathanRise">
-                <iframe style="border: 0; width: 100%; height: 120px;" src="https://bandcamp.com/EmbeddedPlayer/album=2328323263/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/artwork=small/transparent=true/" seamless><a href="https://leviathanrise.bandcamp.com/album/season-of-the-father-ii-nursery-rhymes-and-lullabies-for-lenfant-terrible">Season of the Father II - Nursery Rhymes and Lullabies for L&#39;enfant Terrible by Leviathan Rise</a></iframe>
-                <a href="https://leviathanrise.bandcamp.com/">Leviathan Rise on Bandcamp</a>
-            </div>
+    <div class="section">
+      <h2>Demonstrations</h2>
+      <p>Explore interactive demonstrations related to the concepts discussed:</p>
+      <p class="essay-title clickable-title" onclick="toggleAbstract('demoFloyd')">Floyd’s Triangle Diagonals &amp; Combinatorial Sequences <span class="click-info">(click to expand)</span></p>
+      <div class="summary" id="demoFloyd">
+          <p>This demonstration visualizes Floyd’s Triangle and explores its diagonal sums, revealing intriguing number sequences like structured tetragonal anti-prism numbers.</p>
+          <a href="floyd.html">Go to Demonstration</a>
+      </div>
+      <p class="essay-title clickable-title" onclick="toggleAbstract('demoFourier')">Fourier Interference Patterns <span class="click-info">(click to expand)</span></p>
+      <div class="summary" id="demoFourier">
+          <p>Explore the Fourier transform of interference patterns with high-resolution visualizations of spectral compositions.</p>
+          <a href="FourierInterference.html">Go to Demonstration</a>
+      </div>
+      <p class="essay-title clickable-title" onclick="toggleAbstract('demoInterference')">Dot Grid Rotator <span class="click-info">(click to expand)</span></p>
+      <div class="summary" id="demoInterference">
+          <p>Interactively rotate a dot grid and observe interference patterns as transformations create dynamic visual effects.</p>
+          <a href="interference.html">Go to Demonstration</a>
+      </div>
+      <p class="essay-title clickable-title" onclick="toggleAbstract('demoModular')">Modular Multiplication Visualization <span class="click-info">(click to expand)</span></p>
+      <div class="summary" id="demoModular">
+          <p>A graphical representation of modular multiplication, revealing hidden structures in number theory through dynamic circular patterns.</p>
+          <a href="modular.html">Go to Demonstration</a>
+      </div>
+      <p class="essay-title clickable-title" onclick="toggleAbstract('demoNormal')">Normal Distribution Visualizer <span class="click-info">(click to expand)</span></p>
+      <div class="summary" id="demoNormal">
+          <p>Dynamically adjust mean and standard deviation to see how the normal distribution curve changes in real time.</p>
+          <a href="normal.html">Go to Demonstration</a>
+      </div>
+      <p class="essay-title clickable-title" onclick="toggleAbstract('demoDinoChrono')">Paleontology, Plate Tectonics, and Evolution Timeline <span class="click-info">(click to expand)</span></p>
+      <div class="summary" id="demoDinoChrono">
+          <p>Follow an interactive timeline exploring the history of paleontology, the evolution of dinosaurs, and the development of plate tectonics.</p>
+          <a href="dino_chrono.html">Go to Demonstration</a>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Newest Articles</h2>
+      <p>Explore the latest additions to our collection:</p>
+      <p class="essay-title clickable-title" onclick="toggleAbstract('articleBrain')">The Symplectic Geometry of Brainwave Dynamics <span class="click-info">(click to expand)</span></p>
+      <div class="summary" id="articleBrain">
+          <p>This article models brain dynamics using a geometric framework, treating brainwaves as the dynamics of coupled oscillators on a torus with an additional phase delay capturing awareness.</p>
+          <a href="Brain/index.html">Read More</a>
+      </div>
+      <p class="essay-title clickable-title" onclick="toggleAbstract('articleGraphEntropy')">Redundancy in Food Web Graphs via Filtered Entropy Phase Measure <span class="click-info">(click to expand)</span></p>
+      <div class="summary" id="articleGraphEntropy">
+          <p>Examining redundancy in directed graphs, this article develops a filtered Shannon entropy measure to quantify alternative pathways in networks, with applications to ecological food webs.</p>
+          <a href="GraphEntropy/index.html">Read More</a>
+      </div>
+      <p class="essay-title clickable-title" onclick="toggleAbstract('articleQuantum')">Quantum Encoding on the Torus &amp; Electromechanical Reality <span class="click-info">(click to expand)</span></p>
+      <div class="summary" id="articleQuantum">
+          <p>This article explores a geometric framework in which quantum states are encoded in the topology of a two-torus, bridging quantum encoding with classical electromechanical dynamics.</p>
+          <a href="Quant-um/index.html">Read More</a>
+      </div>
+      <p class="essay-title clickable-title" onclick="toggleAbstract('articleQuantum2Classical')">From Quantum to Classical in the Integrable Regime <span class="click-info">(click to expand)</span></p>
+      <div class="summary" id="articleQuantum2Classical">
+          <p>Investigating the connection between quantum and classical mechanics in integrable systems, this article explores how quantum states project into classical dynamics via symplectization.</p>
+          <a href="Quantum2Classical/index.html">Read More</a>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Essays</h2>
+      <!-- Dropdown Menus for Topic Selection -->
+      <div>
+          <label for="topic1">Choose Topic 1:</label>
+          <select id="topic1" onchange="filterEssays()">
+              <option value="">--Select a Topic--</option>
+              <option value="Mathematics">Mathematics</option>
+              <option value="Philosophy">Philosophy</option>
+              <option value="Physics">Physics</option>
+              <option value="PDEs">PDEs</option>
+              <option value="Consciousness Studies">Consciousness Studies</option>
+              <option value="Morse Theory">Morse Theory</option>
+              <option value="Topology">Topology</option>
+              <option value="Causal Networks">Causal Networks</option>
+              <option value="Quantum Mechanics">Quantum Mechanics</option>
+              <option value="Classical Mechanics">Classical Mechanics</option>
+              <option value="Set Theory">Set Theory</option>
+              <option value="Paradoxes">Paradoxes</option>
+              <option value="Ecology">Ecology</option>
+              <option value="Complexity">Complexity</option>
+              <option value="Food Webs">Food Webs</option>
+              <option value="Geometry">Geometry</option>
+              <option value="Non-Euclidean Geometry">Non-Euclidean Geometry</option>
+              <option value="Number Theory">Number Theory</option>
+              <option value="Puzzles">Puzzles</option>
+              <option value="Unsolved Problems">Unsolved Problems</option>
+              <option value="Bioelectric Morphology">Bioelectric Morphology</option>
+              <option value="Biology">Biology</option>
+              <option value="Spacetime">Spacetime</option>
+              <option value="Exotic Structures">Exotic Structures</option>
+              <option value="Coordinates">Coordinates</option>
+              <option value="Manifolds">Manifolds</option>
+              <option value="4D Geometry">4D Geometry</option>
+              <option value="Ontology">Ontology</option>
+          </select>
+
+          <label for="topic2">Choose Topic 2:</label>
+          <select id="topic2" onchange="filterEssays()">
+              <option value="">--Select a Topic--</option>
+              <option value="Mathematics">Mathematics</option>
+              <option value="Philosophy">Philosophy</option>
+              <option value="Physics">Physics</option>
+              <option value="PDEs">PDEs</option>
+              <option value="Consciousness Studies">Consciousness Studies</option>
+              <option value="Morse Theory">Morse Theory</option>
+              <option value="Topology">Topology</option>
+              <option value="Causal Networks">Causal Networks</option>
+              <option value="Quantum Mechanics">Quantum Mechanics</option>
+              <option value="Classical Mechanics">Classical Mechanics</option>
+              <option value="Set Theory">Set Theory</option>
+              <option value="Paradoxes">Paradoxes</option>
+              <option value="Ecology">Ecology</option>
+              <option value="Complexity">Complexity</option>
+              <option value="Food Webs">Food Webs</option>
+              <option value="Geometry">Geometry</option>
+              <option value="Non-Euclidean Geometry">Non-Euclidean Geometry</option>
+              <option value="Number Theory">Number Theory</option>
+              <option value="Puzzles">Puzzles</option>
+              <option value="Unsolved Problems">Unsolved Problems</option>
+              <option value="Bioelectric Morphology">Bioelectric Morphology</option>
+              <option value="Biology">Biology</option>
+              <option value="Spacetime">Spacetime</option>
+              <option value="Exotic Structures">Exotic Structures</option>
+              <option value="Coordinates">Coordinates</option>
+              <option value="Manifolds">Manifolds</option>
+              <option value="4D Geometry">4D Geometry</option>
+          </select>
+
+          <label for="topic3">Choose Topic 3:</label>
+          <select id="topic3" onchange="filterEssays()">
+              <option value="">--Select a Topic--</option>
+              <option value="Mathematics">Mathematics</option>
+              <option value="Philosophy">Philosophy</option>
+              <option value="Physics">Physics</option>
+              <option value="PDEs">PDEs</option>
+              <option value="Consciousness Studies">Consciousness Studies</option>
+              <option value="Morse Theory">Morse Theory</option>
+              <option value="Topology">Topology</option>
+              <option value="Causal Networks">Causal Networks</option>
+              <option value="Quantum Mechanics">Quantum Mechanics</option>
+              <option value="Classical Mechanics">Classical Mechanics</option>
+              <option value="Set Theory">Set Theory</option>
+              <option value="Paradoxes">Paradoxes</option>
+              <option value="Ecology">Ecology</option>
+              <option value="Complexity">Complexity</option>
+              <option value="Food Webs">Food Webs</option>
+              <option value="Geometry">Geometry</option>
+              <option value="Non-Euclidean Geometry">Non-Euclidean Geometry</option>
+              <option value="Number Theory">Number Theory</option>
+              <option value="Puzzles">Puzzles</option>
+              <option value="Unsolved Problems">Unsolved Problems</option>
+              <option value="Bioelectric Morphology">Bioelectric Morphology</option>
+              <option value="Biology">Biology</option>
+              <option value="Spacetime">Spacetime</option>
+              <option value="Exotic Structures">Exotic Structures</option>
+              <option value="Coordinates">Coordinates</option>
+              <option value="Manifolds">Manifolds</option>
+              <option value="4D Geometry">4D Geometry</option>
+          </select>
       </div>
 
-<div class="section">
-    <h2>Essays</h2>
+      <!-- Essays with Keywords -->
+      <div class="essay-container" data-keywords="Mathematics,Philosophy,Physics,PDEs,Consciousness Studies,Ontology">
+          <p class="essay-title clickable-title" onclick="toggleAbstract('summaryNewest')">
+              <span style="color: red; font-weight: bold;">New!</span> The Effectiveness of Mathematics: A Closer Look <span class="click-info">(click for summary)</span>
+          </p>
+          <div class="summary" id="summaryNewest">
+              This essay critically examines the celebrated notion of the "unreasonable effectiveness of mathematics" in describing the natural world. It explores how, while only a small fraction of mathematical theory directly applies to physical sciences, this subset is profoundly effective in shaping our understanding of the universe. The discussion covers geometric methods in PDEs, exotic structures in four-dimensional spaces, the Axiom of Choice, and the application of simplicial complexes in consciousness studies, questioning whether mathematics discovers objective truths or constructs frameworks that shape our perception of reality.
+              <a href="Articles/effective_mathematics.html" target="_blank">Read more</a>
+          </div>
+      </div>
 
-    <!-- Dropdown Menus for Topic Selection -->
-    <div>
-        <label for="topic1">Choose Topic 1:</label>
-        <select id="topic1" onchange="filterEssays()">
-            <option value="">--Select a Topic--</option>
-            <option value="Mathematics">Mathematics</option>
-            <option value="Philosophy">Philosophy</option>
-            <option value="Physics">Physics</option>
-            <option value="PDEs">PDEs</option>
-            <option value="Consciousness Studies">Consciousness Studies</option>
-            <option value="Morse Theory">Morse Theory</option>
-            <option value="Topology">Topology</option>
-            <option value="Causal Networks">Causal Networks</option>
-            <option value="Quantum Mechanics">Quantum Mechanics</option>
-            <option value="Classical Mechanics">Classical Mechanics</option>
-            <option value="Set Theory">Set Theory</option>
-            <option value="Paradoxes">Paradoxes</option>
-            <option value="Ecology">Ecology</option>
-            <option value="Complexity">Complexity</option>
-            <option value="Food Webs">Food Webs</option>
-            <option value="Geometry">Geometry</option>
-            <option value="Non-Euclidean Geometry">Non-Euclidean Geometry</option>
-            <option value="Number Theory">Number Theory</option>
-            <option value="Puzzles">Puzzles</option>
-            <option value="Unsolved Problems">Unsolved Problems</option>
-            <option value="Bioelectric Morphology">Bioelectric Morphology</option>
-            <option value="Biology">Biology</option>
-            <option value="Spacetime">Spacetime</option>
-            <option value="Exotic Structures">Exotic Structures</option>
-            <option value="Coordinates">Coordinates</option>
-            <option value="Manifolds">Manifolds</option>
-            <option value="4D Geometry">4D Geometry</option>
-            <option value="Ontology">Ontology</option>
-        </select>
+      <div class="essay-container" data-keywords="Morse Theory,Topology,Causal Networks,Quantum Mechanics,Consciousness Studies,Ontology">
+          <p class="essay-title clickable-title" onclick="toggleAbstract('summary1')">
+              Morse Theoretic Tension in Causal Networks: Nonlocality and Resonance in Complex Systems <span class="click-info">(click for GPT summary)</span>
+          </p>
+          <div class="summary" id="summary1">
+              This essay investigates the application of Morse Theory to causal networks, emphasizing the emergence of nonlocality and resonance from the topological features of these systems. It delves into the role of directed graphs, simplicial complexes, and Morse flow in influencing the dynamics of complex systems. The essay connects these mathematical concepts to broader themes in consciousness studies and quantum mechanics, questioning how topology may govern the interactions within complex networks.
+              <a href="Articles/morse-theory-tension-causal-networks.html" target="_blank">Read more</a>
+          </div>
+      </div>
 
-        <label for="topic2">Choose Topic 2:</label>
-        <select id="topic2" onchange="filterEssays()">
-            <option value="">--Select a Topic--</option>
-            <option value="Mathematics">Mathematics</option>
-            <option value="Philosophy">Philosophy</option>
-            <option value="Physics">Physics</option>
-            <option value="PDEs">PDEs</option>
-            <option value="Consciousness Studies">Consciousness Studies</option>
-            <option value="Morse Theory">Morse Theory</option>
-            <option value="Topology">Topology</option>
-            <option value="Causal Networks">Causal Networks</option>
-            <option value="Quantum Mechanics">Quantum Mechanics</option>
-            <option value="Classical Mechanics">Classical Mechanics</option>
-            <option value="Set Theory">Set Theory</option>
-            <option value="Paradoxes">Paradoxes</option>
-            <option value="Ecology">Ecology</option>
-            <option value="Complexity">Complexity</option>
-            <option value="Food Webs">Food Webs</option>
-            <option value="Geometry">Geometry</option>
-            <option value="Non-Euclidean Geometry">Non-Euclidean Geometry</option>
-            <option value="Number Theory">Number Theory</option>
-            <option value="Puzzles">Puzzles</option>
-            <option value="Unsolved Problems">Unsolved Problems</option>
-            <option value="Bioelectric Morphology">Bioelectric Morphology</option>
-            <option value="Biology">Biology</option>
-            <option value="Spacetime">Spacetime</option>
-            <option value="Exotic Structures">Exotic Structures</option>
-            <option value="Coordinates">Coordinates</option>
-            <option value="Manifolds">Manifolds</option>
-            <option value="4D Geometry">4D Geometry</option>
-        </select>
+      <div class="essay-container" data-keywords="Causal Networks,Quantum Mechanics,Classical Mechanics,Mathematics,Topology,Ontology">
+          <p class="essay-title clickable-title" onclick="toggleAbstract('summary2')">
+              Classical to Quantum Causal Networks: Part I <span class="click-info">(click for GPT summary)</span>
+          </p>
+          <div class="summary" id="summary2">
+              This essay explores the shift from classical causal networks to quantum causal networks, beginning with an analysis of classical networks and their fundamental structures. It addresses the introduction of cycles and their implications, setting the stage for understanding the complexities of quantum networks. The discussion provides a foundation for future exploration of quantum causal networks, questioning how classical principles adapt to the quantum realm.
+              <a href="Articles/Classical_2_Quantum_Causal_I.html" target="_blank">Read more</a>
+          </div>
+      </div>
 
-        <label for="topic3">Choose Topic 3:</label>
-        <select id="topic3" onchange="filterEssays()">
-            <option value="">--Select a Topic--</option>
-            <option value="Mathematics">Mathematics</option>
-            <option value="Philosophy">Philosophy</option>
-            <option value="Physics">Physics</option>
-            <option value="PDEs">PDEs</option>
-            <option value="Consciousness Studies">Consciousness Studies</option>
-            <option value="Morse Theory">Morse Theory</option>
-            <option value="Topology">Topology</option>
-            <option value="Causal Networks">Causal Networks</option>
-            <option value="Quantum Mechanics">Quantum Mechanics</option>
-            <option value="Classical Mechanics">Classical Mechanics</option>
-            <option value="Set Theory">Set Theory</option>
-            <option value="Paradoxes">Paradoxes</option>
-            <option value="Ecology">Ecology</option>
-            <option value="Complexity">Complexity</option>
-            <option value="Food Webs">Food Webs</option>
-            <option value="Geometry">Geometry</option>
-            <option value="Non-Euclidean Geometry">Non-Euclidean Geometry</option>
-            <option value="Number Theory">Number Theory</option>
-            <option value="Puzzles">Puzzles</option>
-            <option value="Unsolved Problems">Unsolved Problems</option>
-            <option value="Bioelectric Morphology">Bioelectric Morphology</option>
-            <option value="Biology">Biology</option>
-            <option value="Spacetime">Spacetime</option>
-            <option value="Exotic Structures">Exotic Structures</option>
-            <option value="Coordinates">Coordinates</option>
-            <option value="Manifolds">Manifolds</option>
-            <option value="4D Geometry">4D Geometry</option>
-        </select>
+      <div class="essay-container" data-keywords="Axiom of Choice,Mathematics,Philosophy,Set Theory,Paradoxes,Ontology">
+          <p class="essay-title clickable-title" onclick="toggleAbstract('summary3')">The Alchemy of Choice: How the Axiom of Choice Transmutes Mathematical Reality <span class="click-info">(click for GPT Summary)</span></p>
+          <div class="summary" id="summary3">
+              This essay examines the transformative impact of the Axiom of Choice (AoC) in mathematics, likening its effects to a philosophical alchemy that reshapes mathematical reality. It explores controversial topics such as the Banach-Tarski Paradox and the constructivist critique of AoC, while also considering its broader philosophical implications. The essay questions how the AoC influences our understanding of mathematical truth and the nature of mathematical existence.
+              <a href="Articles/alchemy-choice-how-axiom-transmutes-mathematical-truth.html" target="_blank">Read more</a>
+          </div>
+      </div>
+
+      <div class="essay-container" data-keywords="Topology,Ecology,Mathematics,Complexity,Food Webs,Ontology">
+          <p class="essay-title clickable-title" onclick="toggleAbstract('summary4')">Unraveling the Complexity of Food Webs: A Topological Approach <span class="click-info">(click for GPT Summary)</span></p>
+          <div class="summary" id="summary4">
+              This essay applies topological methods to the study of food web stability, highlighting how algebraic topology and discrete Morse theory can provide new insights into ecological resilience. It critiques traditional graph-theoretic models and introduces advanced frameworks such as the directed forest complex to capture higher-order interactions within ecosystems. The essay questions how these topological tools might deepen our understanding of ecological stability and the role of redundancy in complex systems.
+              <a href="Articles/unraveling-complexity-food-webs-topological-approach.html" target="_blank">Read more</a>
+          </div>
+      </div>
+
+      <div class="essay-container" data-keywords="Mathematics,Geometry,Constants,Non-Euclidean Geometry,Philosophy,Ontology">
+          <p class="essay-title clickable-title" onclick="toggleAbstract('summary5')">Why is π? <span class="click-info">(click for GPT Summary)</span></p>
+          <div class="summary" id="summary5">
+              This essay celebrates π Day by exploring the mathematical constant π and its fundamental properties. It discusses how π is derived as the ratio of a circle's circumference to its diameter and examines the historical methods used to approximate it. The essay also explores π's behavior in non-Euclidean geometries, raising questions about its constancy and the deeper mathematical principles it embodies.
+              <a href="Articles/why-π-is-not-constant.html" target="_blank">Read more</a>
+          </div>
+      </div>
+
+      <div class="essay-container" data-keywords="Mathematics,Number Theory,Complexity,Puzzles,Unsolved Problems,Ontology">
+          <p class="essay-title clickable-title" onclick="toggleAbstract('summary6')">Mathematics Out of Reach: Math’s hardest problem is impossibly easy to understand <span class="click-info">(click for GPT Summary)</span></p>
+          <div class="summary" id="summary6">
+              This essay examines the Collatz Conjecture, a simple yet unsolved problem in mathematics that defies easy categorization. It contrasts this conjecture with more complex mathematical challenges, exploring why its straightforward statement belies the depth of its complexity. The discussion highlights the broader implications of the problem for mathematics, questioning how seemingly simple rules can lead to intricate and unresolved mysteries.
+              <a href="Articles/mathematics-out-reach-maths-hardest-problem.html" target="_blank">Read more</a>
+          </div>
+      </div>
+
+      <div class="essay-container" data-keywords="Morse Theory,Bioelectric Morphology,Mathematics,Biology,Topology,Ontology">
+          <p class="essay-title clickable-title" onclick="toggleAbstract('summary7')">Morse Theory and the Geometry of Bioelectric Morphology <span class="click-info">(click for GPT Summary)</span></p>
+          <div class="summary" id="summary7">
+              This essay draws parallels between Morse Theory in mathematics and the concepts of bioelectric morphology as proposed by biologist Michael Levin. It explores how mathematical ideas of local-to-global transformations can provide insights into the organization and evolution of biological systems, suggesting a new framework for understanding how biological structures may develop and change.
+              <a href="Articles/morse-theory-geometry-bioelectric-morphology.html" target="_blank">Read more</a>
+          </div>
+      </div>
+
+      <div class="essay-container" data-keywords="Mathematics,Physics,Spacetime,Exotic Structures,Topology,Ontology">
+          <p class="essay-title clickable-title" onclick="toggleAbstract('summary8')">Exotic Cosmos, Exotic Spacetime <span class="click-info">(click for GPT Summary)</span></p>
+          <div class="summary" id="summary8">
+              This essay investigates the construction of exotic 4D spacetimes, examining how modifications to standard geometric and topological models can result in unique physical properties. It discusses the concept of cobordism and its application in creating spacetimes with unusual characteristics, questioning how these constructions might influence our understanding of the universe and physical reality.
+              <a href="Articles/exotic-cosmos-spacetime.html" target="_blank">Read more</a>
+          </div>
+      </div>
+
+      <div class="essay-container" data-keywords="Coordinates,Manifolds,Exotic Structures,Mathematics,Topology,Ontology">
+          <p class="essay-title clickable-title" onclick="toggleAbstract('summary9')">Technical Interlude II: Coordinate Boogaloo <span class="click-info">(click for GPT Summary)</span></p>
+          <div class="summary" id="summary9">
+              This essay explores the concept of coordinates within the framework of manifolds, with a particular focus on their application to both standard and exotic spaces. It discusses the importance of coordinates in performing calculations on manifolds and highlights the unique characteristics of 4D Euclidean space (\(R^4\)) and its infinitely many non-equivalent smooth structures. The essay examines how these properties challenge traditional calculus and expand our understanding of mathematical spaces.
+              <a href="Articles/technical-interlude-ii-coordinate-boogaloo.html" target="_blank">Read more</a>
+          </div>
+      </div>
+
+      <div class="essay-container" data-keywords="Exotic Structures,Mathematics,Topology,Quantum Mechanics,Ontology">
+          <p class="essay-title clickable-title" onclick="toggleAbstract('summary10')">An Exotic Interlude: Witten’s Construction <span class="click-info">(click for GPT Summary)</span></p>
+          <div class="summary" id="summary10">
+              This essay explores the construction of exotic spheres through Witten’s procedure as outlined in “Global Gravitational Anomalies.” It details how removing and reintroducing equators in a specific way can lead to manifolds with exotic smooth structures. The essay questions the implications of these exotic geometries, particularly in understanding the complexities of topology and its effects on physical theories.
+              <a href="Articles/exotic-interlude-wittens-construction.html" target="_blank">Read more</a>
+          </div>
+      </div>
+
+      <div class="essay-container" data-keywords="Physics,4D Geometry,Exotic Structures,Mathematics,Topology,Ontology">
+          <p class="essay-title clickable-title" onclick="toggleAbstract('summary11')">Physics &amp; 4D Exotic Smoothness <span class="click-info">(click for GPT Summary)</span></p>
+          <div class="summary" id="summary11">
+              This essay examines the role of exotic smooth structures in 4D spacetime and their implications for physics. It discusses how different smooth structures alter the application of calculus on manifolds and the significance of diffeomorphisms in identifying equivalent manifolds. The essay connects these mathematical concepts to their potential influence on our understanding of gravitational phenomena and the nature of the universe.
+              <a href="Articles/physics-4d-exotic-smoothness.html" target="_blank">Read more</a>
+          </div>
+      </div>
+
+      <div class="essay-container" data-keywords="Mathematics,Physics,4D Geometry,Exotic Structures,Philosophy,Ontology">
+          <p class="essay-title clickable-title" onclick="toggleAbstract('summary12')">Is Mathematics Physical in 4D? <span class="click-info">(click for GPT Summary)</span></p>
+          <div class="summary" id="summary12">
+              This essay explores the relationship between mathematics and physical reality, focusing on the unique nature of four-dimensional space. It investigates the implications of exotic smooth structures in 4D and how they affect mathematical operations and physical theories. The discussion raises questions about the nature of mathematical existence and how mathematics might manifest in the physical world, particularly in higher dimensions.
+              <a href="Articles/mathematics-physical-4d.html" target="_blank">Read more</a>
+          </div>
+      </div>
     </div>
 
-    <!-- Essays with Keywords -->
-    <div class="essay-container" data-keywords="Mathematics,Philosophy,Physics,PDEs,Consciousness Studies,Ontology">
-        <p class="essay-title" onclick="toggleAbstract('summaryNewest')">
-            <span style="color: red; font-weight: bold;">New!</span> The Effectiveness of Mathematics: A Closer Look <span class="click-info">(click for summary)</span>
-        </p>
-        <div class="summary" id="summaryNewest">
-            This essay critically examines the celebrated notion of the "unreasonable effectiveness of mathematics" in describing the natural world. It explores how, while only a small fraction of mathematical theory directly applies to physical sciences, this subset is profoundly effective in shaping our understanding of the universe. The discussion covers geometric methods in PDEs, exotic structures in four-dimensional spaces, the Axiom of Choice, and the application of simplicial complexes in consciousness studies, questioning whether mathematics discovers objective truths or constructs frameworks that shape our perception of reality.
-            <a href="Articles/effective_mathematics.html" target="_blank">Read more</a>
-        </div>
+    <div class="section">
+      <h2>Publications</h2>
+      <p class="essay-title clickable-title" onclick="toggleAbstract('pubTopologicalEnergy')">Topological Energy Dynamics of Food Web Graphs <span class="click-info">(click to expand)</span></p>
+      <div class="summary" id="pubTopologicalEnergy">
+          <p>This paper explores how topological and dynamical structures interact within food web graphs, providing insight into energy flow and network stability.</p>
+          <a href="https://www.academia.edu/127348782/TOPOLOGICAL_ENERGY_DYNAMICS_OF_FOOD_WEB_GRAPHS" target="_blank">Read Publication</a>
+      </div>
+      <p class="essay-title clickable-title" onclick="toggleAbstract('pubQuantum2Classical')">From Quantum to Classical in the Integrable Regime <span class="click-info">(click to expand)</span></p>
+      <div class="summary" id="pubQuantum2Classical">
+          <p>This work investigates the transition from quantum to classical mechanics in integrable systems, emphasizing the role of symplectic and contact geometry.</p>
+          <a href="https://www.academia.edu/127403873/From_Quantum_to_Classical_in_the_Integrable_Regime" target="_blank">Read Publication</a>
+      </div>
+      <p class="essay-title clickable-title" onclick="toggleAbstract('pubRedundancy')">Redundancy in Food Web Graphs via Filtered Entropy Phase Measure <span class="click-info">(click to expand)</span></p>
+      <div class="summary" id="pubRedundancy">
+          <p>This paper introduces a novel entropy-based framework to quantify redundancy in food web graphs, revealing insights into ecological network resilience.</p>
+          <a href="https://www.academia.edu/127805428/Redundancy_in_Food_Web_Graphs_via_Filtered_Entropy_Phase_Measure" target="_blank">Read Publication</a>
+      </div>
+  
+      <div>
+          <p class="paper-title clickable-title" onclick="toggleAbstract('abstract1')">The Topology of Awareness: Mapping the Holographic Terrain of Conscious Experience <span class="click-info">(click for abstract)</span></p>
+          <div class="abstract" id="abstract1">
+              We propose a mathematical model of consciousness based on the theory of chain complexes and simplicial topology, in which the structure and dynamics of conscious experience are understood as a kind of emergent hologram that arises from the integration and correlation of many different observations or measurements of an underlying potentiality field. This model is inspired by the holographic paradigm proposed by David Bohm and others, and seeks to provide a rigorous and computable framework for describing the way in which the apparent separateness and locality of conscious phenomena emerge from a deeper, non-local and non-dual order. We argue that this framework has the potential to unify and shed new light on a wide range of topics in consciousness studies, from the binding problem and the neural correlates of consciousness to the nature of qualia and the possibility of panpsychism. However, it is crucial to acknowledge that our model does not claim to solve the hard problem of consciousness or to assert the computability of subjective experience. Rather, it provides a novel mathematical lens through which to view and analyze the complex topological structure of consciousness, without reducing it to purely computational processes. <a href="https://www.academia.edu/117446294/The_Topology_of_Awareness_Mapping_the_Holographic_Terrain_of_Conscious_Experience" target="_blank">Read more</a>
+          </div>
+      </div>
+
+      <div>
+          <p class="paper-title clickable-title" onclick="toggleAbstract('abstract2')">The Rank of Recurrence Matrices <span class="click-info">(click for abstract)</span></p>
+          <div class="abstract" id="abstract2">
+              A recurrence matrix is defined as a matrix whose entries (read left-to-right, row-by-row) are sequential elements generated by a linear recurrence relation. The maximal rank of this matrix is determined by the order of the corresponding recurrence. In the case of an order-two recurrence, the associated matrix fails to have full rank whenever the ratio of the two initial values of the sequence is an eigenvalue of the relation. <a href="https://www.academia.edu/110144201/The_Rank_of_Recurrence_Matrices" target="_blank">Read more</a>
+          </div>
+      </div>
+
+      <div>
+          <p class="paper-title clickable-title" onclick="toggleAbstract('abstract3')">Toric Integrable Geodesic Flows in Odd Dimensions <span class="click-info">(click for abstract)</span></p>
+          <div class="abstract" id="abstract3">
+              Let Q be a compact, connected n-dimensional Riemannian manifold, and assume that the geodesic flow is toric integrable. If n = 3 is odd, or if π<sub>1</sub>(Q) is infinite, we show that the cosphere bundle of Q is equivariantly contactomorphic to the cosphere bundle of the torus T<sup>n</sup>. As a consequence, Q is homeomorphic to T<sup>n</sup>. <a href="https://www.academia.edu/110144062/TORIC_INTEGRABLE_GEODESIC_FLOWS_IN_ODD_DIMENSIONS" target="_blank">Read more</a>
+              <br><br>
+              <strong><span style="color: #ff6600;">Listen to the podcast:</span></strong> <a href="https://illuminate.google.com/library?utm_source=waitlist&utm_medium=email&play=ArZDBj_6RcWo" target="_blank">AI-generated podcast on "Toric Integrable Geodesic Flows in Odd Dimensions"</a>
+          </div>
+      </div>
+
+      <div>
+          <p class="paper-title clickable-title" onclick="toggleAbstract('abstract4')">Obstructions to Toric Integrable Geodesic Flows in Dimension 3 <span class="click-info">(click for abstract)</span></p>
+          <div class="abstract" id="abstract4">
+              The geodesic flow of a Riemannian metric on a compact manifold Q is said to be toric integrable if it is completely integrable and the first integrals of motion generate a homogeneous torus action on the punctured cotangent bundle T*Q \ Q. If the geodesic flow is toric integrable, the cosphere bundle admits the structure of a contact toric manifold. By comparing the Betti numbers of contact toric manifolds and cosphere bundles, we are able to provide necessary conditions for the geodesic flow on a compact, connected 3-dimensional Riemannian manifold to be toric integrable. <a href="https://www.academia.edu/110143847/Obstructions_to_toric_integrable_geodesic_flows_in_dimension_3" target="_blank">Read more</a>
+              <br><br>
+              <strong><span style="color: #ff6600;">Listen to the podcast:</span></strong> <a href="https://illuminate.google.com/library?utm_source=waitlist&utm_medium=email&play=SJHQnf_pdlrD" target="_blank">AI-generated podcast on "Obstructions to Toric Integrable Geodesic Flows in Dimension 3"</a>
+          </div>
+      </div>
+
+      <div>
+          <p class="paper-title clickable-title" onclick="toggleAbstract('abstract5')">Folded Symplectic Toric Four-Manifolds <span class="click-info">(click for abstract)</span></p>
+          <div class="abstract" id="abstract5">
+              We show that two orientable, four-dimensional folded symplectic toric manifolds are isomorphic provided that their orbit spaces have trivial degree-two integral cohomology and there exists a diffeomorphism of the orbit spaces (as manifolds with corners) preserving orbital moment maps. <a href="https://www.academia.edu/110143702/Folded_Symplectic_Toric_Four_Manifolds" target="_blank">Read more</a>
+              <br><br>
+              <strong><span style="color: #ff6600;">Listen to the podcast:</span></strong> <a href="https://illuminate.google.com/library?utm_source=waitlist&utm_medium=email&play=Yi6vqe1_UXcb4" target="_blank">AI-generated podcast on "Folded Symplectic Toric Four-Manifolds"</a>
+          </div>
+      </div>
+
+      <div>
+          <p class="paper-title clickable-title" onclick="toggleAbstract('abstract6')">A Primer for Undergraduate Research: From Groups and Tiles to Frames and Vaccines (Editor) <span class="click-info">(click for abstract)</span></p>
+          <div class="abstract" id="abstract6">
+              A pioneering text providing state-of-the-art resources for faculty looking to mentor in undergraduate research and students looking to participate. Contains a wide range of topics, not normally addressed by the undergraduate curriculum, appropriate for student-faculty exploration that are from pure and applied math. A completely self-contained and accessible text with pre-requisites, specific open problems, directions for new research and a carefully selected bibliography included in every chapter. Equips readers to tackle the many challenges of starting undergraduate research. <a href="https://link.springer.com/book/10.1007/978-3-319-66065-3" target="_blank">Read more</a>
+          </div>
+      </div>
     </div>
-
-    <div class="essay-container" data-keywords="Morse Theory,Topology,Causal Networks,Quantum Mechanics,Consciousness Studies,Ontology">
-        <p class="essay-title" onclick="toggleAbstract('summary1')">
-            Morse Theoretic Tension in Causal Networks: Nonlocality and Resonance in Complex Systems <span class="click-info">(click for GPT summary)</span>
-        </p>
-        <div class="summary" id="summary1">
-            This essay investigates the application of Morse Theory to causal networks, emphasizing the emergence of nonlocality and resonance from the topological features of these systems. It delves into the role of directed graphs, simplicial complexes, and Morse flow in influencing the dynamics of complex systems. The essay connects these mathematical concepts to broader themes in consciousness studies and quantum mechanics, questioning how topology may govern the interactions within complex networks.
-            <a href="Articles/morse-theory-tension-causal-networks.html" target="_blank">Read more</a>
-        </div>
-    </div>
-
-    <div class="essay-container" data-keywords="Causal Networks,Quantum Mechanics,Classical Mechanics,Mathematics,Topology,Ontology">
-        <p class="essay-title" onclick="toggleAbstract('summary2')">
-            Classical to Quantum Causal Networks: Part I <span class="click-info">(click for GPT summary)</span>
-        </p>
-        <div class="summary" id="summary2">
-            This essay explores the shift from classical causal networks to quantum causal networks, beginning with an analysis of classical networks and their fundamental structures. It addresses the introduction of cycles and their implications, setting the stage for understanding the complexities of quantum networks. The discussion provides a foundation for future exploration of quantum causal networks, questioning how classical principles adapt to the quantum realm.
-            <a href="Articles/Classical_2_Quantum_Causal_I.html" target="_blank">Read more</a>
-        </div>
-    </div>
-
-    <div class="essay-container" data-keywords="Axiom of Choice,Mathematics,Philosophy,Set Theory,Paradoxes,Ontology">
-        <p class="essay-title" onclick="toggleAbstract('summary3')">The Alchemy of Choice: How the Axiom of Choice Transmutes Mathematical Reality <span class="click-info">(click for GPT Summary)</span></p>
-        <div class="summary" id="summary3">
-            This essay examines the transformative impact of the Axiom of Choice (AoC) in mathematics, likening its effects to a philosophical alchemy that reshapes mathematical reality. It explores controversial topics such as the Banach-Tarski Paradox and the constructivist critique of AoC, while also considering its broader philosophical implications. The essay questions how the AoC influences our understanding of mathematical truth and the nature of mathematical existence.
-            <a href="Articles/alchemy-choice-how-axiom-transmutes-mathematical-truth.html" target="_blank">Read more</a>
-        </div>
-    </div>
-
-    <div class="essay-container" data-keywords="Topology,Ecology,Mathematics,Complexity,Food Webs,Ontology">
-        <p class="essay-title" onclick="toggleAbstract('summary4')">Unraveling the Complexity of Food Webs: A Topological Approach <span class="click-info">(click for GPT Summary)</span></p>
-        <div class="summary" id="summary4">
-            This essay applies topological methods to the study of food web stability, highlighting how algebraic topology and discrete Morse theory can provide new insights into ecological resilience. It critiques traditional graph-theoretic models and introduces advanced frameworks such as the directed forest complex to capture higher-order interactions within ecosystems. The essay questions how these topological tools might deepen our understanding of ecological stability and the role of redundancy in complex systems.
-            <a href="Articles/unraveling-complexity-food-webs-topological-approach.html" target="_blank">Read more</a>
-        </div>
-    </div>
-
-    <div class="essay-container" data-keywords="Mathematics,Geometry,Constants,Non-Euclidean Geometry,Philosophy,Ontology">
-        <p class="essay-title" onclick="toggleAbstract('summary5')">Why is π? <span class="click-info">(click for GPT Summary)</span></p>
-        <div class="summary" id="summary5">
-            This essay celebrates π Day by exploring the mathematical constant π and its fundamental properties. It discusses how π is derived as the ratio of a circle's circumference to its diameter and examines the historical methods used to approximate it. The essay also explores π's behavior in non-Euclidean geometries, raising questions about its constancy and the deeper mathematical principles it embodies.
-            <a href="Articles/why-π-is-not-constant.html" target="_blank">Read more</a>
-        </div>
-    </div>
-
-    <div class="essay-container" data-keywords="Mathematics,Number Theory,Complexity,Puzzles,Unsolved Problems,Ontology">
-        <p class="essay-title" onclick="toggleAbstract('summary6')">Mathematics Out of Reach: Math’s hardest problem is impossibly easy to understand <span class="click-info">(click for GPT Summary)</span></p>
-        <div class="summary" id="summary6">
-            This essay examines the Collatz Conjecture, a simple yet unsolved problem in mathematics that defies easy categorization. It contrasts this conjecture with more complex mathematical challenges, exploring why its straightforward statement belies the depth of its complexity. The discussion highlights the broader implications of the problem for mathematics, questioning how seemingly simple rules can lead to intricate and unresolved mysteries.
-            <a href="Articles/mathematics-out-reach-maths-hardest-problem.html" target="_blank">Read more</a>
-        </div>
-    </div>
-
-    <div class="essay-container" data-keywords="Morse Theory,Bioelectric Morphology,Mathematics,Biology,Topology,Ontology">
-        <p class="essay-title" onclick="toggleAbstract('summary7')">Morse Theory and the Geometry of Bioelectric Morphology <span class="click-info">(click for GPT Summary)</span></p>
-        <div class="summary" id="summary7">
-            This essay draws parallels between Morse Theory in mathematics and the concepts of bioelectric morphology as proposed by biologist Michael Levin. It explores how mathematical ideas of local-to-global transformations can provide insights into the organization and evolution of biological systems, suggesting a new framework for understanding how biological structures may develop and change.
-            <a href="Articles/morse-theory-geometry-bioelectric-morphology.html" target="_blank">Read more</a>
-        </div>
-    </div>
-
-    <div class="essay-container" data-keywords="Mathematics,Physics,Spacetime,Exotic Structures,Topology,Ontology">
-        <p class="essay-title" onclick="toggleAbstract('summary8')">Exotic Cosmos, Exotic Spacetime <span class="click-info">(click for GPT Summary)</span></p>
-        <div class="summary" id="summary8">
-            This essay investigates the construction of exotic 4D spacetimes, examining how modifications to standard geometric and topological models can result in unique physical properties. It discusses the concept of cobordism and its application in creating spacetimes with unusual characteristics, questioning how these constructions might influence our understanding of the universe and physical reality.
-            <a href="Articles/exotic-cosmos-spacetime.html" target="_blank">Read more</a>
-        </div>
-    </div>
-
-    <div class="essay-container" data-keywords="Coordinates,Manifolds,Exotic Structures,Mathematics,Topology,Ontology">
-        <p class="essay-title" onclick="toggleAbstract('summary9')">Technical Interlude II: Coordinate Boogaloo <span class="click-info">(click for GPT Summary)</span></p>
-        <div class="summary" id="summary9">
-            This essay explores the concept of coordinates within the framework of manifolds, with a particular focus on their application to both standard and exotic spaces. It discusses the importance of coordinates in performing calculations on manifolds and highlights the unique characteristics of 4D Euclidean space (\(R^4\)) and its infinitely many non-equivalent smooth structures. The essay examines how these properties challenge traditional calculus and expand our understanding of mathematical spaces.
-            <a href="Articles/technical-interlude-ii-coordinate-boogaloo.html" target="_blank">Read more</a>
-        </div>
-    </div>
-
-    <div class="essay-container" data-keywords="Exotic Structures,Mathematics,Topology,Quantum Mechanics,Ontology">
-        <p class="essay-title" onclick="toggleAbstract('summary10')">An Exotic Interlude: Witten’s Construction <span class="click-info">(click for GPT Summary)</span></p>
-        <div class="summary" id="summary10">
-            This essay explores the construction of exotic spheres through Witten’s procedure as outlined in “Global Gravitational Anomalies.” It details how removing and reintroducing equators in a specific way can lead to manifolds with exotic smooth structures. The essay questions the implications of these exotic geometries, particularly in understanding the complexities of topology and its effects on physical theories.
-            <a href="Articles/exotic-interlude-wittens-construction.html" target="_blank">Read more</a>
-        </div>
-    </div>
-
-    <div class="essay-container" data-keywords="Physics,4D Geometry,Exotic Structures,Mathematics,Topology,Ontology">
-        <p class="essay-title" onclick="toggleAbstract('summary11')">Physics & 4D Exotic Smoothness <span class="click-info">(click for GPT Summary)</span></p>
-        <div class="summary" id="summary11">
-            This essay examines the role of exotic smooth structures in 4D spacetime and their implications for physics. It discusses how different smooth structures alter the application of calculus on manifolds and the significance of diffeomorphisms in identifying equivalent manifolds. The essay connects these mathematical concepts to their potential influence on our understanding of gravitational phenomena and the nature of the universe.
-            <a href="Articles/physics-4d-exotic-smoothness.html" target="_blank">Read more</a>
-        </div>
-    </div>
-
-    <div class="essay-container" data-keywords="Mathematics,Physics,4D Geometry,Exotic Structures,Philosophy,Ontology">
-        <p class="essay-title" onclick="toggleAbstract('summary12')">Is Mathematics Physical in 4D? <span class="click-info">(click for GPT Summary)</span></p>
-        <div class="summary" id="summary12">
-            This essay explores the relationship between mathematics and physical reality, focusing on the unique nature of four-dimensional space. It investigates the implications of exotic smooth structures in 4D and how they affect mathematical operations and physical theories. The discussion raises questions about the nature of mathematical existence and how mathematics might manifest in the physical world, particularly in higher dimensions.
-            <a href="Articles/mathematics-physical-4d.html" target="_blank">Read more</a>
-        </div>
-    </div>
-    <!-- Add more essays as needed -->
-</div>
-
-
-
-<div class="section">
-    <h2>Publications</h2>
-    
-    <div>
-        <p class="paper-title" onclick="toggleAbstract('abstract1')">The Topology of Awareness: Mapping the Holographic Terrain of Conscious Experience <span class="click-info">(click for abstract)</span></p>
-        <div class="abstract" id="abstract1">
-            We propose a mathematical model of consciousness based on the theory of chain complexes and simplicial topology, in which the structure and dynamics of conscious experience are understood as a kind of emergent hologram that arises from the integration and correlation of many different observations or measurements of an underlying potentiality field. This model is inspired by the holographic paradigm proposed by David Bohm and others, and seeks to provide a rigorous and computable framework for describing the way in which the apparent separateness and locality of conscious phenomena emerge from a deeper, non-local and non-dual order. We argue that this framework has the potential to unify and shed new light on a wide range of topics in consciousness studies, from the binding problem and the neural correlates of consciousness to the nature of qualia and the possibility of panpsychism. However, it is crucial to acknowledge that our model does not claim to solve the hard problem of consciousness or to assert the computability of subjective experience. Rather, it provides a novel mathematical lens through which to view and analyze the complex topological structure of consciousness, without reducing it to purely computational processes. <a href="https://www.academia.edu/117446294/The_Topology_of_Awareness_Mapping_the_Holographic_Terrain_of_Conscious_Experience" target="_blank">Read more</a>
-        </div>
-    </div>
-
-    <div>
-        <p class="paper-title" onclick="toggleAbstract('abstract2')">The Rank of Recurrence Matrices <span class="click-info">(click for abstract)</span></p>
-        <div class="abstract" id="abstract2">
-            A recurrence matrix is defined as a matrix whose entries (read left-to-right, row-by-row) are sequential elements generated by a linear recurrence relation. The maximal rank of this matrix is determined by the order of the corresponding recurrence. In the case of an order-two recurrence, the associated matrix fails to have full rank whenever the ratio of the two initial values of the sequence is an eigenvalue of the relation. <a href="https://www.academia.edu/110144201/The_Rank_of_Recurrence_Matrices" target="_blank">Read more</a>
-        </div>
-    </div>
-
-    <div>
-        <p class="paper-title" onclick="toggleAbstract('abstract3')">Toric Integrable Geodesic Flows in Odd Dimensions <span class="click-info">(click for abstract)</span></p>
-        <div class="abstract" id="abstract3">
-            Let Q be a compact, connected n-dimensional Riemannian manifold, and assume that the geodesic flow is toric integrable. If n = 3 is odd, or if π<sub>1</sub>(Q) is infinite, we show that the cosphere bundle of Q is equivariantly contactomorphic to the cosphere bundle of the torus T<sup>n</sup>. As a consequence, Q is homeomorphic to T<sup>n</sup>. <a href="https://www.academia.edu/110144062/TORIC_INTEGRABLE_GEODESIC_FLOWS_IN_ODD_DIMENSIONS" target="_blank">Read more</a>
-            <br><br>
-            <strong><span style="color: #ff6600;">Listen to the podcast:</span></strong> <a href="https://illuminate.google.com/library?utm_source=waitlist&utm_medium=email&play=ArZDBj_6RcWo" target="_blank">AI-generated podcast on "Toric Integrable Geodesic Flows in Odd Dimensions"</a>
-        </div>
-    </div>
-
-    <div>
-        <p class="paper-title" onclick="toggleAbstract('abstract4')">Obstructions to Toric Integrable Geodesic Flows in Dimension 3 <span class="click-info">(click for abstract)</span></p>
-        <div class="abstract" id="abstract4">
-            The geodesic flow of a Riemannian metric on a compact manifold Q is said to be toric integrable if it is completely integrable and the first integrals of motion generate a homogeneous torus action on the punctured cotangent bundle T*Q \ Q. If the geodesic flow is toric integrable, the cosphere bundle admits the structure of a contact toric manifold. By comparing the Betti numbers of contact toric manifolds and cosphere bundles, we are able to provide necessary conditions for the geodesic flow on a compact, connected 3-dimensional Riemannian manifold to be toric integrable. <a href="https://www.academia.edu/110143847/Obstructions_to_toric_integrable_geodesic_flows_in_dimension_3" target="_blank">Read more</a>
-            <br><br>
-            <strong><span style="color: #ff6600;">Listen to the podcast:</span></strong> <a href="https://illuminate.google.com/library?utm_source=waitlist&utm_medium=email&play=SJHQnf_pdlrD" target="_blank">AI-generated podcast on "Obstructions to Toric Integrable Geodesic Flows in Dimension 3"</a>
-        </div>
-    </div>
-
-    <div>
-        <p class="paper-title" onclick="toggleAbstract('abstract5')">Folded Symplectic Toric Four-Manifolds <span class="click-info">(click for abstract)</span></p>
-        <div class="abstract" id="abstract5">
-            We show that two orientable, four-dimensional folded symplectic toric manifolds are isomorphic provided that their orbit spaces have trivial degree-two integral cohomology and there exists a diffeomorphism of the orbit spaces (as manifolds with corners) preserving orbital moment maps. <a href="https://www.academia.edu/110143702/Folded_Symplectic_Toric_Four_Manifolds" target="_blank">Read more</a>
-            <br><br>
-            <strong><span style="color: #ff6600;">Listen to the podcast:</span></strong> <a href="https://illuminate.google.com/library?utm_source=waitlist&utm_medium=email&play=Yi6vqe1_UXcb4" target="_blank">AI-generated podcast on "Folded Symplectic Toric Four-Manifolds"</a>
-        </div>
-    </div>
-
-    <div>
-        <p class="paper-title" onclick="toggleAbstract('abstract6')">A Primer for Undergraduate Research: From Groups and Tiles to Frames and Vaccines (Editor) <span class="click-info">(click for abstract)</span></p>
-        <div class="abstract" id="abstract6">
-            A pioneering text providing state-of-the-art resources for faculty looking to mentor in undergraduate research and students looking to participate. Contains a wide range of topics, not normally addressed by the undergraduate curriculum, appropriate for student-faculty exploration that are from pure and applied math. A completely self-contained and accessible text with pre-requisites, specific open problems, directions for new research and a carefully selected bibliography included in every chapter. Equips readers to tackle the many challenges of starting undergraduate research. <a href="https://link.springer.com/book/10.1007/978-3-319-66065-3" target="_blank">Read more</a>
-        </div>
-    </div>
-</div>
-
-
 
     <div class="footer">
-        <p>&copy; 2024 Christopher Lee-Jenkins</p>
+      <p>&copy; 2025 CRL-J</p>
     </div>
 </div>
 </body>
