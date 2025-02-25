@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Multiplication Tables: Distinct Products and Asymptotic Insights</title>
+  <!-- Load MathJax for LaTeX rendering -->
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+  <style>
+    /* 1980s Neon Themed Styles */
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: 'Courier New', Courier, monospace;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+    header {
+      background: linear-gradient(45deg, #ff6ec7, #1f51ff);
+      padding: 20px;
+      text-align: center;
+    }
+    header h1 {
+      color: #39ff14;
+      font-size: 3em;
+      margin: 0;
+      text-shadow: 0 0 5px #39ff14, 0 0 10px #39ff14;
+    }
+    header h2 {
+      color: #ff6ec7;
+      font-size: 1.5em;
+      margin: 0;
+      text-shadow: 0 0 5px #ff6ec7, 0 0 10px #ff6ec7;
+    }
+    main {
+      padding: 20px;
+    }
+    section {
+      margin-bottom: 40px;
+    }
+    h2 {
+      color: #ff6ec7;
+      border-bottom: 2px solid #39ff14;
+      padding-bottom: 5px;
+    }
+    p {
+      margin-bottom: 1em;
+    }
+    ul {
+      list-style: disc;
+      margin-left: 20px;
+    }
+    a {
+      color: #ff6ec7;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    footer {
+      background: #1f51ff;
+      padding: 20px;
+      text-align: center;
+    }
+    .neon {
+      color: #39ff14;
+      text-shadow: 0 0 5px #39ff14, 0 0 10px #39ff14;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Multiplication Tables</h1>
+    <h2>Distinct Products, Triangular Numbers, and Asymptotic Insights</h2>
+  </header>
+  <main>
+    <section id="introduction">
+      <h2>Introduction</h2>
+      <p>
+        Multiplication tables are a familiar part of early education, yet they reveal much deeper mathematical structures upon closer examination. In this article, we explore the matrix formed by an arithmetic progression, count its distinct products, observe how these counts tend toward triangular numbers in the limit, and connect these findings with asymptotic insights from number theory.
+      </p>
+    </section>
+    <section id="multiplication-table-matrices">
+      <h2>Multiplication Table Matrices</h2>
+      <p>
+        Consider a \( k \times k \) multiplication table where each entry is defined by:
+      </p>
+      <p style="text-align: center;">\( A_{ij} = (a_0 + i - 1)(a_0 + j - 1) \)</p>
+      <p>
+        Here, \( a_0 \) is the initial term of an arithmetic progression. For example, if we set \( a_0 = 3 \) and construct a \( 5 \times 5 \) table, the rows and columns are labeled with the sequence:
+      </p>
+      <p style="text-align: center;">\( 3, 4, 5, 6, 7 \)</p>
+      <p>
+        This produces the matrix:
+      </p>
+      <p style="text-align: center;">
+        \(
+        \begin{pmatrix}
+          9 & 12 & 15 & 18 & 21 \\
+          12 & 16 & 20 & 24 & 28 \\
+          15 & 20 & 25 & 30 & 35 \\
+          18 & 24 & 30 & 36 & 40 \\
+          21 & 28 & 35 & 42 & 49
+        \end{pmatrix}
+        \)
+      </p>
+      <p>
+        This table is not only useful for learning multiplication, but it also provides a basis for deeper combinatorial investigations.
+      </p>
+    </section>
+    <section id="distinct-products">
+      <h2>Counting Distinct Products</h2>
+      <p>
+        A natural question is: how many distinct products appear in an \( n \times n \) multiplication table? Let \( M(a_0, k) \) denote the number of distinct products in a table with seed \( a_0 \). For instance, numerical experiments yield sequences such as:
+      </p>
+      <ul>
+        <li>\( M(1,k): \) 1, 3, 6, 9, 14, 18, 25, …</li>
+        <li>\( M(2,k): \) 1, 3, 6, 10, 14, 20, 25, …</li>
+        <li>\( M(3,k): \) 1, 3, 6, 10, 15, 20, 26, …</li>
+      </ul>
+      <p>
+        These sequences illustrate the nontrivial structure present in what might seem like a simple array.
+      </p>
+    </section>
+    <section id="triangular-numbers">
+      <h2>Triangular Numbers as the Limiting Sequence</h2>
+      <p>
+        An intriguing observation is that, as the seed \( a_0 \) becomes large, the number of distinct products approaches the \( k \)th triangular number:
+      </p>
+      <p style="text-align: center;">\( \displaystyle \lim_{a_0 \to \infty} M(a_0, k) = \frac{k(k+1)}{2} \)</p>
+      <p>
+        This convergence suggests that the intrinsic combinatorial structure of the multiplication table is closely linked to the triangular numbers. For more details on triangular numbers, see the 
+        <a href="https://oeis.org/A000217" target="_blank">OEIS page on triangular numbers</a>.
+      </p>
+    </section>
+    <section id="asymptotic-insights">
+      <h2>Asymptotic Insights and the Erdős–Tenenbaum–Ford Constant</h2>
+      <p>
+        Further insight comes from the classic multiplication table problem, which was studied by Erdős, and later refined by Tenenbaum and Ford. Their work shows that the number of distinct entries in an \( n \times n \) multiplication table behaves asymptotically as:
+      </p>
+      <p style="text-align: center;">\( \displaystyle \frac{n^2}{(\log n)^{\delta + o(1)}} \)</p>
+      <p>
+        where \( \delta \) is the Erdős–Tenenbaum–Ford constant. More details on this constant can be found on its <a href="https://en.wikipedia.org/wiki/Erd%C5%91s%E2%80%93Tenenbaum%E2%80%93Ford_constant" target="_blank">Wikipedia page</a>. This asymptotic relationship highlights the deep interplay between elementary arithmetic and advanced number theory.
+      </p>
+    </section>
+    <section id="conclusion">
+      <h2>Conclusion</h2>
+      <p>
+        Multiplication tables are far more than simple educational tools; they offer a window into the rich structure of numbers. The convergence of distinct product counts to triangular numbers and the asymptotic behavior described by the Erdős–Tenenbaum–Ford constant reveal a hidden order in what might initially seem elementary. Exploring these patterns deepens our appreciation of the elegance underlying basic arithmetic.
+      </p>
+    </section>
+  </main>
+  <footer>
+    <p class="neon">Keep exploring and enjoy the beauty of mathematics!</p>
+  </footer>
+</body>
+</html>
