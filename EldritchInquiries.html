@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eldritch Inquiries: A Lovecraftian Investigation</title>
+  <style>
+    :root {
+      --dark-bg: #1a1a1a;
+      --light-text: #e0e0e0;
+      --accent: #7b0000;
+      --paper: #f5e8c0;
+      --ink: #333;
+      --location-bg: #2c2c2c;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Times New Roman', Times, serif;
+      background-color: var(--dark-bg);
+      color: var(--light-text);
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    #game-container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+    
+    #header {
+      padding: 10px;
+      background-color: var(--accent);
+      border-bottom: 2px solid #000;
+      text-align: center;
+    }
+    
+    h1 {
+      font-family: 'Times New Roman', Times, serif;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+    
+    #map-panel {
+      flex: 2;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    #map {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: repeat(5, 1fr);
+      gap: 10px;
+      flex: 1;
+    }
+    
+    .location {
+      background-color: var(--location-bg);
+      border: 1px solid #444;
+      border-radius: 5px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.3s;
+    }
+    
+    .location:hover {
+      background-color: #3a3a3a;
+      transform: scale(1.05);
+    }
+    
+    .location.visited {
+      border: 1px solid #666;
+      opacity: 0.8;
+    }
+    
+    .location.current {
+      border: 2px solid var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+    }
+    
+    .location-name {
+      font-size: 14px;
+      text-align: center;
+    }
+    
+    #controls {
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    button {
+      padding: 8px 16px;
+      background-color: var(--accent);
+      color: var(--light-text);
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-family: 'Times New Roman', Times, serif;
+      transition: all 0.3s;
+    }
+    
+    button:hover {
+      background-color: #9b0000;
+    }
+    
+    button:disabled {
+      background-color: #444;
+      cursor: not-allowed;
+    }
+    
+    #notebook-panel {
+      flex: 1;
+      background-color: var(--paper);
+      color: var(--ink);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      border-left: 3px solid #333;
+      overflow-y: auto;
+    }
+    
+    #notebook-title {
+      text-align: center;
+      margin-bottom: 10px;
+      font-family: 'Times New Roman', Times, serif;
+      color: var(--ink);
+      border-bottom: 1px solid #aa8;
+      padding-bottom: 5px;
+    }
+    
+    #clues-container {
+      flex: 1;
+      overflow-y: auto;
+    }
+    
+    .clue {
+      padding: 10px;
+      margin: 10px 0;
+      background-color: rgba(255, 255, 255, 0.4);
+      border: 1px solid #aa8;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    
+    .clue:hover {
+      background-color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .clue.connected {
+      border: 2px solid var(--accent);
+    }
+    
+    #event-log {
+      height: 150px;
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 10px;
+      overflow-y: auto;
+      font-style: italic;
+    }
+    
+    .log-entry {
+      margin-bottom: 5px;
+      padding: 3px;
+      border-left: 3px solid var(--accent);
+      padding-left: 10px;
+    }
+    
+    #modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+    }
+    
+    #modal-content {
+      background-color: var(--paper);
+      color: var(--ink);
+      padding: 20px;
+      border-radius: 5px;
+      max-width: 600px;
+      width: 80%;
+      max-height: 80%;
+      overflow-y: auto;
+      position: relative;
+    }
+    
+    #close-modal {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #555;
+      color: white;
+      border: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 15px;
+      cursor: pointer;
+    }
+    
+    #sanity-bar {
+      width: 100%;
+      height: 10px;
+      background-color: #333;
+      margin-top: 5px;
+    }
+    
+    #sanity-fill {
+      height: 100%;
+      background-color: var(--accent);
+      transition: width 0.5s;
+    }
+    
+    #victory-screen {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+      z-index: 20;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    
+    #victory-content {
+      max-width: 600px;
+      padding: 30px;
+      background-color: var(--dark-bg);
+      border: 3px solid var(--accent);
+    }
+    
+    h2 {
+      margin-bottom: 20px;
+    }
+    
+    #restart {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div id="header">
+    <h1>ELDRITCH INQUIRIES</h1>
+    <div id="sanity-container">
+      Sanity: <span id="sanity-value">100</span>%
+      <div id="sanity-bar">
+        <div id="sanity-fill" style="width: 100%;"></div>
+      </div>
+    </div>
+  </div>
+  
+  <div id="game-container">
+    <div id="map-panel">
+      <div id="map"></div>
+      <div id="event-log"></div>
+      <div id="controls">
+        <div>
+          <button id="investigate">Investigate Location</button>
+        </div>
+        <div>
+          <button id="view-notebook">Consult Notebook</button>
+        </div>
+      </div>
+    </div>
+    
+    <div id="notebook-panel">
+      <h2 id="notebook-title">Detective's Notebook</h2>
+      <div id="clues-container"></div>
+      <div id="solve-case-container" style="text-align: center; margin-top: 20px;">
+        <button id="solve-case" disabled>Attempt to Solve Case</button>
+      </div>
+    </div>
+  </div>
+  
+  <div id="modal">
+    <div id="modal-content">
+      <button id="close-modal">X</button>
+      <h2 id="modal-title"></h2>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+  
+  <div id="victory-screen">
+    <div id="victory-content">
+      <h2>Case Solved!</h2>
+      <p id="victory-text"></p>
+      <button id="restart">Start New Investigation</button>
+    </div>
+  </div>
+  
+  <script>
+    // Game state
+    const gameState = {
+      currentLocation: null,
+      visitedLocations: new Set(),
+      clues: [],
+      connectedClues: new Set(),
+      sanity: 100,
+      requiredCluesForSolution: 5,
+      locationData: [
+        { id: 'miskatonic', name: 'Miskatonic University', description: 'The prestigious university with a notorious occult section in its library.' },
+        { id: 'innsmouth', name: 'Innsmouth Harbor', description: 'A decrepit fishing town with an air of decay and hostility.' },
+        { id: 'arkham', name: 'Arkham Asylum', description: 'The asylum houses those whose minds have been broken by unspeakable horrors.' },
+        { id: 'dunwich', name: 'Dunwich Village', description: 'An isolated village with strange customs and whispers of dark rituals.' },
+        { id: 'kingsport', name: 'Kingsport Lighthouse', description: 'An old lighthouse perched on cliffs, surrounded by strange mists.' },
+        { id: 'marsh', name: 'Marsh Manor', description: 'The ancestral home of the Marsh family, known for their odd appearance and secretive behavior.' },
+        { id: 'witch', name: 'Witch House', description: 'A colonial-era house with a dark history of accusations and disappearances.' },
+        { id: 'woods', name: 'Arkham Woods', description: 'Ancient woods where strange stone circles and carvings can be found.' },
+        { id: 'church', name: 'Esoteric Order', description: 'A peculiar church where strange chanting can be heard at night.' },
+        { id: 'wharf', name: 'Forgotten Wharf', description: 'An abandoned dock where strange ships have been sighted.' },
+        { id: 'cemetery', name: 'Arkham Cemetery', description: 'The old cemetery where generations of Arkham residents rest... or do they?' },
+        { id: 'museum', name: 'Historical Society', description: 'The museum contains artifacts from expeditions to remote corners of the world.' },
+        { id: 'bookstore', name: 'Occult Bookstore', description: 'A dusty shop selling rare and forbidden tomes.' },
+        { id: 'house', name: 'Abandoned House', description: 'A decrepit mansion on the outskirts of town that locals avoid.' },
+        { id: 'cave', name: 'Coastal Caves', description: 'Sea caves that reach deep beneath the coastal cliffs.' },
+        { id: 'inn', name: 'Gilman Inn', description: 'A rundown establishment where travelers report strange dreams.' },
+        { id: 'library', name: 'Arkham Library', description: 'The public library with a restricted section of unusual books.' },
+        { id: 'factory', name: 'Abandoned Factory', description: 'Once used for processing fish, now abandoned for unknown reasons.' },
+        { id: 'farm', name: 'Whateley Farm', description: 'An isolated farm owned by a reclusive family with strange beliefs.' },
+        { id: 'river', name: 'Miskatonic River', description: 'The river flowing through Arkham, sometimes carrying strange things from upstream.' },
+        { id: 'docks', name: 'Innsmouth Docks', description: 'The main port where fish and other things are brought ashore.' },
+        { id: 'park', name: 'Arkham Park', description: 'A public park with strange statues of unknown origin.' },
+        { id: 'shop', name: 'Curiosity Shop', description: 'A store selling oddities from around the world and beyond.' },
+        { id: 'mill', name: 'Old Mill', description: 'An abandoned mill with strange machinery still intact.' },
+        { id: 'tower', name: 'Observatory Tower', description: 'A university facility for watching the stars... and things between them.' }
+      ],
+      clueData: [
+        { id: 'c1', text: 'A torn page from the Necronomicon describing an ancient ritual to summon "those who wait beyond the veil."', connected: [] },
+        { id: 'c2', text: 'Reports of unusual fish-like humanoids seen at night near Innsmouth Harbor.', connected: ['c7', 'c13'] },
+        { id: 'c3', text: 'Strange symbols carved into stone at multiple locations form a pattern when mapped.', connected: ['c9', 'c14'] },
+        { id: 'c4', text: 'Multiple witnesses report hearing chanting in an unknown language from beneath the Marsh Manor.', connected: ['c10'] },
+        { id: 'c5', text: 'Astronomical charts showing a rare alignment happening on the winter solstice.', connected: ['c14', 'c15'] },
+        { id: 'c6', text: 'A journal entry describing transformation rituals practiced by the Marsh family.', connected: ['c2', 'c13'] },
+        { id: 'c7', text: 'Ancient gold jewelry with inscriptions mentioning "Dagon" and "the Deep Ones."', connected: ['c2', 'c13'] },
+        { id: 'c8', text: 'Patient records from Arkham Asylum describing identical hallucinations of underwater cities.', connected: ['c2', 'c10'] },
+        { id: 'c9', text: 'A map showing locations of stone circles that form a larger pattern across the region.', connected: ['c3', 'c14'] },
+        { id: 'c10', text: 'Translated text referring to "the awakening" and "the return of the Elder Gods."', connected: ['c4', 'c15'] },
+        { id: 'c11', text: 'Missing persons reports showing a pattern of disappearances every 27 years.', connected: ['c4', 'c15'] },
+        { id: 'c12', text: 'Strange specimens collected from the shore with both fish and human characteristics.', connected: ['c2', 'c6'] },
+        { id: 'c13', text: 'Accounts of a secret ceremony where Innsmouth residents walk into the ocean at night.', connected: ['c2', 'c7'] },
+        { id: 'c14', text: 'An ancient stone tablet showing celestial bodies in specific alignment.', connected: ['c3', 'c5'] },
+        { id: 'c15', text: 'Professor Armitage\'s notes on the "thin places" where realities can intersect.', connected: ['c5', 'c10'] }
+      ],
+      encounters: [
+        {
+          type: 'minor',
+          title: 'Strange Sounds',
+          description: 'You hear unsettling whispers that seem to come from nowhere and everywhere at once.',
+          sanityCost: 5
+        },
+        {
+          type: 'minor',
+          title: 'Unusual Fog',
+          description: 'A greenish fog rolls in, bringing with it the scent of salt and decay.',
+          sanityCost: 5
+        },
+        {
+          type: 'minor',
+          title: 'Watching Eyes',
+          description: 'You feel eyes watching you from shadows where nothing should be lurking.',
+          sanityCost: 5
+        },
+        {
+          type: 'medium',
+          title: 'Strange Resident',
+          description: 'You encounter a local with an unnaturally wide mouth and bulging, unblinking eyes who asks too many questions about your investigation.',
+          sanityCost: 10
+        },
+        {
+          type: 'medium',
+          title: 'Ritualistic Symbols',
+          description: 'You discover fresh blood used to draw arcane symbols on a wall. The blood is still wet.',
+          sanityCost: 10
+        },
+        {
+          type: 'major',
+          title: 'Glimpse Beyond',
+          description: 'For a brief moment, reality seems to tear, and you glimpse a vast city of impossible geometry under alien stars.',
+          sanityCost: 20
+        },
+        {
+          type: 'major',
+          title: 'The Chanting',
+          description: 'You stumble upon a circle of robed figures chanting in an inhuman language. One turns to look at you, revealing no face beneath the hood.',
+          sanityCost: 20
+        }
+      ],
+      solution: "The Deep Ones of Innsmouth are preparing for a ritual during the upcoming celestial alignment. The Marsh family, who have interbred with these creatures for generations, are leading the ceremony that will thin the barrier between worlds and allow the Elder Gods to return. The disappearances are sacrifices, and the strange symbols mark ritual sites that form a massive summoning circle across the region."
+    };
+    
+    // Elements
+    const mapElement = document.getElementById('map');
+    const eventLogElement = document.getElementById('event-log');
+    const investigateButton = document.getElementById('investigate');
+    const viewNotebookButton = document.getElementById('view-notebook');
+    const cluesContainer = document.getElementById('clues-container');
+    const modalElement = document.getElementById('modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalBody = document.getElementById('modal-body');
+    const closeModalButton = document.getElementById('close-modal');
+    const sanityValue = document.getElementById('sanity-value');
+    const sanityFill = document.getElementById('sanity-fill');
+    const solveButton = document.getElementById('solve-case');
+    const victoryScreen = document.getElementById('victory-screen');
+    const victoryText = document.getElementById('victory-text');
+    const restartButton = document.getElementById('restart');
+    
+    // Initialize game
+    function initGame() {
+      // Reset game state
+      gameState.currentLocation = null;
+      gameState.visitedLocations = new Set();
+      gameState.clues = [];
+      gameState.connectedClues = new Set();
+      gameState.sanity = 100;
+      
+      // Update UI
+      updateSanityDisplay();
+      generateMap();
+      clearClues();
+      clearLog();
+      
+      // Add starter log entry
+      addLogEntry("You arrive in Arkham to investigate strange occurrences reported in the region...");
+    }
+    
+    // Generate map locations
+    function generateMap() {
+      mapElement.innerHTML = '';
+      
+      // Randomly select and place locations
+      const selectedLocations = [];
+      const availableLocations = [...gameState.locationData];
+      
+      // Select 25 random locations (5x5 grid)
+      for (let i = 0; i < 25; i++) {
+        if (availableLocations.length === 0) break;
+        
+        const randomIndex = Math.floor(Math.random() * availableLocations.length);
+        selectedLocations.push(availableLocations.splice(randomIndex, 1)[0]);
+      }
+      
+      // Create location elements
+      selectedLocations.forEach((location, index) => {
+        const locationElement = document.createElement('div');
+        locationElement.className = 'location';
+        locationElement.dataset.id = location.id;
+        
+        const nameElement = document.createElement('div');
+        nameElement.className = 'location-name';
+        nameElement.textContent = location.name;
+        
+        locationElement.appendChild(nameElement);
+        mapElement.appendChild(locationElement);
+        
+        // Set click handler
+        locationElement.addEventListener('click', () => moveToLocation(location));
+      });
+    }
+    
+    // Move to a location
+    function moveToLocation(location) {
+      // Update current location
+      gameState.currentLocation = location;
+      gameState.visitedLocations.add(location.id);
+      
+      // Update UI
+      updateLocationDisplay();
+      addLogEntry(`You travel to ${location.name}.`);
+    }
+    
+    // Update location display
+    function updateLocationDisplay() {
+      // Remove current class from all locations
+      document.querySelectorAll('.location').forEach(element => {
+        element.classList.remove('current');
+        
+        if (gameState.visitedLocations.has(element.dataset.id)) {
+          element.classList.add('visited');
+        }
+      });
+      
+      // Add current class to current location
+      if (gameState.currentLocation) {
+        const currentElement = document.querySelector(`.location[data-id="${gameState.currentLocation.id}"]`);
+        if (currentElement) {
+          currentElement.classList.add('current');
+        }
+      }
+    }
+    
+    // Investigate the current location
+    function investigateLocation() {
+      if (!gameState.currentLocation) {
+        addLogEntry("Select a location to investigate first.");
+        return;
+      }
+      
+      addLogEntry(`You investigate ${gameState.currentLocation.name}...`);
+      
+      // Chance of finding a clue (70%)
+      if (Math.random() < 0.7) {
+        // Find an unacquired clue
+        findClue();
+      }
+      
+      // Chance of random encounter (60%)
+      if (Math.random() < 0.6) {
+        triggerEncounter();
+      }
+    }
+    
+    // Find a clue
+    function findClue() {
+      // Filter out clues we already have
+      const availableClues = gameState.clueData.filter(clue => 
+        !gameState.clues.some(c => c.id === clue.id)
+      );
+      
+      if (availableClues.length === 0) {
+        addLogEntry("You search thoroughly but find nothing new.");
+        return;
+      }
+      
+      // Select random clue
+      const randomIndex = Math.floor(Math.random() * availableClues.length);
+      const newClue = availableClues[randomIndex];
+      
+      // Add to player's clues
+      gameState.clues.push(newClue);
+      addLogEntry(`You discovered a clue: "${newClue.text.substring(0, 60)}..."`);
+      
+      // Update notebook
+      updateCluesDisplay();
+      
+      // Check if we can solve the case
+      checkSolveCondition();
+    }
+    
+    // Trigger a random encounter
+    function triggerEncounter() {
+      // Select random encounter
+      const randomIndex = Math.floor(Math.random() * gameState.encounters.length);
+      const encounter = gameState.encounters[randomIndex];
+      
+      // Display encounter
+      addLogEntry(`Encounter: ${encounter.title}`);
+      
+      // Apply sanity cost
+      adjustSanity(-encounter.sanityCost);
+      
+      // Show encounter details in modal
+      showModal(encounter.title, `<p>${encounter.description}</p><p>Your sanity decreases by ${encounter.sanityCost} points.</p>`);
+    }
+    
+    // Update clues display in notebook
+    function updateCluesDisplay() {
+      cluesContainer.innerHTML = '';
+      
+      if (gameState.clues.length === 0) {
+        const emptyNote = document.createElement('div');
+        emptyNote.textContent = "No clues collected yet.";
+        emptyNote.style.fontStyle = 'italic';
+        emptyNote.style.textAlign = 'center';
+        emptyNote.style.padding = '20px';
+        cluesContainer.appendChild(emptyNote);
+        return;
+      }
+      
+      gameState.clues.forEach(clue => {
+        const clueElement = document.createElement('div');
+        clueElement.className = 'clue';
+        clueElement.dataset.id = clue.id;
+        
+        if (gameState.connectedClues.has(clue.id)) {
+          clueElement.classList.add('connected');
+        }
+        
+        clueElement.textContent = clue.text;
+        
+        // Connect clues on click
+        clueElement.addEventListener('click', () => toggleClueConnection(clue));
+        
+        cluesContainer.appendChild(clueElement);
+      });
+    }
+    
+    // Toggle clue connection
+    function toggleClueConnection(clue) {
+      if (gameState.connectedClues.has(clue.id)) {
+        gameState.connectedClues.delete(clue.id);
+        addLogEntry(`You disconnect the clue from your theory.`);
+      } else {
+        gameState.connectedClues.add(clue.id);
+        addLogEntry(`You connect the clue to your developing theory.`);
+      }
+      
+      updateCluesDisplay();
+      checkSolveCondition();
+    }
+    
+    // Check if case can be solved
+    function checkSolveCondition() {
+      if (gameState.connectedClues.size >= gameState.requiredCluesForSolution) {
+        solveButton.disabled = false;
+      } else {
+        solveButton.disabled = true;
+      }
+    }
+    
+    // Attempt to solve the case
+    function solveCase() {
+      const correctClueConnections = checkClueConnections();
+      const completenessRatio = Math.min(1, gameState.connectedClues.size / gameState.clueData.length);
+      
+      // Calculate success probability
+      const successProbability = correctClueConnections * completenessRatio;
+      
+      if (Math.random() < successProbability) {
+        // Success
+        showVictoryScreen();
+      } else {
+        // Failure
+        adjustSanity(-10);
+        addLogEntry("Your theory doesn't quite fit together. The strain takes a toll on your sanity.");
+        showModal("Failed Attempt", "The connections between your clues don't form a coherent theory. You need to reconsider your approach and perhaps find more evidence.");
+      }
+    }
+    
+    // Check how many correct connections the player has made
+    function checkClueConnections() {
+      let correctConnections = 0;
+      let totalConnections = 0;
+      
+      gameState.connectedClues.forEach(clueId => {
+        const clue = gameState.clueData.find(c => c.id === clueId);
+        if (clue) {
+          clue.connected.forEach(connectedId => {
+            totalConnections++;
+            if (gameState.connectedClues.has(connectedId)) {
+              correctConnections++;
+            }
+          });
+        }
+      });
+      
+      return totalConnections > 0 ? correctConnections / totalConnections : 0;
+    }
+    
+    // Show victory screen
+    function showVictoryScreen() {
+      victoryText.textContent = gameState.solution;
+      victoryScreen.style.display = 'flex';
+    }
+    
+    // Adjust sanity
+    function adjustSanity(amount) {
+      gameState.sanity = Math.max(0, Math.min(100, gameState.sanity + amount));
+      updateSanityDisplay();
+      
+      if (gameState.sanity <= 0) {
+        // Game over due to insanity
+        showModal("Descent into Madness", "The horrors you've witnessed have shattered your sanity. You are committed to Arkham Asylum, where your ravings about ancient gods and cosmic horrors are dismissed as delusions.", true);
+      }
+    }
+    
+    // Update sanity display
+    function updateSanityDisplay() {
+      sanityValue.textContent = gameState.sanity;
+      sanityFill.style.width = `${gameState.sanity}%`;
+    }
+    
+    // Add entry to event log
+    function addLogEntry(text) {
+      const entry = document.createElement('div');
+      entry.className = 'log-entry';
+      entry.textContent = text;
+      eventLogElement.appendChild(entry);
+      eventLogElement.scrollTop = eventLogElement.scrollHeight;
+    }
+    
+    // Clear event log
+    function clearLog() {
+      eventLogElement.innerHTML = '';
+    }
+    
+    // Clear clues
+    function clearClues() {
+      cluesContainer.innerHTML = '';
+    }
+    
+    // Show modal
+    function showModal(title, content, isGameOver = false) {
+      modalTitle.textContent = title;
+      modalBody.innerHTML = content;
+      modalElement.style.display = 'flex';
+      
+      if (isGameOver) {
+        const restartButton = document.createElement('button');
+        restartButton.textContent = 'Start New Investigation';
+        restartButton.addEventListener('click', () => {
+          hideModal();
+          initGame();
+        });
+        modalBody.appendChild(document.createElement('br'));
+        modalBody.appendChild(document.createElement('br'));
+        modalBody.appendChild(restartButton);
+      }
+    }
+    
+    // Hide modal
+    function hideModal() {
+      modalElement.style.display = 'none';
+    }
+    
+    // Event listeners
+    investigateButton.addEventListener('click', investigateLocation);
+    viewNotebookButton.addEventListener('click', () => {
+      if (gameState.currentLocation) {
+        showModal("Detective's Notes", `<h3>${gameState.currentLocation.name}</h3><p>${gameState.currentLocation.description}</p>`);
+      } else {
+        addLogEntry("Visit a location first to record notes about it.");
+      }
+    });
+    closeModalButton.addEventListener('click', hideModal);
+    solveButton.addEventListener('click', solveCase);
+    restartButton.addEventListener('click', () => {
+      victoryScreen.style.display = 'none';
+      initGame();
+    });
+    
+    // Initialize the game
+    initGame();
+  </script>
+</body>
+</html>
