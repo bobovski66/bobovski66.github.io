@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Directed and Undirected Graph Visualizer</title>
+    <style>
+        /* Sci-Fi Theme */
+        body {
+            margin: 0;
+            background-color: #111;
+            color: #00FFAA;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #toolbar {
+            margin: 10px;
+            color: #00FFAA;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        button {
+            background-color: #222;
+            color: #00FFAA;
+            border: 1px solid #00FFAA;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        canvas {
+            border: 2px solid #00FFAA;
+            background-color: #111;
+            cursor: crosshair;
+        }
+    </style>
+</head>
+<body>
+    <h1>Graph Visualizer</h1>
+    <div id="toolbar">
+        <button onclick="toggleEdgeType()">Toggle Edge Type: <span id="edgeType">Directed</span></button>
+        <button onclick="toggleDeleteMode()">Toggle Delete Mode: <span id="deleteModeStatus">Off</span></button>
+        <button onclick="toggleLabelMode()">Toggle Label Mode: <span id="labelModeStatus">Off</span></button>
+        <button onclick="clearCanvas()">Clear</button>
+    </div>
+    <canvas id="canvas" width="800" height="600"></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let nodes = [];
+        let edges = [];
+        let isDirected = true;
+        let selectedNode = null;
+        let draggingNode = null;
+        let deleteMode = false;
+        let labelMode = false;
+
+        // Toggle edge type between directed and undirected
+        function toggleEdgeType() {
+            isDirected = !isDirected;
+            document.getElementById('edgeType').innerText = isDirected ? 'Directed' : 'Undirected';
+        }
+
+        // Toggle delete mode on or off
+        function toggleDeleteMode() {
+            deleteMode = !deleteMode;
+            document.getElementById('deleteModeStatus').innerText = deleteMode ? 'On' : 'Off';
+            labelMode = false; // Turn off label mode if delete mode is on
+            document.getElementById('labelModeStatus').innerText = 'Off';
+        }
+
+        // Toggle label mode on or off
+        function toggleLabelMode() {
+            labelMode = !labelMode;
+            document.getElementById('labelModeStatus').innerText = labelMode ? 'On' : 'Off';
+            deleteMode = false; // Turn off delete mode if label mode is on
+            document.getElementById('deleteModeStatus').innerText = 'Off';
+        }
+
+        // Handle mouse click to add/select nodes, create edges, delete, or label nodes/edges
+        canvas.addEventListener('mousedown', (event) => {
+            const { offsetX, offsetY } = event;
+            const clickedNode = getNodeAtPosition(offsetX, offsetY);
+            const clickedEdge = getEdgeAtPosition(offsetX, offsetY);
+            const isShiftPressed = event.shiftKey;
+
+            if (deleteMode) {
+                // Delete node or edge
+                if (clickedEdge) {
+                    edges = edges.filter(edge => edge !== clickedEdge);
+                } else if (clickedNode) {
+                    nodes = nodes.filter(node => node !== clickedNode);
+                    edges = edges.filter(edge => edge.from !== clickedNode && edge.to !== clickedNode);
+                }
+                drawGraph();
+            } else if (labelMode) {
+                // Label node or edge
+                if (clickedNode) {
+                    const label = prompt("Enter label for this node:");
+                    if (label !== null) clickedNode.label = label;
+                } else if (clickedEdge) {
+                    const label = prompt("Enter label for this edge:");
+                    if (label !== null) clickedEdge.label = label;
+                }
+                drawGraph();
+            } else if (isShiftPressed && clickedNode) {
+                // Create edge only if Shift key is held down
+                if (selectedNode && selectedNode !== clickedNode) {
+                    edges.push({ from: selectedNode, to: clickedNode, directed: isDirected });
+                    selectedNode = null;
+                } else {
+                    selectedNode = clickedNode;
+                }
+                drawGraph();
+            } else {
+                // Select or create node without creating an edge
+                if (clickedNode) {
+                    selectedNode = clickedNode;
+                    draggingNode = clickedNode; // Start dragging the node
+                } else {
+                    const newNode = { x: offsetX, y: offsetY, label: "" };
+                    nodes.push(newNode);
+                    selectedNode = newNode;
+                    draggingNode = newNode; // Start dragging the new node
+                }
+                drawGraph();
+            }
+        });
+
+        // Mouse move to update the position of the dragged node
+        canvas.addEventListener('mousemove', (event) => {
+            if (draggingNode) {
+                const { offsetX, offsetY } = event;
+                draggingNode.x = offsetX;
+                draggingNode.y = offsetY;
+                drawGraph();
+            }
+        });
+
+        // Stop dragging when the mouse is released
+        canvas.addEventListener('mouseup', () => {
+            draggingNode = null;
+        });
+
+        // Function to find if a node is clicked
+        function getNodeAtPosition(x, y) {
+            return nodes.find(node => Math.hypot(node.x - x, node.y - y) < 15);
+        }
+
+        // Function to find if an edge is clicked (approximate check)
+        function getEdgeAtPosition(x, y) {
+            return edges.find(({ from, to }) => {
+                const distance = Math.abs(
+                    ((to.y - from.y) * x - (to.x - from.x) * y + to.x * from.y - to.y * from.x) /
+                    Math.hypot(to.y - from.y, to.x - from.x)
+                );
+                return distance < 10; // Tolerance for clicking on the edge
+            });
+        }
+
+        // Draw the entire graph
+        function drawGraph() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw edges
+            edges.forEach(({ from, to, directed, label }) => {
+                drawEdge(from, to, directed, label);
+            });
+
+            // Draw nodes
+            nodes.forEach(node => {
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, 15, 0, 2 * Math.PI);
+                ctx.fillStyle = '#00FFAA';
+                ctx.fill();
+                ctx.strokeStyle = '#00FFAA';
+                ctx.stroke();
+
+                // Draw node label
+                if (node.label) {
+                    ctx.font = "12px Arial";
+                    ctx.fillStyle = '#000000';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(node.label, node.x, node.y);
+                }
+            });
+        }
+
+        // Draw edge with arrow or line based on directed/undirected, and add label if present
+        function drawEdge(from, to, directed, label) {
+            const angle = Math.atan2(to.y - from.y, to.x - from.x);
+            const offset = 15;
+
+            ctx.beginPath();
+            ctx.moveTo(from.x + offset * Math.cos(angle), from.y + offset * Math.sin(angle));
+            ctx.lineTo(to.x - offset * Math.cos(angle), to.y - offset * Math.sin(angle));
+            ctx.strokeStyle = '#00FFAA';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Draw arrow for directed edges
+            if (directed) {
+                ctx.beginPath();
+                const arrowSize = 10;
+                ctx.moveTo(
+                    to.x - offset * Math.cos(angle) - arrowSize * Math.cos(angle - Math.PI / 6),
+                    to.y - offset * Math.sin(angle) - arrowSize * Math.sin(angle - Math.PI / 6)
+                );
+                ctx.lineTo(to.x - offset * Math.cos(angle), to.y - offset * Math.sin(angle));
+                ctx.lineTo(
+                    to.x - offset * Math.cos(angle) - arrowSize * Math.cos(angle + Math.PI / 6),
+                    to.y - offset * Math.sin(angle) - arrowSize * Math.sin(angle + Math.PI / 6)
+                );
+                ctx.fillStyle = '#00FFAA';
+                ctx.fill();
+            }
+
+            // Draw edge label in white
+            if (label) {
+                const labelOffset = 10;
+                const labelX = (from.x + to.x) / 2 + labelOffset * Math.sin(angle);
+                const labelY = (from.y + to.y) / 2 - labelOffset * Math.cos(angle);
+                ctx.font = "12px Arial";
+                ctx.fillStyle = '#FFFFFF'; // White font color for edge labels
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(label, labelX, labelY);
+            }
+        }
+
+        // Clear canvas and reset nodes/edges
+        function clearCanvas() {
+            nodes = [];
+            edges = [];
+            selectedNode = null;
+            drawGraph();
+        }
+
+        // Initial drawing
+        drawGraph();
+    </script>
+</body>
+</html>
