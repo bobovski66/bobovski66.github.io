@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NUFORC Mapper Visualizations</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #1f1c2c, #928dab);
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      color: #f0f0f0;
+      text-align: center;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 50px auto;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 15px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+    p {
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+    }
+    select {
+      padding: 10px 15px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 5px;
+      background: #fff;
+      color: #333;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
+    select:hover {
+      transform: scale(1.05);
+    }
+    iframe {
+      width: 100%;
+      height: 800px;
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Explore UFO Sightings Mapper Visualizations</h1>
+    <p>Select a visualization option from the dropdown below and dive into the cosmic mysteries:</p>
+    <select id="visualizationSelect">
+      <option value="">-- Select a Visualization --</option>
+      <option value="NUFORC_Mapper_Geo_Lat.html">Latitude Clustering</option>
+      <option value="NUFORC_Mapper_Geo_Long.html">Longitude Clustering</option>
+      <option value="NUFORC_Mapper_Time.html">Temporal Clustering</option>
+      <option value="NUFORC_Mapper_Shape.html">UFO Shape Clustering</option>
+      <option value="NUFORC_Mapper.html">Combined Topological Analysis</option>
+    </select>
+    <iframe id="viewer" src="" title="Mapper Visualization"></iframe>
+  </div>
+  <script>
+    const selectElement = document.getElementById('visualizationSelect');
+    const viewer = document.getElementById('viewer');
+    selectElement.addEventListener('change', function() {
+      const selectedValue = this.value;
+      viewer.src = selectedValue || '';
+    });
+  </script>
+</body>
+</html>
