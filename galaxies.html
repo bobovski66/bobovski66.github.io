@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Animated Bubble Universe (JavaScript)</title>
+  <style>
+    body {
+      background: #000;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      color: #fff;
+      font-family: sans-serif;
+      flex-direction: column;
+    }
+    canvas {
+      border: 1px solid #333;
+      image-rendering: pixelated; /* keep 1×1 pixels sharp */
+    }
+    #controls {
+      margin-top: 12px;
+    }
+    button {
+      padding: 6px 14px;
+      background: #222;
+      border: 1px solid #555;
+      color: #eee;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #333;
+    }
+    p.info {
+      font-size: 0.8rem;
+      margin-top: 8px;
+      text-align: center;
+      max-width: 400px;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <h1>Animated Bubble Universe</h1>
+  <canvas id="canvas" width="640" height="480"></canvas>
+  <div id="controls">
+    <button id="toggleBtn">Play</button>
+  </div>
+  <p class="info">
+    Starting from a random seed, this “Bubble Universe” evolves in real time.  
+    Hit **Play** to watch a smoothly morphing, living swirl of color—hit **Pause** to freeze it.  
+    Adapted from the original QB64 demo by schraf on YouTube.
+  </p>
+
+  <script>
+    (function() {
+      const canvas = document.getElementById("canvas");
+      const ctx    = canvas.getContext("2d");
+      const W = canvas.width;   // 640
+      const H = canvas.height;  // 480
+
+      //--------------------------------------------------------------------------------
+      // 1) We’ll keep these constants (almost exactly like QB64 did):
+      const pi = Math.PI;         // Math.PI === 3.141592653589...
+      const r  = (2 * pi) / 235;  // same as “2 * pi / 235” in BASIC
+      let t    = 4 * Math.random(); // initial random seed (0 ≤ t < 4)
+      //    (In QB64: “t = 4 * RND”, which is 4·(0..1).)
+      //--------------------------------------------------------------------------------
+
+      // 2) u, v, x act as our internal state for each (i,j) iteration:
+      let u = 0, v = 0, x = 0;
+
+      // 3) Animation control:
+      let isPlaying = false;
+      let animationId = null;
+
+      // 4) How fast does “t” march forward?  Experiment with dt = 0.01 → 0.05 etc.
+      const dt = 0.02;
+
+      //--------------------------------------------------------------------------------
+      // drawBubbleUniverse(current_t):
+      //   Exactly mirrors the BASIC code’s double “FOR i=0 TO 249 / FOR j=0 TO 249” loops.
+      //   Each time we re‐draw EVERYTHING from scratch, using the given “t” parameter.
+      //--------------------------------------------------------------------------------
+      function drawBubbleUniverse(currentT) {
+        // Clear entire canvas to black:
+        ctx.fillStyle = "#000";
+        ctx.fillRect(0, 0, W, H);
+
+        // Reset u, v, x before the nested loops:
+        u = 0;
+        v = 0;
+        x = 0;
+
+        // Now perform exactly 250 × 250 steps:
+        for (let i = 0; i <= 249; i++) {
+          for (let j = 0; j <= 249; j++) {
+            //  u = SIN(i + v) + SIN(r * i + x)
+            u = Math.sin(i + v) + Math.sin(r * i + x);
+
+            //  v = COS(i + v) + COS(r * i + x)
+            v = Math.cos(i + v) + Math.cos(r * i + x);
+
+            //  x = u + t
+            x = u + currentT;
+
+            // Compute pixel position on a 640×480 grid:
+            const px = Math.floor(320 + 108 * u);
+            const py = Math.floor(240 + 108 * v);
+
+            if (px >= 0 && px < W && py >= 0 && py < H) {
+              // rr = (i * 3) % 256
+              const rr = (i * 3) & 0xff;
+
+              // gg = (j * 3) % 256
+              const gg = (j * 3) & 0xff;
+
+              // bb = (255 - ((i + j) \ 2)) % 256
+              // In BASIC, “\” is integer‐divide, so (i+j)\2 = floor((i+j)/2)
+              const halfIJ = Math.floor((i + j) / 2);
+              let bb = 255 - halfIJ;
+              bb = bb & 0xff; // mod 256
+
+              // Draw a single 1×1 pixel:
+              ctx.fillStyle = `rgb(${rr}, ${gg}, ${bb})`;
+              ctx.fillRect(px, py, 1, 1);
+            }
+          }
+        }
+      }
+
+      //--------------------------------------------------------------------------------
+      // loop():  Called on every animation frame while isPlaying === true.
+      //   • Clear → draw with current “t” → increment t by dt → schedule the next frame.
+      //--------------------------------------------------------------------------------
+      function loop() {
+        drawBubbleUniverse(t);
+        t += dt;
+        animationId = requestAnimationFrame(loop);
+      }
+
+      //--------------------------------------------------------------------------------
+      // play() / pause():  Toggle the animation on/off
+      //--------------------------------------------------------------------------------
+      function play() {
+        if (!isPlaying) {
+          isPlaying = true;
+          document.getElementById("toggleBtn").textContent = "Pause";
+          // Kick off the very first frame:
+          animationId = requestAnimationFrame(loop);
+        }
+      }
+
+      function pause() {
+        if (isPlaying) {
+          isPlaying = false;
+          document.getElementById("toggleBtn").textContent = "Play";
+          cancelAnimationFrame(animationId);
+          animationId = null;
+        }
+      }
+
+      //--------------------------------------------------------------------------------
+      // Wire the Play/Pause button:
+      //--------------------------------------------------------------------------------
+      const btn = document.getElementById("toggleBtn");
+      btn.addEventListener("click", () => {
+        if (isPlaying) {
+          pause();
+        } else {
+          // Every time we start, let’s pick a fresh random “t” if you want:
+          // (If you prefer continuing from the old t, remove that line.)
+          t = 4 * Math.random();
+          play();
+        }
+      });
+
+      //--------------------------------------------------------------------------------
+      // Initial draw (paused) so the user sees something right away:
+      //--------------------------------------------------------------------------------
+      drawBubbleUniverse(t);
+    })();
+  </script>
+</body>
+</html>
