@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Z<sub>m</sub> &times; Z<sub>n</sub> Torus Explorer</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: #f0f0f0;
+    }
+    canvas {
+      background: white;
+      border: 1px solid #ccc;
+      margin-top: 20px;
+    }
+    label, select, input {
+      margin: 0.5em;
+    }
+    .generator-group {
+      margin-bottom: 0.5em;
+    }
+    .legend {
+      margin-top: 1em;
+      font-size: 14px;
+    }
+    .legend span {
+      display: inline-block;
+      margin-right: 1em;
+    }
+    .legend-color {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      margin-right: 0.3em;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+  <h1>Z<sub>m</sub> &times; Z<sub>n</sub> Torus Motion</h1>
+
+  <div>
+    <label for="m">m (Z<sub>m</sub>):</label>
+    <input type="number" id="m" value="3" min="1" onchange="updateDimensions()" />
+
+    <label for="n">n (Z<sub>n</sub>):</label>
+    <input type="number" id="n" value="4" min="1" onchange="updateDimensions()" />
+  </div>
+
+  <div id="generators"></div>
+  <button onclick="drawPath()">Draw Generator Paths</button>
+  <button onclick="addGenerator()">Add Generator</button>
+
+  <canvas id="torusCanvas" width="600" height="600"></canvas>
+
+  <div class="legend">
+    <span><span class="legend-color" style="background: gold;"></span>Generated subgroup</span>
+    <span><span class="legend-color" style="background: black;"></span>Intersection of generators</span>
+    <span><span class="legend-color" style="background: red;"></span>Generator 1 path</span>
+    <span><span class="legend-color" style="background: blue;"></span>Generator 2 path</span>
+    <span><span class="legend-color" style="background: green;"></span>Generator 3 path</span>
+    <span><span class="legend-color" style="background: purple;"></span>Generator 4 path</span>
+  </div>
+
+  <script>
+    const canvas = document.getElementById("torusCanvas");
+    const ctx = canvas.getContext("2d");
+    const generatorContainer = document.getElementById("generators");
+    let m = parseInt(document.getElementById("m").value);
+    let n = parseInt(document.getElementById("n").value);
+    let cellSize = 80;
+    let generatorCount = 0;
+    const colors = ["red", "blue", "green", "purple", "orange", "brown"];
+
+    function updateDimensions() {
+      m = parseInt(document.getElementById("m").value);
+      n = parseInt(document.getElementById("n").value);
+      resizeCanvas();
+      drawGrid();
+      updateGeneratorRanges();
+    }
+
+    function resizeCanvas() {
+      canvas.width = m * cellSize;
+      canvas.height = n * cellSize;
+    }
+
+    function addGenerator(dx = 1, dy = 1) {
+      const idx = generatorCount++;
+      const div = document.createElement("div");
+      div.className = "generator-group";
+      div.innerHTML = `
+        <label>Generator ${idx + 1} dx:</label>
+        <input type="number" class="dx" value="${dx}" min="0" max="${m - 1}" />
+        <label>dy:</label>
+        <input type="number" class="dy" value="${dy}" min="0" max="${n - 1}" />
+        <span class="order-display"></span>
+      `;
+      generatorContainer.appendChild(div);
+    }
+
+    function updateGeneratorRanges() {
+      const dxInputs = document.querySelectorAll(".dx");
+      const dyInputs = document.querySelectorAll(".dy");
+      dxInputs.forEach(input => input.max = m - 1);
+      dyInputs.forEach(input => input.max = n - 1);
+    }
+
+    function drawGrid() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = "#aaa";
+
+      for (let i = 0; i <= m; i++) {
+        ctx.beginPath();
+        ctx.moveTo(i * cellSize, 0);
+        ctx.lineTo(i * cellSize, n * cellSize);
+        ctx.stroke();
+      }
+      for (let j = 0; j <= n; j++) {
+        ctx.beginPath();
+        ctx.moveTo(0, j * cellSize);
+        ctx.lineTo(m * cellSize, j * cellSize);
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = "black";
+      ctx.font = "14px sans-serif";
+      for (let i = 0; i < m; i++) {
+        for (let j = 0; j < n; j++) {
+          ctx.fillText(`(${i},${j})`, i * cellSize + 10, j * cellSize + 20);
+        }
+      }
+    }
+
+    function drawPath() {
+      drawGrid();
+      const dxList = [...document.querySelectorAll(".dx")].map(e => parseInt(e.value));
+      const dyList = [...document.querySelectorAll(".dy")].map(e => parseInt(e.value));
+      const orderDisplays = [...document.querySelectorAll(".order-display")];
+
+      const pointMap = new Map();
+      const subgroupPoints = new Set();
+      const queue = [[0, 0]];
+      const seen = new Set(["0,0"]);
+
+      while (queue.length) {
+        const [x, y] = queue.shift();
+        subgroupPoints.add(`${x},${y}`);
+        for (let i = 0; i < dxList.length; i++) {
+          const nx = (x + dxList[i]) % m;
+          const ny = (y + dyList[i]) % n;
+          const key = `${nx},${ny}`;
+          if (!seen.has(key)) {
+            seen.add(key);
+            queue.push([nx, ny]);
+          }
+        }
+      }
+
+      dxList.forEach((dx, index) => {
+        const dy = dyList[index];
+        let x = 0, y = 0;
+        const color = colors[index % colors.length];
+
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(x * cellSize + cellSize / 2, y * cellSize + cellSize / 2);
+
+        const visited = new Set();
+        let order = 0;
+
+        while (true) {
+          const key = `${x},${y}`;
+          const prior = pointMap.get(key) || new Set();
+          prior.add(index);
+          pointMap.set(key, prior);
+          if (visited.has(key)) break;
+          visited.add(key);
+          order++;
+
+          x = (x + dx) % m;
+          y = (y + dy) % n;
+
+          ctx.lineTo(x * cellSize + cellSize / 2, y * cellSize + cellSize / 2);
+        }
+
+        ctx.stroke();
+        if (orderDisplays[index]) {
+          orderDisplays[index].textContent = ` (order: ${order})`;
+        }
+      });
+
+      for (const [key, indices] of pointMap.entries()) {
+        if (indices.size > 1) {
+          const [x, y] = key.split(",").map(Number);
+          ctx.beginPath();
+          ctx.arc(x * cellSize + cellSize / 2, y * cellSize + cellSize / 2, 6, 0, 2 * Math.PI);
+          ctx.fillStyle = "black";
+          ctx.fill();
+        }
+      }
+
+      for (const key of subgroupPoints) {
+        const [x, y] = key.split(",").map(Number);
+        ctx.beginPath();
+        ctx.arc(x * cellSize + cellSize / 2, y * cellSize + cellSize / 2, 4, 0, 2 * Math.PI);
+        ctx.fillStyle = "gold";
+        ctx.fill();
+      }
+    }
+
+    resizeCanvas();
+    drawGrid();
+    addGenerator();
+  </script>
+</body>
+</html>
