@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar System Simulator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+            font-family: 'Arial', sans-serif;
+            color: white;
+            overflow: hidden;
+        }
+
+        #container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #canvas {
+            background: radial-gradient(ellipse at center, #001122 0%, #000000 100%);
+            cursor: crosshair;
+        }
+
+        #controls {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #00ffff;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+            min-width: 280px;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #00ffff;
+            font-size: 14px;
+        }
+
+        select, input, button {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #333;
+            background: #1a1a1a;
+            color: white;
+            border-radius: 5px;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #00ffff;
+            box-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+        }
+
+        button {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px 0;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        .body-type {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .body-type button {
+            flex: 1;
+            min-width: 60px;
+            padding: 10px 5px;
+            font-size: 12px;
+        }
+
+        .sun-btn { background: linear-gradient(45deg, #ff9500, #ffb347) !important; }
+        .planet-btn { background: linear-gradient(45deg, #4a90e2, #7bb3f0) !important; }
+        .moon-btn { background: linear-gradient(45deg, #95a5a6, #bdc3c7) !important; }
+        .asteroid-btn { background: linear-gradient(45deg, #8b4513, #cd853f) !important; }
+
+        #info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #ff6b6b;
+            max-width: 250px;
+        }
+
+        #instructions {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        .trail {
+            opacity: 0.6;
+        }
+
+        #stats {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <canvas id="canvas"></canvas>
+        
+        <div id="controls">
+            <h3 style="color: #00ffff; margin-bottom: 15px;">🌌 Solar System Builder</h3>
+            
+            <div class="control-group">
+                <label>Body Type:</label>
+                <div class="body-type">
+                    <button class="sun-btn" onclick="setBodyType('sun')">☀️ Sun</button>
+                    <button class="planet-btn" onclick="setBodyType('planet')">🪐 Planet</button>
+                    <button class="moon-btn" onclick="setBodyType('moon')">🌙 Moon</button>
+                    <button class="asteroid-btn" onclick="setBodyType('asteroid')">☄️ Asteroid</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>Mass:</label>
+                <input type="range" id="massSlider" min="1" max="100" value="10">
+                <span id="massValue">10</span>
+            </div>
+
+            <div class="control-group">
+                <label>Initial Velocity:</label>
+                <input type="range" id="velocitySlider" min="0" max="50" value="10">
+                <span id="velocityValue">10</span>
+            </div>
+
+            <div class="control-group">
+                <label>Simulation Speed:</label>
+                <input type="range" id="speedSlider" min="1" max="20" value="10">
+                <span id="speedValue">1.0x</span>
+            </div>
+
+            <div class="control-group">
+                <button onclick="togglePause()">⏸️ Pause/Resume</button>
+                <button onclick="clearSystem()">🗑️ Clear All</button>
+                <button onclick="addRandomSystem()">🎲 Random System</button>
+            </div>
+        </div>
+
+        <div id="info">
+            <h4>🎯 Selected: <span id="selectedType">Sun</span></h4>
+            <p>Click anywhere to place a celestial body!</p>
+            <p><strong>Tip:</strong> Place a sun first, then add planets around it for realistic orbits.</p>
+        </div>
+
+        <div id="instructions">
+            <strong>Controls:</strong><br>
+            • Click to place bodies<br>
+            • Drag to set initial velocity<br>
+            • Right-click to delete bodies<br>
+            • Mouse wheel to zoom
+        </div>
+
+        <div id="stats">
+            <div>Bodies: <span id="bodyCount">0</span></div>
+            <div>Total Energy: <span id="totalEnergy">0</span></div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Set canvas size
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        // Game state
+        let bodies = [];
+        let selectedBodyType = 'sun';
+        let isPaused = false;
+        let simulationSpeed = 1.0;
+        let camera = { x: 0, y: 0, zoom: 1 };
+        let isMouseDown = false;
+        let mouseStart = { x: 0, y: 0 };
+        let isDragging = false;
+        let dragStart = { x: 0, y: 0 };
+        let cameraStart = { x: 0, y: 0 };
+        let stars = [];
+        
+        // Physics constants
+        const G = 0.1; // Gravitational constant (scaled for simulation)
+        const MAX_TRAIL_LENGTH = 50;
+        
+        // Initialize stars
+        function initStars() {
+            for (let i = 0; i < 200; i++) {
+                stars.push({
+                    x: Math.random() * canvas.width * 2,
+                    y: Math.random() * canvas.height * 2,
+                    size: Math.random() * 2 + 0.5,
+                    opacity: Math.random() * 0.8 + 0.2
+                });
+            }
+        }
+        
+        // Celestial body class
+        class CelestialBody {
+            constructor(x, y, mass, type, vx = 0, vy = 0) {
+                this.x = x;
+                this.y = y;
+                this.vx = vx;
+                this.vy = vy;
+                this.mass = mass;
+                this.type = type;
+                this.trail = [];
+                this.color = this.getColor();
+                this.radius = this.getRadius();
+                this.fixed = type === 'sun' && mass > 50; // Massive suns stay fixed
+            }
+            
+            getColor() {
+                switch (this.type) {
+                    case 'sun': return `hsl(${45 + Math.random() * 30}, 100%, ${60 + Math.random() * 20}%)`;
+                    case 'planet': return `hsl(${Math.random() * 360}, 70%, 50%)`;
+                    case 'moon': return `hsl(0, 0%, ${60 + Math.random() * 30}%)`;
+                    case 'asteroid': return `hsl(${20 + Math.random() * 40}, 60%, 40%)`;
+                    default: return '#ffffff';
+                }
+            }
+            
+            getRadius() {
+                const baseRadius = Math.sqrt(this.mass) * 2;
+                switch (this.type) {
+                    case 'sun': return Math.max(baseRadius * 1.5, 15);
+                    case 'planet': return Math.max(baseRadius, 8);
+                    case 'moon': return Math.max(baseRadius * 0.7, 4);
+                    case 'asteroid': return Math.max(baseRadius * 0.5, 2);
+                    default: return baseRadius;
+                }
+            }
+            
+            update() {
+                if (this.fixed) return;
+                
+                // Add current position to trail
+                this.trail.push({ x: this.x, y: this.y });
+                if (this.trail.length > MAX_TRAIL_LENGTH) {
+                    this.trail.shift();
+                }
+                
+                // Update position
+                this.x += this.vx * simulationSpeed;
+                this.y += this.vy * simulationSpeed;
+            }
+            
+            applyGravity(other) {
+                if (this === other || this.fixed) return;
+                
+                const dx = other.x - this.x;
+                const dy = other.y - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < this.radius + other.radius) {
+                    // Collision - merge bodies
+                    if (other.mass > this.mass) {
+                        other.mass += this.mass;
+                        other.radius = other.getRadius();
+                        return 'merge';
+                    }
+                } else if (distance > 0) {
+                    const force = G * this.mass * other.mass / (distance * distance);
+                    const ax = (force * dx / distance) / this.mass;
+                    const ay = (force * dy / distance) / this.mass;
+                    
+                    this.vx += ax * simulationSpeed;
+                    this.vy += ay * simulationSpeed;
+                }
+                return null;
+            }
+            
+            draw() {
+                const screenX = this.x * camera.zoom + camera.x;
+                const screenY = this.y * camera.zoom + camera.y;
+                const screenRadius = this.radius * camera.zoom;
+                
+                // Draw trail
+                if (this.trail.length > 1) {
+                    const hslMatch = this.color.match(/hsl\((\d+(?:\.\d+)?),\s*(\d+(?:\.\d+)?)%,\s*(\d+(?:\.\d+)?)%\)/);
+                    if (hslMatch) {
+                        const h = parseFloat(hslMatch[1]);
+                        const s = parseFloat(hslMatch[2]);
+                        const l = parseFloat(hslMatch[3]);
+                        ctx.strokeStyle = `hsla(${h}, ${s}%, ${l}%, 0.25)`;
+                    } else {
+                        ctx.strokeStyle = this.color;
+                    }
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    for (let i = 0; i < this.trail.length; i++) {
+                        const trailX = this.trail[i].x * camera.zoom + camera.x;
+                        const trailY = this.trail[i].y * camera.zoom + camera.y;
+                        if (i === 0) {
+                            ctx.moveTo(trailX, trailY);
+                        } else {
+                            ctx.lineTo(trailX, trailY);
+                        }
+                    }
+                    ctx.stroke();
+                }
+                
+                // Draw body
+                ctx.save();
+                
+                // Glow effect for suns
+                if (this.type === 'sun') {
+                    const gradient = ctx.createRadialGradient(screenX, screenY, 0, screenX, screenY, screenRadius * 2);
+                    gradient.addColorStop(0, this.color);
+                    
+                    // Convert HSL to rgba for transparency
+                    const hslMatch = this.color.match(/hsl\((\d+(?:\.\d+)?),\s*(\d+(?:\.\d+)?)%,\s*(\d+(?:\.\d+)?)%\)/);
+                    if (hslMatch) {
+                        const h = parseFloat(hslMatch[1]);
+                        const s = parseFloat(hslMatch[2]);
+                        const l = parseFloat(hslMatch[3]);
+                        gradient.addColorStop(0.7, `hsla(${h}, ${s}%, ${l}%, 0.5)`);
+                        gradient.addColorStop(1, `hsla(${h}, ${s}%, ${l}%, 0)`);
+                    } else {
+                        gradient.addColorStop(0.7, this.color);
+                        gradient.addColorStop(1, 'transparent');
+                    }
+                    
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(screenX - screenRadius * 2, screenY - screenRadius * 2, screenRadius * 4, screenRadius * 4);
+                }
+                
+                // Main body
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(screenX, screenY, screenRadius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Add some detail based on type
+                if (this.type === 'planet' && screenRadius > 10) {
+                    const hslMatch = this.color.match(/hsl\((\d+(?:\.\d+)?),\s*(\d+(?:\.\d+)?)%,\s*(\d+(?:\.\d+)?)%\)/);
+                    if (hslMatch) {
+                        const h = parseFloat(hslMatch[1]);
+                        const s = parseFloat(hslMatch[2]);
+                        const l = parseFloat(hslMatch[3]);
+                        ctx.fillStyle = `hsla(${h}, ${s}%, ${l}%, 0.8)`;
+                    } else {
+                        ctx.fillStyle = this.color;
+                    }
+                    ctx.beginPath();
+                    ctx.arc(screenX - screenRadius * 0.3, screenY - screenRadius * 0.3, screenRadius * 0.6, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                
+                ctx.restore();
+            }
+        }
+        
+        // UI Functions
+        function setBodyType(type) {
+            selectedBodyType = type;
+            document.getElementById('selectedType').textContent = type.charAt(0).toUpperCase() + type.slice(1);
+            
+            // Set appropriate default mass
+            const massSlider = document.getElementById('massSlider');
+            switch (type) {
+                case 'sun': massSlider.value = 80; break;
+                case 'planet': massSlider.value = 20; break;
+                case 'moon': massSlider.value = 5; break;
+                case 'asteroid': massSlider.value = 2; break;
+            }
+            updateSliders();
+        }
+        
+        function updateSliders() {
+            const mass = document.getElementById('massSlider').value;
+            const velocity = document.getElementById('velocitySlider').value;
+            const speed = document.getElementById('speedSlider').value;
+            
+            document.getElementById('massValue').textContent = mass;
+            document.getElementById('velocityValue').textContent = velocity;
+            document.getElementById('speedValue').textContent = (speed / 10).toFixed(1) + 'x';
+            
+            simulationSpeed = speed / 10;
+        }
+        
+        function togglePause() {
+            isPaused = !isPaused;
+        }
+        
+        function clearSystem() {
+            bodies = [];
+        }
+        
+        function addRandomSystem() {
+            bodies = [];
+            
+            // Add central sun
+            bodies.push(new CelestialBody(canvas.width / 2, canvas.height / 2, 100, 'sun'));
+            
+            // Add planets
+            for (let i = 0; i < 3 + Math.random() * 4; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 150 + i * 100 + Math.random() * 50;
+                const x = canvas.width / 2 + Math.cos(angle) * distance;
+                const y = canvas.height / 2 + Math.sin(angle) * distance;
+                
+                // Calculate orbital velocity
+                const orbitalSpeed = Math.sqrt(G * 100 / distance) * 0.8;
+                const vx = -Math.sin(angle) * orbitalSpeed;
+                const vy = Math.cos(angle) * orbitalSpeed;
+                
+                const mass = 10 + Math.random() * 30;
+                bodies.push(new CelestialBody(x, y, mass, 'planet', vx, vy));
+                
+                // Sometimes add a moon
+                if (Math.random() < 0.4) {
+                    const moonAngle = Math.random() * Math.PI * 2;
+                    const moonDist = 30 + Math.random() * 20;
+                    const moonX = x + Math.cos(moonAngle) * moonDist;
+                    const moonY = y + Math.sin(moonAngle) * moonDist;
+                    
+                    const moonOrbitalSpeed = Math.sqrt(G * mass / moonDist) * 0.8;
+                    const moonVx = vx - Math.sin(moonAngle) * moonOrbitalSpeed;
+                    const moonVy = vy + Math.cos(moonAngle) * moonOrbitalSpeed;
+                    
+                    bodies.push(new CelestialBody(moonX, moonY, 2 + Math.random() * 5, 'moon', moonVx, moonVy));
+                }
+            }
+            
+            // Add some asteroids
+            for (let i = 0; i < 5 + Math.random() * 10; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 50 + Math.random() * 400;
+                const x = canvas.width / 2 + Math.cos(angle) * distance;
+                const y = canvas.height / 2 + Math.sin(angle) * distance;
+                
+                const vx = (Math.random() - 0.5) * 20;
+                const vy = (Math.random() - 0.5) * 20;
+                
+                bodies.push(new CelestialBody(x, y, 1 + Math.random() * 3, 'asteroid', vx, vy));
+            }
+        }
+        
+        // Mouse handling
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            if (e.button === 0) { // Left click
+                if (e.shiftKey) {
+                    // Shift + drag to pan view
+                    isDragging = true;
+                    dragStart.x = e.clientX;
+                    dragStart.y = e.clientY;
+                    cameraStart.x = camera.x;
+                    cameraStart.y = camera.y;
+                    canvas.style.cursor = 'grabbing';
+                } else {
+                    // Normal click to place body
+                    isMouseDown = true;
+                    mouseStart.x = e.clientX - rect.left;
+                    mouseStart.y = e.clientY - rect.top;
+                }
+            } else if (e.button === 2) { // Right click
+                // Delete nearby body
+                const mouseX = ((e.clientX - rect.left) - camera.x) / camera.zoom;
+                const mouseY = ((e.clientY - rect.top) - camera.y) / camera.zoom;
+                
+                bodies = bodies.filter(body => {
+                    const dx = body.x - mouseX;
+                    const dy = body.y - mouseY;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    return distance > body.radius;
+                });
+            } else if (e.button === 1) { // Middle click
+                // Middle click to pan view
+                isDragging = true;
+                dragStart.x = e.clientX;
+                dragStart.y = e.clientY;
+                cameraStart.x = camera.x;
+                cameraStart.y = camera.y;
+                canvas.style.cursor = 'grabbing';
+                e.preventDefault();
+            }
+        });
+        
+        canvas.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                // Pan the view
+                const deltaX = e.clientX - dragStart.x;
+                const deltaY = e.clientY - dragStart.y;
+                
+                camera.x = cameraStart.x + deltaX;
+                camera.y = cameraStart.y + deltaY;
+            }
+        });
+        
+        canvas.addEventListener('mouseup', (e) => {
+            if (e.button === 0) {
+                if (isDragging) {
+                    // End drag
+                    isDragging = false;
+                    canvas.style.cursor = 'crosshair';
+                } else if (isMouseDown) {
+                    // Place body
+                    try {
+                        const rect = canvas.getBoundingClientRect();
+                        const mouseX = ((mouseStart.x) - camera.x) / camera.zoom;
+                        const mouseY = ((mouseStart.y) - camera.y) / camera.zoom;
+                        
+                        const deltaX = (e.clientX - rect.left) - mouseStart.x;
+                        const deltaY = (e.clientY - rect.top) - mouseStart.y;
+                        
+                        const vx = deltaX * 0.1;
+                        const vy = deltaY * 0.1;
+                        
+                        const mass = parseInt(document.getElementById('massSlider').value) || 10;
+                        const newBody = new CelestialBody(mouseX, mouseY, mass, selectedBodyType, vx, vy);
+                        bodies.push(newBody);
+                    } catch (error) {
+                        console.error('Error placing body:', error);
+                    }
+                    
+                    isMouseDown = false;
+                }
+            } else if (e.button === 1) { // Middle click
+                isDragging = false;
+                canvas.style.cursor = 'crosshair';
+            }
+        });
+        
+        canvas.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        });
+        
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+            camera.zoom *= zoomFactor;
+            camera.zoom = Math.max(0.1, Math.min(camera.zoom, 3));
+        });
+        
+        // Update stats
+        function updateStats() {
+            document.getElementById('bodyCount').textContent = bodies.length;
+            
+            let totalEnergy = 0;
+            bodies.forEach(body => {
+                const kineticEnergy = 0.5 * body.mass * (body.vx * body.vx + body.vy * body.vy);
+                totalEnergy += kineticEnergy;
+            });
+            document.getElementById('totalEnergy').textContent = Math.round(totalEnergy);
+        }
+        
+        // Draw stars
+        function drawStars() {
+            stars.forEach(star => {
+                const screenX = star.x * camera.zoom + camera.x;
+                const screenY = star.y * camera.zoom + camera.y;
+                
+                if (screenX > -10 && screenX < canvas.width + 10 && 
+                    screenY > -10 && screenY < canvas.height + 10) {
+                    ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
+                    ctx.fillRect(screenX, screenY, star.size, star.size);
+                }
+            });
+        }
+        
+        // Main game loop
+        function gameLoop() {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw stars
+            drawStars();
+            
+            if (!isPaused) {
+                // Update physics
+                for (let i = bodies.length - 1; i >= 0; i--) {
+                    const body = bodies[i];
+                    
+                    // Apply gravity from all other bodies
+                    for (let j = 0; j < bodies.length; j++) {
+                        if (i !== j) {
+                            const result = body.applyGravity(bodies[j]);
+                            if (result === 'merge') {
+                                bodies.splice(i, 1);
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                // Update positions
+                bodies.forEach(body => body.update());
+            }
+            
+            // Draw all bodies
+            bodies.forEach(body => body.draw());
+            
+            // Update stats
+            updateStats();
+            
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // Event listeners
+        document.getElementById('massSlider').addEventListener('input', updateSliders);
+        document.getElementById('velocitySlider').addEventListener('input', updateSliders);
+        document.getElementById('speedSlider').addEventListener('input', updateSliders);
+        
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+        
+        // Initialize
+        initStars();
+        updateSliders();
+        setBodyType('sun');
+        gameLoop();
+    </script>
+</body>
+</html>
