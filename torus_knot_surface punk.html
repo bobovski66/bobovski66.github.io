@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>(p,q) Torus Knot and Surface Visualizer</title>
+  <script src="https://cdn.plot.ly/plotly-2.27.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+  <style>
+    body {
+      background: #1b1b1b;
+      font-family: "Courier New", Courier, monospace;
+      color: #d9c79f;
+      padding: 20px;
+    }
+    h2 {
+      text-align: center;
+      color: #ffcc00;
+      text-shadow: 1px 1px 2px #000;
+    }
+    label, select, button {
+      font-size: 16px;
+      margin: 5px;
+      background-color: #333;
+      color: #d9c79f;
+      border: 1px solid #888;
+      border-radius: 4px;
+      padding: 5px 10px;
+    }
+    button:hover {
+      background-color: #444;
+      cursor: pointer;
+    }
+    #knot, #surface {
+      border: 2px solid #444;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ffcc00;
+    }
+  </style>
+</head>
+<body>
+  <h2>⛓️ Torus Knot and Holomorphic Surface Generator ⚙️</h2>
+  <label for="p">p:</label>
+  <select id="p"></select>
+  <label for="q">q:</label>
+  <select id="q"></select>
+  <button onclick="updatePlots()">Update</button>
+  <div id="knot" style="width:45%; height:500px; display:inline-block;"></div>
+  <div id="surface" style="width:45%; height:500px; display:inline-block;"></div>
+
+  <script>
+    const pSelect = document.getElementById('p');
+    const qSelect = document.getElementById('q');
+
+    function gcd(a, b) {
+      return b ? gcd(b, a % b) : a;
+    }
+
+    for (let i = 2; i <= 10; i++) {
+      const optionP = document.createElement('option');
+      optionP.value = i;
+      optionP.text = i;
+      pSelect.appendChild(optionP);
+
+      const optionQ = document.createElement('option');
+      optionQ.value = i;
+      optionQ.text = i;
+      qSelect.appendChild(optionQ);
+    }
+    pSelect.value = 2;
+    qSelect.value = 3;
+
+    function computeKnot(p, q) {
+      const theta = Array.from({ length: 1000 }, (_, i) => 2 * Math.PI * i / 1000);
+      const x = theta.map(t => Math.cos(p * t));
+      const y = theta.map(t => Math.sin(p * t));
+      const z = theta.map(t => Math.cos(q * t));
+      return { x, y, z };
+    }
+
+    function computeSurface(p, q) {
+      const res = 80;
+      const r = [], theta = [];
+      for (let i = 0; i < res; i++) {
+        r.push(i / (res - 1));
+        theta.push(2 * Math.PI * i / (res - 1));
+      }
+      const x = [], y = [], z = [];
+      for (let i = 0; i < theta.length; i++) {
+        const rowX = [], rowY = [], rowZ = [];
+        for (let j = 0; j < r.length; j++) {
+          const real = r[j] * Math.cos(theta[i]);
+          const imag = r[j] * Math.sin(theta[i]);
+          const zval = math.complex(real, imag);
+          const zPowP = math.pow(zval, p);
+          const zPowQ = math.pow(zval, q);
+          rowX.push(zPowP.re);
+          rowY.push(zPowP.im);
+          rowZ.push(zPowQ.re);
+        }
+        x.push(rowX);
+        y.push(rowY);
+        z.push(rowZ);
+      }
+      return { x, y, z };
+    }
+
+    function updatePlots() {
+      const p = parseInt(pSelect.value);
+      const q = parseInt(qSelect.value);
+      if (gcd(p, q) !== 1) {
+        alert("p and q must be relatively prime.");
+        return;
+      }
+
+      const knot = computeKnot(p, q);
+      Plotly.newPlot('knot', [{
+        type: 'scatter3d',
+        mode: 'lines',
+        x: knot.x,
+        y: knot.y,
+        z: knot.z,
+        line: { color: '#ffcc00', width: 4 }
+      }], {
+        paper_bgcolor: '#1b1b1b',
+        scene: { 
+          xaxis: { color: '#d9c79f' },
+          yaxis: { color: '#d9c79f' },
+          zaxis: { color: '#d9c79f' }
+        },
+        title: `Torus Knot (p=${p}, q=${q})`,
+        font: { color: '#ffcc00' },
+        margin: { t: 30 }
+      });
+
+      const surface = computeSurface(p, q);
+      Plotly.newPlot('surface', [{
+        type: 'surface',
+        x: surface.x,
+        y: surface.y,
+        z: surface.z,
+        colorscale: 'YlGnBu',
+        showscale: false
+      }], {
+        paper_bgcolor: '#1b1b1b',
+        scene: { 
+          xaxis: { color: '#d9c79f' },
+          yaxis: { color: '#d9c79f' },
+          zaxis: { color: '#d9c79f' }
+        },
+        title: `Surface z ↦ (z^${p}, z^${q})`,
+        font: { color: '#ffcc00' },
+        margin: { t: 30 }
+      });
+    }
+
+    updatePlots();
+  </script>
+</body>
+</html>
