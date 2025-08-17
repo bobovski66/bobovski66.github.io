@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Torus Knot — Softmax 3D + Parameter Strip</title>
+  <style>
+    :root{ --bg:#0b0f14; --fg:#e6edf3; --muted:#9aa5b1; --panel:#111826; }
+    *{ box-sizing:border-box }
+    body{ margin:0; background:var(--bg); color:var(--fg); font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Helvetica,Arial }
+    header{ padding:12px 16px; background:var(--panel); box-shadow:0 1px 0 rgba(255,255,255,.06) inset }
+    header h1{ margin:0; font-size:18px; font-weight:600 }
+    header p{ margin:2px 0 0; color:var(--muted); font-size:12px }
+    .controls{ display:flex; flex-wrap:wrap; gap:16px; padding:10px 16px; background:#0e1520; border-top:1px solid rgba(255,255,255,.06); border-bottom:1px solid rgba(255,255,255,.06) }
+    .control{ display:grid; gap:6px }
+    .control label{ font-size:12px; color:var(--muted) }
+    input[type="number"], input[type="range"], select, button, input[type="color"]{ appearance:none; background:var(--panel); color:var(--fg); border:1px solid rgba(255,255,255,.1); border-radius:10px; padding:8px 10px }
+    input[type="range"]{ height:8px; padding:0 }
+    .spacer{ flex:1 }
+
+    #main{ height:calc(100vh - 168px); display:grid; grid-template-columns: 1.2fr 0.8fr; gap:8px; padding:8px }
+    .pane{ position:relative; background: radial-gradient(1200px 800px at 30% -10%, #141b29, #0b0f14 60%); border:1px solid rgba(255,255,255,.06); border-radius:10px; overflow:hidden }
+    canvas{ display:block; width:100%; height:100% }
+    .hint{ position:absolute; bottom:8px; left:10px; color:#c0cad5; font-size:12px; opacity:.85 }
+    .pane h3{ position:absolute; top:8px; left:12px; margin:0; font-size:12px; color:#a9b4c2; font-weight:600; letter-spacing:.4px }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Torus Knot — Softmax 3D + Parameter Strip</h1>
+    <p>Bold (p,q) torus knot on a softmax torus (left), with its parameter-strip trace (θ,u) (right). Temperature τ rescales the grid and the vertical scale of u; the 3D knot itself is invariant.</p>
+  </header>
+
+  <div class="controls">
+    <div class="control">
+      <label for="p">p (major wraps)</label>
+      <input id="p" type="number" min="1" max="48" step="1" value="2" />
+    </div>
+    <div class="control">
+      <label for="q">q (minor wraps)</label>
+      <input id="q" type="number" min="1" max="48" step="1" value="3" />
+    </div>
+    <div class="control">
+      <label for="tau">temperature τ: <span id="tauLbl">1.00</span></label>
+      <input id="tau" type="range" min="0.10" max="3.00" step="0.01" value="1.00" />
+    </div>
+    <div class="control">
+      <label for="gridMode">grid</label>
+      <select id="gridMode">
+        <option value="off">off</option>
+        <option value="few">few lines</option>
+        <option value="many" selected>many lines</option>
+      </select>
+    </div>
+    <div class="control">
+      <label for="gridAlpha">grid opacity</label>
+      <input id="gridAlpha" type="range" min="0" max="1" step="0.02" value="0.22" />
+    </div>
+    <div class="control">
+      <label for="knotColor">knot color</label>
+      <input id="knotColor" type="color" value="#ffd166" />
+    </div>
+    <div class="control">
+      <label for="knotWidth">knot width</label>
+      <input id="knotWidth" type="range" min="1" max="6" step="0.5" value="3.5" />
+    </div>
+    <div class="control">
+      <label for="knotGlow">knot glow</label>
+      <select id="knotGlow">
+        <option value="on" selected>on</option>
+        <option value="off">off</option>
+      </select>
+    </div>
+    <div class="control">
+      <label for="auto">auto-rotate</label>
+      <select id="auto">
+        <option value="on" selected>on</option>
+        <option value="off">off</option>
+      </select>
+    </div>
+    <div class="spacer"></div>
+    <div class="control">
+      <label for="samples">strip samples</label>
+      <input id="samples" type="range" min="500" max="12000" step="100" value="4000" />
+    </div>
+    <div class="control">
+      <label for="asym">strip asymptotes</label>
+      <select id="asym">
+        <option value="on">show</option>
+        <option value="off" selected>hide</option>
+      </select>
+    </div>
+    <div class="control">
+      <label>&nbsp;</label>
+      <button id="save">Save PNG (3D)</button>
+    </div>
+  </div>
+
+  <div id="main">
+    <div class="pane"><h3>3D — knot on torus</h3><canvas id="cv3d"></canvas><div class="hint">drag to rotate · wheel to zoom</div></div>
+    <div class="pane"><h3>Parameter strip — (θ,u)</h3><canvas id="strip"></canvas><div class="hint">τ stretches u; vertical spikes at sin(qt)=±1</div></div>
+  </div>
+
+<script>
+(() => {
+  // --- Elements ---
+  const cv3d = document.getElementById('cv3d');
+  const ctx3d = cv3d.getContext('2d');
+  const strip = document.getElementById('strip');
+  const stx = strip.getContext('2d');
+
+  const pEl = document.getElementById('p');
+  const qEl = document.getElementById('q');
+  const tauEl = document.getElementById('tau');
+  const tauLbl = document.getElementById('tauLbl');
+  const gridModeEl = document.getElementById('gridMode');
+  const gridAlphaEl = document.getElementById('gridAlpha');
+  const knotColorEl = document.getElementById('knotColor');
+  const knotWidthEl = document.getElementById('knotWidth');
+  const knotGlowEl = document.getElementById('knotGlow');
+  const autoEl = document.getElementById('auto');
+  const samplesEl = document.getElementById('samples');
+  const asymEl = document.getElementById('asym');
+  const saveBtn = document.getElementById('save');
+
+  // --- DPI resize helpers ---
+  function resizeCanvas(el, ctx){
+    const r = window.devicePixelRatio || 1;
+    const rect = el.getBoundingClientRect();
+    el.width = Math.round(rect.width * r);
+    el.height = Math.round(rect.height * r);
+    ctx.setTransform(r,0,0,r,0,0);
+  }
+  function resizeAll(){ resizeCanvas(cv3d, ctx3d); resizeCanvas(strip, stx); }
+  window.addEventListener('resize', ()=>{ resizeAll(); redrawStrip(); });
+  resizeAll();
+
+  // --- Math helpers ---
+  const tanh = Math.tanh ? Math.tanh.bind(Math) : (x)=>{ const e=Math.exp(2*x); return (e-1)/(e+1); };
+  const cosh = Math.cosh ? Math.cosh.bind(Math) : (x)=> (Math.exp(x)+Math.exp(-x))/2;
+  const sech = (x)=> 1/cosh(x);
+  const atanh = Math.atanh ? Math.atanh.bind(Math) : (x)=> 0.5*Math.log((1+x)/(1-x));
+  const clamp = (x,a,b)=> Math.max(a, Math.min(b,x));
+  const TWO_PI = Math.PI*2;
+
+  // --- Camera for 3D ---
+  let yaw=0.65, pitch=0.35, dist=4.3; let auto=true;
+  cv3d.addEventListener('wheel', e=>{ e.preventDefault(); dist *= (1+Math.sign(e.deltaY)*0.08); dist = clamp(dist,1.6,12); }, {passive:false});
+  let dragging=false,lx=0,ly=0;
+  cv3d.addEventListener('mousedown', e=>{ dragging=true; lx=e.clientX; ly=e.clientY; });
+  window.addEventListener('mouseup', ()=> dragging=false);
+  window.addEventListener('mousemove', e=>{ if(!dragging) return; const dx=e.clientX-lx, dy=e.clientY-ly; lx=e.clientX; ly=e.clientY; yaw+=dx*0.006; pitch+=dy*0.006; pitch=clamp(pitch,-1.25,1.25); });
+  autoEl.addEventListener('change', ()=>{ auto=(autoEl.value==='on'); });
+
+  function rotate([x,y,z]){
+    const cy=Math.cos(yaw), sy=Math.sin(yaw);
+    const cx=Math.cos(pitch), sx=Math.sin(pitch);
+    let X = cy*x - sy*y;
+    let Y = sy*x + cy*y;
+    let Z = z;
+    let Y2 = cx*Y - sx*Z;
+    let Z2 = sx*Y + cx*Z;
+    return [X,Y2,Z2];
+  }
+  function project([x,y,z]){
+    const f=1.25; const zc=z+dist; const s=(cv3d.width/(window.devicePixelRatio||1))*0.35;
+    const px=(x*f/zc)*s + cv3d.getBoundingClientRect().width/2;
+    const py=(y*f/zc)*s + cv3d.getBoundingClientRect().height/2;
+    return [px,py,zc];
+  }
+
+  // --- Torus geometry (softmax charts) ---
+  function torusPointCharted(a, th, R, r, sign){ const c=sech(a), s=tanh(a); return (sign>=0)
+    ? [(R+r*c)*Math.cos(th), (R+r*c)*Math.sin(th), r*s]
+    : [(R-r*c)*Math.cos(th), (R-r*c)*Math.sin(th), -r*s]; }
+
+  function buildGrid(R,r,tau,mode){
+    if(mode==='off') return {par:[],mer:[]};
+    const few=(mode==='few'); const UMAX=7.2; const Nu=few?6:12; const Nth=few?8:18; const steps=few?160:360;
+    const par=[], mer=[];
+    for(let i=0;i<Nu;i++){
+      const u=-UMAX + (2*UMAX)*i/(Nu-1); const a=u/(2*tau);
+      const ptsN=[], ptsS=[]; for(let j=0;j<=steps;j++){ const th=2*Math.PI*j/steps; ptsN.push(torusPointCharted(a,th,R,r,+1)); ptsS.push(torusPointCharted(a,th,R,r,-1)); }
+      par.push(ptsN, ptsS);
+    }
+    for(let i=0;i<Nth;i++){
+      const th=2*Math.PI*i/Nth; const ptsN=[], ptsS=[]; for(let j=0;j<=steps;j++){ const u=-UMAX + (2*UMAX)*j/steps; const a=u/(2*tau); ptsN.push(torusPointCharted(a,th,R,r,+1)); ptsS.push(torusPointCharted(a,th,R,r,-1)); }
+      mer.push(ptsN, ptsS);
+    }
+    return {par,mer};
+  }
+
+  function buildKnot(R,r,p,q){
+    const N=5000, pts=[]; for(let i=0;i<N;i++){ const t=i*TWO_PI/N; const s=Math.sin(q*t), c=Math.cos(q*t); const eps=1e-12; const a=atanh(Math.max(-1+eps, Math.min(1-eps, s))); const sign=(c>=0)?+1:-1; const th=(p*t)%TWO_PI; pts.push(torusPointCharted(a,th,R,r,sign)); } return pts;
+  }
+
+  function drawCurve3D(ctx, pts, stroke, width, glow){ ctx.strokeStyle=stroke; ctx.lineWidth=width; ctx.shadowColor = glow? stroke : 'transparent'; ctx.shadowBlur = glow? glow: 0; ctx.beginPath(); for(let i=0;i<pts.length;i++){ const [px,py]=project(rotate(pts[i])); if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);} ctx.stroke(); }
+
+  // --- Strip drawing ---
+  function robustAtanh(x){ const eps=1e-12; const y=Math.max(-1+eps, Math.min(1-eps,x)); return 0.5*Math.log((1+y)/(1-y)); }
+  function genStripCurve(p,q,tau,N){ const theta=new Float64Array(N), u=new Float64Array(N); for(let i=0;i<N;i++){ const t=i*TWO_PI/N; let th=(p*t)%TWO_PI; if(th<0) th+=TWO_PI; theta[i]=th; u[i]= 2*tau*robustAtanh(Math.sin(q*t)); } return {theta,u}; }
+  function calcAsymptotes(p,q){ const xs=[]; for(let k=0;k<2*q;k++){ const tk=(Math.PI/2 + k*Math.PI)/q; let x=(p*tk)%TWO_PI; if(x<0) x+=TWO_PI; xs.push(x);} xs.sort((a,b)=>a-b); return xs; }
+  function redrawStrip(){
+    resizeCanvas(strip, stx);
+    const W=strip.getBoundingClientRect().width, H=strip.getBoundingClientRect().height;
+    const p=Math.max(1, Math.floor(+pEl.value||2)); const q=Math.max(1, Math.floor(+qEl.value||3)); const tau=+tauEl.value; const N=Math.floor(+samplesEl.value||4000); const showAsym = asymEl.value==='on';
+    const {theta,u}=genStripCurve(p,q,tau,N);
+
+    // compute range from 99th percentile of |u|
+    const absU=Array.from(u, Math.abs).sort((a,b)=>a-b); const uMax = absU[Math.min(absU.length-1, Math.floor(0.99*absU.length))] || 1; const U=Math.max(2.0, uMax);
+    const L=50,R=20,T=18,B=30;
+    const xToPx = x=> L + (W-L-R) * (x/TWO_PI);
+    const yToPx = y=> (H-B) - (H-T-B) * ((y+U)/(2*U));
+
+    stx.clearRect(0,0,W,H);
+    // grid
+    stx.strokeStyle='rgba(230,237,243,0.12)'; stx.lineWidth=1; stx.beginPath();
+    for(let i=0;i<=8;i++){ const X=xToPx(i*TWO_PI/8); stx.moveTo(X,T); stx.lineTo(X,H-B);} for(let i=0;i<=8;i++){ const y=-U + 2*U*i/8; const Y=yToPx(y); stx.moveTo(L,Y); stx.lineTo(W-R,Y);} stx.stroke();
+    // labels
+    stx.fillStyle='rgba(230,237,243,0.9)'; stx.font='12px system-ui, -apple-system, Segoe UI, Roboto, Arial'; stx.fillText('θ (0 → 2π)', L, T-4); stx.save(); stx.translate(12,(H-T-B)/2+T); stx.rotate(-Math.PI/2); stx.textAlign='center'; stx.fillText('u (logit latitude)',0,0); stx.restore();
+
+    // asymptotes
+    if(showAsym){ const xs=calcAsymptotes(p,q); stx.strokeStyle='rgba(250,120,120,0.35)'; stx.setLineDash([6,6]); stx.beginPath(); for(const xv of xs){ const X=xToPx(xv); stx.moveTo(X,T); stx.lineTo(X,H-B);} stx.stroke(); stx.setLineDash([]); }
+
+    // curve
+    stx.strokeStyle = knotColorEl.value || '#ffd166'; stx.lineWidth = 1.6; stx.beginPath(); let moved=false;
+    for(let i=0;i<N;i++){ const X=xToPx(theta[i]); const Y=yToPx(Math.max(-U, Math.min(U, u[i]))); if(!moved){ stx.moveTo(X,Y); moved=true; continue; } const prevX=xToPx(theta[(i-1+N)%N]); if(X<prevX){ stx.stroke(); stx.beginPath(); stx.moveTo(X,Y);} else { stx.lineTo(X,Y);} } stx.stroke();
+
+    // footer
+    stx.fillStyle='rgba(200,210,220,0.9)'; stx.textAlign='right'; stx.fillText(`(p,q)=(${p},${q}), τ=${tau.toFixed(2)}, samples=${N}, range ±${U.toFixed(2)}` , W-8, H-8);
+  }
+
+  // --- State / geometry ---
+  function updateGeometry(){
+    const R=2.0, r=1.0; const p=clamp(Math.floor(+pEl.value||2),1,72); const q=clamp(Math.floor(+qEl.value||3),1,72); const tau=+tauEl.value; tauLbl.textContent=tau.toFixed(2);
+    grid = buildGrid(R,r,tau, gridModeEl.value);
+    knot = buildKnot(R,r,p,q);
+    redrawStrip();
+  }
+
+  let grid={par:[],mer:[]}, knot=[];
+
+  // --- Render loop for 3D ---
+  function render3D(){
+    if ((autoEl.value==='on')) yaw += 0.0045;
+    const W=cv3d.getBoundingClientRect().width, H=cv3d.getBoundingClientRect().height; ctx3d.clearRect(0,0,W,H);
+    const gAlpha=parseFloat(gridAlphaEl.value||'0.22'); const gStroke=`rgba(220,235,255,${gAlpha.toFixed(3)})`;
+    for(const poly of grid.par){ drawCurve3D(ctx3d, poly, gStroke, 1.0, 0); }
+    for(const poly of grid.mer){ drawCurve3D(ctx3d, poly, gStroke, 1.0, 0); }
+    const color=knotColorEl.value||'#ffd166'; const w=parseFloat(knotWidthEl.value||'3'); const glow=(knotGlowEl.value==='on')? Math.max(8, 2.5*w):0; drawCurve3D(ctx3d, knot, color, w, glow);
+    requestAnimationFrame(render3D);
+  }
+
+  // --- Events ---
+  document.querySelectorAll('#p,#q,#tau,#gridMode,#gridAlpha,#knotColor,#knotWidth,#knotGlow,#auto,#samples,#asym').forEach(el=>{ el.addEventListener('input', updateGeometry); el.addEventListener('change', updateGeometry); });
+  saveBtn.addEventListener('click', ()=>{ const a=document.createElement('a'); a.download='torus_knot_on_torus.png'; a.href=cv3d.toDataURL('image/png'); a.click(); });
+
+  // Init
+  updateGeometry();
+  render3D();
+})();
+</script>
+</body>
+</html>
