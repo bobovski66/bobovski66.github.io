@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+title: Collatz CD Reproducible Certificates
+message: If you use this repository, please cite it as below.
+authors:
+  - family-names: <Your-Last-Name>
+    given-names: <Your-First-Name>
+version: v1.0-collatz-cd
+date-released: 2025-08-24
+repository-code: https://github.com/<user>/<repo>
