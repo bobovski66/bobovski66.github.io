@@ -1,0 +1,21 @@
+\section{Bootstrap with a published base window}
+\label{sec:bootstrap}
+
+\noindent\textbf{(H1) No nontrivial cycles (proved).}
+By Theorem~\ref{thm:no-nontrivial-cycles}, the only periodic point on the integer leaf is $1$.
+
+\medskip\noindent
+\textbf{(H2) Affine valuation certificate (finite input).}
+There exist $R,N,\mu_*,B$ such that for every itinerary with $n_j\ge N$,
+\(
+\sum_{j<m}\min\{\nu_2(3n_j+1),R\}\ge \mu_* m - B.
+\)
+In our certificate (Proposition~\ref{prop:R13S4}), $\mu_*=2$ and $B=16$ at modulus $2^{17}$.
+
+\medskip\noindent
+\textbf{(H3) Published base window (finite input).}
+Every $n<2^{71}$ reaches $1$ under the accelerated map.
+
+\begin{theorem}[Abstract bootstrap]\label{thm:bootstrap}
+Assume \textup{(H1)}–\textup{(H3)}. If $\mu_*>c_N$ then every positive integer reaches $1$.
+\end{theorem}
