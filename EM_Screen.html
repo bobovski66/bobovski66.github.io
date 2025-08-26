@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Contact-Descent EM — Screen & 3D Interface</title>
+<style>
+  :root { --bg:#0b0e13; --panel:#111723; --ink:#e7ecf4; --muted:#98a2b3; --accent:#6ae3ff; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:14px/1.4 system-ui, ui-sans-serif, Segoe UI, Roboto, Helvetica, Arial; }
+  header { padding:12px 16px; border-bottom:1px solid #1b2230; display:flex; gap:16px; align-items:center; }
+  header h1 { font-size:16px; margin:0; letter-spacing:.3px; font-weight:700; }
+  header .sub { color:var(--muted); font-size:12px; }
+  .wrap { display:grid; grid-template-columns: 320px 1fr; gap:0; min-height:calc(100vh - 50px); }
+  aside { background:var(--panel); border-right:1px solid #1b2230; padding:14px 12px; overflow:auto; }
+  main { display:grid; grid-template-rows: 1fr 1fr; }
+  canvas { width:100%; height:100%; display:block; background:linear-gradient(#0b0e13,#0a0d12); }
+  .card { background:#0f1624; border:1px solid #1b2230; border-radius:10px; padding:10px 10px 6px; margin-bottom:10px; }
+  .card h3 { margin:0 0 6px 0; font-size:13px; color:#cfe3ff; letter-spacing:.2px; }
+  .row { display:flex; align-items:center; gap:8px; margin:6px 0; }
+  .row label { flex:0 0 120px; color:#b9c3d0; font-size:12px; }
+  .row input[type=range] { flex:1; }
+  .row input[type=number] { width:80px; background:#0c121c; color:var(--ink); border:1px solid #1b2230; border-radius:6px; padding:4px 6px; }
+  .row select { flex:1; background:#0c121c; color:var(--ink); border:1px solid #1b2230; border-radius:6px; padding:6px; }
+  .tog { display:flex; flex-wrap:wrap; gap:8px; }
+  .tog label { display:flex; gap:6px; align-items:center; background:#0c121c; border:1px solid #1b2230; border-radius:1000px; padding:6px 10px; font-size:12px; }
+  .btn { display:inline-flex; align-items:center; justify-content:center; padding:8px 10px; border-radius:10px; border:1px solid #1b2230; background:#10192a; color:var(--ink); cursor:pointer; user-select:none; }
+  .btn:active { transform:translateY(1px); }
+  .legend { display:flex; gap:8px; align-items:center; flex-wrap:wrap; color:#b9c3d0; font-size:12px; }
+  .chip { padding:2px 8px; border-radius:999px; border:1px solid #1b2230; background:#0c121c; }
+  .bar { height:6px; background:linear-gradient(90deg,#386cf9,#9fd3ff); border-radius:999px; flex:1; }
+  .footer-note { color:#94a3b8; font-size:11px; margin-top:6px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Contact-Descent EM</h1>
+  <div class="sub">Screen fields from bulk action; Reeb overdrive → induced EMF</div>
+  <div style="margin-left:auto; display:flex; gap:8px;">
+    <div class="btn" id="pauseBtn">⏸ Pause</div>
+    <div class="btn" id="resetBtn">↺ Reset</div>
+  </div>
+</header>
+
+<div class="wrap">
+  <aside>
+    <div class="card">
+      <h3>Sampling & Display</h3>
+      <div class="row"><label>Domain size L</label><input id="domL" type="range" min="4" max="20" step="0.5" value="10"></div>
+      <div class="row"><label>Vector density</label><input id="vecSkip" type="range" min="1" max="6" step="1" value="3"></div>
+      <div class="row"><label>Grid resolution</label><input id="res" type="range" min="24" max="160" step="8" value="96"></div>
+      <div class="tog">
+        <label><input type="checkbox" id="showE" checked>Show E field</label>
+        <label><input type="checkbox" id="showB" checked>Show B colormap</label>
+        <label><input type="checkbox" id="showPhi" >Equipotentials</label>
+        <label><input type="checkbox" id="showA" >A streamlines</label>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Potentials (screen)</h3>
+      <div class="row"><label>Base B<span class="chip">B₀</span></label><input id="B0" type="range" min="-2" max="2" step="0.05" value="0.8"></div>
+      <div class="row"><label>φ amplitude</label><input id="phiAmp" type="range" min="0" max="3" step="0.05" value="1.0"></div>
+      <div class="row"><label>φ wavevector |kφ|</label><input id="kphi" type="range" min="0" max="4" step="0.1" value="1.2"></div>
+      <div class="row"><label>φ angle θφ</label><input id="angPhi" type="range" min="0" max="6.283" step="0.01" value="0.6"></div>
+      <div class="row"><label>ωφ (phase)</label><input id="wPhi" type="range" min="0" max="6" step="0.05" value="1.2"></div>
+      <div class="row"><label>EMF tilt (x,y)</label>
+        <input id="emfX" type="number" step="0.1" value="0.4">
+        <input id="emfY" type="number" step="0.1" value="0.0">
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Gauge drive (Reeb)</h3>
+      <div class="row"><label>χ amplitude</label><input id="chiAmp" type="range" min="0" max="3" step="0.05" value="1.0"></div>
+      <div class="row"><label>|k| (χ)</label><input id="kchi" type="range" min="0" max="4" step="0.1" value="1.2"></div>
+      <div class="row"><label>angle θχ</label><input id="angChi" type="range" min="0" max="6.283" step="0.01" value="1.2"></div>
+      <div class="row"><label>ω (Reeb)</label><input id="wChi" type="range" min="0" max="10" step="0.05" value="4.0"></div>
+      <div class="row"><label>Overdrive</label><input id="overdrive" type="range" min="0" max="1" step="0.01" value="0.0"></div>
+      <div class="footer-note">Gauge: A → A + ∇χ, φ → φ − ∂<sub>t</sub>χ (Reeb pullback). Overdrive jitters the timebase to emulate a stressed Reeb channel.</div>
+    </div>
+
+    <div class="card">
+      <h3>3D Interface View</h3>
+      <div class="row"><label>Height scale</label><input id="zScale" type="range" min="0" max="2" step="0.02" value="0.8"></div>
+      <div class="row"><label>Auto-rotate</label><input id="autoRot" type="range" min="0" max="1" step="0.01" value="0.15"></div>
+      <div class="tog">
+        <label><input type="checkbox" id="showReeb" checked>Reeb ticks</label>
+        <label><input type="checkbox" id="wire" checked>Wireframe</label>
+      </div>
+      <div class="legend">
+        <span>Φ (equipotentials)</span><div class="bar"></div><span>B (blue→red), E (arrows)</span>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <canvas id="screen"></canvas>
+    <canvas id="bulk3d"></canvas>
+  </main>
+</div>
+
+<script>
+(() => {
+  const dpr = Math.max(1, window.devicePixelRatio || 1);
+  const $ = id => document.getElementById(id);
+
+  const cvs2d = $("screen"), ctx = cvs2d.getContext("2d");
+  const cvs3d = $("bulk3d"), g3 = cvs3d.getContext("2d");
+
+  // Fixed canvas sizing (prevents the "resizing flicker" when sliders move)
+  function fitCanvases() {
+    const rect2 = cvs2d.getBoundingClientRect();
+    cvs2d.width = Math.floor(rect2.width * dpr);
+    cvs2d.height = Math.floor(rect2.height * dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+
+    const rect3 = cvs3d.getBoundingClientRect();
+    cvs3d.width = Math.floor(rect3.width * dpr);
+    cvs3d.height = Math.floor(rect3.height * dpr);
+    g3.setTransform(dpr,0,0,dpr,0,0);
+  }
+  fitCanvases();
+  window.addEventListener("resize", fitCanvases);
+
+  // UI getters (sampled each frame)
+  const ui = {
+    L: () => +$("domL").value,
+    res: () => +$("res").value|0,
+    skip: () => +$("vecSkip").value|0,
+    showE: () => $("showE").checked,
+    showB: () => $("showB").checked,
+    showPhi: () => $("showPhi").checked,
+    showA: () => $("showA").checked,
+
+    B0: () => +$("B0").value,
+    phiAmp: () => +$("phiAmp").value,
+    kphi: () => +$("kphi").value,
+    angPhi: () => +$("angPhi").value,
+    wPhi: () => +$("wPhi").value,
+    emfX: () => +$("emfX").value,
+    emfY: () => +$("emfY").value,
+
+    chiAmp: () => +$("chiAmp").value,
+    kchi: () => +$("kchi").value,
+    angChi: () => +$("angChi").value,
+    wChi: () => +$("wChi").value,
+    overdrive: () => +$("overdrive").value,
+
+    zScale: () => +$("zScale").value,
+    autoRot: () => +$("autoRot").value,
+    showReeb: () => $("showReeb").checked,
+    wire: () => $("wire").checked
+  };
+
+  // Timebase with "overdrive" jitter (simple skip/jump model)
+  let t = 0, paused = false;
+  const dtBase = 1/60;
+  function stepTime() {
+    if (paused) return;
+    let dt = dtBase;
+    const od = ui.overdrive();
+    if (od > 0) {
+      // jitter and occasional skips proportional to overdrive
+      const jitter = (Math.random() - 0.5) * 0.015 * od;
+      dt += jitter;
+      if (Math.random() < od * 0.06) {
+        dt += 0.15 * od * (1 + Math.random()); // a "skip" like a record hop
+      }
+    }
+    t += dt;
+  }
+
+  // Helpers
+  function kVec(mag, ang) { return {kx: mag*Math.cos(ang), ky: mag*Math.sin(ang)}; }
+  function clamp(x,a,b){return Math.max(a,Math.min(b,x));}
+
+  // Core field definitions on the screen Σ
+  function fieldsAt(x, y) {
+    const B0 = ui.B0();
+
+    // Gauge χ and its gradient/time drive
+    const {kx: kcx, ky: kcy} = kVec(ui.kchi(), ui.angChi());
+    const phaseChi = kcx*x + kcy*y - ui.wChi()*t;
+    const chiAmp = ui.chiAmp();
+    const dchi_dx = chiAmp * kcx * Math.cos(phaseChi);
+    const dchi_dy = chiAmp * kcy * Math.cos(phaseChi);
+    const d_dt_gradChi_x = - ui.wChi() * chiAmp * kcx * Math.sin(phaseChi); // ∂/∂t (∂χ/∂x)
+    const d_dt_gradChi_y = - ui.wChi() * chiAmp * kcy * Math.sin(phaseChi);
+
+    // Vector potential A = 1/2 B0 (-y, x) + ∇χ
+    const Ax = -0.5*B0*y + dchi_dx;
+    const Ay =  0.5*B0*x + dchi_dy;
+
+    // ∂A/∂t = ∇(∂χ/∂t) ⇒ -∂A/∂t contributes to E
+    const minus_dA_dt_x = - d_dt_gradChi_x;
+    const minus_dA_dt_y = - d_dt_gradChi_y;
+
+    // Scalar potential φ
+    const {kx: kpx, ky: kpy} = kVec(ui.kphi(), ui.angPhi());
+    const phasePhi = kpx*x + kpy*y - ui.wPhi()*t;
+    const phi = ui.phiAmp() * Math.sin(phasePhi) + ui.emfX()*x + ui.emfY()*y;
+
+    // -∇φ
+    const minus_grad_phi_x = - ( ui.phiAmp() * kpx * Math.cos(phasePhi) + ui.emfX() );
+    const minus_grad_phi_y = - ( ui.phiAmp() * kpy * Math.cos(phasePhi) + ui.emfY() );
+
+    // E = -∇φ - ∂A/∂t
+    const Ex = minus_grad_phi_x + minus_dA_dt_x;
+    const Ey = minus_grad_phi_y + minus_dA_dt_y;
+
+    // Bz = ∂Ay/∂x - ∂Ax/∂y → from A = 1/2B0(-y,x) + ∇χ, the curl of ∇χ is 0, so Bz = B0 (constant)
+    // If you want spatially varying B, add a "vortex bump" here (left as extension).
+    const Bz = B0;
+
+    return {Ax, Ay, phi, Ex, Ey, Bz};
+  }
+
+  function drawScreen() {
+    const W = cvs2d.width/dpr, H = cvs2d.height/dpr;
+    ctx.clearRect(0,0,W,H);
+    const L = ui.L();
+    const res = ui.res();
+    const dx = (2*L)/res, dy = dx;
+    const x0 = -L, y0 = -L;
+
+    // Precompute scalar samples for φ and B if needed
+    const showB = ui.showB(), showPhi = ui.showPhi();
+    let phiGrid = null;
+    if (showPhi) phiGrid = new Float32Array((res+1)*(res+1));
+
+    // Map world → screen
+    const sx = W/(2*L), sy = H/(2*L);
+    function toScreenX(x) { return (x + L)*sx; }
+    function toScreenY(y) { return H - (y + L)*sy; }
+
+    // B colormap (constant B0 painted as gradient for intuition)
+    if (showB) {
+      const B0 = ui.B0();
+      const grad = ctx.createLinearGradient(0,0,W,0);
+      const alpha = clamp(0.5 + 0.5*(B0/2), 0, 1);
+      grad.addColorStop(0,   `rgba(70,120,255,${0.25+0.35*alpha})`);
+      grad.addColorStop(0.5, `rgba(220,230,255,${0.15+0.2*alpha})`);
+      grad.addColorStop(1,   `rgba(255,110,100,${0.25+0.35*alpha})`);
+      ctx.fillStyle = grad;
+      ctx.fillRect(0,0,W,H);
+    }
+
+    // Equipotentials
+    if (showPhi) {
+      ctx.save();
+      ctx.globalAlpha = 0.7;
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = "#cfe3ff";
+      // sample φ
+      for (let j=0;j<=res;j++){
+        for (let i=0;i<=res;i++){
+          const x = x0 + i*dx, y = y0 + j*dy;
+          const {phi} = fieldsAt(x,y);
+          phiGrid[j*(res+1)+i] = phi;
+        }
+      }
+      // draw iso-lines by marching squares (simple coarse)
+      const levels = 10, pmin = Math.min(...phiGrid), pmax = Math.max(...phiGrid);
+      for (let l=1;l<levels;l++){
+        const v = pmin + (l/levels)*(pmax-pmin);
+        ctx.beginPath();
+        // basic marching algorithm
+        for (let j=0;j<res;j++){
+          for (let i=0;i<res;i++){
+            // square corners
+            const p00 = phiGrid[j*(res+1)+i];
+            const p10 = phiGrid[j*(res+1)+i+1];
+            const p01 = phiGrid[(j+1)*(res+1)+i];
+            const p11 = phiGrid[(j+1)*(res+1)+i+1];
+            // quick-and-dirty: draw segment midpoints when crossing level
+            if ((p00-v)*(p10-v) < 0) {
+              const x = x0 + (i+0.5)*dx, y = y0 + j*dy;
+              ctx.moveTo(toScreenX(x), toScreenY(y));
+              ctx.lineTo(toScreenX(x), toScreenY(y+dy));
+            }
+            if ((p00-v)*(p01-v) < 0) {
+              const x = x0 + i*dx, y = y0 + (j+0.5)*dy;
+              ctx.moveTo(toScreenX(x), toScreenY(y));
+              ctx.lineTo(toScreenX(x+dx), toScreenY(y));
+            }
+          }
+        }
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    // A streamlines (optional, very coarse)
+    if (ui.showA()) {
+      ctx.save();
+      ctx.globalAlpha = 0.6;
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = "#7ad3ff";
+      const seedStep = Math.max(1, ui.skip());
+      for (let j=0;j<=res;j+=seedStep*3){
+        for (let i=0;i<=res;i+=seedStep*3){
+          let x = x0 + i*dx, y = y0 + j*dy;
+          ctx.beginPath();
+          ctx.moveTo(toScreenX(x), toScreenY(y));
+          for (let s=0;s<60;s++){
+            const f = fieldsAt(x,y);
+            const vlen = Math.hypot(f.Ax, f.Ay)+1e-6;
+            const ux = f.Ax/vlen, uy = f.Ay/vlen;
+            const h = 0.3*dx;
+            x += ux*h; y += uy*h;
+            if (x<-L||x>L||y<-L||y>L) break;
+            ctx.lineTo(toScreenX(x), toScreenY(y));
+          }
+          ctx.stroke();
+        }
+      }
+      ctx.restore();
+    }
+
+    // E vectors
+    if (ui.showE()) {
+      ctx.save();
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = "#f1f5f9";
+      ctx.fillStyle = "#f1f5f9";
+      const skip = Math.max(1, ui.skip());
+      const scale = 0.5*dx;
+      for (let j=0;j<=res;j+=skip){
+        for (let i=0;i<=res;i+=skip){
+          const x = x0 + i*dx, y = y0 + j*dy;
+          const {Ex,Ey} = fieldsAt(x,y);
+          const len = Math.hypot(Ex,Ey) || 1e-6;
+          const ux = Ex/len, uy = Ey/len;
+          const px = toScreenX(x), py = toScreenY(y);
+          const Lvec = clamp( scale * Math.log(1+len), 0, 1.2*dx);
+          const tx = px + ux*Lvec, ty = py - uy*Lvec;
+          // shaft
+          ctx.beginPath();
+          ctx.moveTo(px,py);
+          ctx.lineTo(tx,ty);
+          ctx.stroke();
+          // arrowhead
+          const ah = 4 + 6*Math.min(1, len/2);
+          const angle = Math.atan2(-(uy), ux);
+          const a1 = angle + 2.6, a2 = angle - 2.6;
+          ctx.beginPath();
+          ctx.moveTo(tx,ty);
+          ctx.lineTo(tx + ah*Math.cos(a1), ty + ah*Math.sin(a1));
+          ctx.lineTo(tx + ah*Math.cos(a2), ty + ah*Math.sin(a2));
+          ctx.closePath();
+          ctx.fill();
+        }
+      }
+      ctx.restore();
+    }
+
+    // Overlay axes
+    ctx.save();
+    ctx.globalAlpha = 0.35;
+    ctx.strokeStyle = "#7a8aa0";
+    ctx.beginPath();
+    ctx.moveTo(toScreenX(-L), toScreenY(0));
+    ctx.lineTo(toScreenX(L),  toScreenY(0));
+    ctx.moveTo(toScreenX(0),  toScreenY(-L));
+    ctx.lineTo(toScreenX(0),  toScreenY(L));
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // 3D interface view (lightweight software wireframe)
+  let yaw = 0.6, pitch = -0.4;
+  let dragging = false, lx=0, ly=0;
+  cvs3d.addEventListener("mousedown", e => { dragging=true; lx=e.clientX; ly=e.clientY; });
+  window.addEventListener("mouseup", ()=> dragging=false);
+  window.addEventListener("mousemove", e => {
+    if(!dragging) return;
+    const dx = (e.clientX-lx)*0.006, dy=(e.clientY-ly)*0.006;
+    yaw += dx; pitch = clamp(pitch+dy, -1.2, 1.2);
+    lx = e.clientX; ly = e.clientY;
+  });
+
+  function draw3D() {
+    const W = cvs3d.width/dpr, H = cvs3d.height/dpr;
+    g3.clearRect(0,0,W,H);
+
+    // autorotation
+    yaw += ui.autoRot()*0.02;
+
+    const L = ui.L(), res = Math.max(24, ui.res());
+    const step = (2*L)/res;
+    const halfW = W/2, halfH = H/2;
+    const fov = 450, camZ = 22;
+
+    // quick rot helpers
+    const cy = Math.cos(yaw), sy = Math.sin(yaw);
+    const cx = Math.cos(pitch), sx = Math.sin(pitch);
+    const zScale = ui.zScale();
+
+    // Build grid of points
+    const pts = [];
+    for (let j=0;j<=res;j++){
+      const y = -L + j*step;
+      const row = [];
+      for (let i=0;i<=res;i++){
+        const x = -L + i*step;
+        const F = fieldsAt(x,y);
+        // height from φ + EMF tilt (think "bulk action pulled down")
+        const z0 = zScale * ( 0.6*F.phi / (1+ui.phiAmp()) + 0.25*(ui.emfX()*x + ui.emfY()*y) );
+        // rotate point
+        let xr = x*cy + 0*z0*sy; // y-rotation
+        let zr = -x*sy + 0*z0*cy;
+        let yr = y*cx - z0*sx;   // x-rotation
+        zr = y*sx + z0*cx + 8;   // move “camera”
+        const s = fov/(camZ + zr);
+        const X = halfW + xr*s, Y = halfH - yr*s;
+        row.push({X,Y,zr, phi:F.phi, B:F.Bz});
+      }
+      pts.push(row);
+    }
+
+    // color by φ (action) subtly
+    function phiColor(phi){
+      // map to 0..1 with gentle scale
+      const p = 0.5 + 0.5*Math.tanh(0.3*phi);
+      const r = 90 + 120*p, g = 120 + 80*p, b = 160 + 65*(1-p);
+      return `rgba(${r|0},${g|0},${b|0},0.9)`;
+    }
+
+    // Draw wireframe surface
+    g3.lineWidth = 1;
+    for (let j=0;j<res;j++){
+      g3.beginPath();
+      for (let i=0;i<=res;i++){
+        const p = pts[j][i];
+        if (i===0) g3.moveTo(p.X,p.Y); else g3.lineTo(p.X,p.Y);
+      }
+      g3.strokeStyle = ui.wire() ? "rgba(140,160,190,0.45)" : "transparent";
+      g3.stroke();
+    }
+    for (let i=0;i<res;i++){
+      g3.beginPath();
+      for (let j=0;j<=res;j++){
+        const p = pts[j][i];
+        if (j===0) g3.moveTo(p.X,p.Y); else g3.lineTo(p.X,p.Y);
+      }
+      g3.strokeStyle = ui.wire() ? "rgba(120,140,170,0.35)" : "transparent";
+      g3.stroke();
+    }
+
+    // Fill patches with a translucent phi-tint for depth
+    g3.globalAlpha = 0.22;
+    for (let j=0;j<res;j++){
+      for (let i=0;i<res;i++){
+        const p00 = pts[j][i], p10 = pts[j][i+1], p01 = pts[j+1][i], p11 = pts[j+1][i+1];
+        g3.fillStyle = phiColor((p00.phi+p10.phi+p01.phi+p11.phi)/4);
+        g3.beginPath();
+        g3.moveTo(p00.X,p00.Y);
+        g3.lineTo(p10.X,p10.Y);
+        g3.lineTo(p11.X,p11.Y);
+        g3.lineTo(p01.X,p01.Y);
+        g3.closePath();
+        g3.fill();
+      }
+    }
+    g3.globalAlpha = 1;
+
+    // Reeb ticks (verticals)
+    if (ui.showReeb()){
+      g3.strokeStyle = "rgba(255,255,255,0.45)";
+      g3.lineWidth = 1;
+      const stepR = Math.max(1, (ui.skip()|0));
+      for (let j=0;j<=res;j+=stepR*3){
+        for (let i=0;i<=res;i+=stepR*3){
+          const p = pts[j][i];
+          const q = pts[Math.min(j+2,res)][Math.min(i+2,res)];
+          g3.beginPath();
+          g3.moveTo(p.X,p.Y);
+          g3.lineTo((p.X+q.X)*0.5, (p.Y+q.Y)*0.5 - 8);
+          g3.stroke();
+        }
+      }
+    }
+
+    // HUD
+    g3.fillStyle = "rgba(20,28,44,0.8)";
+    g3.fillRect(10,10,230,62);
+    g3.fillStyle = "#cfe3ff";
+    g3.font = "12px system-ui";
+    g3.fillText(`B0=${ui.B0().toFixed(2)}  |  φAmp=${ui.phiAmp().toFixed(2)}  |  χAmp=${ui.chiAmp().toFixed(2)}`, 18, 28);
+    g3.fillText(`|kφ|=${ui.kphi().toFixed(2)}, ωφ=${ui.wPhi().toFixed(2)}  |  |kχ|=${ui.kchi().toFixed(2)}, ωχ=${ui.wChi().toFixed(2)}`, 18, 46);
+    g3.fillText(`Overdrive=${ui.overdrive().toFixed(2)}  |  E_emf=(${ui.emfX().toFixed(2)}, ${ui.emfY().toFixed(2)})`, 18, 64);
+  }
+
+  // Controls
+  $("pauseBtn").onclick = () => {
+    paused = !paused;
+    $("pauseBtn").textContent = paused ? "▶ Play" : "⏸ Pause";
+  };
+  $("resetBtn").onclick = () => { t = 0; yaw = 0.6; pitch = -0.4; };
+
+  // Main loop
+  function frame() {
+    stepTime();
+    drawScreen();
+    draw3D();
+    requestAnimationFrame(frame);
+  }
+  frame();
+})();
+</script>
+</body>
+</html>
