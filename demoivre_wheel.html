@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interactive Moiré Wheels</title>
+  <style>
+    :root{
+      --bg:#0b0b0f;
+      --panel:#151722;
+      --text:#e8eaf2;
+      --muted:#9aa0b4;
+      --accent:#7dd3fc;
+      --danger:#fca5a5;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0}
+    body{
+      display:grid;
+      grid-template-columns: 320px 1fr;
+      grid-template-rows: 1fr;
+      gap: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      overflow:hidden;
+    }
+    aside{
+      height:100vh;overflow:auto;padding:16px 14px;background:linear-gradient(180deg,var(--panel),#0f111a 80%);
+      border-right:1px solid #202435;
+    }
+    h1{font-size:18px;margin:0 0 10px 0;font-weight:700;letter-spacing:.2px}
+    .hint{color:var(--muted);font-size:12px;margin-top:4px}
+    fieldset{border:1px solid #24283b;border-radius:12px;padding:12px;margin:12px 0}
+    legend{padding:0 8px;color:#cbd5e1}
+    label{font-size:12px;color:#cbd5e1;display:block;margin:8px 0 4px}
+    input[type="range"]{width:100%}
+    input[type="number"]{width:100%;padding:6px;border-radius:8px;background:#0f1220;color:var(--text);border:1px solid #283046}
+    input[type="color"]{width:100%;height:36px;border:none;background:transparent;padding:0}
+    select{width:100%;padding:6px;border-radius:8px;background:#0f1220;color:var(--text);border:1px solid #283046}
+    button{
+      appearance:none;cursor:pointer;border:none;border-radius:10px;padding:10px 12px;margin:4px 0;font-weight:600;
+      color:#0b0b0f;background:#cbe6ff;transition:transform .05s ease, opacity .2s; box-shadow:0 1px 0 #0003, 0 6px 18px #0004
+    }
+    button.secondary{background:#253046;color:#e2e8f0}
+    button.ghost{background:transparent;color:var(--muted);border:1px dashed #2a324a}
+    button.danger{background:var(--danger);}
+    button:active{transform:translateY(1px)}
+    .row{display:flex;gap:8px;align-items:center}
+    .row > *{flex:1}
+    .toolbar{display:grid;grid-template-columns:1fr 1fr; gap:8px}
+    .list{margin-top:6px}
+    .wheelItem{
+      display:flex;align-items:center;justify-content:space-between;gap:8px;margin:6px 0;padding:8px;border:1px solid #24283b;border-radius:10px;background:#0f1220;
+    }
+    .wheelMeta{display:flex;align-items:center;gap:8px}
+    .swatch{width:16px;height:16px;border-radius:50%;outline:1px solid #556;box-shadow:0 0 0 2px #000 inset}
+    .small{font-size:12px;color:#aeb6c7}
+    .kbd{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; background:#1d2233; padding:2px 6px;border-radius:6px;color:#dbeafe}
+    canvas{display:block;width:100%;height:100vh;}
+    .badge{font-size:11px;color:#9aa0b4;background:#1b2030;border:1px solid #2a3148;padding:2px 6px;border-radius:999px}
+  </style>
+</head>
+<body>
+  <aside>
+    <h1>Interactive Moiré Wheels</h1>
+    <div class="hint">Click the canvas to <b>add</b> a wheel using the settings below. Click an existing wheel to <b>select</b> it; drag to move. <span class="badge">Del</span> deletes the selection.</div>
+
+    <div class="toolbar" style="margin:12px 0 6px">
+      <button id="playBtn">⏸︎ Pause</button>
+      <button class="secondary" id="clearBtn">✕ Clear All</button>
+    </div>
+
+    <fieldset>
+      <legend>New / Selected Wheel</legend>
+      <div class="row">
+        <div>
+          <label for="type">Style</label>
+          <select id="type">
+            <option value="concentric">Concentric rings</option>
+            <option value="radial">Radial spokes</option>
+          </select>
+        </div>
+        <div>
+          <label for="color">Stroke color</label>
+          <input type="color" id="color" value="#ffffff" />
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="radius">Radius <span class="small" id="radiusVal"></span></label>
+          <input type="range" id="radius" min="30" max="380" value="180" />
+        </div>
+        <div>
+          <label for="count">Lines/Rings <span class="small" id="countVal"></span></label>
+          <input type="range" id="count" min="8" max="200" value="64" />
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="stroke">Stroke width <span class="small" id="strokeVal"></span></label>
+          <input type="range" id="stroke" min="0.5" max="4" step="0.1" value="1.2" />
+        </div>
+        <div>
+          <label for="alpha">Opacity <span class="small" id="alphaVal"></span></label>
+          <input type="range" id="alpha" min="0.05" max="1" step="0.05" value="1" />
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="angle">Angle (deg) <span class="small" id="angleVal"></span></label>
+          <input type="range" id="angle" min="0" max="360" step="1" value="0" />
+        </div>
+        <div>
+          <label for="speed">Rotation (rev/s) <span class="small" id="speedVal"></span></label>
+          <input type="range" id="speed" min="-2" max="2" step="0.01" value="0.12" />
+        </div>
+      </div>
+      <div class="row">
+        <button id="addBtn">＋ Add wheel (click canvas)</button>
+        <button id="updateBtn" class="secondary">Apply to selected</button>
+      </div>
+      <div class="hint">Tip: create overlapping wheels with slightly different counts or radii for rich moiré. Hold the mouse while moving—animation continues.</div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Canvas</legend>
+      <div class="row">
+        <div>
+          <label for="bg">Background</label>
+          <input type="color" id="bg" value="#0b0b0f" />
+        </div>
+        <div>
+          <label for="blend">Blend mode</label>
+          <select id="blend">
+            <option value="lighter">lighter (default)</option>
+            <option value="screen">screen</option>
+            <option value="source-over">normal</option>
+            <option value="difference">difference</option>
+            <option value="overlay">overlay</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <button class="ghost" id="saveBtn">⌁ Save layout</button>
+        <button class="ghost" id="loadBtn">⤓ Load</button>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Wheels (<span id="countBadge">0</span>)</legend>
+      <div class="list" id="wheelList"></div>
+      <div class="hint">Click an item to select. Use <span class="kbd">↑</span>/<span class="kbd">↓</span> to reorder; <span class="kbd">Del</span> to remove.</div>
+    </fieldset>
+  </aside>
+
+  <canvas id="c"></canvas>
+
+  <script>
+  // --- Utilities ------------------------------------------------------------
+  const $ = (sel) => document.querySelector(sel);
+  const ui = {
+    playBtn: $('#playBtn'), clearBtn: $('#clearBtn'), addBtn: $('#addBtn'), updateBtn: $('#updateBtn'),
+    type: $('#type'), color: $('#color'), radius: $('#radius'), count: $('#count'), stroke: $('#stroke'), alpha: $('#alpha'),
+    angle: $('#angle'), speed: $('#speed'),
+    radiusVal: $('#radiusVal'), countVal: $('#countVal'), strokeVal: $('#strokeVal'), alphaVal: $('#alphaVal'), angleVal: $('#angleVal'), speedVal: $('#speedVal'),
+    wheelList: $('#wheelList'), countBadge: $('#countBadge'),
+    canvas: $('#c'), bg: $('#bg'), blend: $('#blend'), saveBtn: $('#saveBtn'), loadBtn: $('#loadBtn')
+  };
+  function uid(){return Math.random().toString(36).slice(2,9)}
+
+  // --- Canvas setup ---------------------------------------------------------
+  const ctx = ui.canvas.getContext('2d');
+  let DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+  function resize(){
+    const {clientWidth:w, clientHeight:h} = ui.canvas;
+    ui.canvas.width = Math.floor(w * DPR);
+    ui.canvas.height = Math.floor(h * DPR);
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+  }
+  const ro = new ResizeObserver(resize); ro.observe(ui.canvas);
+  resize();
+
+  // --- Wheel model ----------------------------------------------------------
+  class Wheel{
+    constructor({id=uid(), x=300, y=300, radius=180, type='concentric', count=64, color='#ffffff', stroke=1.2, alpha=1, angle=0, speed=0.12}){
+      Object.assign(this,{id,x,y,radius,type,count,color,stroke,alpha,angle,speed});
+      this.selected=false;
+    }
+    contains(px,py){
+      const dx=px-this.x, dy=py-this.y; return Math.hypot(dx,dy) <= this.radius + 6;
+    }
+    step(dt){ this.angle += this.speed * dt * 2*Math.PI; }
+    draw(ctx){
+      ctx.save();
+      ctx.translate(this.x, this.y);
+      ctx.rotate(this.angle);
+      ctx.globalAlpha = this.alpha;
+      ctx.lineWidth = this.stroke;
+      ctx.strokeStyle = this.color;
+      ctx.lineCap = 'round';
+      if(this.type === 'concentric'){
+        const step = this.radius / this.count;
+        for(let i=1;i<=this.count;i++){
+          ctx.beginPath();
+          ctx.arc(0,0, i*step, 0, Math.PI*2);
+          ctx.stroke();
+        }
+      } else {
+        for(let i=0;i<this.count;i++){
+          const a = i * (Math.PI*2/this.count);
+          ctx.beginPath();
+          ctx.moveTo(0,0);
+          ctx.lineTo(this.radius*Math.cos(a), this.radius*Math.sin(a));
+          ctx.stroke();
+        }
+      }
+      // selection ring
+      if(this.selected){
+        ctx.globalAlpha=1; ctx.setLineDash([6,6]); ctx.lineDashOffset = 2;
+        ctx.strokeStyle = '#7dd3fc'; ctx.lineWidth = 1.2;
+        ctx.beginPath(); ctx.arc(0,0,this.radius+6,0,Math.PI*2); ctx.stroke();
+        ctx.setLineDash([]);
+      }
+      ctx.restore();
+      ctx.globalAlpha=1;
+    }
+  }
+
+  // --- App state ------------------------------------------------------------
+  const state = {
+    wheels: [],
+    playing: true,
+    adding: false,
+    selectedId: null,
+    bg: ui.bg.value,
+    blend: ui.blend.value,
+  };
+
+  // --- Rendering ------------------------------------------------------------
+  let last=performance.now();
+  function frame(now){
+    const dt = Math.min(0.05, (now-last)/1000); last=now;
+    // clear
+    ctx.save();
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+    ctx.fillStyle = state.bg; ctx.fillRect(0,0,ui.canvas.clientWidth, ui.canvas.clientHeight);
+    ctx.globalCompositeOperation = state.blend;
+
+    // update + draw
+    for(const w of state.wheels){ if(state.playing) w.step(dt); w.draw(ctx);}    
+    ctx.restore();
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  // --- UI helpers -----------------------------------------------------------
+  function readForm(){
+    return {
+      type: ui.type.value,
+      color: ui.color.value,
+      radius: +ui.radius.value,
+      count: +ui.count.value,
+      stroke: +ui.stroke.value,
+      alpha: +ui.alpha.value,
+      angle: (+ui.angle.value)*Math.PI/180,
+      speed: +ui.speed.value,
+    };
+  }
+  function writeForm(w){
+    if(!w) return;
+    ui.type.value = w.type; ui.color.value = w.color; ui.radius.value = w.radius; ui.count.value = w.count;
+    ui.stroke.value = w.stroke; ui.alpha.value = w.alpha; ui.angle.value = ( (w.angle%(2*Math.PI)+2*Math.PI)%(2*Math.PI) ) * 180/Math.PI; ui.speed.value = w.speed;
+    updateFormLabels();
+  }
+  function updateFormLabels(){
+    ui.radiusVal.textContent = ui.radius.value+'px';
+    ui.countVal.textContent = ui.count.value;
+    ui.strokeVal.textContent = ui.stroke.value;
+    ui.alphaVal.textContent = ui.alpha.value;
+    ui.angleVal.textContent = ui.angle.value+'°';
+    ui.speedVal.textContent = ui.speed.value+' rev/s';
+  }
+  ['radius','count','stroke','alpha','angle','speed'].forEach(id=>{
+    ui[id].addEventListener('input', updateFormLabels);
+  });
+  updateFormLabels();
+
+  function syncList(){
+    ui.countBadge.textContent = state.wheels.length;
+    ui.wheelList.innerHTML = '';
+    state.wheels.forEach((w,idx)=>{
+      const item = document.createElement('div');
+      item.className='wheelItem'; item.dataset.id=w.id;
+      const meta = document.createElement('div'); meta.className='wheelMeta';
+      const sw = document.createElement('div'); sw.className='swatch'; sw.style.background=w.color; meta.appendChild(sw);
+      const label = document.createElement('div'); label.innerHTML = `<div>${w.type} · <span class="small">${w.count} lines · r=${w.radius}</span></div>`;
+      meta.appendChild(label);
+      const btns = document.createElement('div');
+      const up=document.createElement('button'); up.textContent='↑'; up.className='secondary'; up.style.padding='6px 10px'; up.onclick=(e)=>{e.stopPropagation(); if(idx>0){const t=state.wheels[idx-1]; state.wheels[idx-1]=state.wheels[idx]; state.wheels[idx]=t; syncList();}}
+      const down=document.createElement('button'); down.textContent='↓'; down.className='secondary'; down.style.padding='6px 10px'; down.onclick=(e)=>{e.stopPropagation(); if(idx<state.wheels.length-1){const t=state.wheels[idx+1]; state.wheels[idx+1]=state.wheels[idx]; state.wheels[idx]=t; syncList();}}
+      const del=document.createElement('button'); del.textContent='Del'; del.className='danger'; del.style.padding='6px 10px'; del.onclick=(e)=>{e.stopPropagation(); removeWheel(w.id);}
+      btns.appendChild(up); btns.appendChild(down); btns.appendChild(del);
+      item.appendChild(meta); item.appendChild(btns);
+      if(w.id===state.selectedId) item.style.outline='2px solid #7dd3fc';
+      item.onclick=()=>{selectWheel(w.id)};
+      ui.wheelList.appendChild(item);
+    });
+  }
+
+  function addWheelAt(x,y){
+    const w = new Wheel({x,y, ...readForm()});
+    state.wheels.push(w); selectWheel(w.id); syncList();
+  }
+  function removeWheel(id){
+    const i = state.wheels.findIndex(w=>w.id===id); if(i>=0){state.wheels.splice(i,1);} state.selectedId=null; syncList();
+  }
+  function selectWheel(id){
+    state.selectedId = id;
+    state.wheels.forEach(w=>w.selected = (w.id===id));
+    const w = state.wheels.find(w=>w.id===id); writeForm(w); syncList();
+  }
+
+  // --- Interactions on canvas ----------------------------------------------
+  let dragging=false, dragDX=0, dragDY=0;
+  ui.canvas.addEventListener('mousedown', (e)=>{
+    const rect=ui.canvas.getBoundingClientRect(); const x=(e.clientX-rect.left), y=(e.clientY-rect.top);
+    // check hit topmost wheel first
+    for(let i=state.wheels.length-1;i>=0;i--){
+      const w=state.wheels[i];
+      if(w.contains(x,y)){
+        selectWheel(w.id); dragging=true; dragDX=x-w.x; dragDY=y-w.y; return;
+      }
+    }
+    // if adding or no hit, prepare to add
+    if(state.adding){ addWheelAt(x,y); state.adding=false; ui.addBtn.textContent='＋ Add wheel (click canvas)'; }
+    else { // blank click deselect
+      state.selectedId=null; state.wheels.forEach(w=>w.selected=false); syncList();
+    }
+  });
+  window.addEventListener('mousemove', (e)=>{
+    if(!dragging) return; const rect=ui.canvas.getBoundingClientRect(); const x=(e.clientX-rect.left), y=(e.clientY-rect.top);
+    const w = state.wheels.find(w=>w.id===state.selectedId); if(w){ w.x = x - dragDX; w.y = y - dragDY; }
+  });
+  window.addEventListener('mouseup', ()=> dragging=false);
+
+  // --- Buttons & controls ---------------------------------------------------
+  ui.playBtn.onclick=()=>{ state.playing=!state.playing; ui.playBtn.textContent = state.playing ? '⏸︎ Pause' : '▶︎ Play'; };
+  ui.clearBtn.onclick=()=>{ state.wheels.length=0; state.selectedId=null; syncList(); };
+  ui.addBtn.onclick=()=>{ state.adding=!state.adding; ui.addBtn.textContent = state.adding ? '… Now click canvas to place' : '＋ Add wheel (click canvas)'; };
+  ui.updateBtn.onclick=()=>{
+    const w = state.wheels.find(w=>w.id===state.selectedId); if(!w) return; Object.assign(w, readForm()); syncList();
+  };
+  ui.bg.addEventListener('input', ()=>{ state.bg = ui.bg.value; });
+  ui.blend.addEventListener('change', ()=>{ state.blend = ui.blend.value; });
+
+  // Save / Load
+  ui.saveBtn.onclick=()=>{
+    const data = JSON.stringify({bg:state.bg, blend:state.blend, wheels:state.wheels.map(w=>({ ...w, selected:false }))}, null, 2);
+    localStorage.setItem('moire-wheels-layout', data);
+    ui.saveBtn.textContent='Saved ✓'; setTimeout(()=>ui.saveBtn.textContent='⌁ Save layout', 900);
+  };
+  ui.loadBtn.onclick=()=>{
+    const data = localStorage.getItem('moire-wheels-layout');
+    if(!data) { ui.loadBtn.textContent='(nothing saved)'; setTimeout(()=>ui.loadBtn.textContent='⤓ Load', 900); return; }
+    try{
+      const obj = JSON.parse(data);
+      state.bg = obj.bg || state.bg; ui.bg.value=state.bg; state.blend = obj.blend || state.blend; ui.blend.value=state.blend;
+      state.wheels = (obj.wheels||[]).map(o=>new Wheel(o)); state.selectedId=null; syncList();
+    }catch(err){ console.error(err); }
+  };
+
+  // Keyboard shortcuts
+  window.addEventListener('keydown', (e)=>{
+    if(e.key==='Delete' || e.key==='Backspace'){ if(state.selectedId){ removeWheel(state.selectedId); }}
+  });
+
+  // Seed with two classic concentric wheels
+  const W = ui.canvas.clientWidth, H = ui.canvas.clientHeight;
+  addWheelAt(W*0.45, H*0.55); state.wheels[state.wheels.length-1].speed=0.08; state.wheels[state.wheels.length-1].count=70; state.wheels[state.wheels.length-1].color='#ffffff';
+  addWheelAt(W*0.60, H*0.55); state.wheels[state.wheels.length-1].speed=-0.10; state.wheels[state.wheels.length-1].count=64; state.wheels[state.wheels.length-1].color='#ffffff';
+  selectWheel(state.wheels[state.wheels.length-1].id);
+  syncList();
+  </script>
+</body>
+</html>
