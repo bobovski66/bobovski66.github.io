@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rotational Magnetic Levitation — Blue‑Phase Explorer</title>
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React + ReactDOM (CDN) -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- Babel for JSX in the browser (for a quick standalone demo) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+      html, body { background: #0a0a0a; }
+      input[type="range"] { width: 100%; }
+      /* Small utility class used in SVG labels */
+      .text-xs { font-size: 10px; }
+    </style>
+  </head>
+  <body class="min-h-screen text-neutral-100">
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useEffect, useMemo, useRef, useState } = React;
+
+      function App() {
+        const [running, setRunning] = useState(true);
+        const [omega, setOmega] = useState(2 * Math.PI * 120); // rad/s
+        const [d, setD] = useState(0.03); // m
+        const [B0, setB0] = useState(0.05); // T·m^3
+        const [BzBias, setBzBias] = useState(0.5e-3); // T
+        const [gamma, setGamma] = useState(800);
+        const [alpha, setAlpha] = useState(0.6);
+        const [dt, setDt] = useState(0.001);
+        const [timeScale, setTimeScale] = useState(1);
+        const [m, setM] = useState([0, 0.5, 0.8660254]);
+        const mRef = useRef(m); useEffect(()=>{mRef.current=m;},[m]);
+        const [t, setT] = useState(0);
+        const tRef = useRef(0); useEffect(()=>{tRef.current=t;},[t]);
+
+        const norm = (v) => Math.hypot(v[0], v[1], v[2]);
+        const add = (a,b) => [a[0]+b[0], a[1]+b[1], a[2]+b[2]];
+        const mul = (k,a) => [k*a[0], k*a[1], k*a[2]];
+        const cross = (a,b) => [a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]];
+        const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
+
+        const Bperp = useMemo(()=> B0 / Math.max(1e-4, d*d*d), [B0,d]);
+        const BzLeak = useMemo(()=> 0.0 * B0 / Math.max(1e-4, d*d*d), [B0,d]); // disabled
+
+        const FzCurve = useMemo(()=>{
+          const C1=1.0, C2=0.4; const mNow=mRef.current; const mperp2=1 - mNow[2]*mNow[2];
+          const pts=[]; for(let i=10;i<=60;i++){ const dd=i/1000; const Bp=B0/Math.max(1e-4,dd**3);
+            const dBp2 = -6*(B0*B0)/Math.max(1e-8, dd**7); // d/d( Bp^2 )
+            const dBz = 0; // leak disabled
+            const F = C1*mNow[2]*dBz + (C2/(omega*omega))*mperp2*dBp2; pts.push({d:dd,F}); }
+          return pts; }, [B0, omega]);
+
+        const foldEstimate = useMemo(()=>{ let best=null; for(let i=1;i<FzCurve.length;i++){ const a=FzCurve[i-1], b=FzCurve[i];
+          if((a.F>=0&&b.F<=0)||(a.F<=0&&b.F>=0)){ const tt=a.F===b.F?0.5:(0-a.F)/(b.F-a.F); const d0=a.d+tt*(b.d-a.d); const slope=(b.F-a.F)/(b.d-a.d); best={d:d0,slope}; break; } }
+          return best; }, [FzCurve]);
+
+        const reqRef = useRef(0);
+        useEffect(()=>{
+          let last = performance.now();
+          const loop = (now)=>{
+            const elapsed=(now-last)/1000; last=now;
+            if(running){
+              const steps=Math.max(1, Math.floor((elapsed*timeScale)/dt));
+              let mLoc=mRef.current.slice(); let tLoc=tRef.current;
+              for(let k=0;k<steps;k++){
+                const c=Math.cos(omega*tLoc), s=Math.sin(omega*tLoc);
+                const B=[Bperp*c, Bperp*s, BzBias + BzLeak];
+                const mxB=cross(mLoc,B); const mxbxB=cross(mLoc,mxB);
+                const dm=add(mul(gamma,mxB), mul(-alpha,mxbxB));
+                mLoc = add(mLoc, mul(dt, dm));
+                const n=norm(mLoc)||1; mLoc=mul(1/n,mLoc); tLoc+=dt;
+              }
+              setM(mLoc); setT(tLoc);
+            }
+            reqRef.current = requestAnimationFrame(loop);
+          };
+          reqRef.current = requestAnimationFrame(loop);
+          return ()=> cancelAnimationFrame(reqRef.current);
+        }, [running, dt, omega, Bperp, BzBias, BzLeak, gamma, alpha, timeScale]);
+
+        const theta = Math.acos(clamp(m[2],-1,1));
+        const phiRotor = ((omega*t) % (2*Math.PI) + 2*Math.PI) % (2*Math.PI);
+        const phiDip = Math.atan2(m[1], m[0]);
+        let phiLag = phiRotor - phiDip; while(phiLag>Math.PI) phiLag-=2*Math.PI; while(phiLag<-Math.PI) phiLag+=2*Math.PI;
+
+        const histRef = useRef([]); const [bluePhase, setBluePhase] = useState(false);
+        useEffect(()=>{ const h=histRef.current; h.push({theta,phiLag,t}); if(h.length>300) h.shift(); if(h.length>100){
+            const mean=arr=>arr.reduce((a,b)=>a+b,0)/arr.length; const v=arr=>{const m=mean(arr); return arr.reduce((a,b)=>a+(b-m)*(b-m),0)/arr.length;};
+            const vT=v(h.map(u=>u.theta)), vP=v(h.map(u=>u.phiLag)); setBluePhase(vT<2e-4 && vP<2e-4);
+          }
+        }, [theta, phiLag, t]);
+
+        const fmt = (x, d=3) => Number.isFinite(x)? x.toFixed(d) : "—";
+
+        return (
+          <div className="max-w-6xl mx-auto p-4 md:p-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <Header running={running} setRunning={setRunning} />
+              <Scene m={m} phiRotor={phiRotor} theta={theta} blue={bluePhase} />
+              <FzPlot Fz={FzCurve} fold={foldEstimate} dNow={d} />
+            </div>
+            <div className="space-y-4">
+              <Panel title="Controls">
+                <Slider label={`Rotor frequency f (Hz)`} min={10} max={400} step={1}
+                  value={omega/(2*Math.PI)} onChange={(f)=>setOmega(2*Math.PI*f)} />
+                <Slider label={`Separation d (mm)`} min={10} max={60} step={1}
+                  value={d*1000} onChange={(mm)=>setD(mm/1000)} />
+                <Slider label={`Rotor strength B₀ (T·m³)`} min={0.005} max={0.2} step={0.001}
+                  value={B0} onChange={setB0} />
+                <Slider label={`Vertical bias B_{r,z} (mT)`} min={0} max={5} step={0.05}
+                  value={BzBias*1e3} onChange={(mT)=>setBzBias(mT/1e3)} />
+                <Slider label={`γ (rad/(T·s))`} min={50} max={2000} step={10}
+                  value={gamma} onChange={setGamma} />
+                <Slider label={`Damping α`} min={0} max={1.5} step={0.01}
+                  value={alpha} onChange={setAlpha} />
+                <Slider label={`Δt (ms)`} min={0.1} max={3} step={0.1}
+                  value={dt*1000} onChange={(ms)=>setDt(ms/1000)} />
+                <Slider label={`Timescale ×`} min={0.25} max={4} step={0.05}
+                  value={timeScale} onChange={setTimeScale} />
+                <div className="flex gap-2 pt-2">
+                  <button className="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500" onClick={()=>setRunning(r=>!r)}>{running?"Pause":"Run"}</button>
+                  <button className="px-3 py-2 rounded-xl bg-sky-600 hover:bg-sky-500" onClick={()=>{
+                    const v=[Math.random()*2-1, Math.random()*2-1, Math.random()*2-1]; const n=Math.hypot(...v)||1; setM(v.map(x=>x/n));
+                  }}>Randomize m</button>
+                  <button className="px-3 py-2 rounded-xl bg-amber-600 hover:bg-amber-500" onClick={()=>{ setM([0,0.5,0.8660254]); setT(0); }}>Reset</button>
+                </div>
+              </Panel>
+
+              <Panel title="Readouts">
+                <Readout label="f (Hz)" value={fmt(omega/(2*Math.PI),1)} />
+                <Readout label="ω (rad/s)" value={fmt(omega,1)} />
+                <Readout label="B⊥ at floater (mT)" value={fmt(Bperp*1e3,2)} />
+                <Readout label="Bz bias (mT)" value={fmt(BzBias*1e3,2)} />
+                <Readout label="θ tilt (deg)" value={fmt(theta*180/Math.PI,2)} />
+                <Readout label="φ lag (deg)" value={fmt(phiLag*180/Math.PI,2)} />
+                <Readout label="Blue‑phase?" value={bluePhase?"LOCKED":"—"} emphasis={bluePhase} />
+                {foldEstimate && (
+                  <>
+                    <Readout label="Fold d* (mm)" value={fmt(foldEstimate.d*1000,1)} />
+                    <Readout label="Fold slope" value={fmt(foldEstimate.slope,3)} />
+                  </>
+                )}
+              </Panel>
+
+              <Panel title="Notes">
+                <ul className="text-sm space-y-1 list-disc pl-5">
+                  <li>Pedagogical model: orientation via Landau–Lifshitz form (stable, fast).</li>
+                  <li>Blue‑phase detector uses variance of θ and φ over a ~0.3s window.</li>
+                  <li>F(d) plot shows the fold (F=0). Negative slope ≈ restoring vertical force.</li>
+                  <li>Decrease d or increase f to see the equilibrium distance trend shrink.</li>
+                </ul>
+              </Panel>
+            </div>
+          </div>
+        );
+      }
+
+      function Header({ running, setRunning }) {
+        return (
+          <div className="flex items-center justify-between bg-neutral-800/70 rounded-2xl p-4 shadow">
+            <div>
+              <h1 className="text-xl md:text-2xl font-semibold">Rotational Magnetic Levitation — Blue‑Phase Explorer</h1>
+              <p className="text-neutral-300 text-sm">Folded/SHS intuition with a hands‑on, tunable toy model.</p>
+            </div>
+            <button className={`px-4 py-2 rounded-xl ${running?"bg-rose-600 hover:bg-rose-500":"bg-emerald-600 hover:bg-emerald-500"}`} onClick={()=>setRunning(r=>!r)}>
+              {running?"Pause":"Run"}
+            </button>
+          </div>
+        );
+      }
+
+      function Panel({ title, children }) {
+        return (
+          <div className="bg-neutral-800/70 rounded-2xl p-4 shadow">
+            <h2 className="text-lg font-semibold mb-3">{title}</h2>
+            {children}
+          </div>
+        );
+      }
+
+      function Slider({ label, min, max, step, value, onChange }) {
+        const digits = step>=1?0:(step>=0.1?1:(step>=0.01?2:3));
+        return (
+          <div className="mb-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-neutral-300">{label}</span>
+              <span className="text-sm font-mono">{typeof value==="number"? value.toFixed(digits): value}</span>
+            </div>
+            <input type="range" min={min} max={max} step={step} value={value}
+              onChange={(e)=>onChange(parseFloat(e.target.value))} />
+          </div>
+        );
+      }
+
+      function Readout({ label, value, emphasis=false }) {
+        return (
+          <div className="flex items-center justify-between text-sm py-0.5">
+            <span className="text-neutral-300">{label}</span>
+            <span className={`font-mono ${emphasis?"text-emerald-400":""}`}>{value}</span>
+          </div>
+        );
+      }
+
+      function Scene({ m, phiRotor, theta, blue }) {
+        const size=380; const cx=size/2, cy=size/2, R=size*0.38;
+        const rx=Math.cos(phiRotor), ry=Math.sin(phiRotor);
+        const [mx,my,mz]=m; const proj=(x,y)=>[cx+R*x, cy - R*y];
+        const [Bx,By]=proj(rx,ry); const [Mx,My]=proj(mx,my);
+        const thetaDeg=(theta*180/Math.PI).toFixed(1);
+        return (
+          <div className="bg-neutral-800/70 rounded-2xl p-4 shadow">
+            <h2 className="text-lg font-semibold mb-3">Visualization</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <svg viewBox={`0 0 ${size} ${size}`} className="w-full h-full bg-neutral-900/60 rounded-xl">
+                <circle cx={cx} cy={cy} r={R} fill="#0a0a0a" stroke="#444" />
+                <circle cx={cx} cy={cy} r={2} fill="#888" />
+                <line x1={cx} y1={cy} x2={Bx} y2={By} stroke="#60a5fa" strokeWidth={4} />
+                <circle cx={Bx} cy={By} r={5} fill="#60a5fa" />
+                <text x={10} y={20} className="fill-sky-300 text-xs">B⊥ (rotor)</text>
+                <line x1={cx} y1={cy} x2={Mx} y2={My} stroke={blue?"#34d399":"#eab308"} strokeWidth={4} />
+                <circle cx={Mx} cy={My} r={5} fill={blue?"#34d399":"#eab308"} />
+                <text x={10} y={36} className="fill-emerald-300 text-xs">m⊥ (floater)</text>
+                <line x1={cx-R} y1={cy} x2={cx+R} y2={cy} stroke="#333" />
+                <line x1={cx} y1={cy-R} x2={cx} y2={cy+R} stroke="#333" />
+              </svg>
+              <div className="flex flex-col justify-between">
+                <div className="bg-neutral-900/60 rounded-xl p-3">
+                  <div className="text-sm text-neutral-300">Tilt θ</div>
+                  <div className="text-3xl font-semibold">{thetaDeg}<span className="text-base ml-1">deg</span></div>
+                  <div className="text-xs text-neutral-400">mz = {mz.toFixed(3)}</div>
+                </div>
+                <div className="bg-neutral-900/60 rounded-xl p-3">
+                  <div className="text-sm text-neutral-300">Legend</div>
+                  <div className="text-xs text-neutral-400 space-y-1">
+                    <div><span className="inline-block w-3 h-3 bg-sky-500 mr-2"></span>Rotor field B⊥ direction</div>
+                    <div><span className="inline-block w-3 h-3 bg-amber-500 mr-2"></span>Floater dipole m⊥ (amber) / <span className="inline-block w-3 h-3 bg-emerald-500 mx-1"></span> (emerald when locked)</div>
+                  </div>
+                </div>
+                <div className={`rounded-xl p-3 ${blue?"bg-emerald-900/40 border border-emerald-600":"bg-neutral-900/60"}`}>
+                  <div className="text-sm">Blue‑phase detector</div>
+                  <div className={`text-xl font-semibold ${blue?"text-emerald-400":"text-neutral-300"}`}>{blue?"LOCKED (phase‑locked)":"—"}</div>
+                  <div className="text-xs text-neutral-400">Variance thresholds on θ and φ over ~0.3s window.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      function FzPlot({ Fz, fold, dNow }) {
+        const W=600,H=220,pad=36; if(!Fz||Fz.length===0) return null;
+        const xs=Fz.map(p=>p.d), ys=Fz.map(p=>p.F);
+        const xMin=Math.min(...xs), xMax=Math.max(...xs); const yMin=Math.min(...ys), yMax=Math.max(...ys);
+        const xScale=(x)=> pad + (x-xMin)*(W-2*pad)/(xMax-xMin);
+        const yScale=(y)=> H-pad - (y-yMin)*(H-2*pad)/(yMax-yMin+1e-12);
+        const path=Fz.map((p,i)=>`${i===0?"M":"L"} ${xScale(p.d)} ${yScale(p.F)}`).join(" ");
+        return (
+          <div className="bg-neutral-800/70 rounded-2xl p-4 shadow">
+            <h2 className="text-lg font-semibold mb-2">Vertical Force Proxy F(d) and Fold</h2>
+            <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-[220px] bg-neutral-900/60 rounded-xl">
+              <line x1={pad} y1={H-pad} x2={W-pad} y2={H-pad} stroke="#444"/>
+              <line x1={pad} y1={pad} x2={pad} y2={H-pad} stroke="#444"/>
+              <line x1={pad} y1={yScale(0)} x2={W-pad} y2={yScale(0)} stroke="#555" strokeDasharray="4 3"/>
+              <path d={path} fill="none" stroke="#93c5fd" strokeWidth={2}/>
+              <line x1={xScale(dNow)} y1={pad} x2={xScale(dNow)} y2={H-pad} stroke="#fbbf24" strokeDasharray="4 3"/>
+              {fold && (
+                <g>
+                  <circle cx={xScale(fold.d)} cy={yScale(0)} r={4} fill="#34d399" />
+                  <text x={xScale(fold.d)+6} y={yScale(0)-6} className="fill-emerald-300 text-xs">fold d*</text>
+                </g>
+              )}
+              {Array.from({length:6},(_,i)=>i).map(i=>{ const dd=xMin + i*(xMax-xMin)/5; return (
+                <g key={i}><line x1={xScale(dd)} y1={H-pad} x2={xScale(dd)} y2={H-pad+4} stroke="#666"/>
+                <text x={xScale(dd)} y={H-pad+16} textAnchor="middle" className="fill-neutral-300 text-[10px]">{(dd*1000).toFixed(0)} mm</text></g> );})}
+              {Array.from({length:5},(_,i)=>i).map(i=>{ const yy=yMin + i*(yMax-yMin)/4; return (
+                <g key={i}><line x1={pad-4} y1={yScale(yy)} x2={pad} y2={yScale(yy)} stroke="#666"/>
+                <text x={pad-6} y={yScale(yy)+3} textAnchor="end" className="fill-neutral-300 text-[10px]">{yy.toExponential(1)}</text></g> );})}
+            </svg>
+            <p className="text-xs text-neutral-400 mt-2">Illustrative F(d): sign change with negative slope ≈ stable levitation. Trend depends on (f, B₀, Bz, α, γ).</p>
+          </div>
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+    </script>
+  </body>
+</html>
