@@ -1,0 +1,300 @@
+\documentclass[11pt]{article}
+
+% ---------- Packages ----------
+\usepackage[letterpaper,margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{physics}
+\usepackage{siunitx}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage[nameinlink,capitalise]{cleveref}
+
+% ---------- Hyperref setup ----------
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!60!black,
+  citecolor=blue!60!black,
+  urlcolor=blue!60!black
+}
+
+% ---------- Custom commands ----------
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\TT}{\mathbb{T}}
+\newcommand{\SSS}{\mathbb{S}}
+\newcommand{\EE}{\mathbb{E}}
+\renewcommand{\dd}{\,\mathrm{d}}
+\newcommand{\vect}[1]{\mathbf{#1}}
+\newcommand{\wh}[1]{\widehat{#1}}
+\newcommand{\wt}[1]{\widetilde{#1}}
+\newcommand{\angles}[1]{\langle #1 \rangle}
+\newcommand{\bigO}{\mathcal{O}}
+\newcommand{\calH}{\mathcal{H}}
+\newcommand{\calM}{\mathcal{M}}
+\newcommand{\calL}{\mathcal{L}}
+\newcommand{\calO}{\mathcal{O}}
+
+% ---------- Theorem styles (if needed) ----------
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\theoremstyle{plain}
+\newtheorem{proposition}{Proposition}
+\newtheorem{remark}{Remark}
+
+% ---------- Title ----------
+\title{Rotational Magnetic Levitation:\\
+A Folded/SHS Framework with Practitioner Playbook}
+\author{ }
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We provide an experiment-ready guide to rotational magnetic levitation (RML) accompanied by a concise theoretical scaffold based on Floquet averaging, stable Hamiltonian structures (SHS), and a folded symplectic normal form for vertical equilibrium. The practical portion covers hardware setup, tuning, measurement plans, and troubleshooting. The theoretical portion explains why a small vertical bias field \(B_{r,z}\) selects a Reeb-like direction, how fast rotation yields a phase-locked “blue phase,” and why stable levitation occurs at a fold where the averaged vertical force crosses zero with negative slope. We conclude with experiment recipes, scaling laws, and data-analysis templates that tie directly to the model.
+\end{abstract}
+
+\tableofcontents
+
+% =========================================================
+\section{Quick-Start for Practitioners}
+
+\subsection{Hardware and Materials}
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Rotor magnet (Rm):} Diametrically magnetized cylinder or sphere on a high-speed motor with RPM readout.
+  \item \textbf{Floater magnet (Fm):} Smaller permanent magnet (sphere or short cylinder) to levitate.
+  \item \textbf{Bias magnet (Bm):} Small static magnet mounted above the rotor to supply a controllable vertical field component \(B_{r,z}\). A micrometer stage is recommended.
+  \item \textbf{Alignment:} 3-axis stages to set rotor--floater separation \(d\) and to position Bm.
+  \item \textbf{Damping option:} Adjustable aluminum plate or viscous bath (water/glycerin) for capture assistance.
+  \item \textbf{Sensing:} High-speed camera, optional IMU on Fm, Hall sensors, and a laser distance sensor for vertical height \(z\).
+\end{itemize}
+
+\paragraph{Recommended starting geometry.}
+Rotor radius \(R_r\approx\) 15--25\,mm; Floater radius \(R_f\approx\) 5--10\,mm; initial separation \(d_0\approx\) 10--40\,mm; NdFeB (N42--N52).
+
+\subsection{Safety and Alignment}
+Use a clear shield around the rotor; verify balance to target RPM (e.g., 12--18k RPM). Fix the spin axis vertical. Verify polarities and field magnitudes with a Gaussmeter.
+
+\subsection{First-Levitation Protocol (Minimal Knobs)}
+\begin{enumerate}[leftmargin=1.5em]
+  \item \textbf{Dial a small vertical bias:} set \(B_{r,z}\sim 1\%\)–\(10\%\) of the transverse field at Fm.
+  \item \textbf{Set separation:} start at \(d\approx 25\) mm.
+  \item \textbf{Spin up:} sweep rotor frequency \(\omega_r\) slowly from low to high.
+  \item \textbf{Watch for capture (blue phase):} small constant tilt \(\theta_f\), steady phase lag \(\phi\), stable height.
+  \item \textbf{Remove damping (if used):} steady levitation should persist after capture.
+\end{enumerate}
+
+\paragraph{Tell-tales of success.} Nearly constant \(\theta_f\ll 1\) rad, steady \(\phi\), height decreases mildly as \(\omega_r\) increases.
+
+\paragraph{If capture fails.} Increase \(B_{r,z}\) and/or introduce damping (aluminum plate within 5--10\,mm below Fm) to enlarge the basin of attraction.
+
+\subsection{Knobs and Qualitative Effects}
+\begin{itemize}[leftmargin=1.5em]
+  \item Increasing \(\omega_r\): decreases levitation height and \(\theta_f\).
+  \item Increasing \(B_{r,z}\): widens capture basin, decreases \(\theta_f\), stabilizes phase-lock.
+  \item Increasing \(R_f\): raises required \(\omega_r\) (since \(I_f\propto R_f^5\)).
+  \item Increasing remanence: weaker effect on thresholds; modestly increases height.
+\end{itemize}
+
+\subsection{Minimal Measurement Set}
+\begin{itemize}[leftmargin=1.5em]
+  \item Levitation height \(z(\omega_r)\) (or separation \(d(\omega_r)\)).
+  \item Floater orientation: tilt \(\theta_f(\omega_r,B_{r,z})\) and phase lag \(\phi(\omega_r,B_{r,z})\).
+  \item Capture probability vs \(B_{r,z}\) (with/without damping).
+\end{itemize}
+
+\subsection{Troubleshooting}
+\begin{itemize}[leftmargin=1.5em]
+  \item Jitter or no capture: increase \(B_{r,z}\) or add damping; check rotor wobble.
+  \item Sudden drop at high \(\omega_r\): mode transition; back off \(\omega_r\) or adjust \(d\).
+  \item Floater spins uncontrollably: excess \(B_{r,\perp}\) asymmetry; reduce rotor tilt or lower \(\omega_r\).
+  \item Extreme sensitivity to nearby objects: likely near the fold \(F_z\simeq 0\); increase \(B_{r,z}\).
+\end{itemize}
+
+% =========================================================
+\section{Design of Experiments (DoE)}
+
+\subsection{Core Factor Sweeps}
+\begin{itemize}[leftmargin=1.5em]
+  \item \(\omega_r\): 6--18\,krpm, 8--10 levels.
+  \item \(B_{r,z}\): 0, 0.5, 1, 2, 5\,mT (measured at floater location with rotor off).
+  \item \(d\): 10--40\,mm in steps of 2.5--5\,mm.
+  \item \(R_f\): 5, 6, 8, 10\,mm (same material).
+\end{itemize}
+
+\subsection{Response Variables}
+Levitation height \(z\), tilt \(\theta_f\), phase lag \(\phi\), capture probability, time-to-capture, mode labels (UD/Side/Mixed/U), drop frequency.
+
+\subsection{Recommended Plots}
+\begin{itemize}[leftmargin=1.5em]
+  \item \(z\) vs \(\omega_r\) at fixed \(B_{r,z}\) (expect decreasing trend).
+  \item \(\theta_f,\phi\) vs \(\omega_r\) for several \(B_{r,z}\).
+  \item Stability maps in \((\omega_r,d)\) for each \(B_{r,z}\).
+  \item Capture probability vs \(B_{r,z}\) with/without damping.
+  \item Threshold \(\omega_r\) vs \(R_f\) (log–log slope \(\approx 5/2\); see \S\ref{sec:scaling}).
+\end{itemize}
+
+\subsection{Example DoE Table}
+\begin{table}[h]
+  \centering
+  \sisetup{round-mode=places,round-precision=1}
+  \begin{tabular}{@{}lllll@{}}
+    \toprule
+    Factor & Levels & Units & Notes & Role \\
+    \midrule
+    \(\omega_r\) & 6--18k (10) & rpm & evenly spaced & primary sweep \\
+    \(B_{r,z}\) & 0, 0.5, 1, 2, 5 & mT & measured w/ rotor off & bias control \\
+    \(d\) & 10:5:40 & mm & fixed by stage & geometry \\
+    \(R_f\) & 5, 6, 8, 10 & mm & same grade NdFeB & inertia scaling \\
+    \bottomrule
+  \end{tabular}
+  \caption{Suggested factors and levels for initial DoE.}
+\end{table}
+
+% =========================================================
+\section{Theory to Practice: Intuition, Formulas, Predictions}
+\label{sec:theory2practice}
+
+\subsection{One-Paragraph Intuition}
+A fast, nearly transverse rotating field from the rotor produces a periodic torque on the floater. A small \emph{static} vertical field \(B_{r,z}\) selects a preferred axis (the ``Reeb'' direction). Above a critical speed the floater phase-locks: its tilt \(\theta_f\) and phase lag \(\phi\) become approximately constant while it precesses at the drive rate. In this locked regime the time-averaged vertical force \(F_z\) is non-monotone in distance and crosses zero with \emph{negative slope}, producing a restoring force (stable levitation). Damping helps capture but is not required to maintain the locked state.
+
+\subsection{Working Formulas in the Blue Phase}
+Let \(I_f\) be the floater moment of inertia, \(m_f\) its magnetic moment, and \(B_{r,\perp}\) the transverse amplitude of the rotor field at the floater. In the locked steady state,
+\begin{equation}
+  \label{eq:phi-theta}
+  \phi \approx \frac{\zeta_{\mathrm{rot}}\,\omega_r}{I_f\omega_r^2 - m_f B_{r,z}},
+  \qquad
+  \theta_f \approx \frac{m_f B_{r,\perp}}{I_f\omega_r^2 - m_f B_{r,z}}.
+\end{equation}
+\textbf{Implications.} Increasing \(\omega_r\) or \(B_{r,z}\) decreases \(\theta_f\) and \(\phi\). Finite \(I_f\) is essential (drag alone cannot replace it). For a sphere of radius \(R_f\), \(I_f\propto R_f^5\), so thresholds scale strongly with size.
+
+\subsection{Folded Normal Form for Vertical Equilibrium}
+Let \(F_z(d;\omega_r,B_{r,z},\ldots)\) denote the time-averaged vertical force. Near a stable levitation distance \(d_\star\),
+\begin{equation}
+  \label{eq:Fz-linear}
+  F_z(d) \approx K\,(d-d_\star) + \cdots, \qquad K<0.
+\end{equation}
+The \emph{fold set} is \(\Sigma=\{F_z=0\}\). Stability corresponds to crossing with negative slope; practically, a gentle tap yields return rather than escape.
+
+\subsection{SHS Picture \& Reeb-Locked Orbit}
+On a fixed energy shell \(\calM^3=\{H_{\mathrm{eff}}=E\}\), there exists a \(1\)-form \(\lambda\) (contact-like) such that \(\lambda\wedge d\lambda>0\) and the restricted dynamics are conformal to the Reeb field \(R\) of \(\lambda\). The small \(B_{r,z}\) provides coorientation and sets the Reeb direction (precession). The blue phase corresponds to a closed Reeb-type orbit whose linearization has one stable direction (vertical) and a neutral direction along the orbit.
+
+\subsection{Practitioner Predictions (Immediately Testable)}
+\begin{enumerate}[leftmargin=1.5em,label=\textbf{P\arabic*.}]
+  \item \(\theta_f(\omega_r,B_{r,z})\) and \(\phi(\omega_r,B_{r,z})\) follow \cref{eq:phi-theta}; fits estimate \(I_f\) and effective field coefficients.
+  \item \(z(\omega_r)\) strictly decreases at fixed \(B_{r,z}\), with inflections near mode transitions.
+  \item Hysteresis/monodromy under slow loops in \((\omega_r,B_{r,z})\) encircling \(\Sigma\): height and phase do not return identically.
+  \item Capture probability increases with \(B_{r,z}\) and with damping during approach; steady state persists after damping is removed.
+  \item Nano-regime crossover: intrinsic spin angular momentum can substitute for drive-induced twist, enabling stabilization in static fields.
+\end{enumerate}
+
+% =========================================================
+\section{Experiment Recipes}
+
+\subsection{Mapping the Reeb Direction (Bias-Sweep)}
+Fix \(d\). For each \(B_{r,z}\), sweep \(\omega_r\) upward; record \(\theta_f,\phi,z\).
+\emph{Expected:} decreasing \(\theta_f,\phi\) with both \(\omega_r\) and \(B_{r,z}\); widening capture basin with larger \(B_{r,z}\).
+
+\subsection{Height--Frequency Curves (Core Plot)}
+For multiple \(B_{r,z}\), measure \(z(\omega_r)\).
+\emph{Expected:} monotone decrease; inflection indicates proximity to a mode transition.
+
+\subsection{Basin Mapping with Damping}
+Place an aluminum plate at gaps 2--20\,mm. From randomized initial conditions, measure capture probability into the blue phase.
+\emph{Expected:} strong improvement at small gaps; once captured, levitation persists after removing the plate.
+
+\subsection{Size Scaling Test}
+Repeat the core plot for \(R_f=5,6,8,10\) mm. Estimate minimum \(\omega_r\) for robust capture.
+\emph{Expected:} \(\omega_{r,\min}\propto R_f^{5/2}\) (holding geometry constant).
+
+\subsection{Hysteresis/Monodromy Loop}
+Perform slow parameter loops: increase \(\omega_r\) while decreasing \(B_{r,z}\), then reverse; track \(z,\phi\).
+\emph{Expected:} loop area \(>0\) in \((\omega_r,B_{r,z})\) plane (contact-geometric phase).
+
+% =========================================================
+\section{Data Analysis Checklist}
+
+\begin{itemize}[leftmargin=1.5em]
+  \item Fit \(\theta_f\) and \(\phi\) to \cref{eq:phi-theta} to extract \(I_f\) and field coefficients.
+  \item Segment time-series into modes (UD/Side/Mixed/U) using spectral features of \(z(t),\theta_f(t),\phi(t)\).
+  \item Construct stability regions in \((\omega_r,d)\) for each \(B_{r,z}\).
+  \item Quantify capture probability vs \(B_{r,z}\) and plate gap; fit a logistic curve.
+\end{itemize}
+
+% =========================================================
+\section{Extensions and Variations}
+\begin{itemize}[leftmargin=1.5em]
+  \item Non-axisymmetric rotors: tilt magnetization by \(\alpha\) to control \(B_{r,z}\) without a separate bias magnet.
+  \item Multi-rotor lattices: levitate arrays and probe synchronization/collective phases.
+  \item Fluid media: vary viscosity to map capture-time vs damping while holding steady-state height.
+  \item Sensing upgrade: 3D Hall-sensor ring to reconstruct \(\vect B\) and test averaging model.
+\end{itemize}
+
+% =========================================================
+\appendix
+
+\section{Floquet/Kapitza Averaging Sketch}
+Let the rotor field be
+\begin{equation}
+  \vect B_r(t)=B_{r,\perp}\,(\cos\omega_r t\,\hat{\vect x}+\sin\omega_r t\,\hat{\vect y}) + B_{r,z}\,\hat{\vect z}.
+\end{equation}
+The floater dipole \(\vect m_f=m_f \hat m_f\) obeys rigid-body dynamics with torque
+\(\boldsymbol\tau=\vect m_f\times \vect B_r\) and optional rotational drag \(-\zeta_{\mathrm{rot}}\boldsymbol\omega_f\).
+Averaging over \(2\pi/\omega_r\) yields an effective correction of order \(B_{r,\perp}^2/\omega_r^2\) and a gyroscopic term \(\propto I_f\omega_r\).
+In the locked regime, \(\hat m_f\) maintains constant \(\theta_f,\phi\) in the drive frame, leading to \cref{eq:phi-theta}.
+
+\section{SHS on the Energy Shell}
+Let \(H_{\mathrm{eff}}\) denote the averaged Hamiltonian on \(T^*(\SSS^2\times\RR)\).
+On a fixed energy level \(\calM^3=\{H_{\mathrm{eff}}=E\}\), choose a \(1\)-form \(\lambda\) such that \(\lambda\wedge d\lambda>0\) and the Hamiltonian vector field restricts to be conformal to the Reeb field \(R\) of \(\lambda\).
+The small but nonzero \(B_{r,z}\) supplies coorientation and selects the Reeb direction (precession axis).
+The locked blue phase is a closed Reeb-type orbit with one stable transverse direction (vertical).
+
+\section{Folded Symplectic Normal Form for Vertical Motion}
+In reduced vertical coordinates \((d,p_d)\), the averaged \(2\)-form may flip sign across the fold set \(\Sigma=\{F_z(d)=0\}\).
+A local model is
+\begin{equation}
+  \omega = \omega_0 + s\,\dd s\wedge \lambda,
+\end{equation}
+where \(s\) is the signed distance to \(\Sigma\) and \(\lambda\) is the contact \(1\)-form inherited from the locked precession.
+Stability at \(d_\star\) corresponds to \(\partial_d F_z|_{d_\star}<0\).
+
+\section{Scaling Relations}
+\label{sec:scaling}
+For a solid sphere of radius \(R_f\) and density \(\rho\),
+\begin{equation}
+  I_f = \frac{8\pi}{15}\rho R_f^5.
+\end{equation}
+Balancing \(I_f\omega_r^2 \sim m_f B_{r,z}\) with \(m_f\propto R_f^3\) suggests
+\begin{equation}
+  \omega_{r,\min} \propto R_f^{5/2},
+\end{equation}
+if the field geometry is approximately size-invariant. The tilt obeys
+\(
+\theta_f \propto B_{r,\perp}/(I_f\omega_r^2 - m_f B_{r,z})
+\),
+and increasing \(\omega_r\) typically reduces the equilibrium distance \(d_\star\).
+
+\section{Bill of Materials (Sketch) \& CAD Notes}
+BLDC with encoder; 3D-printed chuck with set screws; acrylic shield; micrometer stages for \(d\) and Bm; Gaussmeter; aluminum plate on a linear stage. Provide slotted mounts to tune lateral offset and Bm height precisely.
+
+\section{Analysis Notebook Outline}
+\textbf{Inputs:} RPM vs time, \(z(t)\), \(\theta_f(t)\), \(\phi(t)\), \(B_{r,z}\), \(d\), \(R_f\). \\
+\textbf{Processing:} smoothing, phase extraction, mode classification (spectral clustering), locked-state parameter estimation. \\
+\textbf{Fits:} rational \(\theta_f,\phi\) models (\cref{eq:phi-theta}); logistic for capture vs bias/damping; \(\omega_{r,\min}(R_f)\) slope. \\
+\textbf{Outputs:} stability maps, scaling plots, residuals, parameter tables.
+
+% =========================================================
+\section*{One-Page Executive Summary}
+Add a small vertical bias \(B_{r,z}\). Spin up slowly. Seek a small, constant \(\theta_f\) and steady \(\phi\).
+Height drops as \(\omega_r\) rises. Use an aluminum plate only for capture.
+Measure \(z(\omega_r)\), \(\theta_f(\omega_r,B_{r,z})\), capture probability vs \(B_{r,z}\).
+Fit the rational formulas to extract inertial/field scales.
+Stable levitation sits on the fold \(F_z=0\); negative slope means you’re safe.
+The SHS/Reeb picture explains stability of a non-minimum energy configuration once phase-locked.
+
+\end{document}
