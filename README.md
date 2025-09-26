@@ -45,4 +45,3 @@ I’m a mathematician and educator exploring the seams between differential topo
 
 ---
 
-_This README is intentionally minimal: About + direct links._
