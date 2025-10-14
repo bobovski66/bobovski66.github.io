@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hopf Fibration — Stereoscopic Viewer (Standalone)</title>
+  <style>
+    :root { color-scheme: dark; }
+    body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; background: #0a0a0a; color: #eaeaea; }
+    .wrap { padding: 16px; max-width: 1100px; margin: 0 auto; }
+    .controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 12px; }
+    label { font-size: 12px; opacity: .95; }
+    label > span.val { margin-left: 8px; font-size: 11px; opacity: .8; }
+    input[type="range"] { vertical-align: middle; margin-left: 8px; }
+    .row { display: flex; gap: 8px; }
+    .col { flex: 1 1 0; }
+    .panel { border: 1px solid #222; border-radius: 12px; padding: 12px; background: #0f0f0f; box-shadow: 0 2px 10px rgba(0,0,0,.3); }
+    .hint { font-size: 12px; opacity: .8; margin-top: 8px; }
+    details { margin-top: 8px; }
+    summary { cursor: pointer; font-size: 13px; text-decoration: underline; }
+    .viewer { width: 100%; }
+    .stereo { display: flex; gap: 8px; }
+    canvas { display: inline-block; vertical-align: top; }
+    .mono { display: none; }
+    .small { font-size: 11px; opacity: .85; }
+  </style>
+  <!-- three.js -->
+  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <h2>Hopf Fibration — Stereoscopic Viewer (Standalone)</h2>
+    <div class="panel">
+      <div class="controls" id="controls">
+        <label>Fibers
+          <input id="fibers" type="range" min="24" max="600" step="1" value="120" />
+          <span class="val" id="fibersVal">120</span>
+        </label>
+        <label>Samples/Fiber
+          <input id="samples" type="range" min="32" max="512" step="1" value="128" />
+          <span class="val" id="samplesVal">128</span>
+        </label>
+        <label>IPD
+          <input id="ipd" type="range" min="0" max="0.2" step="0.005" value="0.06" />
+          <span class="val" id="ipdVal">0.060</span>
+        </label>
+        <label>Phase speed
+          <input id="phase" type="range" min="0" max="2.0" step="0.05" value="0.7" />
+          <span class="val" id="phaseVal">0.70</span>
+        </label>
+        <label>Opacity
+          <input id="opacity" type="range" min="0.05" max="1.0" step="0.01" value="0.82" />
+          <span class="val" id="opacityVal">0.82</span>
+        </label>
+        <label>Radius scale
+          <input id="radius" type="range" min="0.6" max="1.5" step="0.01" value="0.9" />
+          <span class="val" id="radiusVal">0.90</span>
+        </label>
+        <label><input id="stereo" type="checkbox" checked /> Stereo</label>
+        <label><input id="beads" type="checkbox" /> Moving beads</label>
+      </div>
+
+      <div class="viewer" id="viewer">
+        <div class="stereo" id="stereoRow">
+          <canvas id="leftCanvas"></canvas>
+          <canvas id="rightCanvas"></canvas>
+        </div>
+        <canvas id="monoCanvas" class="mono"></canvas>
+      </div>
+
+      <p class="hint">
+        Keep <b>Stereo</b> checked for side-by-side pairs (cross-eye or VR viewers). Uncheck for a mono view.
+        Use the sliders to change fiber count, opacity, global phase speed (beads), and radius scaling. The faint wire torus is a visual guide only.
+      </p>
+
+      <details>
+        <summary>Math notes (quick)</summary>
+        <div class="small">
+          We sample base points <em>n</em> on S^2 and use a standard Hopf section:
+          z1 = sqrt((1+n_z)/2), z2 = (n_x + i n_y)/sqrt(2(1+n_z)). The fiber over n is
+          ( e^(i·theta) · z1 , e^(i·theta) · z2 ) ⊂ S^3. We embed S^3 → R^3 by stereographic projection from (-1,0,0,0):
+          (x0,x1,x2,x3) → (x1, x2, x3)/(1 - x0). Varying theta draws each circular fiber. Colors encode base directions.
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <script>
+    // ----------------- Params -----------------
+    const params = {
+      fibers: 120,
+      samplesPerFiber: 128,
+      ipd: 0.06,
+      orbitSpeed: 0.15,
+      phaseSpeed: 0.7,
+      opacity: 0.82,
+      showBeads: false,
+      beadCount: 64,
+      beadSize: 0.02,
+      radiusScale: 0.9,
+      runTests: true,
+      stereo: true,
+    };
+
+    // ----------------- DOM -----------------
+    const elFibers = document.getElementById('fibers');
+    const elSamples = document.getElementById('samples');
+    const elIpd = document.getElementById('ipd');
+    const elPhase = document.getElementById('phase');
+    const elOpacity = document.getElementById('opacity');
+    const elRadius = document.getElementById('radius');
+    const elStereo = document.getElementById('stereo');
+    const elBeads = document.getElementById('beads');
+
+    const elFibersVal = document.getElementById('fibersVal');
+    const elSamplesVal = document.getElementById('samplesVal');
+    const elIpdVal = document.getElementById('ipdVal');
+    const elPhaseVal = document.getElementById('phaseVal');
+    const elOpacityVal = document.getElementById('opacityVal');
+    const elRadiusVal = document.getElementById('radiusVal');
+
+    const viewer = document.getElementById('viewer');
+    const stereoRow = document.getElementById('stereoRow');
+    const leftCanvas = document.getElementById('leftCanvas');
+    const rightCanvas = document.getElementById('rightCanvas');
+    const monoCanvas = document.getElementById('monoCanvas');
+
+    // ----------------- THREE setup -----------------
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0a0a0a);
+    const group = new THREE.Group();
+    scene.add(group);
+    const beadsGroup = new THREE.Group();
+    scene.add(beadsGroup);
+
+    const ambient = new THREE.AmbientLight(0xffffff, 0.9);
+    scene.add(ambient);
+    const dir = new THREE.DirectionalLight(0xffffff, 0.3);
+    dir.position.set(2,3,4);
+    scene.add(dir);
+
+    const leftRenderer = new THREE.WebGLRenderer({ canvas: leftCanvas, antialias: true });
+    const rightRenderer = new THREE.WebGLRenderer({ canvas: rightCanvas, antialias: true });
+    const monoRenderer = new THREE.WebGLRenderer({ canvas: monoCanvas, antialias: true });
+
+    // Cameras
+    const camL = new THREE.PerspectiveCamera(55, 1, 0.01, 100);
+    const camR = new THREE.PerspectiveCamera(55, 1, 0.01, 100);
+    camL.position.set(-params.ipd, 0.1, 3.5);
+    camR.position.set( params.ipd, 0.1, 3.5);
+
+    // ----------------- Math utils -----------------
+    function fibonacciSphere(samples, jitter=0.0) {
+      const pts = [];
+      const phi = Math.PI * (3 - Math.sqrt(5));
+      for (let i = 0; i < samples; i++) {
+        const y = 1 - (i / Math.max(1, samples - 1)) * 2;
+        const radius = Math.sqrt(Math.max(0, 1 - y*y));
+        const theta = phi * i + (jitter ? (Math.random() - 0.5) * jitter : 0);
+        const x = Math.cos(theta) * radius;
+        const z = Math.sin(theta) * radius;
+        const v = new THREE.Vector3(x, y, z).normalize();
+        pts.push(v);
+      }
+      return pts;
+    }
+
+    function hopfSection(n) {
+      const nx = n.x, ny = n.y, nz = n.z;
+      if (nz > -0.999999) {
+        const denom = Math.sqrt(2 * (1 + nz));
+        const z1 = new THREE.Vector2(Math.sqrt((1 + nz)/2), 0);
+        const z2 = new THREE.Vector2(nx/denom, ny/denom);
+        return { z1, z2 };
+      }
+      return { z1: new THREE.Vector2(0,1), z2: new THREE.Vector2(0,0) };
+    }
+
+    function c2_to_r4(z1, z2) {
+      return { x0: z1.x, x1: z1.y, x2: z2.x, x3: z2.y };
+    }
+
+    function globalPhase(z1, z2, phi) {
+      const c = Math.cos(phi), s = Math.sin(phi);
+      const z1p = new THREE.Vector2(c*z1.x - s*z1.y, s*z1.x + c*z1.y);
+      const z2p = new THREE.Vector2(c*z2.x - s*z2.y, s*z2.x + c*z2.y);
+      return { z1: z1p, z2: z2p };
+    }
+
+    function stereoR4toR3(r4) {
+      const denom = 1 - r4.x0;
+      return new THREE.Vector3(r4.x1/denom, r4.x2/denom, r4.x3/denom);
+    }
+
+    function fiberPolyline(n, M, phi, radiusScale=1.0) {
+      const { z1, z2 } = hopfSection(n);
+      const pts = [];
+      for (let k=0; k<=M; k++) {
+        const theta = (2*Math.PI*k)/M + phi;
+        const { z1:zz1, z2:zz2 } = globalPhase(z1, z2, theta);
+        const r4 = c2_to_r4(zz1, zz2);
+        const p = stereoR4toR3(r4).multiplyScalar(radiusScale);
+        pts.push(p);
+      }
+      return pts;
+    }
+
+    function makeLine(points, color=0xffffff, opacity=1.0) {
+      const geom = new THREE.BufferGeometry().setFromPoints(points);
+      const mat = new THREE.LineBasicMaterial({ color, transparent: opacity < 1.0, opacity });
+      return new THREE.Line(geom, mat);
+    }
+
+    function colorFromNormal(n) {
+      const h = ((Math.atan2(n.z, n.x) / (2*Math.PI)) + 0.5) % 1;
+      const l = 0.5 * (n.y * 0.5 + 0.5) + 0.35;
+      const s = 0.8;
+      const color = new THREE.Color();
+      color.setHSL(h, s, l);
+      return color;
+    }
+
+    // ----------------- Build geometry -----------------
+    function buildHopfGeometry() {
+      group.clear();
+      beadsGroup.clear();
+
+      const basePts = fibonacciSphere(params.fibers, 0.0);
+      const M = params.samplesPerFiber;
+      const phi0 = 0;
+
+      for (const n of basePts) {
+        const pts = fiberPolyline(n, M, phi0, params.radiusScale);
+        const col = colorFromNormal(n);
+        const line = makeLine(pts, col.getHex(), params.opacity);
+        group.add(line);
+      }
+
+      // beads optional
+      if (params.showBeads) {
+        const beadGeom = new THREE.SphereGeometry(params.beadSize, 12, 12);
+        for (let i=0;i<params.beadCount;i++) {
+          const idx = Math.floor(Math.random()*basePts.length);
+          const n = basePts[idx];
+          const t0 = Math.random()*2*Math.PI;
+          const mat = new THREE.MeshStandardMaterial({ color: colorFromNormal(n), metalness: 0.1, roughness: 0.4 });
+          const m = new THREE.Mesh(beadGeom, mat);
+          m.userData = { n, t0 };
+          const pts = fiberPolyline(n, 64, t0, params.radiusScale);
+          m.position.copy(pts[0]);
+          beadsGroup.add(m);
+        }
+      }
+
+      // faint torus reference
+      const torus = new THREE.Mesh(
+        new THREE.TorusGeometry(1.2*params.radiusScale, 0.45*params.radiusScale, 2, 100),
+        new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.05, wireframe: true })
+      );
+      group.add(torus);
+    }
+
+    function animateBeads(t) {
+      beadsGroup.children.forEach(m => {
+        const { n, t0 } = m.userData;
+        const pts = fiberPolyline(n, 1, t0 + t * params.phaseSpeed, params.radiusScale);
+        m.position.copy(pts[0]);
+      });
+    }
+
+    // ----------------- Self tests -----------------
+    function runSelfTests() {
+      const tests = [];
+
+      tests.push({
+        name: "fibonacciSphere count & norm",
+        run: () => {
+          const k = 37;
+          const pts = fibonacciSphere(k);
+          const countOk = pts.length === k;
+          const normsOk = pts.every(v => Math.abs(v.length() - 1) < 1e-6);
+          return countOk && normsOk;
+        }
+      });
+
+      tests.push({
+        name: "hopfSection normalization",
+        run: () => {
+          for (let i=0;i<20;i++) {
+            const n = fibonacciSphere(1)[0];
+            const { z1, z2 } = hopfSection(n);
+            const s = z1.x*z1.x + z1.y*z1.y + z2.x*z2.x + z2.y*z2.y;
+            if (Math.abs(s-1) > 1e-6) return false;
+          }
+          return true;
+        }
+      });
+
+      tests.push({
+        name: "fiberPolyline closure",
+        run: () => {
+          const n = new THREE.Vector3(0.3, 0.8, 0.5).normalize();
+          const pts = fiberPolyline(n, 128, 0.0, 1.0);
+          const a = pts[0], b = pts[pts.length-1];
+          return a.distanceTo(b) < 1e-4;
+        }
+      });
+
+      tests.push({
+        name: "stereographic finite",
+        run: () => {
+          const { z1, z2 } = hopfSection(new THREE.Vector3(0,0,1));
+          const r4 = c2_to_r4(z1, z2);
+          const p = stereoR4toR3(r4);
+          return Number.isFinite(p.x) && Number.isFinite(p.y) && Number.isFinite(p.z);
+        }
+      });
+
+      tests.push({
+        name: "globalPhase identity & 2π",
+        run: () => {
+          const z1 = new THREE.Vector2(0.8, 0.1);
+          const z2 = new THREE.Vector2(-0.2, 0.56);
+          const a = globalPhase(z1, z2, 0);
+          const b = globalPhase(z1, z2, 2*Math.PI);
+          const eq = (u,v) => Math.hypot(u.x-v.x, u.y-v.y) < 1e-6;
+          return eq(a.z1, z1) && eq(a.z2, z2) && eq(b.z1, z1) && eq(b.z2, z2);
+        }
+      });
+
+      tests.push({
+        name: "globalPhase quarter-turn",
+        run: () => {
+          const z = new THREE.Vector2(1, 0);
+          const { z1 } = globalPhase(z, z, 0.5*Math.PI);
+          return Math.abs(z1.x) < 1e-6 && Math.abs(z1.y - 1) < 1e-6;
+        }
+      });
+
+      tests.push({
+        name: "camera baseline matches IPD (initial)",
+        run: () => {
+          return Math.abs(camL.position.x + camR.position.x) < 1e-6 &&
+                 Math.abs(camR.position.x - (-camL.position.x) - 2*params.ipd) < 1e-3;
+        }
+      });
+
+      tests.push({
+        name: "makeLine point count",
+        run: () => {
+          const pts = [new THREE.Vector3(), new THREE.Vector3(1,0,0), new THREE.Vector3(1,1,0)];
+          const line = makeLine(pts, 0xffffff, 1.0);
+          const pos = line.geometry.getAttribute('position');
+          return pos && pos.count === pts.length;
+        }
+      });
+
+      tests.push({
+        name: "radiusScale zero collapses",
+        run: () => {
+          const n = new THREE.Vector3(0,0,1);
+          const pts = fiberPolyline(n, 16, 0, 0);
+          return pts.every(p => p.length() < 1e-12);
+        }
+      });
+
+      const results = tests.map(t => ({ name: t.name, ok: !!t.run() }));
+      const allOk = results.every(r => r.ok);
+      console.groupCollapsed('Hopf Viewer self-tests');
+      results.forEach(r => console.log(`${r.ok ? '✅' : '❌'} ${r.name}`));
+      console.log('All OK:', allOk);
+      console.groupEnd();
+    }
+
+    // ----------------- Resize handling -----------------
+    function setSizes() {
+      const containerWidth = viewer.clientWidth;
+      const h = Math.max(300, Math.floor(containerWidth * 9 / 16));
+      const halfW = Math.floor(containerWidth/2) - 4; // gap
+
+      if (params.stereo) {
+        leftCanvas.style.display = 'inline-block';
+        rightCanvas.style.display = 'inline-block';
+        monoCanvas.style.display = 'none';
+
+        leftCanvas.width = halfW; leftCanvas.height = h;
+        rightCanvas.width = halfW; rightCanvas.height = h;
+        leftCanvas.style.width = halfW + 'px'; leftCanvas.style.height = h + 'px';
+        rightCanvas.style.width = halfW + 'px'; rightCanvas.style.height = h + 'px';
+
+        camL.aspect = halfW / h; camL.updateProjectionMatrix();
+        camR.aspect = halfW / h; camR.updateProjectionMatrix();
+        leftRenderer.setSize(halfW, h, false);
+        rightRenderer.setSize(halfW, h, false);
+      } else {
+        leftCanvas.style.display = 'none';
+        rightCanvas.style.display = 'none';
+        monoCanvas.style.display = 'block';
+
+        monoCanvas.width = containerWidth; monoCanvas.height = h;
+        monoCanvas.style.width = containerWidth + 'px'; monoCanvas.style.height = h + 'px';
+
+        camL.aspect = containerWidth / h; camL.updateProjectionMatrix();
+        monoRenderer.setSize(containerWidth, h, false);
+      }
+    }
+
+    window.addEventListener('resize', setSizes);
+
+    // ----------------- Controls wiring -----------------
+    elFibers.addEventListener('input', () => {
+      params.fibers = parseInt(elFibers.value, 10);
+      elFibersVal.textContent = String(params.fibers);
+      buildHopfGeometry();
+    });
+    elSamples.addEventListener('input', () => {
+      params.samplesPerFiber = parseInt(elSamples.value, 10);
+      elSamplesVal.textContent = String(params.samplesPerFiber);
+      buildHopfGeometry();
+    });
+    elIpd.addEventListener('input', () => {
+      params.ipd = parseFloat(elIpd.value);
+      elIpdVal.textContent = params.ipd.toFixed(3);
+      camL.position.x = -params.ipd;
+      camR.position.x =  params.ipd;
+    });
+    elPhase.addEventListener('input', () => {
+      params.phaseSpeed = parseFloat(elPhase.value);
+      elPhaseVal.textContent = params.phaseSpeed.toFixed(2);
+    });
+    elOpacity.addEventListener('input', () => {
+      params.opacity = parseFloat(elOpacity.value);
+      elOpacityVal.textContent = params.opacity.toFixed(2);
+      buildHopfGeometry();
+    });
+    elRadius.addEventListener('input', () => {
+      params.radiusScale = parseFloat(elRadius.value);
+      elRadiusVal.textContent = params.radiusScale.toFixed(2);
+      buildHopfGeometry();
+    });
+    elStereo.addEventListener('change', () => {
+      params.stereo = elStereo.checked;
+      setSizes();
+    });
+    elBeads.addEventListener('change', () => {
+      params.showBeads = elBeads.checked;
+      buildHopfGeometry();
+    });
+
+    // ----------------- Animation loop -----------------
+    const clock = new THREE.Clock();
+    function render() {
+      const t = clock.getElapsedTime();
+
+      // gentle rotation
+      group.rotation.y = 0.25 * t * params.orbitSpeed;
+      group.rotation.x = 0.15 * Math.sin(0.5 * t * params.orbitSpeed);
+
+      if (params.showBeads) animateBeads(t);
+
+      camL.lookAt(0,0,0);
+      camR.lookAt(0,0,0);
+
+      if (params.stereo) {
+        leftRenderer.render(scene, camL);
+        rightRenderer.render(scene, camR);
+      } else {
+        monoRenderer.render(scene, camL);
+      }
+      requestAnimationFrame(render);
+    }
+
+    // ----------------- Init -----------------
+    buildHopfGeometry();
+    setSizes();
+    if (params.runTests) runSelfTests();
+    render();
+  </script>
+</body>
+</html>
