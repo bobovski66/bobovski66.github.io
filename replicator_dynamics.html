@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Replicator Dynamics Explorer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(to bottom right, #f8fafc, #e2e8f0);
+            min-height: 100vh;
+            padding: 24px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            padding: 24px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+        
+        .header p {
+            font-size: 14px;
+            color: #64748b;
+        }
+        
+        .info-btn {
+            padding: 8px;
+            border-radius: 8px;
+            background: #dbeafe;
+            border: none;
+            color: #2563eb;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .info-btn:hover {
+            background: #bfdbfe;
+        }
+        
+        .info-box {
+            display: none;
+            margin-bottom: 16px;
+            padding: 16px;
+            background: #dbeafe;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #1e293b;
+        }
+        
+        .info-box.show {
+            display: block;
+        }
+        
+        .info-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        
+        .info-box li {
+            margin-bottom: 4px;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+        
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        canvas {
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: crosshair;
+            background: white;
+        }
+        
+        .controls {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .controls h3 {
+            font-size: 16px;
+            color: #1e293b;
+            margin-bottom: 12px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+        }
+        
+        .play-btn {
+            flex: 1;
+            background: #22c55e;
+            color: white;
+        }
+        
+        .play-btn:hover {
+            background: #16a34a;
+        }
+        
+        .play-btn.playing {
+            background: #ef4444;
+        }
+        
+        .play-btn.playing:hover {
+            background: #dc2626;
+        }
+        
+        .reset-btn {
+            padding: 10px 16px;
+            background: #e2e8f0;
+            color: #475569;
+        }
+        
+        .reset-btn:hover {
+            background: #cbd5e1;
+        }
+        
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+        
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+        }
+        
+        .instructions {
+            font-size: 14px;
+            color: #64748b;
+            margin-top: 16px;
+        }
+        
+        .state-box {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .state-box h3 {
+            font-size: 16px;
+            color: #1e293b;
+            margin-bottom: 12px;
+        }
+        
+        .state-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .state-row span:first-child {
+            color: #64748b;
+        }
+        
+        .state-row span:last-child {
+            font-family: 'Courier New', monospace;
+        }
+        
+        .divider {
+            border-top: 1px solid #cbd5e1;
+            margin: 12px 0;
+            padding-top: 12px;
+        }
+        
+        .fitness {
+            font-weight: 600;
+        }
+        
+        .energy-box {
+            background: #fef3c7;
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #64748b;
+        }
+        
+        .energy-box p:first-child {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>Replicator Dynamics Explorer</h1>
+                <p>Folded symplectic geometry meets evolutionary game theory</p>
+            </div>
+            <button class="info-btn" onclick="toggleInfo()">ℹ Info</button>
+        </div>
+
+        <div class="info-box" id="infoBox">
+            <p style="font-weight: 600; margin-bottom: 8px;">Geometric Interpretation:</p>
+            <ul>
+                <li><strong>Symmetric games:</strong> Gradient flow on Shahshahani metric → trajectories converge to equilibria</li>
+                <li><strong>Antisymmetric games:</strong> Hamiltonian flow → periodic orbits (e.g., rock-paper-scissors)</li>
+                <li><strong>Mixed games:</strong> Superposition of gradient + Hamiltonian components → spirals</li>
+                <li>The simplex lives on the Reeb quotient Z/⟨R⟩ of a folded symplectic manifold</li>
+            </ul>
+        </div>
+
+        <div class="main-grid">
+            <div>
+                <canvas id="canvas" width="600" height="600"></canvas>
+            </div>
+
+            <div>
+                <div class="controls">
+                    <h3>Controls</h3>
+                    <div class="button-group">
+                        <button class="play-btn" id="playBtn" onclick="togglePlay()">
+                            <span id="playIcon">▶</span>
+                            <span id="playText">Play</span>
+                        </button>
+                        <button class="reset-btn" onclick="reset()">↻</button>
+                    </div>
+
+                    <div style="margin-bottom: 16px;">
+                        <label for="gameType">Game Type</label>
+                        <select id="gameType" onchange="changeGameType()">
+                            <option value="symmetric">Symmetric (Potential)</option>
+                            <option value="antisymmetric">Antisymmetric (RPS)</option>
+                            <option value="mixed">Mixed</option>
+                        </select>
+                    </div>
+
+                    <div class="instructions">
+                        <p><strong>Click</strong> to set initial state</p>
+                        <p><strong>Press Play</strong> to evolve</p>
+                    </div>
+                </div>
+
+                <div class="state-box">
+                    <h3>Current State</h3>
+                    <div class="state-row">
+                        <span>Strategy 1:</span>
+                        <span id="x1">0.400</span>
+                    </div>
+                    <div class="state-row">
+                        <span>Strategy 2:</span>
+                        <span id="x2">0.300</span>
+                    </div>
+                    <div class="state-row">
+                        <span>Strategy 3:</span>
+                        <span id="x3">0.300</span>
+                    </div>
+                    <div class="divider">
+                        <div class="state-row fitness">
+                            <span>Mean Fitness:</span>
+                            <span id="fitness">0.0000</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="energy-box">
+                    <p>Energy & Geometry:</p>
+                    <p>Trajectories minimize folded symplectic energy E(u) = ∫ ω(∂τz, J∂τz). For symmetric games, E(u) = ΔH_S equals the fitness difference.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let isPlaying = false;
+        let currentPoint = { x: 0.4, y: 0.3, z: 0.3 };
+        let trajectories = [];
+        let animationId = null;
+        let gameType = 'symmetric';
+        
+        const matrices = {
+            symmetric: [[3, 1, 2], [1, 3, 2], [2, 2, 2]],
+            antisymmetric: [[0, 1, -1], [-1, 0, 1], [1, -1, 0]],
+            mixed: [[2, 1, 0], [0, 2, 1], [1, 0, 2]]
+        };
+        
+        function baryToCanvas(x, y, z) {
+            const margin = 60;
+            const scale = Math.min(canvas.width, canvas.height) - 2 * margin;
+            const h = scale * Math.sqrt(3) / 2;
+            
+            const cx = margin + (x + z * 0.5) * scale;
+            const cy = canvas.height - margin - z * h;
+            
+            return { cx, cy };
+        }
+        
+        function replicatorStep(state, dt) {
+            let { x, y, z } = state;
+            
+            const sum = x + y + z;
+            x /= sum; y /= sum; z /= sum;
+            
+            const A = matrices[gameType];
+            const fitness = [
+                A[0][0] * x + A[0][1] * y + A[0][2] * z,
+                A[1][0] * x + A[1][1] * y + A[1][2] * z,
+                A[2][0] * x + A[2][1] * y + A[2][2] * z
+            ];
+            
+            const avgFitness = x * fitness[0] + y * fitness[1] + z * fitness[2];
+            
+            const dx = x * (fitness[0] - avgFitness) * dt;
+            const dy = y * (fitness[1] - avgFitness) * dt;
+            const dz = z * (fitness[2] - avgFitness) * dt;
+            
+            let newX = Math.max(0.001, Math.min(0.998, x + dx));
+            let newY = Math.max(0.001, Math.min(0.998, y + dy));
+            let newZ = Math.max(0.001, Math.min(0.998, z + dz));
+            
+            const newSum = newX + newY + newZ;
+            return {
+                x: newX / newSum,
+                y: newY / newSum,
+                z: newZ / newSum,
+                fitness: avgFitness
+            };
+        }
+        
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const corners = [
+                baryToCanvas(1, 0, 0),
+                baryToCanvas(0, 1, 0),
+                baryToCanvas(0, 0, 1)
+            ];
+            
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(corners[0].cx, corners[0].cy);
+            ctx.lineTo(corners[1].cx, corners[1].cy);
+            ctx.lineTo(corners[2].cx, corners[2].cy);
+            ctx.closePath();
+            ctx.stroke();
+            
+            ctx.fillStyle = '#1e293b';
+            ctx.font = 'bold 14px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('Strategy 1', corners[0].cx, corners[0].cy + 25);
+            ctx.fillText('Strategy 2', corners[1].cx, corners[1].cy + 25);
+            ctx.fillText('Strategy 3', corners[2].cx, corners[2].cy - 15);
+            
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 1;
+            const gridSize = 8;
+            for (let i = 0; i <= gridSize; i++) {
+                for (let j = 0; j <= gridSize - i; j++) {
+                    const k = gridSize - i - j;
+                    const x = i / gridSize;
+                    const y = j / gridSize;
+                    const z = k / gridSize;
+                    
+                    if (x < 0.05 || y < 0.05 || z < 0.05) continue;
+                    
+                    const pos = baryToCanvas(x, y, z);
+                    const next = replicatorStep({ x, y, z }, 0.3);
+                    const nextPos = baryToCanvas(next.x, next.y, next.z);
+                    
+                    const dx = nextPos.cx - pos.cx;
+                    const dy = nextPos.cy - pos.cy;
+                    const len = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (len > 1) {
+                        ctx.beginPath();
+                        ctx.moveTo(pos.cx, pos.cy);
+                        const scale = Math.min(len, 15) / len;
+                        ctx.lineTo(pos.cx + dx * scale * 0.7, pos.cy + dy * scale * 0.7);
+                        ctx.stroke();
+                        
+                        const angle = Math.atan2(dy, dx);
+                        ctx.beginPath();
+                        ctx.moveTo(pos.cx + dx * scale * 0.7, pos.cy + dy * scale * 0.7);
+                        ctx.lineTo(
+                            pos.cx + dx * scale * 0.7 - 4 * Math.cos(angle - 0.5),
+                            pos.cy + dy * scale * 0.7 - 4 * Math.sin(angle - 0.5)
+                        );
+                        ctx.stroke();
+                    }
+                }
+            }
+            
+            trajectories.forEach((traj, idx) => {
+                ctx.strokeStyle = `hsl(${idx * 60}, 70%, 50%)`;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                traj.forEach((point, i) => {
+                    const pos = baryToCanvas(point.x, point.y, point.z);
+                    if (i === 0) ctx.moveTo(pos.cx, pos.cy);
+                    else ctx.lineTo(pos.cx, pos.cy);
+                });
+                ctx.stroke();
+            });
+            
+            const pos = baryToCanvas(currentPoint.x, currentPoint.y, currentPoint.z);
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.arc(pos.cx, pos.cy, 6, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+        
+        function animate() {
+            const dt = 0.05;
+            const newState = replicatorStep(currentPoint, dt);
+            
+            currentPoint = newState;
+            updateDisplay();
+            
+            if (trajectories.length === 0) {
+                trajectories.push([{ ...currentPoint }]);
+            } else {
+                const lastTraj = trajectories[trajectories.length - 1];
+                lastTraj.push({ ...currentPoint });
+                if (lastTraj.length > 150) lastTraj.shift();
+            }
+            
+            draw();
+            
+            if (isPlaying) {
+                animationId = requestAnimationFrame(animate);
+            }
+        }
+        
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            const playBtn = document.getElementById('playBtn');
+            const playIcon = document.getElementById('playIcon');
+            const playText = document.getElementById('playText');
+            
+            if (isPlaying) {
+                playBtn.classList.add('playing');
+                playIcon.textContent = '⏸';
+                playText.textContent = 'Pause';
+                animate();
+            } else {
+                playBtn.classList.remove('playing');
+                playIcon.textContent = '▶';
+                playText.textContent = 'Play';
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                }
+            }
+        }
+        
+        function reset() {
+            isPlaying = false;
+            const playBtn = document.getElementById('playBtn');
+            const playIcon = document.getElementById('playIcon');
+            const playText = document.getElementById('playText');
+            playBtn.classList.remove('playing');
+            playIcon.textContent = '▶';
+            playText.textContent = 'Play';
+            
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+            
+            currentPoint = { x: 0.4, y: 0.3, z: 0.3 };
+            trajectories = [];
+            updateDisplay();
+            draw();
+        }
+        
+        function changeGameType() {
+            gameType = document.getElementById('gameType').value;
+            reset();
+        }
+        
+        function toggleInfo() {
+            const infoBox = document.getElementById('infoBox');
+            infoBox.classList.toggle('show');
+        }
+        
+        function updateDisplay() {
+            document.getElementById('x1').textContent = currentPoint.x.toFixed(3);
+            document.getElementById('x2').textContent = currentPoint.y.toFixed(3);
+            document.getElementById('x3').textContent = currentPoint.z.toFixed(3);
+            
+            const A = matrices[gameType];
+            const fitness = [
+                A[0][0] * currentPoint.x + A[0][1] * currentPoint.y + A[0][2] * currentPoint.z,
+                A[1][0] * currentPoint.x + A[1][1] * currentPoint.y + A[1][2] * currentPoint.z,
+                A[2][0] * currentPoint.x + A[2][1] * currentPoint.y + A[2][2] * currentPoint.z
+            ];
+            const avgFitness = currentPoint.x * fitness[0] + currentPoint.y * fitness[1] + currentPoint.z * fitness[2];
+            document.getElementById('fitness').textContent = avgFitness.toFixed(4);
+        }
+        
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const canvasX = x * scaleX;
+            const canvasY = y * scaleY;
+            
+            const margin = 60;
+            const scale = Math.min(canvas.width, canvas.height) - 2 * margin;
+            const h = scale * Math.sqrt(3) / 2;
+            
+            const normX = (canvasX - margin) / scale;
+            const normY = (canvas.height - margin - canvasY) / h;
+            
+            let baryZ = normY;
+            let baryX = normX - baryZ * 0.5;
+            let baryY = 1 - baryX - baryZ;
+            
+            baryX = Math.max(0.01, Math.min(0.98, baryX));
+            baryY = Math.max(0.01, Math.min(0.98, baryY));
+            baryZ = Math.max(0.01, Math.min(0.98, baryZ));
+            
+            const sum = baryX + baryY + baryZ;
+            currentPoint = { x: baryX / sum, y: baryY / sum, z: baryZ / sum };
+            
+            if (!isPlaying) {
+                trajectories.push([]);
+            }
+            
+            updateDisplay();
+            draw();
+        });
+        
+        updateDisplay();
+        draw();
+    </script>
+</body>
+</html>
