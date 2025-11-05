@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4-Strategy Replicator Dynamics (3-Simplex)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(to bottom right, #f8fafc, #e2e8f0);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            padding: 24px;
+        }
+        
+        .header {
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+        
+        .header p {
+            font-size: 14px;
+            color: #64748b;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+        
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        canvas {
+            width: 100%;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: #fafafa;
+            cursor: move;
+        }
+        
+        .controls {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .controls h3 {
+            font-size: 16px;
+            color: #1e293b;
+            margin-bottom: 12px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+        }
+        
+        .play-btn {
+            flex: 1;
+            background: #22c55e;
+            color: white;
+        }
+        
+        .play-btn:hover {
+            background: #16a34a;
+        }
+        
+        .play-btn.playing {
+            background: #ef4444;
+        }
+        
+        .play-btn.playing:hover {
+            background: #dc2626;
+        }
+        
+        .reset-btn {
+            padding: 10px 16px;
+            background: #e2e8f0;
+            color: #475569;
+        }
+        
+        .reset-btn:hover {
+            background: #cbd5e1;
+        }
+        
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+        
+        select, input[type="range"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .slider-group {
+            margin-bottom: 12px;
+        }
+        
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+            font-size: 13px;
+        }
+        
+        input[type="range"] {
+            padding: 0;
+            height: 6px;
+        }
+        
+        .state-box {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .state-box h3 {
+            font-size: 16px;
+            color: #1e293b;
+            margin-bottom: 12px;
+        }
+        
+        .state-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .state-row span:first-child {
+            color: #64748b;
+        }
+        
+        .state-row span:last-child {
+            font-family: 'Courier New', monospace;
+        }
+        
+        .extinct {
+            opacity: 0.4;
+            text-decoration: line-through;
+        }
+        
+        .info-box {
+            background: #fef3c7;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 12px;
+        }
+        
+        .info-box p:first-child {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #1e293b;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            font-weight: normal;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>4-Strategy Replicator Dynamics (3-Simplex)</h1>
+            <p>Hierarchical stratified flow with face reduction</p>
+        </div>
+
+        <div class="main-grid">
+            <div>
+                <canvas id="canvas" width="700" height="700"></canvas>
+                <p style="font-size: 12px; color: #64748b; margin-top: 8px;">
+                    Drag to rotate • Scroll to zoom
+                </p>
+            </div>
+
+            <div>
+                <div class="controls">
+                    <h3>Controls</h3>
+                    <div class="button-group">
+                        <button class="play-btn" id="playBtn" onclick="togglePlay()">
+                            <span id="playIcon">▶</span>
+                            <span id="playText">Play</span>
+                        </button>
+                        <button class="reset-btn" onclick="reset()">↻</button>
+                    </div>
+
+                    <div style="margin-bottom: 16px;">
+                        <label for="gameType">Game Type</label>
+                        <select id="gameType" onchange="changeGameType()">
+                            <option value="symmetric">Symmetric (Gradient)</option>
+                            <option value="hierarchy">Hierarchical Extinction</option>
+                            <option value="rock-paper-scissors-lizard">RPSL (Cyclic)</option>
+                            <option value="mixed">Mixed</option>
+                        </select>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="showFaces" checked onchange="draw()">
+                        <label for="showFaces">Show faces</label>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="showVectorField" onchange="draw()">
+                        <label for="showVectorField">Show vector field</label>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Speed</span>
+                            <span id="speedValue">1.0×</span>
+                        </div>
+                        <input type="range" id="speed" min="0.1" max="3" step="0.1" value="1" 
+                               oninput="updateSpeed()">
+                    </div>
+                </div>
+
+                <div class="state-box">
+                    <h3>Current State</h3>
+                    <div class="state-row" id="row1">
+                        <span>Strategy 1:</span>
+                        <span id="x1">0.250</span>
+                    </div>
+                    <div class="state-row" id="row2">
+                        <span>Strategy 2:</span>
+                        <span id="x2">0.250</span>
+                    </div>
+                    <div class="state-row" id="row3">
+                        <span>Strategy 3:</span>
+                        <span id="x3">0.250</span>
+                    </div>
+                    <div class="state-row" id="row4">
+                        <span>Strategy 4:</span>
+                        <span id="x4">0.250</span>
+                    </div>
+                    <div style="padding-top: 12px; margin-top: 12px; border-top: 1px solid #cbd5e1;">
+                        <div class="state-row">
+                            <span>Mean Fitness:</span>
+                            <span id="fitness">0.0000</span>
+                        </div>
+                        <div class="state-row">
+                            <span>Active Dimension:</span>
+                            <span id="dimension">3</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <p>Stratified Dynamics:</p>
+                    <p>Watch trajectories approach faces (3→2D), edges (2→1D), or vertices (1→0D). Once a strategy goes extinct (xᵢ → 0), the flow reduces to a lower-dimensional replicator system.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let isPlaying = false;
+        let currentPoint = { x: 0.25, y: 0.25, z: 0.25, w: 0.25 };
+        let trajectories = [];
+        let animationId = null;
+        let gameType = 'symmetric';
+        let speed = 1.0;
+        
+        // 3D rotation state
+        let rotationX = -0.3;
+        let rotationY = 0.5;
+        let isDragging = false;
+        let lastMouseX = 0;
+        let lastMouseY = 0;
+        let zoom = 1.0;
+        
+        const EXTINCTION_THRESHOLD = 0.001;
+        
+        const matrices = {
+            symmetric: [
+                [3, 1, 1, 1],
+                [1, 3, 1, 1],
+                [1, 1, 3, 1],
+                [1, 1, 1, 3]
+            ],
+            hierarchy: [
+                [4, 3, 2, 1],
+                [1, 3, 2, 1],
+                [1, 1, 2, 1],
+                [1, 1, 1, 1]
+            ],
+            'rock-paper-scissors-lizard': [
+                [0, 1, -1, 1],
+                [-1, 0, 1, -1],
+                [1, -1, 0, 1],
+                [-1, 1, -1, 0]
+            ],
+            mixed: [
+                [2, 1, 0, -1],
+                [0, 2, 1, 0],
+                [1, 0, 2, 1],
+                [-1, 0, -1, 2]
+            ]
+        };
+        
+        // Tetrahedron vertices in 3D
+        const vertices3D = [
+            [1, 1, 1],      // Strategy 1
+            [1, -1, -1],    // Strategy 2
+            [-1, 1, -1],    // Strategy 3
+            [-1, -1, 1]     // Strategy 4
+        ];
+        
+        // Normalize vertices
+        for (let v of vertices3D) {
+            const len = Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+            v[0] /= len; v[1] /= len; v[2] /= len;
+        }
+        
+        function rotate3D(point, rx, ry) {
+            let [x, y, z] = point;
+            
+            // Rotate around X axis
+            let y1 = y * Math.cos(rx) - z * Math.sin(rx);
+            let z1 = y * Math.sin(rx) + z * Math.cos(rx);
+            
+            // Rotate around Y axis
+            let x2 = x * Math.cos(ry) + z1 * Math.sin(ry);
+            let z2 = -x * Math.sin(ry) + z1 * Math.cos(ry);
+            
+            return [x2, y1, z2];
+        }
+        
+        function project3D(point) {
+            const [x, y, z] = rotate3D(point, rotationX, rotationY);
+            const scale = 200 * zoom;
+            const perspective = 3;
+            const factor = perspective / (perspective + z);
+            
+            return {
+                x: canvas.width / 2 + x * scale * factor,
+                y: canvas.height / 2 - y * scale * factor
+            };
+        }
+        
+        function baryTo3D(x, y, z, w) {
+            return [
+                x * vertices3D[0][0] + y * vertices3D[1][0] + z * vertices3D[2][0] + w * vertices3D[3][0],
+                x * vertices3D[0][1] + y * vertices3D[1][1] + z * vertices3D[2][1] + w * vertices3D[3][1],
+                x * vertices3D[0][2] + y * vertices3D[1][2] + z * vertices3D[2][2] + w * vertices3D[3][2]
+            ];
+        }
+        
+        function replicatorStep(state, dt) {
+            let { x, y, z, w } = state;
+            
+            const sum = x + y + z + w;
+            x /= sum; y /= sum; z /= sum; w /= sum;
+            
+            // Mark extinct strategies
+            if (x < EXTINCTION_THRESHOLD) x = 0;
+            if (y < EXTINCTION_THRESHOLD) y = 0;
+            if (z < EXTINCTION_THRESHOLD) z = 0;
+            if (w < EXTINCTION_THRESHOLD) w = 0;
+            
+            const A = matrices[gameType];
+            const fitness = [
+                A[0][0] * x + A[0][1] * y + A[0][2] * z + A[0][3] * w,
+                A[1][0] * x + A[1][1] * y + A[1][2] * z + A[1][3] * w,
+                A[2][0] * x + A[2][1] * y + A[2][2] * z + A[2][3] * w,
+                A[3][0] * x + A[3][1] * y + A[3][2] * z + A[3][3] * w
+            ];
+            
+            const avgFitness = x * fitness[0] + y * fitness[1] + z * fitness[2] + w * fitness[3];
+            
+            const dx = x > 0 ? x * (fitness[0] - avgFitness) * dt : 0;
+            const dy = y > 0 ? y * (fitness[1] - avgFitness) * dt : 0;
+            const dz = z > 0 ? z * (fitness[2] - avgFitness) * dt : 0;
+            const dw = w > 0 ? w * (fitness[3] - avgFitness) * dt : 0;
+            
+            let newX = x + dx;
+            let newY = y + dy;
+            let newZ = z + dz;
+            let newW = w + dw;
+            
+            // Clamp and renormalize
+            newX = Math.max(0, Math.min(1, newX));
+            newY = Math.max(0, Math.min(1, newY));
+            newZ = Math.max(0, Math.min(1, newZ));
+            newW = Math.max(0, Math.min(1, newW));
+            
+            const newSum = newX + newY + newZ + newW;
+            if (newSum > 0) {
+                return {
+                    x: newX / newSum,
+                    y: newY / newSum,
+                    z: newZ / newSum,
+                    w: newW / newSum,
+                    fitness: avgFitness
+                };
+            }
+            return state;
+        }
+        
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const showFaces = document.getElementById('showFaces').checked;
+            const showVectorField = document.getElementById('showVectorField').checked;
+            
+            // Draw tetrahedron
+            const projVerts = vertices3D.map(v => project3D(v));
+            
+            // Draw faces with transparency
+            if (showFaces) {
+                const faces = [
+                    [0, 1, 2], [0, 1, 3], [0, 2, 3], [1, 2, 3]
+                ];
+                
+                ctx.fillStyle = 'rgba(200, 220, 240, 0.3)';
+                faces.forEach(face => {
+                    ctx.beginPath();
+                    ctx.moveTo(projVerts[face[0]].x, projVerts[face[0]].y);
+                    ctx.lineTo(projVerts[face[1]].x, projVerts[face[1]].y);
+                    ctx.lineTo(projVerts[face[2]].x, projVerts[face[2]].y);
+                    ctx.closePath();
+                    ctx.fill();
+                });
+            }
+            
+            // Draw edges
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 2;
+            const edges = [
+                [0, 1], [0, 2], [0, 3], [1, 2], [1, 3], [2, 3]
+            ];
+            
+            edges.forEach(edge => {
+                ctx.beginPath();
+                ctx.moveTo(projVerts[edge[0]].x, projVerts[edge[0]].y);
+                ctx.lineTo(projVerts[edge[1]].x, projVerts[edge[1]].y);
+                ctx.stroke();
+            });
+            
+            // Draw vertex labels
+            ctx.fillStyle = '#1e293b';
+            ctx.font = 'bold 14px sans-serif';
+            ctx.textAlign = 'center';
+            ['S1', 'S2', 'S3', 'S4'].forEach((label, i) => {
+                const offset = 20;
+                const v = projVerts[i];
+                const dir = rotate3D(vertices3D[i], rotationX, rotationY);
+                ctx.fillText(label, v.x + dir[0] * offset, v.y - dir[1] * offset);
+            });
+            
+            // Draw vector field
+            if (showVectorField) {
+                ctx.strokeStyle = 'rgba(100, 116, 139, 0.6)';
+                ctx.lineWidth = 1.5;
+                
+                const gridSize = 3;
+                for (let i = 0; i <= gridSize; i++) {
+                    for (let j = 0; j <= gridSize-i; j++) {
+                        for (let k = 0; k <= gridSize-i-j; k++) {
+                            const l = gridSize-i-j-k;
+                            if (l < 0) continue;
+                            
+                            const x = i/gridSize, y = j/gridSize, z = k/gridSize, w = l/gridSize;
+                            if (x < 0.05 && y < 0.05 && z < 0.05 && w < 0.05) continue;
+                            
+                            const pos3D = baryTo3D(x, y, z, w);
+                            const pos = project3D(pos3D);
+                            
+                            const next = replicatorStep({ x, y, z, w }, 0.2);
+                            const next3D = baryTo3D(next.x, next.y, next.z, next.w);
+                            const nextPos = project3D(next3D);
+                            
+                            const dx = nextPos.x - pos.x;
+                            const dy = nextPos.y - pos.y;
+                            const len = Math.sqrt(dx*dx + dy*dy);
+                            
+                            if (len > 0.5) {
+                                ctx.beginPath();
+                                ctx.moveTo(pos.x, pos.y);
+                                const scale = Math.min(len, 15) / len;
+                                ctx.lineTo(pos.x + dx*scale*0.8, pos.y + dy*scale*0.8);
+                                ctx.stroke();
+                                
+                                // Arrow head
+                                const angle = Math.atan2(dy, dx);
+                                ctx.beginPath();
+                                ctx.moveTo(pos.x + dx*scale*0.8, pos.y + dy*scale*0.8);
+                                ctx.lineTo(
+                                    pos.x + dx*scale*0.8 - 5*Math.cos(angle-0.3),
+                                    pos.y + dy*scale*0.8 - 5*Math.sin(angle-0.3)
+                                );
+                                ctx.stroke();
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Draw trajectories
+            trajectories.forEach((traj, idx) => {
+                ctx.strokeStyle = `hsl(${idx * 60}, 70%, 50%)`;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                traj.forEach((point, i) => {
+                    const pos3D = baryTo3D(point.x, point.y, point.z, point.w);
+                    const pos = project3D(pos3D);
+                    if (i === 0) ctx.moveTo(pos.x, pos.y);
+                    else ctx.lineTo(pos.x, pos.y);
+                });
+                ctx.stroke();
+            });
+            
+            // Draw current point
+            const pos3D = baryTo3D(currentPoint.x, currentPoint.y, currentPoint.z, currentPoint.w);
+            const pos = project3D(pos3D);
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.arc(pos.x, pos.y, 8, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+        
+        function animate() {
+            const dt = 0.05 * speed;
+            const newState = replicatorStep(currentPoint, dt);
+            
+            currentPoint = newState;
+            updateDisplay();
+            
+            if (trajectories.length === 0) {
+                trajectories.push([{ ...currentPoint }]);
+            } else {
+                const lastTraj = trajectories[trajectories.length - 1];
+                lastTraj.push({ ...currentPoint });
+                if (lastTraj.length > 300) lastTraj.shift();
+            }
+            
+            draw();
+            
+            if (isPlaying) {
+                animationId = requestAnimationFrame(animate);
+            }
+        }
+        
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            const playBtn = document.getElementById('playBtn');
+            const playIcon = document.getElementById('playIcon');
+            const playText = document.getElementById('playText');
+            
+            if (isPlaying) {
+                playBtn.classList.add('playing');
+                playIcon.textContent = '⏸';
+                playText.textContent = 'Pause';
+                if (trajectories.length === 0) {
+                    trajectories.push([]);
+                }
+                requestAnimationFrame(animate);
+            } else {
+                playBtn.classList.remove('playing');
+                playIcon.textContent = '▶';
+                playText.textContent = 'Play';
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                }
+            }
+        }
+        
+        function reset() {
+            isPlaying = false;
+            const playBtn = document.getElementById('playBtn');
+            playBtn.classList.remove('playing');
+            document.getElementById('playIcon').textContent = '▶';
+            document.getElementById('playText').textContent = 'Play';
+            
+            if (animationId) cancelAnimationFrame(animationId);
+            
+            currentPoint = { x: 0.25, y: 0.25, z: 0.25, w: 0.25 };
+            trajectories = [];
+            updateDisplay();
+            draw();
+        }
+        
+        function changeGameType() {
+            gameType = document.getElementById('gameType').value;
+            reset();
+        }
+        
+        function updateSpeed() {
+            speed = parseFloat(document.getElementById('speed').value);
+            document.getElementById('speedValue').textContent = speed.toFixed(1) + '×';
+        }
+        
+        function updateDisplay() {
+            const format = (x) => x.toFixed(3);
+            
+            document.getElementById('x1').textContent = format(currentPoint.x);
+            document.getElementById('x2').textContent = format(currentPoint.y);
+            document.getElementById('x3').textContent = format(currentPoint.z);
+            document.getElementById('x4').textContent = format(currentPoint.w);
+            
+            // Mark extinct strategies
+            const rows = ['row1', 'row2', 'row3', 'row4'];
+            const vals = [currentPoint.x, currentPoint.y, currentPoint.z, currentPoint.w];
+            rows.forEach((row, i) => {
+                if (vals[i] < EXTINCTION_THRESHOLD) {
+                    document.getElementById(row).classList.add('extinct');
+                } else {
+                    document.getElementById(row).classList.remove('extinct');
+                }
+            });
+            
+            const A = matrices[gameType];
+            const fitness = [
+                A[0][0] * currentPoint.x + A[0][1] * currentPoint.y + A[0][2] * currentPoint.z + A[0][3] * currentPoint.w,
+                A[1][0] * currentPoint.x + A[1][1] * currentPoint.y + A[1][2] * currentPoint.z + A[1][3] * currentPoint.w,
+                A[2][0] * currentPoint.x + A[2][1] * currentPoint.y + A[2][2] * currentPoint.z + A[2][3] * currentPoint.w,
+                A[3][0] * currentPoint.x + A[3][1] * currentPoint.y + A[3][2] * currentPoint.z + A[3][3] * currentPoint.w
+            ];
+            const avgFitness = currentPoint.x * fitness[0] + currentPoint.y * fitness[1] + 
+                             currentPoint.z * fitness[2] + currentPoint.w * fitness[3];
+            document.getElementById('fitness').textContent = avgFitness.toFixed(4);
+            
+            // Calculate active dimension
+            let activeDim = 0;
+            if (currentPoint.x >= EXTINCTION_THRESHOLD) activeDim++;
+            if (currentPoint.y >= EXTINCTION_THRESHOLD) activeDim++;
+            if (currentPoint.z >= EXTINCTION_THRESHOLD) activeDim++;
+            if (currentPoint.w >= EXTINCTION_THRESHOLD) activeDim++;
+            document.getElementById('dimension').textContent = activeDim - 1;
+        }
+        
+        // Mouse controls
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const startX = e.clientX;
+            const startY = e.clientY;
+            const startTime = Date.now();
+            
+            isDragging = true;
+            lastMouseX = startX;
+            lastMouseY = startY;
+            
+            const mouseUpHandler = (upEvent) => {
+                const endX = upEvent.clientX;
+                const endY = upEvent.clientY;
+                const endTime = Date.now();
+                const dist = Math.sqrt((endX-startX)**2 + (endY-startY)**2);
+                const duration = endTime - startTime;
+                
+                isDragging = false;
+                
+                // Only treat as click if movement is small and duration is short
+                if (dist < 5 && duration < 200) {
+                    // Convert from screen coordinates to canvas coordinates
+                    const scaleX = canvas.width / rect.width;
+                    const scaleY = canvas.height / rect.height;
+                    const mouseX = (upEvent.clientX - rect.left) * scaleX;
+                    const mouseY = (upEvent.clientY - rect.top) * scaleY;
+                    setPointFromClick(mouseX, mouseY);
+                }
+                
+                canvas.removeEventListener('mouseup', mouseUpHandler);
+            };
+            
+            canvas.addEventListener('mouseup', mouseUpHandler);
+        });
+        
+        canvas.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const dx = e.clientX - lastMouseX;
+                const dy = e.clientY - lastMouseY;
+                
+                rotationY += dx * 0.01;
+                rotationX += dy * 0.01;
+                
+                lastMouseX = e.clientX;
+                lastMouseY = e.clientY;
+                
+                draw();
+            }
+        });
+        
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+        
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            zoom *= (1 - e.deltaY * 0.001);
+            zoom = Math.max(0.3, Math.min(3, zoom));
+            draw();
+        });
+        
+        function setPointFromClick(mouseX, mouseY) {
+            // Find closest point on tetrahedron to the click
+            // Use a fine grid to sample all regions
+            
+            let bestDist = Infinity;
+            let bestPoint = null;
+            
+            const gridSize = 15; // Finer grid
+            for (let i = 0; i <= gridSize; i++) {
+                for (let j = 0; j <= gridSize-i; j++) {
+                    for (let k = 0; k <= gridSize-i-j; k++) {
+                        const l = gridSize-i-j-k;
+                        if (l < 0) continue;
+                        
+                        const x = i/gridSize, y = j/gridSize, z = k/gridSize, w = l/gridSize;
+                        
+                        const pos3D = baryTo3D(x, y, z, w);
+                        const proj = project3D(pos3D);
+                        
+                        const dist = Math.sqrt((proj.x - mouseX)**2 + (proj.y - mouseY)**2);
+                        
+                        if (dist < bestDist) {
+                            bestDist = dist;
+                            bestPoint = { x, y, z, w };
+                        }
+                    }
+                }
+            }
+            
+            if (bestPoint && bestDist < 150) {
+                console.log('Click found point: x=' + bestPoint.x.toFixed(3) + 
+                           ' y=' + bestPoint.y.toFixed(3) + 
+                           ' z=' + bestPoint.z.toFixed(3) + 
+                           ' w=' + bestPoint.w.toFixed(3) + 
+                           ' distance=' + bestDist.toFixed(1));
+                
+                // Use exact point from grid
+                currentPoint = { ...bestPoint };
+                
+                // Start fresh trajectory but keep playing if already playing
+                trajectories.push([]);
+                
+                updateDisplay();
+                draw();
+            } else {
+                console.log('Click too far from tetrahedron:', bestDist);
+            }
+        }
+        
+        updateDisplay();
+        draw();
+    </script>
+</body>
+</html>
