@@ -255,6 +255,12 @@
                         </select>
                     </div>
 
+                    <div style="margin-bottom: 16px;">
+                        <button onclick="setInteriorPoint()" style="width: 100%; background: #3b82f6; color: white;">
+                            Jump to Interior Point
+                        </button>
+                    </div>
+
                     <div class="checkbox-group">
                         <input type="checkbox" id="showFaces" checked onchange="draw()">
                         <label for="showFaces">Show faces</label>
@@ -804,6 +810,34 @@
             } else {
                 console.log('Click too far from tetrahedron:', bestDist);
             }
+        }
+        
+        function setInteriorPoint() {
+            // Set point deep in the interior, far from all faces
+            const base = 0.25;
+            const spread = 0.15;
+            currentPoint = {
+                x: base + (Math.random() - 0.5) * spread,
+                y: base + (Math.random() - 0.5) * spread,
+                z: base + (Math.random() - 0.5) * spread,
+                w: base + (Math.random() - 0.5) * spread
+            };
+            
+            // Normalize
+            const sum = currentPoint.x + currentPoint.y + currentPoint.z + currentPoint.w;
+            currentPoint.x /= sum;
+            currentPoint.y /= sum;
+            currentPoint.z /= sum;
+            currentPoint.w /= sum;
+            
+            console.log('Interior point: x=' + currentPoint.x.toFixed(3) + 
+                       ' y=' + currentPoint.y.toFixed(3) + 
+                       ' z=' + currentPoint.z.toFixed(3) + 
+                       ' w=' + currentPoint.w.toFixed(3));
+            
+            trajectories.push([]);
+            updateDisplay();
+            draw();
         }
         
         updateDisplay();
