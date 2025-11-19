@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Synthesizer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white p-8">
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-4xl font-bold mb-8 text-center bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Web Synthesizer</h1>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <!-- VCO 1 -->
+            <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-bold mb-4 text-purple-400">VCO 1</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block mb-2">Waveform</label>
+                        <select id="vco1-wave" class="w-full bg-gray-700 p-2 rounded">
+                            <option value="sine">Sine</option>
+                            <option value="square">Square</option>
+                            <option value="sawtooth" selected>Sawtooth</option>
+                            <option value="triangle">Triangle</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block mb-2">Octave</label>
+                        <select id="vco1-octave" class="w-full bg-gray-700 p-2 rounded">
+                            <option value="-2">-2</option>
+                            <option value="-1">-1</option>
+                            <option value="0" selected>0</option>
+                            <option value="1">+1</option>
+                            <option value="2">+2</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block mb-2">Frequency: <span id="vco1-freq-val">440</span> Hz</label>
+                        <input type="range" id="vco1-freq" min="20" max="2000" value="440" class="w-full">
+                    </div>
+                    <div>
+                        <label class="block mb-2">Detune: <span id="vco1-detune-val">0</span> cents</label>
+                        <input type="range" id="vco1-detune" min="-100" max="100" value="0" class="w-full">
+                    </div>
+                    <div>
+                        <label class="block mb-2">Mix: <span id="vco1-mix-val">50</span>%</label>
+                        <input type="range" id="vco1-mix" min="0" max="100" value="50" class="w-full">
+                    </div>
+                </div>
+            </div>
+
+            <!-- VCO 2 -->
+            <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-bold mb-4 text-pink-400">VCO 2</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block mb-2">Waveform</label>
+                        <select id="vco2-wave" class="w-full bg-gray-700 p-2 rounded">
+                            <option value="sine">Sine</option>
+                            <option value="square" selected>Square</option>
+                            <option value="sawtooth">Sawtooth</option>
+                            <option value="triangle">Triangle</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block mb-2">Octave</label>
+                        <select id="vco2-octave" class="w-full bg-gray-700 p-2 rounded">
+                            <option value="-2">-2</option>
+                            <option value="-1">-1</option>
+                            <option value="0" selected>0</option>
+                            <option value="1">+1</option>
+                            <option value="2">+2</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block mb-2">Frequency: <span id="vco2-freq-val">440</span> Hz</label>
+                        <input type="range" id="vco2-freq" min="20" max="2000" value="440" class="w-full">
+                    </div>
+                    <div>
+                        <label class="block mb-2">Detune: <span id="vco2-detune-val">7</span> cents</label>
+                        <input type="range" id="vco2-detune" min="-100" max="100" value="7" class="w-full">
+                    </div>
+                    <div>
+                        <label class="block mb-2">Mix: <span id="vco2-mix-val">50</span>%</label>
+                        <input type="range" id="vco2-mix" min="0" max="100" value="50" class="w-full">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Envelope -->
+            <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-bold mb-4 text-green-400">Envelope (ADSR)</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block mb-2">Attack: <span id="env-attack-val">0.01</span> s</label>
+                        <input type="range" id="env-attack" min="0.01" max="2" step="0.01" value="0.01" class="w-full">
+                    </div>
+                    <div>
+                        <label class="block mb-2">Decay: <span id="env-decay-val">0.2</span> s</label>
+                        <input type="range" id="env-decay" min="0.01" max="2" step="0.01" value="0.2" class="w-full">
+                    </div>
+                    <div>
+                        <label class="block mb-2">Sustain: <span id="env-sustain-val">0.5</span></label>
+                        <input type="range" id="env-sustain" min="0" max="1" step="0.01" value="0.5" class="w-full">
+                    </div>
+                    <div>
+                        <label class="block mb-2">Release: <span id="env-release-val">0.5</span> s</label>
+                        <input type="range" id="env-release" min="0.01" max="3" step="0.01" value="0.5" class="w-full">
+                    </div>
+                </div>
+            </div>
+
+            <!-- LFO -->
+            <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-bold mb-4 text-yellow-400">LFO</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block mb-2">Waveform</label>
+                        <select id="lfo-wave" class="w-full bg-gray-700 p-2 rounded">
+                            <option value="sine" selected>Sine</option>
+                            <option value="square">Square</option>
+                            <option value="sawtooth">Sawtooth</option>
+                            <option value="triangle">Triangle</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block mb-2">Rate: <span id="lfo-rate-val">5</span> Hz</label>
+                        <input type="range" id="lfo-rate" min="0.1" max="20" step="0.1" value="5" class="w-full">
+                    </div>
+                    <div>
+                        <label class="block mb-2">Depth: <span id="lfo-depth-val">50</span></label>
+                        <input type="range" id="lfo-depth" min="0" max="200" value="50" class="w-full">
+                    </div>
+                    <div>
+                        <label class="block mb-2">Target</label>
+                        <select id="lfo-target" class="w-full bg-gray-700 p-2 rounded">
+                            <option value="none">None</option>
+                            <option value="pitch" selected>Pitch (Vibrato)</option>
+                            <option value="volume">Volume (Tremolo)</option>
+                            <option value="filter">Filter Cutoff</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter -->
+            <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-bold mb-4 text-orange-400">Filter</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block mb-2">Type</label>
+                        <select id="filter-type" class="w-full bg-gray-700 p-2 rounded">
+                            <option value="lowpass" selected>Low Pass</option>
+                            <option value="highpass">High Pass</option>
+                            <option value="bandpass">Band Pass</option>
+                            <option value="notch">Notch</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block mb-2">Cutoff: <span id="filter-cutoff-val">2000</span> Hz</label>
+                        <input type="range" id="filter-cutoff" min="20" max="20000" value="2000" class="w-full">
+                    </div>
+                    <div>
+                        <label class="block mb-2">Resonance: <span id="filter-res-val">1</span></label>
+                        <input type="range" id="filter-res" min="0.1" max="30" step="0.1" value="1" class="w-full">
+                    </div>
+                    <div>
+                        <label class="block mb-2">Envelope Amount: <span id="filter-env-val">0</span></label>
+                        <input type="range" id="filter-env" min="-5000" max="5000" value="0" class="w-full">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VCA / Master -->
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
+            <h2 class="text-2xl font-bold mb-4 text-blue-400">VCA / Master</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block mb-2">Master Volume: <span id="master-vol-val">0.5</span></label>
+                    <input type="range" id="master-vol" min="0" max="1" step="0.01" value="0.5" class="w-full">
+                </div>
+                <div>
+                    <label class="block mb-2">VCA Mode</label>
+                    <select id="vca-mode" class="w-full bg-gray-700 p-2 rounded">
+                        <option value="envelope" selected>Envelope Controlled</option>
+                        <option value="always-on">Always On</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Arpeggiator -->
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
+            <h2 class="text-2xl font-bold mb-4 text-cyan-400">Arpeggiator</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                    <label class="block mb-2">Enable</label>
+                    <button id="arp-toggle" class="w-full bg-gray-700 hover:bg-gray-600 p-2 rounded font-bold">OFF</button>
+                </div>
+                <div>
+                    <label class="block mb-2">Pattern</label>
+                    <select id="arp-pattern" class="w-full bg-gray-700 p-2 rounded">
+                        <option value="up" selected>Up</option>
+                        <option value="down">Down</option>
+                        <option value="up-down">Up-Down</option>
+                        <option value="random">Random</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block mb-2">Rate: <span id="arp-rate-val">8</span> notes/sec</label>
+                    <input type="range" id="arp-rate" min="1" max="16" value="8" class="w-full">
+                </div>
+                <div>
+                    <label class="block mb-2">Octaves: <span id="arp-octaves-val">1</span></label>
+                    <input type="range" id="arp-octaves" min="1" max="3" value="1" class="w-full">
+                </div>
+            </div>
+        </div>
+
+        <!-- Keyboard -->
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-bold mb-4 text-center">Keyboard</h2>
+            <div class="flex justify-center gap-1 mb-4">
+                <button class="key bg-white text-black px-6 py-20 rounded shadow hover:bg-gray-200" data-note="C" data-freq="261.63">C</button>
+                <button class="key bg-gray-900 text-white px-4 py-12 rounded shadow hover:bg-gray-700 -mr-3 -ml-3 z-10" data-note="C#" data-freq="277.18">C#</button>
+                <button class="key bg-white text-black px-6 py-20 rounded shadow hover:bg-gray-200" data-note="D" data-freq="293.66">D</button>
+                <button class="key bg-gray-900 text-white px-4 py-12 rounded shadow hover:bg-gray-700 -mr-3 -ml-3 z-10" data-note="D#" data-freq="311.13">D#</button>
+                <button class="key bg-white text-black px-6 py-20 rounded shadow hover:bg-gray-200" data-note="E" data-freq="329.63">E</button>
+                <button class="key bg-white text-black px-6 py-20 rounded shadow hover:bg-gray-200" data-note="F" data-freq="349.23">F</button>
+                <button class="key bg-gray-900 text-white px-4 py-12 rounded shadow hover:bg-gray-700 -mr-3 -ml-3 z-10" data-note="F#" data-freq="369.99">F#</button>
+                <button class="key bg-white text-black px-6 py-20 rounded shadow hover:bg-gray-200" data-note="G" data-freq="392.00">G</button>
+                <button class="key bg-gray-900 text-white px-4 py-12 rounded shadow hover:bg-gray-700 -mr-3 -ml-3 z-10" data-note="G#" data-freq="415.30">G#</button>
+                <button class="key bg-white text-black px-6 py-20 rounded shadow hover:bg-gray-200" data-note="A" data-freq="440.00">A</button>
+                <button class="key bg-gray-900 text-white px-4 py-12 rounded shadow hover:bg-gray-700 -mr-3 -ml-3 z-10" data-note="A#" data-freq="466.16">A#</button>
+                <button class="key bg-white text-black px-6 py-20 rounded shadow hover:bg-gray-200" data-note="B" data-freq="493.88">B</button>
+            </div>
+            <p class="text-center text-gray-400">Click keys to play notes</p>
+        </div>
+    </div>
+
+    <script>
+        let audioContext;
+        let vco1, vco2, lfo;
+        let vco1Gain, vco2Gain, lfoGain;
+        let filter;
+        let vca, masterGain;
+        let isPlaying = false;
+        
+        // Arpeggiator state
+        let arpEnabled = false;
+        let arpInterval = null;
+        let arpNotes = [];
+        let arpIndex = 0;
+        let arpDirection = 1; // 1 for up, -1 for down
+
+        // Initialize audio context on first user interaction
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Create VCO 1
+                vco1 = audioContext.createOscillator();
+                vco1.type = document.getElementById('vco1-wave').value;
+                vco1.frequency.value = parseFloat(document.getElementById('vco1-freq').value);
+                vco1.detune.value = parseFloat(document.getElementById('vco1-detune').value);
+                
+                // Create VCO 2
+                vco2 = audioContext.createOscillator();
+                vco2.type = document.getElementById('vco2-wave').value;
+                vco2.frequency.value = parseFloat(document.getElementById('vco2-freq').value);
+                vco2.detune.value = parseFloat(document.getElementById('vco2-detune').value);
+                
+                // Create LFO
+                lfo = audioContext.createOscillator();
+                lfo.type = document.getElementById('lfo-wave').value;
+                lfo.frequency.value = parseFloat(document.getElementById('lfo-rate').value);
+                
+                // Create gains for mixing VCOs
+                vco1Gain = audioContext.createGain();
+                vco2Gain = audioContext.createGain();
+                lfoGain = audioContext.createGain();
+                
+                // Create filter
+                filter = audioContext.createBiquadFilter();
+                filter.type = document.getElementById('filter-type').value;
+                filter.frequency.value = parseFloat(document.getElementById('filter-cutoff').value);
+                filter.Q.value = parseFloat(document.getElementById('filter-res').value);
+                
+                // VCA (controlled by envelope)
+                vca = audioContext.createGain();
+                vca.gain.value = 0;
+                
+                // Master gain
+                masterGain = audioContext.createGain();
+                masterGain.gain.value = parseFloat(document.getElementById('master-vol').value);
+                
+                // Connect the signal chain: VCOs -> Mixer -> Filter -> VCA -> Master -> Output
+                vco1.connect(vco1Gain);
+                vco2.connect(vco2Gain);
+                vco1Gain.connect(filter);
+                vco2Gain.connect(filter);
+                filter.connect(vca);
+                vca.connect(masterGain);
+                masterGain.connect(audioContext.destination);
+                
+                // LFO setup
+                lfoGain.gain.value = parseFloat(document.getElementById('lfo-depth').value);
+                lfo.connect(lfoGain);
+                
+                // Start oscillators
+                vco1.start();
+                vco2.start();
+                lfo.start();
+                
+                updateMixLevels();
+                updateLFOTarget();
+            }
+        }
+
+        // Update mix levels
+        function updateMixLevels() {
+            if (!vco1Gain || !vco2Gain) return;
+            const mix1 = parseFloat(document.getElementById('vco1-mix').value) / 100;
+            const mix2 = parseFloat(document.getElementById('vco2-mix').value) / 100;
+            vco1Gain.gain.value = mix1;
+            vco2Gain.gain.value = mix2;
+        }
+
+        // Update LFO target
+        function updateLFOTarget() {
+            if (!lfoGain) return;
+            
+            // Disconnect LFO from all targets
+            lfoGain.disconnect();
+            
+            const target = document.getElementById('lfo-target').value;
+            const depth = parseFloat(document.getElementById('lfo-depth').value);
+            
+            if (target === 'pitch') {
+                lfoGain.connect(vco1.detune);
+                lfoGain.connect(vco2.detune);
+                lfoGain.gain.value = depth;
+            } else if (target === 'volume') {
+                lfoGain.connect(vca.gain);
+                lfoGain.gain.value = depth / 1000; // Scale down for volume modulation
+            } else if (target === 'filter') {
+                lfoGain.connect(filter.frequency);
+                lfoGain.gain.value = depth * 10; // Scale for filter modulation
+            }
+        }
+
+        // Trigger envelope
+        function triggerEnvelope(time) {
+            if (!vca) return;
+            
+            const vcaMode = document.getElementById('vca-mode').value;
+            
+            if (vcaMode === 'always-on') {
+                vca.gain.cancelScheduledValues(time);
+                vca.gain.setValueAtTime(1, time);
+            } else {
+                const attack = parseFloat(document.getElementById('env-attack').value);
+                const decay = parseFloat(document.getElementById('env-decay').value);
+                const sustain = parseFloat(document.getElementById('env-sustain').value);
+                
+                vca.gain.cancelScheduledValues(time);
+                vca.gain.setValueAtTime(0, time);
+                vca.gain.linearRampToValueAtTime(1, time + attack);
+                vca.gain.linearRampToValueAtTime(sustain, time + attack + decay);
+            }
+            
+            // Filter envelope modulation
+            if (filter) {
+                const filterEnvAmount = parseFloat(document.getElementById('filter-env').value);
+                const baseCutoff = parseFloat(document.getElementById('filter-cutoff').value);
+                const attack = parseFloat(document.getElementById('env-attack').value);
+                const decay = parseFloat(document.getElementById('env-decay').value);
+                const sustain = parseFloat(document.getElementById('env-sustain').value);
+                
+                if (filterEnvAmount !== 0) {
+                    const peakCutoff = Math.max(20, Math.min(20000, baseCutoff + filterEnvAmount));
+                    const sustainCutoff = Math.max(20, Math.min(20000, baseCutoff + (filterEnvAmount * sustain)));
+                    
+                    filter.frequency.cancelScheduledValues(time);
+                    filter.frequency.setValueAtTime(baseCutoff, time);
+                    filter.frequency.linearRampToValueAtTime(peakCutoff, time + attack);
+                    filter.frequency.linearRampToValueAtTime(sustainCutoff, time + attack + decay);
+                }
+            }
+        }
+
+        // Release envelope
+        function releaseEnvelope(time) {
+            if (!vca) return;
+            
+            const vcaMode = document.getElementById('vca-mode').value;
+            
+            if (vcaMode === 'always-on') {
+                // In always-on mode, just fade out quickly
+                vca.gain.cancelScheduledValues(time);
+                vca.gain.setValueAtTime(vca.gain.value, time);
+                vca.gain.linearRampToValueAtTime(0, time + 0.05);
+            } else {
+                const release = parseFloat(document.getElementById('env-release').value);
+                
+                vca.gain.cancelScheduledValues(time);
+                vca.gain.setValueAtTime(vca.gain.value, time);
+                vca.gain.linearRampToValueAtTime(0, time + release);
+            }
+            
+            // Filter envelope release
+            if (filter) {
+                const filterEnvAmount = parseFloat(document.getElementById('filter-env').value);
+                const baseCutoff = parseFloat(document.getElementById('filter-cutoff').value);
+                const release = parseFloat(document.getElementById('env-release').value);
+                
+                if (filterEnvAmount !== 0) {
+                    filter.frequency.cancelScheduledValues(time);
+                    filter.frequency.setValueAtTime(filter.frequency.value, time);
+                    filter.frequency.linearRampToValueAtTime(baseCutoff, time + release);
+                }
+            }
+        }
+
+        // Arpeggiator functions
+        function startArpeggiator() {
+            if (!arpEnabled || arpNotes.length === 0) return;
+            
+            stopArpeggiator();
+            
+            const rate = parseFloat(document.getElementById('arp-rate').value);
+            const interval = 1000 / rate;
+            
+            arpInterval = setInterval(() => {
+                playArpNote();
+            }, interval);
+        }
+        
+        function stopArpeggiator() {
+            if (arpInterval) {
+                clearInterval(arpInterval);
+                arpInterval = null;
+            }
+        }
+        
+        function playArpNote() {
+            if (arpNotes.length === 0) return;
+            
+            const pattern = document.getElementById('arp-pattern').value;
+            const octaves = parseInt(document.getElementById('arp-octaves').value);
+            
+            // Build note sequence with octaves
+            let sequence = [];
+            for (let oct = 0; oct < octaves; oct++) {
+                for (let note of arpNotes) {
+                    sequence.push(note * Math.pow(2, oct));
+                }
+            }
+            
+            // Apply pattern
+            if (pattern === 'down') {
+                sequence.reverse();
+            } else if (pattern === 'random') {
+                const freq = sequence[Math.floor(Math.random() * sequence.length)];
+                playFrequency(freq);
+                return;
+            }
+            
+            let noteToPlay;
+            if (pattern === 'up-down') {
+                if (arpIndex >= sequence.length) {
+                    arpDirection = -1;
+                    arpIndex = sequence.length - 2;
+                } else if (arpIndex < 0) {
+                    arpDirection = 1;
+                    arpIndex = 1;
+                }
+                noteToPlay = sequence[arpIndex];
+                arpIndex += arpDirection;
+            } else {
+                noteToPlay = sequence[arpIndex % sequence.length];
+                arpIndex = (arpIndex + 1) % sequence.length;
+            }
+            
+            playFrequency(noteToPlay);
+        }
+        
+        function playFrequency(freq) {
+            if (!audioContext || !vco1 || !vco2) return;
+            
+            // Apply octave shifts
+            const vco1Octave = parseInt(document.getElementById('vco1-octave').value);
+            const vco2Octave = parseInt(document.getElementById('vco2-octave').value);
+            
+            const vco1Freq = freq * Math.pow(2, vco1Octave);
+            const vco2Freq = freq * Math.pow(2, vco2Octave);
+            
+            vco1.frequency.setValueAtTime(vco1Freq, audioContext.currentTime);
+            vco2.frequency.setValueAtTime(vco2Freq, audioContext.currentTime);
+            triggerEnvelope(audioContext.currentTime);
+            
+            // Quick release for arp notes
+            const rate = parseFloat(document.getElementById('arp-rate').value);
+            const noteLength = (1 / rate) * 0.7; // 70% of the beat
+            setTimeout(() => {
+                releaseEnvelope(audioContext.currentTime);
+            }, noteLength * 1000);
+        }
+        
+        function updateArpNotes(freq, add) {
+            if (add) {
+                if (!arpNotes.includes(freq)) {
+                    arpNotes.push(freq);
+                    arpNotes.sort((a, b) => a - b);
+                }
+            } else {
+                arpNotes = arpNotes.filter(f => f !== freq);
+            }
+            
+            if (arpEnabled) {
+                if (arpNotes.length > 0) {
+                    startArpeggiator();
+                } else {
+                    stopArpeggiator();
+                }
+            }
+        }
+
+        // Key event handlers
+        document.querySelectorAll('.key').forEach(key => {
+            key.addEventListener('mousedown', (e) => {
+                initAudio();
+                const freq = parseFloat(e.target.dataset.freq);
+                
+                if (arpEnabled) {
+                    updateArpNotes(freq, true);
+                    e.target.classList.add('opacity-50');
+                } else {
+                    if (vco1 && vco2) {
+                        // Apply octave shifts
+                        const vco1Octave = parseInt(document.getElementById('vco1-octave').value);
+                        const vco2Octave = parseInt(document.getElementById('vco2-octave').value);
+                        
+                        const vco1Freq = freq * Math.pow(2, vco1Octave);
+                        const vco2Freq = freq * Math.pow(2, vco2Octave);
+                        
+                        vco1.frequency.setValueAtTime(vco1Freq, audioContext.currentTime);
+                        vco2.frequency.setValueAtTime(vco2Freq, audioContext.currentTime);
+                        triggerEnvelope(audioContext.currentTime);
+                        e.target.classList.add('opacity-50');
+                    }
+                }
+            });
+            
+            key.addEventListener('mouseup', (e) => {
+                if (audioContext && vca) {
+                    const freq = parseFloat(e.target.dataset.freq);
+                    if (arpEnabled) {
+                        updateArpNotes(freq, false);
+                    } else {
+                        releaseEnvelope(audioContext.currentTime);
+                    }
+                    e.target.classList.remove('opacity-50');
+                }
+            });
+            
+            key.addEventListener('mouseleave', (e) => {
+                if (audioContext && vca && e.target.classList.contains('opacity-50')) {
+                    const freq = parseFloat(e.target.dataset.freq);
+                    if (arpEnabled) {
+                        updateArpNotes(freq, false);
+                    } else {
+                        releaseEnvelope(audioContext.currentTime);
+                    }
+                    e.target.classList.remove('opacity-50');
+                }
+            });
+        });
+
+        // VCO 1 controls
+        document.getElementById('vco1-wave').addEventListener('change', (e) => {
+            if (vco1) vco1.type = e.target.value;
+        });
+        
+        document.getElementById('vco1-octave').addEventListener('change', (e) => {
+            // Octave changes take effect on next note
+        });
+        
+        document.getElementById('vco1-freq').addEventListener('input', (e) => {
+            document.getElementById('vco1-freq-val').textContent = e.target.value;
+            if (vco1) vco1.frequency.value = parseFloat(e.target.value);
+        });
+        
+        document.getElementById('vco1-detune').addEventListener('input', (e) => {
+            document.getElementById('vco1-detune-val').textContent = e.target.value;
+            if (vco1) vco1.detune.value = parseFloat(e.target.value);
+        });
+        
+        document.getElementById('vco1-mix').addEventListener('input', (e) => {
+            document.getElementById('vco1-mix-val').textContent = e.target.value;
+            updateMixLevels();
+        });
+
+        // VCO 2 controls
+        document.getElementById('vco2-wave').addEventListener('change', (e) => {
+            if (vco2) vco2.type = e.target.value;
+        });
+        
+        document.getElementById('vco2-octave').addEventListener('change', (e) => {
+            // Octave changes take effect on next note
+        });
+        
+        document.getElementById('vco2-freq').addEventListener('input', (e) => {
+            document.getElementById('vco2-freq-val').textContent = e.target.value;
+            if (vco2) vco2.frequency.value = parseFloat(e.target.value);
+        });
+        
+        document.getElementById('vco2-detune').addEventListener('input', (e) => {
+            document.getElementById('vco2-detune-val').textContent = e.target.value;
+            if (vco2) vco2.detune.value = parseFloat(e.target.value);
+        });
+        
+        document.getElementById('vco2-mix').addEventListener('input', (e) => {
+            document.getElementById('vco2-mix-val').textContent = e.target.value;
+            updateMixLevels();
+        });
+
+        // Envelope controls
+        document.getElementById('env-attack').addEventListener('input', (e) => {
+            document.getElementById('env-attack-val').textContent = e.target.value;
+        });
+        
+        document.getElementById('env-decay').addEventListener('input', (e) => {
+            document.getElementById('env-decay-val').textContent = e.target.value;
+        });
+        
+        document.getElementById('env-sustain').addEventListener('input', (e) => {
+            document.getElementById('env-sustain-val').textContent = e.target.value;
+        });
+        
+        document.getElementById('env-release').addEventListener('input', (e) => {
+            document.getElementById('env-release-val').textContent = e.target.value;
+        });
+
+        // LFO controls
+        document.getElementById('lfo-wave').addEventListener('change', (e) => {
+            if (lfo) lfo.type = e.target.value;
+        });
+        
+        document.getElementById('lfo-rate').addEventListener('input', (e) => {
+            document.getElementById('lfo-rate-val').textContent = e.target.value;
+            if (lfo) lfo.frequency.value = parseFloat(e.target.value);
+        });
+        
+        document.getElementById('lfo-depth').addEventListener('input', (e) => {
+            document.getElementById('lfo-depth-val').textContent = e.target.value;
+            updateLFOTarget();
+        });
+        
+        document.getElementById('lfo-target').addEventListener('change', () => {
+            updateLFOTarget();
+        });
+
+        // Filter controls
+        document.getElementById('filter-type').addEventListener('change', (e) => {
+            if (filter) filter.type = e.target.value;
+        });
+        
+        document.getElementById('filter-cutoff').addEventListener('input', (e) => {
+            document.getElementById('filter-cutoff-val').textContent = e.target.value;
+            if (filter) filter.frequency.value = parseFloat(e.target.value);
+        });
+        
+        document.getElementById('filter-res').addEventListener('input', (e) => {
+            document.getElementById('filter-res-val').textContent = e.target.value;
+            if (filter) filter.Q.value = parseFloat(e.target.value);
+        });
+        
+        document.getElementById('filter-env').addEventListener('input', (e) => {
+            document.getElementById('filter-env-val').textContent = e.target.value;
+        });
+
+        // Master volume
+        document.getElementById('master-vol').addEventListener('input', (e) => {
+            document.getElementById('master-vol-val').textContent = e.target.value;
+            if (masterGain) masterGain.gain.value = parseFloat(e.target.value);
+        });
+        
+        // VCA mode
+        document.getElementById('vca-mode').addEventListener('change', (e) => {
+            if (e.target.value === 'always-on' && vca) {
+                vca.gain.setValueAtTime(1, audioContext.currentTime);
+            }
+        });
+        
+        // Arpeggiator controls
+        document.getElementById('arp-toggle').addEventListener('click', (e) => {
+            arpEnabled = !arpEnabled;
+            e.target.textContent = arpEnabled ? 'ON' : 'OFF';
+            e.target.classList.toggle('bg-cyan-500');
+            e.target.classList.toggle('bg-gray-700');
+            
+            if (arpEnabled && arpNotes.length > 0) {
+                startArpeggiator();
+            } else {
+                stopArpeggiator();
+            }
+        });
+        
+        document.getElementById('arp-pattern').addEventListener('change', () => {
+            arpIndex = 0;
+            arpDirection = 1;
+        });
+        
+        document.getElementById('arp-rate').addEventListener('input', (e) => {
+            document.getElementById('arp-rate-val').textContent = e.target.value;
+            if (arpEnabled && arpNotes.length > 0) {
+                startArpeggiator(); // Restart with new rate
+            }
+        });
+        
+        document.getElementById('arp-octaves').addEventListener('input', (e) => {
+            document.getElementById('arp-octaves-val').textContent = e.target.value;
+        });
+    </script>
+</body>
+</html>
