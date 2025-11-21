@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>4-Strategy Replicator Dynamics (3-Simplex)</title>
+    <title>Replicator Dynamics - Information Geometry</title>
     <style>
         * {
             margin: 0;
@@ -19,7 +19,7 @@
         }
         
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
             background: white;
             border-radius: 12px;
@@ -64,7 +64,7 @@
 
         #histogramCanvas {
             cursor: default;
-            height: 250px !important;
+            height: 200px !important;
         }
         
         .controls {
@@ -193,18 +193,19 @@
         }
         
         .info-box {
-            background: #fef3c7;
+            background: #dbeafe;
             padding: 12px;
             border-radius: 8px;
             font-size: 12px;
-            color: #64748b;
+            color: #1e3a8a;
             margin-bottom: 12px;
+            border: 1px solid #93c5fd;
         }
         
         .info-box p:first-child {
             font-weight: 600;
             margin-bottom: 4px;
-            color: #1e293b;
+            color: #1e3a8a;
         }
 
         .checkbox-group {
@@ -235,13 +236,38 @@
             color: #1e293b;
             margin-bottom: 12px;
         }
+
+        .geometry-box {
+            background: #fef3c7;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border: 2px solid #fbbf24;
+        }
+
+        .geometry-box h3 {
+            font-size: 16px;
+            color: #92400e;
+            margin-bottom: 12px;
+        }
+
+        .metric-display {
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            background: white;
+            padding: 8px;
+            border-radius: 4px;
+            margin-top: 8px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>4-Strategy Replicator Dynamics (3-Simplex)</h1>
-            <p>Hierarchical stratified flow with face reduction</p>
+            <h1>Replicator Dynamics - Information Geometry View</h1>
+            <p>Fisher metric, geodesics, and gradient flow on the probability simplex</p>
         </div>
 
         <div class="main-grid">
@@ -301,29 +327,74 @@
                         <input type="checkbox" id="showTrajectory" checked onchange="draw()">
                         <label for="showTrajectory">Show trajectory</label>
                     </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="showMetricEllipses" onchange="draw()">
+                        <label for="showMetricEllipses">Show Fisher metric grid</label>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="showCurrentMetric" checked onchange="draw()">
+                        <label for="showCurrentMetric">Show metric at current point</label>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="showGeodesic" onchange="draw()">
+                        <label for="showGeodesic">Show geodesic to center</label>
+                    </div>
                 </div>
 
                 <div class="histogram-box">
                     <h3>Strategy Mixture</h3>
-                    <canvas id="histogramCanvas" width="350" height="250"></canvas>
+                    <canvas id="histogramCanvas" width="350" height="200"></canvas>
+                </div>
+
+                <div class="geometry-box">
+                    <h3>⚡ Information Geometry</h3>
+                    <div class="state-row">
+                        <span>Shannon Entropy H(p):</span>
+                        <span id="entropy">0.000</span>
+                    </div>
+                    <div class="state-row">
+                        <span>KL Divergence from uniform:</span>
+                        <span id="klDiv">0.000</span>
+                    </div>
+                    <div class="state-row">
+                        <span>Fisher-Rao distance to center:</span>
+                        <span id="fisherDist">0.000</span>
+                    </div>
+                    <div class="state-row" style="margin-top: 12px;">
+                        <span style="font-weight: 600;">Coordinate View:</span>
+                        <span></span>
+                    </div>
+                    <div class="state-row">
+                        <input type="radio" name="coordSystem" value="barycentric" checked onchange="updateDisplay()">
+                        <label style="margin: 0;">Barycentric (x,y,z,w)</label>
+                    </div>
+                    <div class="state-row">
+                        <input type="radio" name="coordSystem" value="log" onchange="updateDisplay()">
+                        <label style="margin: 0;">Log-ratio (centered)</label>
+                    </div>
+                    <div id="fisherMetricDisplay" class="metric-display">
+                    </div>
                 </div>
 
                 <div class="state-box">
-                    <h3>Current State</h3>
+                    <h3>Current State <span id="coordModeLabel" style="font-size: 12px; color: #3b82f6; font-weight: normal;">(Barycentric)</span></h3>
                     <div class="state-row" id="row1">
-                        <span>Strategy 1 (x):</span>
+                        <span id="label1">Strategy 1 (x):</span>
                         <span id="x1">0.250</span>
                     </div>
                     <div class="state-row" id="row2">
-                        <span>Strategy 2 (y):</span>
+                        <span id="label2">Strategy 2 (y):</span>
                         <span id="x2">0.250</span>
                     </div>
                     <div class="state-row" id="row3">
-                        <span>Strategy 3 (z):</span>
+                        <span id="label3">Strategy 3 (z):</span>
                         <span id="x3">0.250</span>
                     </div>
                     <div class="state-row" id="row4">
-                        <span>Strategy 4 (w):</span>
+                        <span id="label4">Strategy 4 (w):</span>
                         <span id="x4">0.250</span>
                     </div>
                     <hr style="margin: 12px 0; border: none; border-top: 1px solid #e2e8f0;">
@@ -338,8 +409,15 @@
                 </div>
 
                 <div class="info-box">
-                    <p>How to use:</p>
-                    Click anywhere on the tetrahedron to place the point. Press Play to watch the dynamics evolve. The point will flow according to replicator dynamics, potentially reducing to lower-dimensional faces as strategies go extinct.
+                    <p>Information Geometry Features:</p>
+                    The simplex is equipped with the Fisher information metric g_ij = δ_ij/p_i - 1. Replicator dynamics can be viewed as gradient flow.
+                    <p style="margin-top: 8px;"><strong>Metric Visualizations:</strong></p>
+                    <strong>Purple Grid Ellipses:</strong> Static grid showing overall metric structure across the simplex.<br>
+                    <strong>Green Current Ellipse:</strong> DYNAMIC! Moves with the red point and grows/shrinks to show how the local metric changes. Watch it expand dramatically as the point approaches boundaries - this is the Fisher metric stretching space! At center it's small and uniform; near edges it grows large showing negative curvature.
+                    <p style="margin-top: 8px;"><strong>Geodesics:</strong> The "straight lines" in this curved geometry, computed by interpolation in log-space.</p>
+                    <p style="margin-top: 8px;"><strong>Coordinate Systems:</strong></p>
+                    <strong>Barycentric:</strong> Standard probabilities (x,y,z,w) summing to 1.<br>
+                    <strong>Log-Ratio:</strong> Centered log coordinates log(p_i/g) where g is geometric mean. These reveal the natural linear structure of compositional data and are centered at 0 for uniform distribution. Note: CLR coordinates sum to 0!
                 </div>
             </div>
         </div>
@@ -358,7 +436,7 @@
         let animationId = null;
         let speed = 1.0;
         let gameType = 'cyclic';
-        let tailLength = 300; // Current tail length setting
+        let tailLength = 300;
         
         // View control
         let rotationX = -0.3;
@@ -369,6 +447,7 @@
         let lastMouseY = 0;
         
         const EXTINCTION_THRESHOLD = 0.001;
+        const LOG_MIN = 1e-10; // Minimum for log calculations
         
         // Game matrices
         const matrices = {
@@ -433,6 +512,66 @@
                 z: rotated.z
             };
         }
+
+        // Information-geometric quantities
+        function shannonEntropy(p) {
+            const vals = [p.x, p.y, p.z, p.w];
+            let H = 0;
+            for (let val of vals) {
+                if (val > LOG_MIN) {
+                    H -= val * Math.log(val);
+                }
+            }
+            return H;
+        }
+
+        function klDivergence(p, q) {
+            // KL(p||q)
+            const pVals = [p.x, p.y, p.z, p.w];
+            const qVals = [q.x, q.y, q.z, q.w];
+            let kl = 0;
+            for (let i = 0; i < 4; i++) {
+                if (pVals[i] > LOG_MIN && qVals[i] > LOG_MIN) {
+                    kl += pVals[i] * Math.log(pVals[i] / qVals[i]);
+                }
+            }
+            return kl;
+        }
+
+        function fisherRaoDistance(p, q) {
+            // Approximate Fisher-Rao distance using sqrt of 2*KL divergence symmetrized
+            const kl1 = klDivergence(p, q);
+            const kl2 = klDivergence(q, p);
+            return Math.sqrt(2 * (kl1 + kl2) / 2);
+        }
+
+        function centeredLogRatio(p) {
+            // CLR transformation
+            const vals = [p.x, p.y, p.z, p.w];
+            const geomMean = Math.pow(
+                vals.reduce((prod, v) => prod * Math.max(v, LOG_MIN), 1),
+                1/4
+            );
+            return vals.map(v => Math.log(Math.max(v, LOG_MIN) / geomMean));
+        }
+
+        function fisherMetricMatrix(p) {
+            // Fisher information metric: g_ij = δ_ij/p_i - 1
+            // This is the 4x4 metric on the simplex
+            const vals = [p.x, p.y, p.z, p.w];
+            const g = [];
+            for (let i = 0; i < 4; i++) {
+                g[i] = [];
+                for (let j = 0; j < 4; j++) {
+                    if (i === j) {
+                        g[i][j] = 1 / Math.max(vals[i], LOG_MIN) - 1;
+                    } else {
+                        g[i][j] = -1;
+                    }
+                }
+            }
+            return g;
+        }
         
         function replicatorDynamics(p) {
             const A = matrices[gameType];
@@ -454,6 +593,204 @@
                 w: p.w * (fitness[3] - avgFitness)
             };
         }
+
+        function computeGeodesicToCenter(p, numPoints = 50) {
+            // Approximate geodesic from p to center using Fisher-Rao metric
+            // This is a simplified computation - true geodesics require solving ODEs
+            const center = { x: 0.25, y: 0.25, z: 0.25, w: 0.25 };
+            const geodesic = [];
+            
+            for (let i = 0; i <= numPoints; i++) {
+                const t = i / numPoints;
+                // Linear interpolation in log space (approximate geodesic)
+                const pt = {
+                    x: Math.exp((1-t)*Math.log(Math.max(p.x, LOG_MIN)) + t*Math.log(center.x)),
+                    y: Math.exp((1-t)*Math.log(Math.max(p.y, LOG_MIN)) + t*Math.log(center.y)),
+                    z: Math.exp((1-t)*Math.log(Math.max(p.z, LOG_MIN)) + t*Math.log(center.z)),
+                    w: Math.exp((1-t)*Math.log(Math.max(p.w, LOG_MIN)) + t*Math.log(center.w))
+                };
+                // Renormalize
+                const sum = pt.x + pt.y + pt.z + pt.w;
+                pt.x /= sum;
+                pt.y /= sum;
+                pt.z /= sum;
+                pt.w /= sum;
+                geodesic.push(pt);
+            }
+            
+            return geodesic;
+        }
+
+        function drawMetricEllipse(p, baseScale = 0.03) {
+            // Draw an ellipse showing the Fisher metric at point p
+            // The Fisher metric g_ij = δ_ij/p_i - 1 determines distances
+            // Near boundaries (small p_i), distances are STRETCHED - ellipses get bigger
+            
+            const vals = [p.x, p.y, p.z, p.w];
+            
+            // Skip if too close to boundary (would be infinite)
+            if (vals.some(v => v < 0.02)) return;
+            
+            // Compute metric scale factor: how much does the metric stretch space?
+            // The metric has form g_ij = δ_ij/p_i - 1
+            // Determinant grows as product of 1/p_i terms
+            // For visualization: use harmonic mean as proxy for metric "size"
+            const harmonicMean = 4 / (1/Math.max(p.x, 0.01) + 1/Math.max(p.y, 0.01) + 
+                                      1/Math.max(p.z, 0.01) + 1/Math.max(p.w, 0.01));
+            
+            // Scale inversely with harmonic mean: smaller p_i → larger ellipse
+            // At uniform (0.25,0.25,0.25,0.25): harmonicMean = 0.25, metricScale = 1
+            // Near boundary: harmonicMean small, metricScale large
+            const metricScale = 0.25 / Math.max(harmonicMean, 0.01);
+            const adjustedScale = baseScale * Math.sqrt(metricScale);
+            
+            // Sample circle in tangent space
+            const angles = 16;
+            const points = [];
+            
+            for (let i = 0; i < angles; i++) {
+                const theta = 2 * Math.PI * i / angles;
+                
+                // Create tangent vector in the 3D tangent space of simplex
+                // These satisfy the constraint: sum(v_i) = 0
+                const v = [
+                    Math.cos(theta),
+                    Math.sin(theta) * 0.7,
+                    Math.sin(theta) * 0.3,
+                    -(Math.cos(theta) + Math.sin(theta) * 0.7 + Math.sin(theta) * 0.3)
+                ];
+                
+                // Apply metric: scale each component by sqrt(p_i) (inverse Fisher metric)
+                // This makes ellipse larger in directions where p_i is smaller
+                const scaled_v = [
+                    v[0] * Math.sqrt(Math.max(p.x, 0.01)),
+                    v[1] * Math.sqrt(Math.max(p.y, 0.01)),
+                    v[2] * Math.sqrt(Math.max(p.z, 0.01)),
+                    v[3] * Math.sqrt(Math.max(p.w, 0.01))
+                ];
+                
+                // Move along geodesic
+                const p_new = {
+                    x: p.x + scaled_v[0] * adjustedScale,
+                    y: p.y + scaled_v[1] * adjustedScale,
+                    z: p.z + scaled_v[2] * adjustedScale,
+                    w: p.w + scaled_v[3] * adjustedScale
+                };
+                
+                // Project back to simplex
+                if (p_new.x > 0 && p_new.y > 0 && p_new.z > 0 && p_new.w > 0) {
+                    const sum = p_new.x + p_new.y + p_new.z + p_new.w;
+                    points.push({
+                        x: p_new.x / sum,
+                        y: p_new.y / sum,
+                        z: p_new.z / sum,
+                        w: p_new.w / sum
+                    });
+                }
+            }
+            
+            if (points.length < 3) return;
+            
+            // Draw the ellipse with color intensity based on metric scale
+            const intensity = Math.min(1, metricScale / 3);
+            ctx.strokeStyle = `rgba(168, 85, 247, ${0.4 + intensity * 0.4})`;
+            ctx.lineWidth = 1.5 + intensity * 1.5;
+            ctx.beginPath();
+            const first3D = baryTo3D(points[0].x, points[0].y, points[0].z, points[0].w);
+            const firstProj = project3D(first3D);
+            ctx.moveTo(firstProj.x, firstProj.y);
+            
+            for (let i = 1; i < points.length; i++) {
+                const p3d = baryTo3D(points[i].x, points[i].y, points[i].z, points[i].w);
+                const proj = project3D(p3d);
+                ctx.lineTo(proj.x, proj.y);
+            }
+            ctx.closePath();
+            ctx.stroke();
+        }
+
+        function drawCurrentMetricEllipse(p, baseScale = 0.04) {
+            // Draw a prominent, dynamic ellipse at the current point
+            // This moves with the point and shows how local geometry changes!
+            
+            const vals = [p.x, p.y, p.z, p.w];
+            if (vals.some(v => v < 0.02)) return;
+            
+            const harmonicMean = 4 / (1/Math.max(p.x, 0.01) + 1/Math.max(p.y, 0.01) + 
+                                      1/Math.max(p.z, 0.01) + 1/Math.max(p.w, 0.01));
+            const metricScale = 0.25 / Math.max(harmonicMean, 0.01);
+            const adjustedScale = baseScale * Math.sqrt(metricScale);
+            
+            const angles = 24; // More points for smoother current ellipse
+            const points = [];
+            
+            for (let i = 0; i < angles; i++) {
+                const theta = 2 * Math.PI * i / angles;
+                const v = [
+                    Math.cos(theta),
+                    Math.sin(theta) * 0.7,
+                    Math.sin(theta) * 0.3,
+                    -(Math.cos(theta) + Math.sin(theta) * 0.7 + Math.sin(theta) * 0.3)
+                ];
+                
+                const scaled_v = [
+                    v[0] * Math.sqrt(Math.max(p.x, 0.01)),
+                    v[1] * Math.sqrt(Math.max(p.y, 0.01)),
+                    v[2] * Math.sqrt(Math.max(p.z, 0.01)),
+                    v[3] * Math.sqrt(Math.max(p.w, 0.01))
+                ];
+                
+                const p_new = {
+                    x: p.x + scaled_v[0] * adjustedScale,
+                    y: p.y + scaled_v[1] * adjustedScale,
+                    z: p.z + scaled_v[2] * adjustedScale,
+                    w: p.w + scaled_v[3] * adjustedScale
+                };
+                
+                if (p_new.x > 0 && p_new.y > 0 && p_new.z > 0 && p_new.w > 0) {
+                    const sum = p_new.x + p_new.y + p_new.z + p_new.w;
+                    points.push({
+                        x: p_new.x / sum,
+                        y: p_new.y / sum,
+                        z: p_new.z / sum,
+                        w: p_new.w / sum
+                    });
+                }
+            }
+            
+            if (points.length < 3) return;
+            
+            // Draw with bright cyan/green color - stands out from the purple grid
+            const intensity = Math.min(1, metricScale / 3);
+            
+            // Fill with semi-transparent color
+            ctx.fillStyle = `rgba(34, 197, 94, ${0.15 + intensity * 0.1})`;
+            ctx.beginPath();
+            const first3D = baryTo3D(points[0].x, points[0].y, points[0].z, points[0].w);
+            const firstProj = project3D(first3D);
+            ctx.moveTo(firstProj.x, firstProj.y);
+            
+            for (let i = 1; i < points.length; i++) {
+                const p3d = baryTo3D(points[i].x, points[i].y, points[i].z, points[i].w);
+                const proj = project3D(p3d);
+                ctx.lineTo(proj.x, proj.y);
+            }
+            ctx.closePath();
+            ctx.fill();
+            
+            // Outline with bright green
+            ctx.strokeStyle = `rgba(34, 197, 94, ${0.8 + intensity * 0.2})`;
+            ctx.lineWidth = 3 + intensity * 1;
+            ctx.beginPath();
+            ctx.moveTo(firstProj.x, firstProj.y);
+            for (let i = 1; i < points.length; i++) {
+                const p3d = baryTo3D(points[i].x, points[i].y, points[i].z, points[i].w);
+                const proj = project3D(p3d);
+                ctx.lineTo(proj.x, proj.y);
+            }
+            ctx.closePath();
+            ctx.stroke();
+        }
         
         function drawHistogram() {
             const width = histCanvas.width;
@@ -462,15 +799,13 @@
             const barWidth = (width - 2 * padding) / 4;
             const maxHeight = height - 2 * padding;
             
-            // Clear
             histCtx.clearRect(0, 0, width, height);
             
-            // Define colors matching the tetrahedron vertices
             const colors = [
-                'rgba(255, 50, 50, 0.8)',   // Strategy 1 (x) - red
-                'rgba(50, 255, 50, 0.8)',   // Strategy 2 (y) - green
-                'rgba(50, 100, 255, 0.8)',  // Strategy 3 (z) - blue
-                'rgba(255, 200, 50, 0.8)'   // Strategy 4 (w) - yellow
+                'rgba(255, 50, 50, 0.8)',
+                'rgba(50, 255, 50, 0.8)',
+                'rgba(50, 100, 255, 0.8)',
+                'rgba(255, 200, 50, 0.8)'
             ];
             
             const values = [currentPoint.x, currentPoint.y, currentPoint.z, currentPoint.w];
@@ -495,7 +830,6 @@
                 histCtx.lineTo(width - padding, y);
                 histCtx.stroke();
                 
-                // Y-axis labels
                 histCtx.fillStyle = '#64748b';
                 histCtx.font = '11px sans-serif';
                 histCtx.textAlign = 'right';
@@ -508,24 +842,20 @@
                 const barH = value * maxHeight;
                 const barY = height - padding - barH;
                 
-                // Draw bar
                 histCtx.fillStyle = colors[i];
                 histCtx.fillRect(x, barY, barWidth * 0.8, barH);
                 
-                // Draw outline
                 histCtx.strokeStyle = colors[i].replace('0.8', '1');
                 histCtx.lineWidth = 2;
                 histCtx.strokeRect(x, barY, barWidth * 0.8, barH);
                 
-                // Draw value on top
                 if (value > 0.02) {
                     histCtx.fillStyle = '#1e293b';
-                    histCtx.font = 'bold 13px sans-serif';
+                    histCtx.font = 'bold 11px sans-serif';
                     histCtx.textAlign = 'center';
-                    histCtx.fillText(value.toFixed(3), x + barWidth * 0.4, barY - 8);
+                    histCtx.fillText(value.toFixed(3), x + barWidth * 0.4, barY - 6);
                 }
                 
-                // Draw label below
                 histCtx.fillStyle = '#1e293b';
                 histCtx.font = 'bold 14px sans-serif';
                 histCtx.textAlign = 'center';
@@ -538,7 +868,7 @@
                     const x = padding + i * barWidth + barWidth * 0.5;
                     const y = height - padding + 35;
                     histCtx.fillStyle = '#ef4444';
-                    histCtx.font = '11px sans-serif';
+                    histCtx.font = '10px sans-serif';
                     histCtx.textAlign = 'center';
                     histCtx.fillText('EXTINCT', x, y);
                 }
@@ -551,6 +881,8 @@
             
             const showFlow = document.getElementById('showFlow').checked;
             const showTrajectory = document.getElementById('showTrajectory').checked;
+            const showMetricEllipses = document.getElementById('showMetricEllipses').checked;
+            const showGeodesic = document.getElementById('showGeodesic').checked;
             
             // Draw tetrahedron edges
             const edges = [
@@ -569,7 +901,7 @@
                 ctx.stroke();
             });
             
-            // Draw faces with transparency
+            // Draw faces
             const faces = [
                 [v1, v2, v3],
                 [v1, v3, v4],
@@ -589,6 +921,58 @@
                 ctx.closePath();
                 ctx.fill();
             });
+            
+            // Draw geodesic to center
+            if (showGeodesic && currentPoint.x > EXTINCTION_THRESHOLD && 
+                currentPoint.y > EXTINCTION_THRESHOLD && 
+                currentPoint.z > EXTINCTION_THRESHOLD && 
+                currentPoint.w > EXTINCTION_THRESHOLD) {
+                const geodesic = computeGeodesicToCenter(currentPoint);
+                
+                ctx.strokeStyle = 'rgba(168, 85, 247, 0.5)';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                
+                const first3D = baryTo3D(geodesic[0].x, geodesic[0].y, geodesic[0].z, geodesic[0].w);
+                const firstProj = project3D(first3D);
+                ctx.moveTo(firstProj.x, firstProj.y);
+                
+                for (let i = 1; i < geodesic.length; i++) {
+                    const p3d = baryTo3D(geodesic[i].x, geodesic[i].y, geodesic[i].z, geodesic[i].w);
+                    const proj = project3D(p3d);
+                    ctx.lineTo(proj.x, proj.y);
+                }
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+            
+            // Draw metric ellipses at grid points
+            if (showMetricEllipses) {
+                const gridSize = 8;
+                for (let i = 1; i < gridSize; i++) {
+                    for (let j = 1; j < gridSize - i; j++) {
+                        for (let k = 1; k < gridSize - i - j; k++) {
+                            const l = gridSize - i - j - k;
+                            if (l < 1) continue;
+                            
+                            const x = i / gridSize;
+                            const y = j / gridSize;
+                            const z = k / gridSize;
+                            const w = l / gridSize;
+                            
+                            drawMetricEllipse({ x, y, z, w }, 0.025);
+                        }
+                    }
+                }
+            }
+
+            // Draw metric ellipse at current point (dynamic - moves with point!)
+            const showCurrentMetric = document.getElementById('showCurrentMetric').checked;
+            if (showCurrentMetric && currentPoint.x > 0.02 && currentPoint.y > 0.02 && 
+                currentPoint.z > 0.02 && currentPoint.w > 0.02) {
+                drawCurrentMetricEllipse(currentPoint, 0.04);
+            }
             
             // Label vertices
             const labels = [
@@ -614,7 +998,7 @@
             
             // Draw flow field
             if (showFlow) {
-                const gridSize = 12;
+                const gridSize = 10;
                 ctx.strokeStyle = 'rgba(100, 116, 139, 0.15)';
                 ctx.lineWidth = 1;
                 
@@ -687,7 +1071,6 @@
             ctx.fill();
             ctx.stroke();
             
-            // Draw histogram
             drawHistogram();
         }
         
@@ -700,13 +1083,11 @@
             currentPoint.z += vel.z * dt;
             currentPoint.w += vel.w * dt;
             
-            // Apply extinction threshold
             if (currentPoint.x < EXTINCTION_THRESHOLD) currentPoint.x = 0;
             if (currentPoint.y < EXTINCTION_THRESHOLD) currentPoint.y = 0;
             if (currentPoint.z < EXTINCTION_THRESHOLD) currentPoint.z = 0;
             if (currentPoint.w < EXTINCTION_THRESHOLD) currentPoint.w = 0;
             
-            // Renormalize
             const sum = currentPoint.x + currentPoint.y + currentPoint.z + currentPoint.w;
             if (sum > 0) {
                 currentPoint.x /= sum;
@@ -717,11 +1098,9 @@
             
             updateDisplay();
             
-            // Track trajectory
             if (trajectories.length > 0) {
                 const lastTraj = trajectories[trajectories.length - 1];
                 lastTraj.push({ ...currentPoint });
-                // Only trim if tailLength is not -1 (keep all)
                 if (tailLength > 0 && lastTraj.length > tailLength) {
                     lastTraj.shift();
                 }
@@ -785,9 +1164,7 @@
         
         function updateTailLength() {
             tailLength = parseInt(document.getElementById('tailLength').value);
-            console.log('Tail length updated to:', tailLength === -1 ? 'Keep All' : tailLength);
             
-            // Trim existing trajectories if needed
             if (tailLength > 0) {
                 trajectories.forEach(traj => {
                     if (traj.length > tailLength) {
@@ -799,12 +1176,43 @@
         }
         
         function updateDisplay() {
+            const coordSystem = document.querySelector('input[name="coordSystem"]:checked').value;
             const format = (x) => x.toFixed(3);
             
-            document.getElementById('x1').textContent = format(currentPoint.x);
-            document.getElementById('x2').textContent = format(currentPoint.y);
-            document.getElementById('x3').textContent = format(currentPoint.z);
-            document.getElementById('x4').textContent = format(currentPoint.w);
+            if (coordSystem === 'barycentric') {
+                // Update mode label
+                document.getElementById('coordModeLabel').textContent = '(Barycentric)';
+                document.getElementById('coordModeLabel').style.color = '#3b82f6';
+                
+                // Update row labels
+                document.getElementById('label1').textContent = 'Strategy 1 (x):';
+                document.getElementById('label2').textContent = 'Strategy 2 (y):';
+                document.getElementById('label3').textContent = 'Strategy 3 (z):';
+                document.getElementById('label4').textContent = 'Strategy 4 (w):';
+                
+                // Display barycentric coordinates (probabilities)
+                document.getElementById('x1').textContent = format(currentPoint.x);
+                document.getElementById('x2').textContent = format(currentPoint.y);
+                document.getElementById('x3').textContent = format(currentPoint.z);
+                document.getElementById('x4').textContent = format(currentPoint.w);
+            } else {
+                // Update mode label
+                document.getElementById('coordModeLabel').textContent = '(Log-Ratio)';
+                document.getElementById('coordModeLabel').style.color = '#8b5cf6';
+                
+                // Update row labels to show log-ratio
+                document.getElementById('label1').textContent = 'log(x/g) - centered:';
+                document.getElementById('label2').textContent = 'log(y/g) - centered:';
+                document.getElementById('label3').textContent = 'log(z/g) - centered:';
+                document.getElementById('label4').textContent = 'log(w/g) - centered:';
+                
+                // Log-ratio coordinates
+                const clr = centeredLogRatio(currentPoint);
+                document.getElementById('x1').textContent = format(clr[0]);
+                document.getElementById('x2').textContent = format(clr[1]);
+                document.getElementById('x3').textContent = format(clr[2]);
+                document.getElementById('x4').textContent = format(clr[3]);
+            }
             
             // Mark extinct strategies
             const rows = ['row1', 'row2', 'row3', 'row4'];
@@ -828,13 +1236,37 @@
                              currentPoint.z * fitness[2] + currentPoint.w * fitness[3];
             document.getElementById('fitness').textContent = avgFitness.toFixed(4);
             
-            // Calculate active dimension
             let activeDim = 0;
             if (currentPoint.x >= EXTINCTION_THRESHOLD) activeDim++;
             if (currentPoint.y >= EXTINCTION_THRESHOLD) activeDim++;
             if (currentPoint.z >= EXTINCTION_THRESHOLD) activeDim++;
             if (currentPoint.w >= EXTINCTION_THRESHOLD) activeDim++;
             document.getElementById('dimension').textContent = activeDim - 1;
+            
+            // Information-geometric quantities
+            const entropy = shannonEntropy(currentPoint);
+            const uniform = { x: 0.25, y: 0.25, z: 0.25, w: 0.25 };
+            const kl = klDivergence(currentPoint, uniform);
+            const frDist = fisherRaoDistance(currentPoint, uniform);
+            
+            document.getElementById('entropy').textContent = entropy.toFixed(4);
+            document.getElementById('klDiv').textContent = kl.toFixed(4);
+            document.getElementById('fisherDist').textContent = frDist.toFixed(4);
+            
+            // Display Fisher metric
+            const g = fisherMetricMatrix(currentPoint);
+            let metricHTML = '<strong>Fisher Metric g_ij:</strong><br>';
+            metricHTML += '<table style="font-size: 10px; border-collapse: collapse;">';
+            for (let i = 0; i < 4; i++) {
+                metricHTML += '<tr>';
+                for (let j = 0; j < 4; j++) {
+                    const val = g[i][j].toFixed(2);
+                    metricHTML += `<td style="padding: 2px 6px; text-align: right;">${val}</td>`;
+                }
+                metricHTML += '</tr>';
+            }
+            metricHTML += '</table>';
+            document.getElementById('fisherMetricDisplay').innerHTML = metricHTML;
         }
         
         // Mouse controls
@@ -857,9 +1289,7 @@
                 
                 isDragging = false;
                 
-                // Only treat as click if movement is small and duration is short
                 if (dist < 5 && duration < 200) {
-                    // Convert from screen coordinates to canvas coordinates
                     const scaleX = canvas.width / rect.width;
                     const scaleY = canvas.height / rect.height;
                     const mouseX = (upEvent.clientX - rect.left) * scaleX;
@@ -900,13 +1330,10 @@
         });
         
         function setPointFromClick(mouseX, mouseY) {
-            // Find closest point on tetrahedron to the click
-            // Use a fine grid to sample all regions
-            
             let bestDist = Infinity;
             let bestPoint = null;
             
-            const gridSize = 15; // Finer grid
+            const gridSize = 15;
             for (let i = 0; i <= gridSize; i++) {
                 for (let j = 0; j <= gridSize-i; j++) {
                     for (let k = 0; k <= gridSize-i-j; k++) {
@@ -929,27 +1356,14 @@
             }
             
             if (bestPoint && bestDist < 150) {
-                console.log('Click found point: x=' + bestPoint.x.toFixed(3) + 
-                           ' y=' + bestPoint.y.toFixed(3) + 
-                           ' z=' + bestPoint.z.toFixed(3) + 
-                           ' w=' + bestPoint.w.toFixed(3) + 
-                           ' distance=' + bestDist.toFixed(1));
-                
-                // Use exact point from grid
                 currentPoint = { ...bestPoint };
-                
-                // Start fresh trajectory but keep playing if already playing
                 trajectories.push([]);
-                
                 updateDisplay();
                 draw();
-            } else {
-                console.log('Click too far from tetrahedron:', bestDist);
             }
         }
         
         function setInteriorPoint() {
-            // Set point deep in the interior, far from all faces
             const base = 0.25;
             const spread = 0.15;
             currentPoint = {
@@ -959,17 +1373,11 @@
                 w: base + (Math.random() - 0.5) * spread
             };
             
-            // Normalize
             const sum = currentPoint.x + currentPoint.y + currentPoint.z + currentPoint.w;
             currentPoint.x /= sum;
             currentPoint.y /= sum;
             currentPoint.z /= sum;
             currentPoint.w /= sum;
-            
-            console.log('Interior point: x=' + currentPoint.x.toFixed(3) + 
-                       ' y=' + currentPoint.y.toFixed(3) + 
-                       ' z=' + currentPoint.z.toFixed(3) + 
-                       ' w=' + currentPoint.w.toFixed(3));
             
             trajectories.push([]);
             updateDisplay();
