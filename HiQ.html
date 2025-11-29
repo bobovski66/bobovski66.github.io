@@ -1,0 +1,867 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hi-Q (Peg Solitaire) — Cross + Triangle</title>
+  <style>
+    :root{
+      --bg: #0b1220;
+      --panel: rgba(255,255,255,.06);
+      --panel2: rgba(255,255,255,.09);
+      --ink: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.7);
+      --muted2: rgba(255,255,255,.5);
+      --accent: #7dd3fc;
+      --good: #86efac;
+      --warn: #fca5a5;
+
+      --cell: clamp(34px, 5.2vw, 56px);
+      --gap: clamp(6px, 1vw, 10px);
+      --radius: 16px;
+      --cellRadius: 999px;
+      --shadow: 0 16px 50px rgba(0,0,0,.35);
+      --shadow2: 0 10px 25px rgba(0,0,0,.25);
+      --ring: 0 0 0 3px rgba(125,211,252,.35);
+      --ring2: 0 0 0 3px rgba(134,239,172,.35);
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: radial-gradient(1200px 800px at 20% -10%, rgba(125,211,252,.18), transparent 45%),
+                  radial-gradient(1200px 800px at 110% 30%, rgba(167,139,250,.16), transparent 55%),
+                  radial-gradient(1000px 700px at 40% 120%, rgba(134,239,172,.13), transparent 50%),
+                  var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 24px;
+    }
+
+    .app{
+      width: min(1050px, 100%);
+      display:grid;
+      grid-template-columns: 340px 1fr;
+      gap: 18px;
+    }
+
+    @media (max-width: 900px){
+      .app{ grid-template-columns: 1fr; }
+    }
+
+    .card{
+      background: var(--panel);
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    header{
+      padding: 18px 18px 12px 18px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      background: linear-gradient(to bottom, rgba(255,255,255,.05), transparent);
+    }
+
+    header h1{
+      margin:0;
+      font-size: 18px;
+      letter-spacing:.2px;
+    }
+    header .sub{
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .controls{
+      padding: 14px 18px 18px 18px;
+      display:flex;
+      flex-direction:column;
+      gap: 12px;
+    }
+
+    .row{
+      display:flex;
+      gap: 10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      background: var(--panel2);
+      border: 1px solid rgba(255,255,255,.10);
+      padding: 10px 12px;
+      border-radius: 999px;
+    }
+
+    .label{
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    button, select{
+      appearance:none;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.07);
+      color: var(--ink);
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor:pointer;
+      box-shadow: var(--shadow2);
+      transition: transform .06s ease, background .12s ease, border-color .12s ease;
+      outline:none;
+    }
+    button:hover, select:hover { background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.22); }
+    button:active{ transform: translateY(1px); }
+    button:disabled{ opacity:.5; cursor:not-allowed; box-shadow:none; }
+    select{ font-weight:650; }
+
+    .toggle{
+      display:flex;
+      border-radius: 14px;
+      overflow:hidden;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+    }
+    .toggle button{
+      border: none;
+      border-radius: 0;
+      box-shadow:none;
+      flex:1;
+      padding: 10px 12px;
+      background: transparent;
+      font-weight: 800;
+      letter-spacing:.2px;
+      color: var(--muted);
+    }
+    .toggle button.active{
+      background: rgba(255,255,255,.12);
+      color: var(--ink);
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .stat{
+      padding: 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.10);
+    }
+    .stat .k{ color: var(--muted); font-size: 12px; }
+    .stat .v{ font-size: 18px; font-weight: 900; margin-top: 4px; }
+
+    .hint{
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    .hint strong{ color: var(--ink); }
+
+    .boardCard{
+      display:flex;
+      flex-direction:column;
+      min-height: 520px;
+    }
+
+    .boardTop{
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      background: linear-gradient(to bottom, rgba(255,255,255,.05), transparent);
+    }
+    .boardTitle{
+      display:flex;
+      flex-direction:column;
+      gap: 2px;
+    }
+    .boardTitle .t{ font-weight: 900; letter-spacing:.2px; }
+    .boardTitle .d{ color: var(--muted); font-size: 12px; }
+
+    .boardArea{
+      padding: 18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex:1;
+    }
+
+    /* Cross board layout */
+    .crossGrid{
+      display:grid;
+      grid-template-columns: repeat(7, var(--cell));
+      grid-template-rows: repeat(7, var(--cell));
+      gap: var(--gap);
+      padding: 16px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    /* Triangle board layout */
+    .triWrap{
+      padding: 16px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+    .triRow{
+      display:flex;
+      justify-content:center;
+      gap: var(--gap);
+      margin: calc(var(--gap) * 0.55) 0;
+    }
+
+    .hole{
+      width: var(--cell);
+      height: var(--cell);
+      border-radius: var(--cellRadius);
+      border: 1px solid rgba(255,255,255,.14);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      user-select:none;
+      position:relative;
+      box-shadow: var(--shadow2);
+      background: rgba(255,255,255,.06);
+      transition: transform .08s ease, background .10s ease, box-shadow .10s ease, border-color .10s ease;
+    }
+    .hole.invalid{
+      visibility:hidden;
+      pointer-events:none;
+      box-shadow:none;
+    }
+
+    .hole.peg{
+      background: radial-gradient(circle at 30% 25%, rgba(255,255,255,.20), rgba(255,255,255,.06) 55%, rgba(255,255,255,.04));
+      border-color: rgba(255,255,255,.20);
+    }
+    .hole.empty{
+      background: rgba(255,255,255,.03);
+      border-color: rgba(255,255,255,.10);
+      box-shadow:none;
+    }
+    .hole.peg::after{
+      content:"";
+      width: 62%;
+      height: 62%;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 25%, rgba(125,211,252,.55), rgba(125,211,252,.14));
+      border: 1px solid rgba(125,211,252,.45);
+      box-shadow: 0 10px 25px rgba(0,0,0,.25);
+    }
+
+    .hole.select{
+      box-shadow: var(--shadow2), var(--ring);
+      border-color: rgba(125,211,252,.55);
+      transform: translateY(-1px);
+    }
+
+    .hole.target{
+      box-shadow: var(--shadow2), var(--ring2);
+      border-color: rgba(134,239,172,.7);
+      background: rgba(134,239,172,.10);
+      transform: translateY(-1px);
+    }
+    .hole.target.empty::before{
+      content:"";
+      width: 34%;
+      height: 34%;
+      border-radius: 999px;
+      background: rgba(134,239,172,.35);
+      border: 1px solid rgba(134,239,172,.65);
+    }
+
+    .footerNote{
+      padding: 14px 18px 18px 18px;
+      border-top: 1px solid rgba(255,255,255,.08);
+      color: var(--muted2);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .toast{
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color: var(--muted);
+      font-size: 13px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+    }
+    .toast strong{ color: var(--ink); }
+    .toast .ok{ color: var(--good); font-weight: 900; }
+    .toast .bad{ color: var(--warn); font-weight: 900; }
+
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+      padding: 2px 6px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.22);
+      color: rgba(255,255,255,.8);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <!-- LEFT: controls -->
+    <section class="card">
+      <header>
+        <h1>Hi-Q (Peg Solitaire)</h1>
+        <div class="sub">
+          Click a peg to select it, then click a highlighted empty hole to jump. The jumped peg disappears.
+        </div>
+      </header>
+
+      <div class="controls">
+        <div class="row">
+          <div class="toggle" aria-label="Board type">
+            <button id="btnCross" class="active" type="button">Cross</button>
+            <button id="btnTri" type="button">Triangle</button>
+          </div>
+        </div>
+
+        <div class="row">
+          <button id="btnNew" type="button">New game</button>
+          <button id="btnUndo" type="button" disabled>Undo</button>
+          <button id="btnHint" type="button">Hint</button>
+        </div>
+
+        <div class="row">
+          <div class="pill" style="flex:1; justify-content:space-between; gap:12px;">
+            <div>
+              <div class="label">Setup</div>
+              <div style="font-weight:900;">Choose the empty hole</div>
+            </div>
+            <button id="btnChooseEmpty" type="button">Pick empty</button>
+          </div>
+        </div>
+
+        <div class="row">
+          <label class="pill" style="flex:1; justify-content:space-between; gap:12px;">
+            <div>
+              <div class="label">Triangle size</div>
+              <div style="font-weight:900;">Rows</div>
+            </div>
+            <select id="triSize" title="Triangle size">
+              <option value="5" selected>5 (15 holes)</option>
+              <option value="6">6 (21 holes)</option>
+              <option value="7">7 (28 holes)</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="stats">
+          <div class="stat">
+            <div class="k">Pegs left</div>
+            <div class="v" id="pegsLeft">—</div>
+          </div>
+          <div class="stat">
+            <div class="k">Moves</div>
+            <div class="v" id="moveCount">—</div>
+          </div>
+          <div class="stat">
+            <div class="k">Legal moves</div>
+            <div class="v" id="legalMoves">—</div>
+          </div>
+          <div class="stat">
+            <div class="k">Goal</div>
+            <div class="v" id="goalText">1</div>
+          </div>
+        </div>
+
+        <div class="toast" id="statusToast" role="status" aria-live="polite">
+          <div id="statusMsg"><strong>Ready.</strong> Try to finish with one peg.</div>
+          <div id="statusBadge" class="ok">●</div>
+        </div>
+
+        <div class="hint">
+          <strong>Tip:</strong> A strong habit is to keep the board “connected” (avoid isolating pegs).
+          <div style="margin-top:8px;">
+            <span class="kbd">Pick empty</span> lets you choose the starting empty hole any time you start a new game.
+          </div>
+        </div>
+      </div>
+
+      <div class="footerNote">
+        Classic rules: jump a peg over an adjacent peg into an empty hole; remove the jumped peg.
+      </div>
+    </section>
+
+    <!-- RIGHT: board -->
+    <section class="card boardCard">
+      <div class="boardTop">
+        <div class="boardTitle">
+          <div class="t" id="boardName">Cross board (English)</div>
+          <div class="d" id="boardDesc">7×7 mask, 33 holes. Default empty: center.</div>
+        </div>
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+          <span class="label">Click → select → jump</span>
+        </div>
+      </div>
+
+      <div class="boardArea" id="boardArea">
+        <!-- injected -->
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // ---------- Utilities ----------
+    const deepClone = (x) => JSON.parse(JSON.stringify(x));
+    const keyOf = (r,c) => `${r},${c}`;
+    const randItem = (arr) => arr[Math.floor(Math.random()*arr.length)];
+    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+
+    // ---------- Game state ----------
+    const state = {
+      mode: "cross",         // "cross" | "tri"
+      choosingEmpty: false,  // when true, clicking a peg will empty it and restart history
+      moveCount: 0,
+      selected: null,        // {r,c}
+      targets: new Set(),    // keys of legal landing empties from selected
+      history: [],           // stack of {board, moveCount}
+      // board representations:
+      // cross: 7x7 with -1 invalid, 0 empty, 1 peg
+      cross: [],
+      // tri: rows of 0..rowIndex, values 0/1
+      tri: [],
+      triN: 5,
+    };
+
+    // ---------- Board generators ----------
+    function makeCrossBoard(emptyAt = {r:3,c:3}) {
+      const b = Array.from({length:7}, () => Array(7).fill(1));
+      // Invalidate 2x2 corners (top-left, top-right, bottom-left, bottom-right)
+      const inval = [
+        [0,0],[0,1],[1,0],[1,1],
+        [0,5],[0,6],[1,5],[1,6],
+        [5,0],[5,1],[6,0],[6,1],
+        [5,5],[5,6],[6,5],[6,6]
+      ];
+      for (const [r,c] of inval) b[r][c] = -1;
+      // Default pegs elsewhere, empty chosen spot if valid
+      if (b[emptyAt.r]?.[emptyAt.c] === 1) b[emptyAt.r][emptyAt.c] = 0;
+      return b;
+    }
+
+    function makeTriBoard(n, emptyAt = {r:0,c:0}) {
+      const b = Array.from({length:n}, (_,r) => Array.from({length:r+1}, () => 1));
+      if (b[emptyAt.r]?.[emptyAt.c] === 1) b[emptyAt.r][emptyAt.c] = 0;
+      return b;
+    }
+
+    // ---------- Move logic ----------
+    const crossDirs = [
+      {dr: 0, dc: 1}, {dr: 0, dc: -1},
+      {dr: 1, dc: 0}, {dr: -1, dc: 0},
+    ];
+
+    // Tri grid in coordinates (r,c) with 0<=c<=r.
+    // Neighbor steps (6 directions) for the triangular lattice:
+    // left/right in row, diagonals up/down:
+    const triDirs = [
+      {dr: 0, dc: 1},   // right
+      {dr: 0, dc: -1},  // left
+      {dr: 1, dc: 0},   // down-left
+      {dr: 1, dc: 1},   // down-right
+      {dr: -1, dc: 0},  // up-right
+      {dr: -1, dc: -1}, // up-left
+    ];
+
+    function inCross(r,c){
+      return r>=0 && r<7 && c>=0 && c<7 && state.cross[r][c] !== -1;
+    }
+    function inTri(r,c){
+      return r>=0 && r<state.triN && c>=0 && c<=r;
+    }
+
+    function getBoardCell(r,c){
+      if (state.mode === "cross") return state.cross[r][c];
+      return state.tri[r][c];
+    }
+    function setBoardCell(r,c,val){
+      if (state.mode === "cross") state.cross[r][c] = val;
+      else state.tri[r][c] = val;
+    }
+
+    function legalMovesFrom(r,c){
+      const moves = [];
+      if (getBoardCell(r,c) !== 1) return moves;
+
+      const dirs = (state.mode === "cross") ? crossDirs : triDirs;
+      for (const {dr,dc} of dirs){
+        const r1 = r + dr, c1 = c + dc;         // jumped-over
+        const r2 = r + 2*dr, c2 = c + 2*dc;     // landing
+        const inside = (state.mode === "cross") ? (inCross(r1,c1) && inCross(r2,c2))
+                                                : (inTri(r1,c1) && inTri(r2,c2));
+        if (!inside) continue;
+        if (getBoardCell(r1,c1) === 1 && getBoardCell(r2,c2) === 0){
+          moves.push({from:{r,c}, over:{r:r1,c:c1}, to:{r:r2,c:c2}});
+        }
+      }
+      return moves;
+    }
+
+    function allLegalMoves(){
+      const moves = [];
+      if (state.mode === "cross"){
+        for (let r=0;r<7;r++){
+          for (let c=0;c<7;c++){
+            if (!inCross(r,c)) continue;
+            moves.push(...legalMovesFrom(r,c));
+          }
+        }
+      } else {
+        for (let r=0;r<state.triN;r++){
+          for (let c=0;c<=r;c++){
+            moves.push(...legalMovesFrom(r,c));
+          }
+        }
+      }
+      return moves;
+    }
+
+    function countPegs(){
+      let n=0;
+      if (state.mode === "cross"){
+        for (let r=0;r<7;r++) for (let c=0;c<7;c++) if (inCross(r,c) && state.cross[r][c]===1) n++;
+      } else {
+        for (let r=0;r<state.triN;r++) for (let c=0;c<=r;c++) if (state.tri[r][c]===1) n++;
+      }
+      return n;
+    }
+
+    function pushHistory(){
+      state.history.push({
+        mode: state.mode,
+        cross: deepClone(state.cross),
+        tri: deepClone(state.tri),
+        triN: state.triN,
+        moveCount: state.moveCount
+      });
+      byId("btnUndo").disabled = (state.history.length === 0);
+    }
+
+    function undo(){
+      const prev = state.history.pop();
+      if (!prev) return;
+      state.mode = prev.mode;
+      state.cross = prev.cross;
+      state.tri = prev.tri;
+      state.triN = prev.triN;
+      state.moveCount = prev.moveCount;
+      state.selected = null;
+      state.targets = new Set();
+      state.choosingEmpty = false;
+      syncUI(true);
+    }
+
+    function applyMove(m){
+      pushHistory();
+      setBoardCell(m.from.r,m.from.c,0);
+      setBoardCell(m.over.r,m.over.c,0);
+      setBoardCell(m.to.r,m.to.c,1);
+      state.moveCount++;
+      state.selected = null;
+      state.targets = new Set();
+      syncUI();
+    }
+
+    // ---------- UI ----------
+    const byId = (id) => document.getElementById(id);
+
+    function setStatus(type, msg){
+      const toast = byId("statusToast");
+      const badge = byId("statusBadge");
+      byId("statusMsg").innerHTML = msg;
+      if (type === "ok"){
+        badge.className = "ok";
+        badge.textContent = "●";
+      } else if (type === "bad"){
+        badge.className = "bad";
+        badge.textContent = "●";
+      } else {
+        badge.className = "";
+        badge.textContent = "●";
+      }
+    }
+
+    function setMode(mode){
+      state.mode = mode;
+      state.selected = null;
+      state.targets = new Set();
+      state.choosingEmpty = false;
+
+      byId("btnCross").classList.toggle("active", mode==="cross");
+      byId("btnTri").classList.toggle("active", mode==="tri");
+
+      byId("boardName").textContent = (mode==="cross")
+        ? "Cross board (English)"
+        : `Triangle board (${state.triN} rows)`;
+      byId("boardDesc").textContent = (mode==="cross")
+        ? "7×7 mask, 33 holes. Default empty: center."
+        : `${state.triN} rows, ${state.triN*(state.triN+1)/2} holes. Default empty: top.`;
+
+      byId("goalText").textContent = "1";
+
+      renderBoard();
+      syncUI(true);
+    }
+
+    function newGame(){
+      state.history = [];
+      state.moveCount = 0;
+      state.selected = null;
+      state.targets = new Set();
+      state.choosingEmpty = false;
+
+      if (state.mode === "cross"){
+        state.cross = makeCrossBoard({r:3,c:3});
+      } else {
+        state.tri = makeTriBoard(state.triN, {r:0,c:0});
+      }
+      byId("btnUndo").disabled = true;
+      renderBoard();
+      syncUI(true);
+      setStatus("ok", "<strong>New game.</strong> Click a peg to begin.");
+    }
+
+    function chooseEmptyToggle(){
+      state.choosingEmpty = !state.choosingEmpty;
+      state.selected = null;
+      state.targets = new Set();
+      const btn = byId("btnChooseEmpty");
+      btn.textContent = state.choosingEmpty ? "Click a peg…" : "Pick empty";
+      if (state.choosingEmpty){
+        setStatus("ok", "<strong>Pick empty:</strong> click a peg to remove it (sets the starting hole).");
+      } else {
+        setStatus("ok", "<strong>Ready.</strong> Click a peg to make a move.");
+      }
+      renderBoard();
+      syncUI();
+    }
+
+    function hint(){
+      const moves = allLegalMoves();
+      if (moves.length === 0){
+        setStatus("bad", "<strong>No legal moves.</strong> Try New game, Undo, or Pick empty.");
+        return;
+      }
+      const m = randItem(moves);
+      // Select that peg and highlight its targets
+      state.selected = {r:m.from.r, c:m.from.c};
+      state.targets = new Set([keyOf(m.to.r,m.to.c)]);
+      setStatus("ok", "<strong>Hint:</strong> try the highlighted jump.");
+      renderBoard();
+      syncUI();
+    }
+
+    function onHoleClick(r,c){
+      const cell = getBoardCell(r,c);
+
+      // Setup choose-empty mode:
+      if (state.choosingEmpty){
+        if (cell !== 1) return;
+        // wipe history and reset moveCount; make that hole empty
+        state.history = [];
+        state.moveCount = 0;
+        // refill board to full, then empty chosen hole
+        if (state.mode === "cross"){
+          // rebuild base board with this empty spot (must be valid)
+          state.cross = makeCrossBoard({r,c});
+        } else {
+          state.tri = makeTriBoard(state.triN, {r,c});
+        }
+        state.choosingEmpty = false;
+        byId("btnChooseEmpty").textContent = "Pick empty";
+        setStatus("ok", "<strong>Starting empty chosen.</strong> Now play!");
+        renderBoard();
+        syncUI(true);
+        return;
+      }
+
+      // Normal play
+      if (state.selected){
+        const k = keyOf(r,c);
+        if (state.targets.has(k)){
+          const from = state.selected;
+          // find the specific move
+          const moves = legalMovesFrom(from.r, from.c);
+          const m = moves.find(m => m.to.r===r && m.to.c===c);
+          if (m) applyMove(m);
+          return;
+        }
+        // reselect if clicking another peg
+        if (cell === 1){
+          selectPeg(r,c);
+        } else {
+          // clicking empty elsewhere clears selection
+          state.selected = null;
+          state.targets = new Set();
+          renderBoard();
+          syncUI();
+        }
+      } else {
+        if (cell === 1) selectPeg(r,c);
+      }
+    }
+
+    function selectPeg(r,c){
+      const moves = legalMovesFrom(r,c);
+      state.selected = {r,c};
+      state.targets = new Set(moves.map(m => keyOf(m.to.r, m.to.c)));
+      renderBoard();
+      syncUI();
+      if (moves.length === 0){
+        setStatus("bad", "<strong>No jumps from that peg.</strong> Try a different peg.");
+      } else {
+        setStatus("ok", `<strong>${moves.length} jump${moves.length===1?"":"s"} available.</strong> Click a green target to jump.`);
+      }
+    }
+
+    function renderBoard(){
+      const area = byId("boardArea");
+      area.innerHTML = "";
+
+      if (state.mode === "cross"){
+        const grid = document.createElement("div");
+        grid.className = "crossGrid";
+
+        for (let r=0;r<7;r++){
+          for (let c=0;c<7;c++){
+            const v = state.cross[r][c];
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "hole";
+
+            if (v === -1){
+              btn.classList.add("invalid");
+            } else if (v === 1){
+              btn.classList.add("peg");
+            } else {
+              btn.classList.add("empty");
+            }
+
+            if (state.selected && state.selected.r===r && state.selected.c===c) btn.classList.add("select");
+            if (state.targets.has(keyOf(r,c))) btn.classList.add("target");
+
+            btn.addEventListener("click", () => onHoleClick(r,c));
+            grid.appendChild(btn);
+          }
+        }
+        area.appendChild(grid);
+      } else {
+        const wrap = document.createElement("div");
+        wrap.className = "triWrap";
+
+        for (let r=0;r<state.triN;r++){
+          const row = document.createElement("div");
+          row.className = "triRow";
+          for (let c=0;c<=r;c++){
+            const v = state.tri[r][c];
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "hole " + (v===1 ? "peg" : "empty");
+
+            if (state.selected && state.selected.r===r && state.selected.c===c) btn.classList.add("select");
+            if (state.targets.has(keyOf(r,c))) btn.classList.add("target");
+
+            btn.addEventListener("click", () => onHoleClick(r,c));
+            row.appendChild(btn);
+          }
+          wrap.appendChild(row);
+        }
+        area.appendChild(wrap);
+      }
+    }
+
+    function syncUI(forceNoStatus = false){
+      const pegs = countPegs();
+      const moves = allLegalMoves().length;
+
+      byId("pegsLeft").textContent = pegs;
+      byId("moveCount").textContent = state.moveCount;
+      byId("legalMoves").textContent = moves;
+
+      byId("btnUndo").disabled = (state.history.length === 0);
+
+      // update title for triangle
+      if (state.mode === "tri"){
+        byId("boardName").textContent = `Triangle board (${state.triN} rows)`;
+        byId("boardDesc").textContent = `${state.triN} rows, ${state.triN*(state.triN+1)/2} holes. Default empty: top.`;
+      } else {
+        byId("boardName").textContent = "Cross board (English)";
+        byId("boardDesc").textContent = "7×7 mask, 33 holes. Default empty: center.";
+      }
+
+      if (forceNoStatus) return;
+
+      if (moves === 0){
+        if (pegs === 1){
+          setStatus("ok", "<strong>You did it.</strong> One peg left — classic Hi-Q finish.");
+        } else {
+          setStatus("bad", `<strong>Stuck.</strong> No legal moves. Pegs left: ${pegs}.`);
+        }
+      }
+    }
+
+    // ---------- Wire up controls ----------
+    byId("btnCross").addEventListener("click", () => setMode("cross"));
+    byId("btnTri").addEventListener("click", () => setMode("tri"));
+
+    byId("btnNew").addEventListener("click", () => newGame());
+    byId("btnUndo").addEventListener("click", () => undo());
+    byId("btnHint").addEventListener("click", () => hint());
+    byId("btnChooseEmpty").addEventListener("click", () => chooseEmptyToggle());
+
+    byId("triSize").addEventListener("change", (e) => {
+      state.triN = clamp(parseInt(e.target.value,10) || 5, 5, 7);
+      // If currently in tri mode, restart tri board with new size
+      if (state.mode === "tri"){
+        state.tri = makeTriBoard(state.triN, {r:0,c:0});
+        state.history = [];
+        state.moveCount = 0;
+        state.selected = null;
+        state.targets = new Set();
+        renderBoard();
+        syncUI(true);
+        setStatus("ok", "<strong>Triangle resized.</strong> New game started.");
+      }
+    });
+
+    // ---------- Init ----------
+    // Start in cross mode
+    state.cross = makeCrossBoard({r:3,c:3});
+    state.tri = makeTriBoard(state.triN, {r:0,c:0});
+    renderBoard();
+    syncUI(true);
+    setStatus("ok", "<strong>Ready.</strong> Click a peg to begin (or Pick empty).");
+  </script>
+</body>
+</html>
