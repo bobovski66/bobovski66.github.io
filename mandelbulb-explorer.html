@@ -240,12 +240,12 @@
             box-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
         }
         
-        .preset-cosmic { background: linear-gradient(135deg, #1a0a2e, #4a1a6e, #ff6b9d); }
-        .preset-lava { background: linear-gradient(135deg, #1a0000, #8b0000, #ff4500); }
-        .preset-ocean { background: linear-gradient(135deg, #001a33, #006699, #00ccff); }
-        .preset-forest { background: linear-gradient(135deg, #0a1a0a, #1a4a1a, #4aff4a); }
-        .preset-gold { background: linear-gradient(135deg, #1a1400, #6b4400, #ffd700); }
-        .preset-ice { background: linear-gradient(135deg, #0a1a2e, #4a7a9e, #aaddff); }
+        .preset-cosmic { background: linear-gradient(135deg, #ff0000, #00ff00, #0000ff); }
+        .preset-lava { background: linear-gradient(135deg, #ff6b00, #ffcc00, #ff3366); }
+        .preset-ocean { background: linear-gradient(135deg, #1a0a2e, #4a1a6e, #ff6b9d); }
+        .preset-forest { background: linear-gradient(135deg, #ff00ff, #00ffff, #ffff00); }
+        .preset-gold { background: linear-gradient(135deg, #00ff88, #ff00ff, #00aaff); }
+        .preset-ice { background: linear-gradient(135deg, #9933ff, #ff3399, #ff9900); }
         
         .divider {
             height: 1px;
@@ -322,6 +322,44 @@
         .julia-preset-btn:hover {
             background: rgba(255, 215, 0, 0.2);
             box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+        
+        .coord-btn {
+            flex: 1;
+            padding: 8px 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-glow);
+            border-radius: 5px;
+            color: var(--text-dim);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .coord-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-bright);
+        }
+        
+        .coord-btn.active {
+            background: rgba(255, 0, 170, 0.15);
+            border-color: var(--accent-magenta);
+            color: var(--accent-magenta);
+            box-shadow: 0 0 15px rgba(255, 0, 170, 0.3);
+        }
+        
+        .coord-info {
+            margin-top: 10px;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 4px;
+            font-size: 0.6rem;
+            color: var(--text-dim);
+            text-align: center;
+            font-style: italic;
         }
         
         @keyframes pulse {
@@ -440,12 +478,21 @@
         
         <div class="control-group">
             <div class="control-label">
-                <span>Fractal Type</span>
+                <span>Coordinate System</span>
             </div>
             <div class="mode-toggle">
-                <button class="mode-btn active" id="mandelbulbBtn">Mandel</button>
-                <button class="mode-btn" id="juliabulbBtn">Julia</button>
-                <button class="mode-btn" id="torusbulbBtn">Torus</button>
+                <button class="coord-btn active" data-coord="0">Spherical</button>
+                <button class="coord-btn" data-coord="1">Toroidal</button>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <div class="control-label">
+                <span>Iteration Mode</span>
+            </div>
+            <div class="mode-toggle">
+                <button class="mode-btn active" id="mandelModeBtn">Mandelbrot</button>
+                <button class="mode-btn" id="juliaModeBtn">Julia</button>
             </div>
         </div>
         
@@ -501,11 +548,10 @@
                 </div>
                 <input type="range" id="torusMinor" min="0.1" max="1.0" step="0.05" value="0.4">
             </div>
-            
-            <div class="torus-info" style="font-size: 0.6rem; color: var(--text-dim); margin-top: 8px; line-height: 1.4;">
-                Iterates in toroidal coordinates:<br>
-                (ρ, θ, φ) → (ρⁿ, nθ, nφ)
-            </div>
+        </div>
+        
+        <div id="coordInfo" class="coord-info">
+            <span id="coordInfoText">Spherical: (r,θ,φ) → (rⁿ,nθ,nφ)</span>
         </div>
     </div>
     
@@ -521,8 +567,7 @@
     </div>
     
     <div class="info-panel">
-        <strong>Drag to rotate.</strong>
-        Spherical: z→zⁿ+c | Toroidal: (ρ,θ,φ)→(ρⁿ,nθ,nφ)+c
+        <strong>Drag to rotate.</strong> 2 coordinate systems × 2 modes = 4 unique fractals
     </div>
 
     <script>
@@ -555,15 +600,15 @@
             uniform vec2 u_mouse;
             uniform bool u_mouseDown;
             uniform vec2 u_rotation;
-            uniform bool u_juliaMode;
+            uniform int u_coordSystem;   // 0 = Spherical, 1 = Toroidal
+            uniform bool u_juliaMode;    // false = Mandelbrot-style, true = Julia-style
             uniform vec3 u_juliaC;
-            uniform int u_fractalType;  // 0 = Mandelbulb, 1 = Juliabulb, 2 = Torusbulb
-            uniform float u_torusMajor;  // Major radius of reference torus
-            uniform float u_torusMinor;  // Minor radius of reference torus
+            uniform float u_torusMajor;
+            uniform float u_torusMinor;
             
-            const int MAX_STEPS = 128;
-            const float MIN_DIST = 0.0001;
-            const float MAX_DIST = 100.0;
+            const int MAX_STEPS = 100;
+            const float MIN_DIST = 0.0002;
+            const float MAX_DIST = 50.0;
             
             // Rotation matrices
             mat3 rotateX(float a) {
@@ -576,33 +621,29 @@
                 return mat3(c, 0., s, 0., 1., 0., -s, 0., c);
             }
             
-            // Mandelbulb/Juliabulb distance estimator (spherical coordinates)
-            vec3 mandelbulb(vec3 pos) {
+            // ============================================
+            // SPHERICAL COORDINATES (Mandelbulb/Juliabulb)
+            // ============================================
+            vec3 sphericalBulb(vec3 pos, vec3 c) {
                 vec3 z = pos;
-                vec3 c = u_juliaMode ? u_juliaC : pos;
                 float dr = 1.0;
                 float r = 0.0;
                 float trap = 1e10;
-                float iterRatio = 0.0;
-                
                 int actualIters = 0;
-                for (int i = 0; i < 24; i++) {
+                
+                for (int i = 0; i < 20; i++) {
                     if (i >= u_iterations) break;
                     
                     r = length(z);
                     if (r > u_bailout) break;
-                    
                     actualIters = i;
                     
-                    // Convert to spherical coordinates
                     float theta = acos(z.z / r);
                     float phi = atan(z.y, z.x);
                     
-                    // Scale and rotate the point
                     float zr = pow(r, u_power);
                     dr = pow(r, u_power - 1.0) * u_power * dr + 1.0;
                     
-                    // Convert back to cartesian coordinates
                     float newTheta = theta * u_power;
                     float newPhi = phi * u_power;
                     
@@ -612,136 +653,106 @@
                         cos(newTheta)
                     );
                     z += c;
-                    
-                    // Orbit trap for coloring
-                    trap = min(trap, length(z));
+                    trap = min(trap, length(z.xz));
                 }
                 
-                iterRatio = float(actualIters) / float(u_iterations);
+                float iterRatio = float(actualIters) / float(u_iterations);
                 float dist = 0.5 * log(r) * r / dr;
                 return vec3(dist, trap, iterRatio);
             }
             
-            // Torusbulb distance estimator (toroidal coordinates)
-            // Uses a reference torus and iterates in (rho, theta, phi) space
-            // where phi = toroidal angle, theta = poloidal angle, rho = distance from torus surface
-            vec3 torusbulb(vec3 pos) {
+            // ============================================
+            // TOROIDAL COORDINATES (Torusbulb)
+            // ============================================
+            vec3 toroidalBulb(vec3 pos, vec3 c) {
                 vec3 z = pos;
-                vec3 c = pos;  // Mandelbrot-style: c = starting point
                 float dr = 1.0;
                 float trap = 1e10;
-                float iterRatio = 0.0;
-                
-                float R = u_torusMajor;  // Major radius
-                float r0 = u_torusMinor; // Minor radius (reference, not used in iteration directly)
-                
                 int actualIters = 0;
-                for (int i = 0; i < 24; i++) {
+                float R = u_torusMajor;
+                
+                for (int i = 0; i < 20; i++) {
                     if (i >= u_iterations) break;
                     
-                    // Convert to toroidal coordinates
-                    // phi = toroidal angle (around z-axis)
                     float phi = atan(z.y, z.x);
-                    
-                    // Project onto the plane at angle phi
-                    // The center of the minor circle is at (R*cos(phi), R*sin(phi), 0)
-                    vec2 centerXY = R * vec2(cos(phi), sin(phi));
-                    
-                    // Vector from torus center circle to point, in the poloidal plane
-                    vec3 torusCenter = vec3(centerXY, 0.0);
-                    vec3 toPoint = z - torusCenter;
-                    
-                    // In the poloidal plane, we have coordinates (distance from z-axis - R, z)
                     float distFromAxis = length(z.xy);
                     vec2 poloidalPos = vec2(distFromAxis - R, z.z);
-                    
-                    // rho = distance from the minor circle center in poloidal plane
                     float rho = length(poloidalPos);
-                    
-                    // theta = poloidal angle
                     float theta = atan(poloidalPos.y, poloidalPos.x);
                     
-                    // Escape condition
                     if (rho > u_bailout * 2.0) break;
-                    
                     actualIters = i;
                     
-                    // Apply the iteration in toroidal coordinates
-                    // rho -> rho^n, theta -> n*theta, phi -> n*phi
                     float newRho = pow(rho, u_power);
                     dr = pow(rho, u_power - 1.0) * u_power * dr + 1.0;
-                    
                     float newTheta = theta * u_power;
                     float newPhi = phi * u_power;
                     
-                    // Convert back to Cartesian
-                    // First, position in poloidal plane (relative to torus center circle)
                     vec2 newPoloidalPos = newRho * vec2(cos(newTheta), sin(newTheta));
-                    
-                    // New distance from z-axis
                     float newDistFromAxis = R + newPoloidalPos.x;
                     
-                    // New Cartesian coordinates
                     z = vec3(
                         newDistFromAxis * cos(newPhi),
                         newDistFromAxis * sin(newPhi),
                         newPoloidalPos.y
                     );
-                    
                     z += c;
-                    
-                    trap = min(trap, rho);
+                    trap = min(trap, rho + 0.5 * abs(theta));
                 }
                 
                 float finalRho = length(vec2(length(z.xy) - R, z.z));
-                iterRatio = float(actualIters) / float(u_iterations);
+                float iterRatio = float(actualIters) / float(u_iterations);
                 float dist = 0.5 * log(finalRho) * finalRho / dr;
                 return vec3(dist, trap, iterRatio);
             }
             
-            // Unified fractal function
+            // ============================================
+            // UNIFIED FRACTAL FUNCTION
+            // ============================================
             vec3 fractalDE(vec3 pos) {
-                if (u_fractalType == 2) {
-                    return torusbulb(pos);
+                vec3 c = u_juliaMode ? u_juliaC : pos;
+                
+                if (u_coordSystem == 0) {
+                    return sphericalBulb(pos, c);
                 } else {
-                    return mandelbulb(pos);
+                    return toroidalBulb(pos, c);
                 }
             }
             
-            // Color palettes
+            // Color palettes - using cosine gradients with more spectral variation
             vec3 palette(float t, int paletteIndex) {
                 vec3 a, b, c, d;
                 
-                if (paletteIndex == 0) { // Cosmic
+                if (paletteIndex == 0) { // Rainbow Spectrum
+                    a = vec3(0.5, 0.5, 0.5);
+                    b = vec3(0.5, 0.5, 0.5);
+                    c = vec3(1.0, 1.0, 1.0);
+                    d = vec3(0.0, 0.33, 0.67);
+                } else if (paletteIndex == 1) { // Sunset Fire
+                    a = vec3(0.5, 0.5, 0.5);
+                    b = vec3(0.5, 0.5, 0.5);
+                    c = vec3(1.0, 1.0, 0.5);
+                    d = vec3(0.8, 0.9, 0.3);
+                } else if (paletteIndex == 2) { // Deep Ocean
                     a = vec3(0.5, 0.5, 0.5);
                     b = vec3(0.5, 0.5, 0.5);
                     c = vec3(1.0, 0.7, 0.4);
-                    d = vec3(0.0, 0.15, 0.2);
-                } else if (paletteIndex == 1) { // Lava
-                    a = vec3(0.5, 0.2, 0.1);
-                    b = vec3(0.5, 0.3, 0.2);
-                    c = vec3(1.0, 0.5, 0.2);
-                    d = vec3(0.0, 0.1, 0.0);
-                } else if (paletteIndex == 2) { // Ocean
-                    a = vec3(0.2, 0.4, 0.6);
-                    b = vec3(0.3, 0.4, 0.5);
-                    c = vec3(0.5, 0.8, 1.0);
-                    d = vec3(0.0, 0.2, 0.3);
-                } else if (paletteIndex == 3) { // Forest
-                    a = vec3(0.2, 0.5, 0.2);
-                    b = vec3(0.3, 0.4, 0.3);
-                    c = vec3(0.4, 1.0, 0.4);
-                    d = vec3(0.1, 0.2, 0.0);
-                } else if (paletteIndex == 4) { // Gold
-                    a = vec3(0.6, 0.5, 0.2);
-                    b = vec3(0.4, 0.3, 0.2);
-                    c = vec3(1.0, 0.9, 0.4);
-                    d = vec3(0.1, 0.05, 0.0);
-                } else { // Ice
-                    a = vec3(0.5, 0.6, 0.7);
-                    b = vec3(0.3, 0.4, 0.5);
-                    c = vec3(0.6, 0.8, 1.0);
-                    d = vec3(0.2, 0.3, 0.4);
+                    d = vec3(0.0, 0.15, 0.20);
+                } else if (paletteIndex == 3) { // Neon Cyber
+                    a = vec3(0.5, 0.5, 0.5);
+                    b = vec3(0.5, 0.5, 0.5);
+                    c = vec3(2.0, 1.0, 0.0);
+                    d = vec3(0.5, 0.2, 0.25);
+                } else if (paletteIndex == 4) { // Aurora
+                    a = vec3(0.5, 0.5, 0.5);
+                    b = vec3(0.5, 0.5, 0.5);
+                    c = vec3(1.0, 1.0, 1.0);
+                    d = vec3(0.3, 0.2, 0.2);
+                } else { // Electric Violet
+                    a = vec3(0.5, 0.5, 0.5);
+                    b = vec3(0.5, 0.5, 0.5);
+                    c = vec3(1.0, 0.7, 1.3);
+                    d = vec3(0.75, 0.2, 0.5);
                 }
                 
                 return a + b * cos(6.28318 * (c * t + d));
@@ -757,31 +768,31 @@
                 ));
             }
             
-            // Soft shadows
+            // Soft shadows - optimized
             float softShadow(vec3 ro, vec3 rd, float mint, float maxt, float k) {
                 float res = 1.0;
                 float t = mint;
-                for (int i = 0; i < 32; i++) {
+                for (int i = 0; i < 24; i++) {
                     if (t > maxt) break;
                     float h = fractalDE(ro + rd * t).x;
                     if (h < 0.001) return 0.0;
                     res = min(res, k * h / t);
-                    t += h;
+                    t += h * 0.8;
                 }
                 return res;
             }
             
-            // Ambient occlusion
+            // Ambient occlusion - optimized
             float calcAO(vec3 p, vec3 n) {
                 float occ = 0.0;
                 float sca = 1.0;
-                for (int i = 0; i < 5; i++) {
-                    float h = 0.01 + 0.12 * float(i);
+                for (int i = 0; i < 4; i++) {
+                    float h = 0.02 + 0.15 * float(i);
                     float d = fractalDE(p + h * n).x;
                     occ += (h - d) * sca;
-                    sca *= 0.95;
+                    sca *= 0.9;
                 }
-                return clamp(1.0 - 3.0 * occ, 0.0, 1.0);
+                return clamp(1.0 - 2.5 * occ, 0.0, 1.0);
             }
             
             void main() {
@@ -801,7 +812,7 @@
                 
                 vec3 rd = normalize(forward + uv.x * right + uv.y * up);
                 
-                // Ray march
+                // Ray march with adaptive stepping
                 float t = 0.0;
                 float trap = 0.0;
                 float iterRatio = 0.0;
@@ -820,50 +831,57 @@
                     }
                     if (t > MAX_DIST) break;
                     
-                    t += d * 0.5; // Step conservatively
+                    // Adaptive step: faster when far, slower when close
+                    t += d * (0.5 + 0.4 * smoothstep(0.0, 0.5, d));
                 }
                 
-                vec3 col = vec3(0.02, 0.02, 0.05); // Background
+                vec3 col = vec3(0.01, 0.01, 0.03); // Background
                 
                 if (hit) {
                     vec3 p = ro + rd * t;
                     vec3 n = calcNormal(p);
                     
-                    // Lighting
-                    vec3 lightDir = normalize(vec3(1.0, 1.0, 0.5));
-                    float diff = max(dot(n, lightDir), 0.0);
-                    float spec = pow(max(dot(reflect(-lightDir, n), -rd), 0.0), 32.0);
+                    // Two-point lighting for more dimension
+                    vec3 lightDir1 = normalize(vec3(1.0, 1.0, 0.5));
+                    vec3 lightDir2 = normalize(vec3(-0.5, 0.3, -0.8));
+                    float diff1 = max(dot(n, lightDir1), 0.0);
+                    float diff2 = max(dot(n, lightDir2), 0.0) * 0.3;
+                    float spec = pow(max(dot(reflect(-lightDir1, n), -rd), 0.0), 24.0);
                     
                     // Ambient occlusion
                     float ao = calcAO(p, n);
                     ao = mix(1.0, ao, u_ao);
                     
-                    // Soft shadow
-                    float shadow = softShadow(p + n * 0.01, lightDir, 0.01, 2.0, 8.0);
+                    // Soft shadow (primary light only)
+                    float shadow = softShadow(p + n * 0.01, lightDir1, 0.01, 2.0, 10.0);
                     
-                    // Color based on orbit trap AND iteration ratio (bailout affects this!)
-                    float colorParam = trap * 1.5 + iterRatio * 0.8;
+                    // Color with more variation using trap and iterRatio
+                    float colorParam = trap * 2.0 + iterRatio * 1.2 + t * 0.05;
                     vec3 baseCol = palette(colorParam, u_palette);
                     
-                    // Fresnel
-                    float fresnel = pow(1.0 - max(dot(n, -rd), 0.0), 3.0);
+                    // Fresnel rim light
+                    float fresnel = pow(1.0 - max(dot(n, -rd), 0.0), 4.0);
                     
                     // Combine lighting
-                    col = baseCol * (0.15 + 0.85 * diff * shadow) * ao;
-                    col += spec * 0.3 * shadow;
-                    col += fresnel * 0.15 * baseCol;
+                    col = baseCol * (0.12 + 0.7 * diff1 * shadow + diff2) * ao;
+                    col += spec * 0.4 * shadow;
+                    col += fresnel * 0.2 * (baseCol + vec3(0.2));
+                    
+                    // Depth-based color shift for more interest
+                    col = mix(col, col * vec3(1.1, 0.9, 0.85), smoothstep(1.0, 4.0, t));
                     
                     // Distance fog
-                    float fog = exp(-t * 0.15);
-                    col = mix(vec3(0.02, 0.02, 0.05), col, fog);
+                    float fog = exp(-t * 0.12);
+                    col = mix(vec3(0.01, 0.01, 0.03), col, fog);
                 }
                 
                 // Subtle vignette
-                float vignette = 1.0 - 0.3 * length(uv);
+                float vignette = 1.0 - 0.2 * length(uv);
                 col *= vignette;
                 
-                // Gamma correction
-                col = pow(col, vec3(0.4545));
+                // Tone mapping and gamma
+                col = col / (col + vec3(1.0));  // Simple tone map
+                col = pow(col, vec3(0.45));
                 
                 fragColor = vec4(col, 1.0);
             }
@@ -936,9 +954,9 @@
             mouse: gl.getUniformLocation(program, 'u_mouse'),
             mouseDown: gl.getUniformLocation(program, 'u_mouseDown'),
             rotation: gl.getUniformLocation(program, 'u_rotation'),
+            coordSystem: gl.getUniformLocation(program, 'u_coordSystem'),
             juliaMode: gl.getUniformLocation(program, 'u_juliaMode'),
             juliaC: gl.getUniformLocation(program, 'u_juliaC'),
-            fractalType: gl.getUniformLocation(program, 'u_fractalType'),
             torusMajor: gl.getUniformLocation(program, 'u_torusMajor'),
             torusMinor: gl.getUniformLocation(program, 'u_torusMinor')
         };
@@ -952,9 +970,9 @@
             rotSpeed: 0.3,
             palette: 0,
             ao: 0.8,
+            coordSystem: 0,  // 0 = Spherical, 1 = Toroidal, 2 = Projective
             juliaMode: false,
             juliaC: { x: 0, y: 0, z: 0 },
-            fractalType: 0,  // 0 = Mandelbulb, 1 = Juliabulb, 2 = Torusbulb
             torusMajor: 1.0,
             torusMinor: 0.4
         };
@@ -1076,28 +1094,55 @@
             });
         });
 
-        // Fractal type toggle
-        const mandelbulbBtn = document.getElementById('mandelbulbBtn');
-        const juliabulbBtn = document.getElementById('juliabulbBtn');
-        const torusbulbBtn = document.getElementById('torusbulbBtn');
+        // Coordinate system and mode toggles
+        const coordBtns = document.querySelectorAll('.coord-btn');
+        const mandelModeBtn = document.getElementById('mandelModeBtn');
+        const juliaModeBtn = document.getElementById('juliaModeBtn');
         const juliaControls = document.getElementById('juliaControls');
         const torusControls = document.getElementById('torusControls');
+        const coordInfoText = document.getElementById('coordInfoText');
+        
+        const coordInfoTexts = [
+            'Spherical: (r,θ,φ) → (rⁿ,nθ,nφ)',
+            'Toroidal: (ρ,θ,φ) → (ρⁿ,nθ,nφ)'
+        ];
 
-        function setFractalType(type) {
-            params.fractalType = type;
-            params.juliaMode = (type === 1);
+        function updateUI() {
+            // Update coordinate buttons
+            coordBtns.forEach((btn, i) => {
+                btn.classList.toggle('active', i === params.coordSystem);
+            });
             
-            mandelbulbBtn.classList.toggle('active', type === 0);
-            juliabulbBtn.classList.toggle('active', type === 1);
-            torusbulbBtn.classList.toggle('active', type === 2);
+            // Update mode buttons
+            mandelModeBtn.classList.toggle('active', !params.juliaMode);
+            juliaModeBtn.classList.toggle('active', params.juliaMode);
             
-            juliaControls.classList.toggle('hidden', type !== 1);
-            torusControls.classList.toggle('hidden', type !== 2);
+            // Show/hide Julia controls
+            juliaControls.classList.toggle('hidden', !params.juliaMode);
+            
+            // Show/hide torus controls
+            torusControls.classList.toggle('hidden', params.coordSystem !== 1);
+            
+            // Update info text
+            coordInfoText.textContent = coordInfoTexts[params.coordSystem];
         }
 
-        mandelbulbBtn.addEventListener('click', () => setFractalType(0));
-        juliabulbBtn.addEventListener('click', () => setFractalType(1));
-        torusbulbBtn.addEventListener('click', () => setFractalType(2));
+        coordBtns.forEach((btn, index) => {
+            btn.addEventListener('click', () => {
+                params.coordSystem = parseInt(btn.dataset.coord);
+                updateUI();
+            });
+        });
+
+        mandelModeBtn.addEventListener('click', () => {
+            params.juliaMode = false;
+            updateUI();
+        });
+
+        juliaModeBtn.addEventListener('click', () => {
+            params.juliaMode = true;
+            updateUI();
+        });
 
         // Julia C controls
         const juliaCx = document.getElementById('juliaCx');
@@ -1162,7 +1207,7 @@
 
         // Resize
         function resize() {
-            const dpr = Math.min(window.devicePixelRatio, 2);
+            const dpr = Math.min(window.devicePixelRatio, 1.5);
             canvas.width = window.innerWidth * dpr;
             canvas.height = window.innerHeight * dpr;
             gl.viewport(0, 0, canvas.width, canvas.height);
@@ -1203,9 +1248,9 @@
             gl.uniform1i(uniforms.palette, params.palette);
             gl.uniform1f(uniforms.ao, params.ao);
             gl.uniform2f(uniforms.rotation, rotation.x, rotation.y);
+            gl.uniform1i(uniforms.coordSystem, params.coordSystem);
             gl.uniform1i(uniforms.juliaMode, params.juliaMode ? 1 : 0);
             gl.uniform3f(uniforms.juliaC, params.juliaC.x, params.juliaC.y, params.juliaC.z);
-            gl.uniform1i(uniforms.fractalType, params.fractalType);
             gl.uniform1f(uniforms.torusMajor, params.torusMajor);
             gl.uniform1f(uniforms.torusMinor, params.torusMinor);
 
