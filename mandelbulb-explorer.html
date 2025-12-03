@@ -233,6 +233,77 @@
             margin: 20px 0;
         }
         
+        .mode-toggle {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .mode-btn {
+            flex: 1;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-glow);
+            border-radius: 6px;
+            color: var(--text-dim);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .mode-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-bright);
+        }
+        
+        .mode-btn.active {
+            background: rgba(0, 240, 255, 0.15);
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+        }
+        
+        .julia-controls {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px dashed rgba(0, 240, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .julia-controls.hidden {
+            display: none;
+        }
+        
+        .julia-presets {
+            margin-top: 12px;
+        }
+        
+        .preset-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        
+        .julia-preset-btn {
+            padding: 6px 10px;
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 4px;
+            color: var(--accent-gold);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .julia-preset-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+        
         @keyframes pulse {
             0%, 100% { opacity: 0.7; }
             50% { opacity: 1; }
@@ -277,7 +348,7 @@
     </div>
     
     <div class="controls-panel">
-        <div class="panel-header">Mandelbulb Parameters</div>
+        <div class="panel-header">Fractal Parameters</div>
         
         <div class="control-group">
             <div class="control-label">
@@ -290,9 +361,9 @@
         <div class="control-group">
             <div class="control-label">
                 <span>Iterations</span>
-                <span class="control-value" id="iterValue">12</span>
+                <span class="control-value" id="iterValue">15</span>
             </div>
-            <input type="range" id="iterations" min="4" max="24" step="1" value="12">
+            <input type="range" id="iterations" min="4" max="24" step="1" value="15">
         </div>
         
         <div class="control-group">
@@ -300,7 +371,7 @@
                 <span>Bailout Radius</span>
                 <span class="control-value" id="bailoutValue">2.0</span>
             </div>
-            <input type="range" id="bailout" min="1" max="8" step="0.1" value="2">
+            <input type="range" id="bailout" min="0.5" max="4" step="0.1" value="2">
         </div>
         
         <div class="divider"></div>
@@ -308,9 +379,9 @@
         <div class="control-group">
             <div class="control-label">
                 <span>Zoom Level</span>
-                <span class="control-value" id="zoomValue">3.5</span>
+                <span class="control-value" id="zoomValue">3.0</span>
             </div>
-            <input type="range" id="zoom" min="1.5" max="8" step="0.1" value="3.5">
+            <input type="range" id="zoom" min="1.5" max="8" step="0.1" value="3.0">
         </div>
         
         <div class="control-group">
@@ -344,6 +415,54 @@
             </div>
             <input type="range" id="ao" min="0" max="1" step="0.05" value="0.8">
         </div>
+        
+        <div class="divider"></div>
+        
+        <div class="control-group">
+            <div class="control-label">
+                <span>Fractal Type</span>
+            </div>
+            <div class="mode-toggle">
+                <button class="mode-btn active" id="mandelbulbBtn">Mandelbulb</button>
+                <button class="mode-btn" id="juliabulbBtn">Juliabulb</button>
+            </div>
+        </div>
+        
+        <div id="juliaControls" class="julia-controls hidden">
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Julia C.x</span>
+                    <span class="control-value" id="juliaCxValue">0.00</span>
+                </div>
+                <input type="range" id="juliaCx" min="-1.5" max="1.5" step="0.01" value="0">
+            </div>
+            
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Julia C.y</span>
+                    <span class="control-value" id="juliaCyValue">0.00</span>
+                </div>
+                <input type="range" id="juliaCy" min="-1.5" max="1.5" step="0.01" value="0">
+            </div>
+            
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Julia C.z</span>
+                    <span class="control-value" id="juliaCzValue">0.00</span>
+                </div>
+                <input type="range" id="juliaCz" min="-1.5" max="1.5" step="0.01" value="0">
+            </div>
+            
+            <div class="julia-presets">
+                <div class="control-label"><span>Presets</span></div>
+                <div class="preset-buttons">
+                    <button class="julia-preset-btn" data-cx="0.35" data-cy="0.35" data-cz="0.35">Symmetric</button>
+                    <button class="julia-preset-btn" data-cx="-0.4" data-cy="0.6" data-cz="0.2">Organic</button>
+                    <button class="julia-preset-btn" data-cx="0.5" data-cy="0" data-cz="-0.5">Spiky</button>
+                    <button class="julia-preset-btn" data-cx="-0.2" data-cy="-0.7" data-cz="0.1">Alien</button>
+                </div>
+            </div>
+        </div>
     </div>
     
     <div class="stats-panel">
@@ -358,9 +477,9 @@
     </div>
     
     <div class="info-panel">
-        <strong>Controls:</strong> Click and drag to rotate manually. 
-        The <strong>power parameter (n)</strong> defines z → z<sup>n</sup> + c in spherical coordinates.
-        Classic Mandelbulb uses n = 8.
+        <strong>Controls:</strong> Click and drag to rotate. 
+        <strong>Mandelbulb:</strong> c = starting point.
+        <strong>Juliabulb:</strong> c = fixed constant — try the presets!
     </div>
 
     <script>
@@ -393,6 +512,8 @@
             uniform vec2 u_mouse;
             uniform bool u_mouseDown;
             uniform vec2 u_rotation;
+            uniform bool u_juliaMode;
+            uniform vec3 u_juliaC;
             
             const int MAX_STEPS = 128;
             const float MIN_DIST = 0.0001;
@@ -409,18 +530,23 @@
                 return mat3(c, 0., s, 0., 1., 0., -s, 0., c);
             }
             
-            // Mandelbulb distance estimator
-            vec2 mandelbulb(vec3 pos) {
+            // Mandelbulb/Juliabulb distance estimator
+            vec3 mandelbulb(vec3 pos) {
                 vec3 z = pos;
+                vec3 c = u_juliaMode ? u_juliaC : pos;  // Julia uses fixed c, Mandelbulb uses pos
                 float dr = 1.0;
                 float r = 0.0;
                 float trap = 1e10;
+                float iterRatio = 0.0;
                 
+                int actualIters = 0;
                 for (int i = 0; i < 24; i++) {
                     if (i >= u_iterations) break;
                     
                     r = length(z);
                     if (r > u_bailout) break;
+                    
+                    actualIters = i;
                     
                     // Convert to spherical coordinates
                     float theta = acos(z.z / r);
@@ -439,15 +565,18 @@
                         sin(newTheta) * sin(newPhi),
                         cos(newTheta)
                     );
-                    z += pos;
+                    z += c;  // Add the constant (pos for Mandelbulb, fixed for Julia)
                     
                     // Orbit trap for coloring
                     trap = min(trap, length(z));
                 }
                 
+                // Iteration ratio affects color - this makes bailout visible!
+                iterRatio = float(actualIters) / float(u_iterations);
+                
                 // Distance estimation
                 float dist = 0.5 * log(r) * r / dr;
-                return vec2(dist, trap);
+                return vec3(dist, trap, iterRatio);
             }
             
             // Color palettes
@@ -546,13 +675,15 @@
                 // Ray march
                 float t = 0.0;
                 float trap = 0.0;
+                float iterRatio = 0.0;
                 bool hit = false;
                 
                 for (int i = 0; i < MAX_STEPS; i++) {
                     vec3 p = ro + rd * t;
-                    vec2 result = mandelbulb(p);
+                    vec3 result = mandelbulb(p);
                     float d = result.x;
                     trap = result.y;
+                    iterRatio = result.z;
                     
                     if (d < MIN_DIST) {
                         hit = true;
@@ -581,8 +712,9 @@
                     // Soft shadow
                     float shadow = softShadow(p + n * 0.01, lightDir, 0.01, 2.0, 8.0);
                     
-                    // Color based on orbit trap
-                    vec3 baseCol = palette(trap * 2.0 + 0.5, u_palette);
+                    // Color based on orbit trap AND iteration ratio (bailout affects this!)
+                    float colorParam = trap * 1.5 + iterRatio * 0.8;
+                    vec3 baseCol = palette(colorParam, u_palette);
                     
                     // Fresnel
                     float fresnel = pow(1.0 - max(dot(n, -rd), 0.0), 3.0);
@@ -674,18 +806,22 @@
             ao: gl.getUniformLocation(program, 'u_ao'),
             mouse: gl.getUniformLocation(program, 'u_mouse'),
             mouseDown: gl.getUniformLocation(program, 'u_mouseDown'),
-            rotation: gl.getUniformLocation(program, 'u_rotation')
+            rotation: gl.getUniformLocation(program, 'u_rotation'),
+            juliaMode: gl.getUniformLocation(program, 'u_juliaMode'),
+            juliaC: gl.getUniformLocation(program, 'u_juliaC')
         };
 
         // Parameters
         let params = {
             power: 8,
-            iterations: 12,
+            iterations: 15,
             bailout: 2,
-            zoom: 3.5,
+            zoom: 3.0,
             rotSpeed: 0.3,
             palette: 0,
-            ao: 0.8
+            ao: 0.8,
+            juliaMode: false,
+            juliaC: { x: 0, y: 0, z: 0 }
         };
 
         let rotation = { x: 0, y: 0 };
@@ -805,6 +941,70 @@
             });
         });
 
+        // Julia mode toggle
+        const mandelbulbBtn = document.getElementById('mandelbulbBtn');
+        const juliabulbBtn = document.getElementById('juliabulbBtn');
+        const juliaControls = document.getElementById('juliaControls');
+
+        mandelbulbBtn.addEventListener('click', () => {
+            params.juliaMode = false;
+            mandelbulbBtn.classList.add('active');
+            juliabulbBtn.classList.remove('active');
+            juliaControls.classList.add('hidden');
+        });
+
+        juliabulbBtn.addEventListener('click', () => {
+            params.juliaMode = true;
+            juliabulbBtn.classList.add('active');
+            mandelbulbBtn.classList.remove('active');
+            juliaControls.classList.remove('hidden');
+        });
+
+        // Julia C controls
+        const juliaCx = document.getElementById('juliaCx');
+        const juliaCy = document.getElementById('juliaCy');
+        const juliaCz = document.getElementById('juliaCz');
+        const juliaCxValue = document.getElementById('juliaCxValue');
+        const juliaCyValue = document.getElementById('juliaCyValue');
+        const juliaCzValue = document.getElementById('juliaCzValue');
+
+        juliaCx.addEventListener('input', (e) => {
+            params.juliaC.x = parseFloat(e.target.value);
+            juliaCxValue.textContent = params.juliaC.x.toFixed(2);
+        });
+
+        juliaCy.addEventListener('input', (e) => {
+            params.juliaC.y = parseFloat(e.target.value);
+            juliaCyValue.textContent = params.juliaC.y.toFixed(2);
+        });
+
+        juliaCz.addEventListener('input', (e) => {
+            params.juliaC.z = parseFloat(e.target.value);
+            juliaCzValue.textContent = params.juliaC.z.toFixed(2);
+        });
+
+        // Julia presets
+        const juliaPresetBtns = document.querySelectorAll('.julia-preset-btn');
+        juliaPresetBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const cx = parseFloat(btn.dataset.cx);
+                const cy = parseFloat(btn.dataset.cy);
+                const cz = parseFloat(btn.dataset.cz);
+                
+                params.juliaC.x = cx;
+                params.juliaC.y = cy;
+                params.juliaC.z = cz;
+                
+                juliaCx.value = cx;
+                juliaCy.value = cy;
+                juliaCz.value = cz;
+                
+                juliaCxValue.textContent = cx.toFixed(2);
+                juliaCyValue.textContent = cy.toFixed(2);
+                juliaCzValue.textContent = cz.toFixed(2);
+            });
+        });
+
         // Resize
         function resize() {
             const dpr = Math.min(window.devicePixelRatio, 2);
@@ -848,6 +1048,8 @@
             gl.uniform1i(uniforms.palette, params.palette);
             gl.uniform1f(uniforms.ao, params.ao);
             gl.uniform2f(uniforms.rotation, rotation.x, rotation.y);
+            gl.uniform1i(uniforms.juliaMode, params.juliaMode ? 1 : 0);
+            gl.uniform3f(uniforms.juliaC, params.juliaC.x, params.juliaC.y, params.juliaC.z);
 
             gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
