@@ -362,6 +362,98 @@
             font-style: italic;
         }
         
+        .record-section {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-glow);
+        }
+        
+        .record-btn {
+            width: 100%;
+            padding: 10px;
+            background: rgba(255, 50, 50, 0.15);
+            border: 1px solid rgba(255, 50, 50, 0.4);
+            border-radius: 6px;
+            color: #ff6b6b;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .record-btn:hover {
+            background: rgba(255, 50, 50, 0.25);
+            box-shadow: 0 0 15px rgba(255, 50, 50, 0.3);
+        }
+        
+        .record-btn.recording {
+            background: rgba(255, 50, 50, 0.4);
+            border-color: #ff6b6b;
+            animation: recording-pulse 1s ease-in-out infinite;
+        }
+        
+        .record-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .record-dot {
+            width: 10px;
+            height: 10px;
+            background: #ff6b6b;
+            border-radius: 50%;
+        }
+        
+        .record-btn.recording .record-dot {
+            animation: blink 0.5s ease-in-out infinite;
+        }
+        
+        @keyframes recording-pulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 50, 50, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(255, 50, 50, 0.6); }
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        .progress-container {
+            margin-top: 8px;
+            display: none;
+        }
+        
+        .progress-container.visible {
+            display: block;
+        }
+        
+        .progress-bar {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #ffaa00);
+            width: 0%;
+            transition: width 0.1s;
+        }
+        
+        .progress-text {
+            font-size: 0.6rem;
+            color: var(--text-dim);
+            text-align: center;
+            margin-top: 4px;
+        }
+        
         @keyframes pulse {
             0%, 100% { opacity: 0.7; }
             50% { opacity: 1; }
@@ -552,6 +644,19 @@
         
         <div id="coordInfo" class="coord-info">
             <span id="coordInfoText">Spherical: (r,θ,φ) → (rⁿ,nθ,nφ)</span>
+        </div>
+        
+        <div class="record-section">
+            <button class="record-btn" id="recordBtn">
+                <span class="record-dot"></span>
+                <span id="recordBtnText">Record Video (10s)</span>
+            </button>
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text" id="progressText">Recording...</div>
+            </div>
         </div>
     </div>
     
@@ -1258,6 +1363,104 @@
 
             updateFPS();
             requestAnimationFrame(render);
+        }
+
+        // ============================================
+        // VIDEO RECORDING (MediaRecorder API)
+        // ============================================
+        const recordBtn = document.getElementById('recordBtn');
+        const recordBtnText = document.getElementById('recordBtnText');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        
+        let isRecording = false;
+        let mediaRecorder = null;
+        let recordedChunks = [];
+        const RECORD_DURATION = 10000; // 10 seconds
+        
+        recordBtn.addEventListener('click', () => {
+            if (isRecording) {
+                stopRecording();
+            } else {
+                startRecording();
+            }
+        });
+        
+        function startRecording() {
+            isRecording = true;
+            recordedChunks = [];
+            recordBtn.classList.add('recording');
+            recordBtnText.textContent = 'Stop Recording';
+            progressContainer.classList.add('visible');
+            progressFill.style.width = '0%';
+            progressText.textContent = 'Recording...';
+            
+            // Get canvas stream
+            const stream = canvas.captureStream(30); // 30 fps
+            
+            // Try MP4 first, fall back to WebM
+            const mimeType = MediaRecorder.isTypeSupported('video/mp4') 
+                ? 'video/mp4' 
+                : 'video/webm;codecs=vp9';
+            
+            mediaRecorder = new MediaRecorder(stream, { 
+                mimeType: mimeType,
+                videoBitsPerSecond: 5000000 // 5 Mbps for good quality
+            });
+            
+            mediaRecorder.ondataavailable = (e) => {
+                if (e.data.size > 0) {
+                    recordedChunks.push(e.data);
+                }
+            };
+            
+            mediaRecorder.onstop = () => {
+                const ext = mimeType.includes('mp4') ? 'mp4' : 'webm';
+                const blob = new Blob(recordedChunks, { type: mimeType });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `fractal-${Date.now()}.${ext}`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                // Reset UI
+                isRecording = false;
+                recordBtn.classList.remove('recording');
+                recordBtnText.textContent = 'Record Video (10s)';
+                progressContainer.classList.remove('visible');
+                mediaRecorder = null;
+            };
+            
+            mediaRecorder.start(100); // Collect data every 100ms
+            
+            // Progress updates
+            const startTime = performance.now();
+            const progressInterval = setInterval(() => {
+                const elapsed = performance.now() - startTime;
+                const progress = Math.min(elapsed / RECORD_DURATION, 1);
+                progressFill.style.width = (progress * 100) + '%';
+                progressText.textContent = `Recording: ${Math.round((RECORD_DURATION - elapsed) / 1000)}s remaining`;
+                
+                if (elapsed >= RECORD_DURATION) {
+                    clearInterval(progressInterval);
+                    stopRecording();
+                }
+            }, 100);
+            
+            // Store interval ID for manual stop
+            recordBtn.dataset.intervalId = progressInterval;
+        }
+        
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                clearInterval(parseInt(recordBtn.dataset.intervalId));
+                progressText.textContent = 'Saving...';
+                mediaRecorder.stop();
+            }
         }
 
         // Start
