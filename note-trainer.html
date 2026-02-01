@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Musical Note Trainer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 900px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .settings-panel {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .setting-group {
+            margin-bottom: 20px;
+        }
+
+        .setting-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .setting-group label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .option-btn {
+            padding: 10px 20px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .option-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .option-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .staff-container {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            padding: 40px;
+            margin: 25px 0;
+            min-height: 250px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .staff {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            height: 200px;
+        }
+
+        .staff-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: #333;
+            left: 0;
+        }
+
+        .staff-line:nth-child(1) { top: 40px; }  /* Top line */
+        .staff-line:nth-child(2) { top: 60px; }
+        .staff-line:nth-child(3) { top: 80px; }  /* Middle line */
+        .staff-line:nth-child(4) { top: 100px; }
+        .staff-line:nth-child(5) { top: 120px; } /* Bottom line */
+
+        .clef {
+            position: absolute;
+            left: 20px;
+            font-size: 120px;
+            font-weight: bold;
+            color: #333;
+            top: 80px;
+            transform: translateY(-50%);
+            font-family: serif;
+        }
+
+        .note {
+            position: absolute;
+            width: 40px;
+            height: 30px;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .note-head {
+            width: 24px;
+            height: 20px;
+            background: #333;
+            border-radius: 50%;
+            transform: rotate(-20deg);
+        }
+
+        .key-signature {
+            position: absolute;
+            left: 140px;
+            top: 80px;
+            transform: translateY(-50%);
+            font-size: 40px;
+            font-weight: bold;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .key-signature-symbol {
+            height: 20px;
+            line-height: 20px;
+        }
+
+        .ledger-line {
+            position: absolute;
+            width: 50px;
+            height: 2px;
+            background: #333;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .answer-section {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 25px 0;
+        }
+
+        .note-button {
+            padding: 15px 25px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border: 3px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 70px;
+        }
+
+        .note-button:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+        }
+
+        .note-button.correct {
+            background: #4caf50;
+            color: white;
+            border-color: #4caf50;
+        }
+
+        .note-button.incorrect {
+            background: #f44336;
+            color: white;
+            border-color: #f44336;
+        }
+
+        .feedback {
+            text-align: center;
+            font-size: 1.3em;
+            font-weight: 600;
+            margin: 20px 0;
+            min-height: 30px;
+        }
+
+        .feedback.correct {
+            color: #4caf50;
+        }
+
+        .feedback.incorrect {
+            color: #f44336;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 25px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        .control-btn {
+            padding: 12px 30px;
+            font-size: 1em;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .primary-btn {
+            background: #667eea;
+            color: white;
+        }
+
+        .primary-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .secondary-btn {
+            background: #6c757d;
+            color: white;
+        }
+
+        .secondary-btn:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        select {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            width: 100%;
+            max-width: 300px;
+            cursor: pointer;
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 Musical Note Trainer</h1>
+
+        <div class="settings-panel">
+            <div class="setting-group">
+                <label>Training Mode:</label>
+                <div class="button-group">
+                    <button class="option-btn active" onclick="setMode('practice')">Practice</button>
+                    <button class="option-btn" onclick="setMode('quiz')">Timed Quiz</button>
+                    <button class="option-btn" onclick="setMode('challenge')">Challenge Mode</button>
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <label>Clef:</label>
+                <div class="button-group">
+                    <button class="option-btn active" onclick="setClef('treble')">Treble Clef</button>
+                    <button class="option-btn" onclick="setClef('bass')">Bass Clef</button>
+                    <button class="option-btn" onclick="setClef('both')">Both Clefs</button>
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <label>Note Range:</label>
+                <div class="button-group">
+                    <button class="option-btn active" onclick="setRange('basic')">Basic (Staff Only)</button>
+                    <button class="option-btn" onclick="setRange('extended')">Extended (1 Ledger)</button>
+                    <button class="option-btn" onclick="setRange('full')">Full Range (2+ Ledgers)</button>
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <label>Include Accidentals:</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="sharps" onchange="updateAccidentals()">
+                        <label for="sharps">Sharps (♯)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="flats" onchange="updateAccidentals()">
+                        <label for="flats">Flats (♭)</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="staff-container">
+            <div class="staff" id="staff">
+                <!-- Staff will be generated here -->
+            </div>
+        </div>
+
+        <div class="feedback" id="feedback"></div>
+
+        <div class="answer-section" id="answerButtons">
+            <!-- Answer buttons will be generated here -->
+        </div>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value" id="correct">0</div>
+                <div class="stat-label">Correct</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="incorrect">0</div>
+                <div class="stat-label">Incorrect</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="accuracy">0%</div>
+                <div class="stat-label">Accuracy</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="streak">0</div>
+                <div class="stat-label">Streak</div>
+            </div>
+        </div>
+
+        <div class="control-buttons">
+            <button class="control-btn primary-btn" onclick="nextNote()">Next Note</button>
+            <button class="control-btn secondary-btn" onclick="resetStats()">Reset Stats</button>
+        </div>
+    </div>
+
+    <script>
+        let config = {
+            mode: 'practice',
+            clef: 'treble',
+            range: 'basic',
+            sharps: false,
+            flats: false
+        };
+
+        let stats = {
+            correct: 0,
+            incorrect: 0,
+            streak: 0
+        };
+
+        let currentNote = null;
+        let audioContext = null;
+
+        // Initialize audio context on first user interaction
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        // Play a note using Web Audio API
+        function playNote(noteName) {
+            initAudio();
+            
+            // Frequency mapping for notes
+            const frequencies = {
+                'C2': 65.41, 'D2': 73.42, 'E2': 82.41, 'F2': 87.31, 'G2': 98.00, 'A2': 110.00, 'B2': 123.47,
+                'C3': 130.81, 'D3': 146.83, 'E3': 164.81, 'F3': 174.61, 'G3': 196.00, 'A3': 220.00, 'B3': 246.94,
+                'C4': 261.63, 'D4': 293.66, 'E4': 329.63, 'F4': 349.23, 'G4': 392.00, 'A4': 440.00, 'B4': 493.88,
+                'C5': 523.25, 'D5': 587.33, 'E5': 659.25, 'F5': 698.46, 'G5': 783.99, 'A5': 880.00, 'B5': 987.77,
+                'C6': 1046.50
+            };
+
+            const baseNote = getBaseNote(noteName);
+            let frequency = frequencies[baseNote];
+            
+            if (!frequency) return;
+
+            // Adjust frequency for sharps and flats
+            if (noteName.includes('#')) {
+                frequency *= Math.pow(2, 1/12); // Up one semitone
+            } else if (noteName.includes('b')) {
+                frequency *= Math.pow(2, -1/12); // Down one semitone
+            }
+
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            oscillator.frequency.value = frequency;
+            oscillator.type = 'sine';
+
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.0);
+
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 1.0);
+        }
+
+        const trebleNotes = {
+            basic: ['E4', 'F4', 'G4', 'A4', 'B4', 'C5', 'D5', 'E5', 'F5'],
+            extended: ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5', 'D5', 'E5', 'F5', 'G5', 'A5'],
+            full: ['A3', 'B3', 'C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5', 'D5', 'E5', 'F5', 'G5', 'A5', 'B5', 'C6']
+        };
+
+        const bassNotes = {
+            basic: ['G2', 'A2', 'B2', 'C3', 'D3', 'E3', 'F3', 'G3', 'A3'],
+            extended: ['E2', 'F2', 'G2', 'A2', 'B2', 'C3', 'D3', 'E3', 'F3', 'G3', 'A3', 'B3', 'C4'],
+            full: ['C2', 'D2', 'E2', 'F2', 'G2', 'A2', 'B2', 'C3', 'D3', 'E3', 'F3', 'G3', 'A3', 'B3', 'C4', 'D4', 'E4']
+        };
+
+        // Position 0 = bottom line, each increment is one staff position (line or space)
+        const treblePositions = {
+            'A3': -4, 'B3': -3, 'C4': -2, 'D4': -1,
+            'E4': 0,  'F4': 1,  'G4': 2,  'A4': 3,  'B4': 4,
+            'C5': 5,  'D5': 6,  'E5': 7,  'F5': 8,
+            'G5': 9,  'A5': 10, 'B5': 11, 'C6': 12
+        };
+
+        // Position 0 = bottom line (G2 in bass clef)
+        const bassPositions = {
+            'C2': -4, 'D2': -3, 'E2': -2, 'F2': -1,
+            'G2': 0,  'A2': 1,  'B2': 2,  'C3': 3,  'D3': 4,
+            'E3': 5,  'F3': 6,  'G3': 7,  'A3': 8,
+            'B3': 9,  'C4': 10, 'D4': 11, 'E4': 12
+        };
+
+        function setMode(mode) {
+            config.mode = mode;
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                if (btn.textContent.toLowerCase().includes(mode)) {
+                    btn.classList.add('active');
+                } else if (btn.onclick.toString().includes('setMode')) {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        function setClef(clef) {
+            config.clef = clef;
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                const btnText = btn.textContent.toLowerCase();
+                if ((clef === 'treble' && btnText.includes('treble')) ||
+                    (clef === 'bass' && btnText.includes('bass')) ||
+                    (clef === 'both' && btnText.includes('both'))) {
+                    btn.classList.add('active');
+                } else if (btn.onclick.toString().includes('setClef')) {
+                    btn.classList.remove('active');
+                }
+            });
+            nextNote();
+        }
+
+        function setRange(range) {
+            config.range = range;
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                const btnText = btn.textContent.toLowerCase();
+                if ((range === 'basic' && btnText.includes('basic')) ||
+                    (range === 'extended' && btnText.includes('extended')) ||
+                    (range === 'full' && btnText.includes('full'))) {
+                    btn.classList.add('active');
+                } else if (btn.onclick.toString().includes('setRange')) {
+                    btn.classList.remove('active');
+                }
+            });
+            nextNote();
+        }
+
+        function updateAccidentals() {
+            config.sharps = document.getElementById('sharps').checked;
+            config.flats = document.getElementById('flats').checked;
+            nextNote();
+        }
+
+        function drawStaff(clef) {
+            const staff = document.getElementById('staff');
+            staff.innerHTML = '';
+
+            // Draw 5 staff lines with absolute positioning
+            for (let i = 0; i < 5; i++) {
+                const line = document.createElement('div');
+                line.className = 'staff-line';
+                staff.appendChild(line);
+            }
+
+            // Add clef symbol
+            const clefSymbol = document.createElement('div');
+            clefSymbol.className = 'clef';
+            clefSymbol.textContent = clef === 'treble' ? '𝄞' : '𝄢';
+            staff.appendChild(clefSymbol);
+
+            // Add key signature if sharps or flats are enabled
+            if (config.sharps || config.flats) {
+                const keySignature = document.createElement('div');
+                keySignature.className = 'key-signature';
+                
+                if (config.sharps) {
+                    keySignature.innerHTML = '<div class="key-signature-symbol">♯</div>';
+                } else if (config.flats) {
+                    keySignature.innerHTML = '<div class="key-signature-symbol">♭</div>';
+                }
+                
+                staff.appendChild(keySignature);
+            }
+        }
+
+        function getNotePosition(note, clef) {
+            const positions = clef === 'treble' ? treblePositions : bassPositions;
+            return positions[note] || 0;
+        }
+
+        function drawNote(note, clef) {
+            const staff = document.getElementById('staff');
+            const baseNote = getBaseNote(note);
+            const position = getNotePosition(baseNote, clef);
+            
+            // Staff lines are at: 40px (top), 60px, 80px (middle), 100px, 120px (bottom)
+            // Position 0 = bottom line (120px), position 8 = top line (40px)
+            // Each position is 10px apart
+            const topPixel = 120 - (position * 10);
+
+            const noteElement = document.createElement('div');
+            noteElement.className = 'note';
+            noteElement.style.top = `${topPixel}px`;
+
+            const noteHead = document.createElement('div');
+            noteHead.className = 'note-head';
+            noteElement.appendChild(noteHead);
+
+            // Add ledger lines if needed
+            if (position < 0) {
+                // Below the staff - add ledger lines for even positions (lines)
+                for (let i = -2; i >= position; i -= 2) {
+                    const ledger = document.createElement('div');
+                    ledger.className = 'ledger-line';
+                    ledger.style.top = `${120 - (i * 10)}px`;
+                    staff.appendChild(ledger);
+                }
+            } else if (position > 8) {
+                // Above the staff - add ledger lines for even positions (lines)
+                for (let i = 10; i <= position; i += 2) {
+                    const ledger = document.createElement('div');
+                    ledger.className = 'ledger-line';
+                    ledger.style.top = `${120 - (i * 10)}px`;
+                    staff.appendChild(ledger);
+                }
+            }
+
+            staff.appendChild(noteElement);
+        }
+
+        function getRandomNote() {
+            let clef = config.clef;
+            if (clef === 'both') {
+                clef = Math.random() < 0.5 ? 'treble' : 'bass';
+            }
+
+            const notes = clef === 'treble' ? trebleNotes[config.range] : bassNotes[config.range];
+            let availableNotes = [...notes];
+
+            if (config.sharps || config.flats) {
+                const extendedNotes = [];
+                notes.forEach(note => {
+                    if (config.sharps && !note.includes('B') && !note.includes('E')) {
+                        extendedNotes.push(note + '#');
+                    }
+                    if (config.flats && !note.includes('C') && !note.includes('F')) {
+                        extendedNotes.push(note + 'b');
+                    }
+                });
+                availableNotes = [...availableNotes, ...extendedNotes];
+            }
+
+            const randomNote = availableNotes[Math.floor(Math.random() * availableNotes.length)];
+            return { note: randomNote, clef: clef };
+        }
+
+        function getNoteName(note) {
+            return note.replace(/[0-9]/g, '').replace('#', '♯').replace('b', '♭');
+        }
+
+        function getBaseNote(note) {
+            return note.replace(/[#b]/g, '');
+        }
+
+        function nextNote() {
+            currentNote = getRandomNote();
+            drawStaff(currentNote.clef);
+            drawNote(currentNote.note, currentNote.clef);
+            
+            generateAnswerButtons();
+            
+            // Play the note sound
+            playNote(currentNote.note);
+            
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('feedback').className = 'feedback';
+        }
+
+        function generateAnswerButtons() {
+            const container = document.getElementById('answerButtons');
+            container.innerHTML = '';
+
+            const noteNames = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+            const modifiers = [''];
+            
+            if (config.sharps) modifiers.push('♯');
+            if (config.flats) modifiers.push('♭');
+
+            const buttons = [];
+            noteNames.forEach(name => {
+                modifiers.forEach(mod => {
+                    buttons.push(name + mod);
+                });
+            });
+
+            buttons.forEach(name => {
+                const button = document.createElement('button');
+                button.className = 'note-button';
+                button.textContent = name;
+                button.onclick = () => checkAnswer(name);
+                container.appendChild(button);
+            });
+        }
+
+        function checkAnswer(answer) {
+            const correctAnswer = getNoteName(currentNote.note);
+            const feedback = document.getElementById('feedback');
+            
+            const buttons = document.querySelectorAll('.note-button');
+            
+            if (answer === correctAnswer) {
+                feedback.textContent = '✓ Correct!';
+                feedback.className = 'feedback correct';
+                stats.correct++;
+                stats.streak++;
+                
+                buttons.forEach(btn => {
+                    if (btn.textContent === answer) {
+                        btn.classList.add('correct');
+                    }
+                });
+                
+                setTimeout(() => {
+                    nextNote();
+                }, 1000);
+            } else {
+                feedback.textContent = `✗ Incorrect. The correct answer is ${correctAnswer}`;
+                feedback.className = 'feedback incorrect';
+                stats.incorrect++;
+                stats.streak = 0;
+                
+                buttons.forEach(btn => {
+                    if (btn.textContent === answer) {
+                        btn.classList.add('incorrect');
+                    }
+                    if (btn.textContent === correctAnswer) {
+                        btn.classList.add('correct');
+                    }
+                });
+            }
+            
+            updateStats();
+        }
+
+        function updateStats() {
+            document.getElementById('correct').textContent = stats.correct;
+            document.getElementById('incorrect').textContent = stats.incorrect;
+            document.getElementById('streak').textContent = stats.streak;
+            
+            const total = stats.correct + stats.incorrect;
+            const accuracy = total > 0 ? Math.round((stats.correct / total) * 100) : 0;
+            document.getElementById('accuracy').textContent = accuracy + '%';
+        }
+
+        function resetStats() {
+            stats = { correct: 0, incorrect: 0, streak: 0 };
+            updateStats();
+        }
+
+        // Initialize
+        nextNote();
+    </script>
+</body>
+</html>
