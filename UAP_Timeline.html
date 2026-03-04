@@ -1,0 +1,1564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UAP Disclosure Timeline — Supporting Karl Nell's Campaign Plan</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Exo+2:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #050d1f;
+    --deep: #081428;
+    --panel: #0a1a2e;
+    --border: #1a3a5c;
+    --gov: #1e88e5;
+    --gov-dim: #0d3f6e;
+    --sci: #00bfa5;
+    --sci-dim: #004d40;
+    --disc: #f57c00;
+    --disc-dim: #4a2400;
+    --nhi: #ab47bc;
+    --nhi-dim: #3a0a4a;
+    --warn: #ef5350;
+    --gold: #ffd54f;
+    --text: #c8ddf0;
+    --muted: #5d7a99;
+    --bright: #e8f4ff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--navy);
+    color: var(--text);
+    font-family: 'Exo 2', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Scanline overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  /* Stars background */
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 30% 40%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 55% 8%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 78% 25%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 92% 60%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 20% 80%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 65% 70%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 45% 90%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 85% 85%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(2px 2px at 5% 50%, rgba(255,255,255,0.3) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  header {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 50px 20px 30px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, rgba(5,20,50,0.95) 0%, rgba(8,20,46,0.8) 100%);
+  }
+
+  .header-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(22px, 4vw, 42px);
+    font-weight: 900;
+    color: var(--bright);
+    letter-spacing: 2px;
+    line-height: 1.2;
+    text-shadow: 0 0 30px rgba(30,136,229,0.5);
+  }
+
+  h1 span {
+    color: var(--gov);
+  }
+
+  .subtitle {
+    font-family: 'Exo 2', sans-serif;
+    font-weight: 300;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--muted);
+    margin-top: 10px;
+    letter-spacing: 1px;
+  }
+
+  /* Nell's Phase Bar */
+  .phase-bar {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    padding: 20px 20px 16px;
+    background: var(--deep);
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+
+  .phase-pill {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    padding: 5px 12px;
+    border-radius: 2px;
+    border: 1px solid;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .phase-0 { background: rgba(93,122,153,0.15); border-color: var(--muted); color: var(--muted); }
+  .phase-1 { background: rgba(30,136,229,0.15); border-color: var(--gov); color: var(--gov); }
+  .phase-2 { background: rgba(0,191,165,0.15); border-color: var(--sci); color: var(--sci); }
+  .phase-3 { background: rgba(245,124,0,0.12); border-color: var(--disc); color: var(--disc); }
+  .phase-4 { background: rgba(171,71,188,0.12); border-color: var(--nhi); color: var(--nhi); }
+
+  /* Legend */
+  .legend {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 12px 20px;
+    background: var(--deep);
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--muted);
+  }
+
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* Main timeline */
+  .timeline-container {
+    position: relative;
+    z-index: 10;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 50px 30px 80px;
+  }
+
+  .timeline-spine {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg,
+      transparent 0%,
+      var(--border) 5%,
+      var(--border) 95%,
+      transparent 100%
+    );
+    transform: translateX(-50%);
+  }
+
+  .year-marker {
+    position: relative;
+    text-align: center;
+    margin: 20px 0 10px;
+    z-index: 5;
+  }
+
+  .year-label {
+    display: inline-block;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--gov);
+    background: var(--navy);
+    padding: 4px 20px;
+    border: 1px solid var(--gov-dim);
+    letter-spacing: 3px;
+    text-shadow: 0 0 20px rgba(30,136,229,0.4);
+  }
+
+  /* Section divider */
+  .section-divider {
+    position: relative;
+    text-align: center;
+    margin: 40px 0 20px;
+    z-index: 5;
+  }
+
+  .section-label {
+    display: inline-block;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    padding: 6px 18px;
+    border-radius: 1px;
+    text-transform: uppercase;
+  }
+
+  /* Event cards */
+  .event {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 30px;
+    position: relative;
+    animation: fadeSlideIn 0.5s ease both;
+  }
+
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .event:nth-child(odd) { flex-direction: row; }
+  .event:nth-child(even) { flex-direction: row-reverse; }
+
+  .event-spacer {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .event-node {
+    flex-shrink: 0;
+    width: 44px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 14px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .node-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid;
+    background: var(--navy);
+    position: relative;
+  }
+
+  .node-dot::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+    opacity: 0.3;
+    animation: pulse 2.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.3; }
+    50% { transform: scale(1.6); opacity: 0.1; }
+  }
+
+  .card {
+    flex: 1;
+    min-width: 0;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 16px 18px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .card:hover {
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+  }
+
+  /* Category colors */
+  .gov .card { border-color: var(--gov-dim); }
+  .gov .card:hover { border-color: var(--gov); box-shadow: 0 4px 24px rgba(30,136,229,0.15); }
+  .gov .card::before { background: linear-gradient(90deg, var(--gov), transparent); }
+  .gov .node-dot { border-color: var(--gov); }
+  .gov .node-dot::after { background: var(--gov); }
+
+  .sci .card { border-color: var(--sci-dim); }
+  .sci .card:hover { border-color: var(--sci); box-shadow: 0 4px 24px rgba(0,191,165,0.15); }
+  .sci .card::before { background: linear-gradient(90deg, var(--sci), transparent); }
+  .sci .node-dot { border-color: var(--sci); }
+  .sci .node-dot::after { background: var(--sci); }
+
+  .disc .card { border-color: var(--disc-dim); }
+  .disc .card:hover { border-color: var(--disc); box-shadow: 0 4px 24px rgba(245,124,0,0.15); }
+  .disc .card::before { background: linear-gradient(90deg, var(--disc), transparent); }
+  .disc .node-dot { border-color: var(--disc); }
+  .disc .node-dot::after { background: var(--disc); }
+
+  .nhi .card { border-color: var(--nhi-dim); }
+  .nhi .card:hover { border-color: var(--nhi); box-shadow: 0 4px 24px rgba(171,71,188,0.15); }
+  .nhi .card::before { background: linear-gradient(90deg, var(--nhi), transparent); }
+  .nhi .node-dot { border-color: var(--nhi); }
+  .nhi .node-dot::after { background: var(--nhi); }
+
+  .mixed .card { border-color: #2a3a4a; }
+  .mixed .card::before { background: linear-gradient(90deg, var(--gold), transparent); }
+  .mixed .node-dot { border-color: var(--gold); }
+  .mixed .node-dot::after { background: var(--gold); }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+
+  .card-date {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 2px;
+  }
+
+  .card-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    padding: 2px 8px;
+    border-radius: 2px;
+    text-transform: uppercase;
+  }
+
+  .tag-gov { background: rgba(30,136,229,0.15); color: var(--gov); border: 1px solid var(--gov-dim); }
+  .tag-sci { background: rgba(0,191,165,0.15); color: var(--sci); border: 1px solid var(--sci-dim); }
+  .tag-disc { background: rgba(245,124,0,0.12); color: var(--disc); border: 1px solid var(--disc-dim); }
+  .tag-nhi { background: rgba(171,71,188,0.12); color: var(--nhi); border: 1px solid var(--nhi-dim); }
+  .tag-law { background: rgba(255,213,79,0.1); color: var(--gold); border: 1px solid rgba(255,213,79,0.3); }
+
+  .card-title {
+    font-family: 'Exo 2', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--bright);
+    line-height: 1.35;
+    margin-bottom: 7px;
+  }
+
+  .card-body {
+    font-size: 12.5px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .card-body strong {
+    color: var(--bright);
+    font-weight: 600;
+  }
+
+  .card-cite {
+    margin-top: 8px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  .nell-flag {
+    display: inline-block;
+    margin-left: 6px;
+    font-size: 9px;
+    font-family: 'Share Tech Mono', monospace;
+    background: rgba(255,213,79,0.12);
+    color: var(--gold);
+    border: 1px solid rgba(255,213,79,0.3);
+    padding: 1px 6px;
+    border-radius: 2px;
+    vertical-align: middle;
+    letter-spacing: 1px;
+  }
+
+  /* Thesis boxes */
+  .thesis-box {
+    position: relative;
+    z-index: 10;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 22px 28px;
+    margin: 0 0 50px;
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .thesis-box h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .thesis-cols {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .thesis-col {
+    padding: 16px;
+    border-radius: 2px;
+  }
+
+  .thesis-col h3 {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+
+  .thesis-col ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .thesis-col ul li {
+    font-size: 12.5px;
+    padding: 4px 0 4px 16px;
+    position: relative;
+    color: var(--text);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    line-height: 1.5;
+  }
+
+  .thesis-col ul li::before {
+    content: '›';
+    position: absolute;
+    left: 0;
+    font-size: 14px;
+  }
+
+  .col-gov { background: rgba(30,136,229,0.05); border: 1px solid var(--gov-dim); }
+  .col-gov h3 { color: var(--gov); }
+  .col-gov ul li::before { color: var(--gov); }
+
+  .col-sci { background: rgba(0,191,165,0.05); border: 1px solid var(--sci-dim); }
+  .col-sci h3 { color: var(--sci); }
+  .col-sci ul li::before { color: var(--sci); }
+
+  .col-nhi { background: rgba(171,71,188,0.05); border: 1px solid var(--nhi-dim); }
+  .col-nhi h3 { color: var(--nhi); }
+  .col-nhi ul li::before { color: var(--nhi); }
+
+  /* Footer */
+  footer {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 20px;
+    border-top: 1px solid var(--border);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 2px;
+  }
+
+  @media (max-width: 680px) {
+    .event { flex-direction: column !important; gap: 8px; }
+    .event-spacer { display: none; }
+    .event-node { padding-top: 0; padding-left: 0; }
+    .timeline-spine { display: none; }
+    .timeline-container { padding: 30px 16px 60px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-tag">// interview reference document — march 2026</div>
+  <h1><span>UAP</span> DISCLOSURE TIMELINE</h1>
+  <div class="subtitle">Supporting Karl Nell's Campaign Plan — Governmental, Scientific & Disclosure Evidence</div>
+</header>
+
+<div class="phase-bar">
+  <div class="phase-pill phase-0">Phase 0: Shaping (pre-2024)</div>
+  <div class="phase-pill phase-1">Phase 1: Demonstrate Existence (to Jan 2026)</div>
+  <div class="phase-pill phase-2">Phase 2: Correlate Signatures (to Jan 2026)</div>
+  <div class="phase-pill phase-3">Phase 3: Characterize Performance (to Oct 2030)</div>
+  <div class="phase-pill phase-4">Phase 4: Determine Nature (to Oct 2034)</div>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--gov)"></div>Government Acceptance</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--sci)"></div>Scientific Acceptance</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--disc)"></div>Disclosure / Legislation</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--nhi)"></div>NHI / Key Testimony</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div>Multi-domain</div>
+</div>
+
+<!-- THESIS SUMMARY -->
+<div style="position:relative;z-index:10;padding:30px 30px 0;max-width:1100px;margin:0 auto;">
+<div class="thesis-box">
+  <h2 style="color:var(--gold)">// YOUR THREE THESES — NELL PHASE ALIGNMENT</h2>
+  <div class="thesis-cols">
+    <div class="thesis-col col-gov">
+      <h3>① Governmental Acceptance ✓</h3>
+      <ul>
+        <li>UAPTF formally established (2021)</li>
+        <li>David Grusch sworn congressional testimony (Jul 2023)</li>
+        <li>FY2024 NDAA / UAP Disclosure Act signed into law (Dec 2023)</li>
+        <li>Col. Nell: "zero doubt" NHI statement at SALT (May 2024)</li>
+        <li>Agencies required to transmit UAP records to NARA (Oct 2024)</li>
+        <li>Nell's slide maps this to <em>Phase 0–1</em></li>
+      </ul>
+    </div>
+    <div class="thesis-col col-sci">
+      <h3>② Scientific Acceptance ← In Progress</h3>
+      <ul>
+        <li>Villarroel/Bruehl: 1950s Palomar transients correlated with nuclear tests &amp; UAP (Oct 2025, <em>Scientific Reports</em>)</li>
+        <li>Bennu: all 5 DNA/RNA nucleobases, 14/20 amino acids (Jan 2025, <em>Nature</em>)</li>
+        <li>Mars: largest organic molecules found — possible fatty acid fragments (Mar 2025, <em>PNAS</em>)</li>
+        <li>Cheyava Falls biosignature — "closest we've come to finding Mars life" (Sep 2025)</li>
+        <li>Mars organics can't be fully explained by non-biological processes (Feb 2026, <em>Astrobiology</em>)</li>
+        <li>Nell's slide maps this to <em>Phase 2–3</em></li>
+      </ul>
+    </div>
+    <div class="thesis-col col-nhi">
+      <h3>③ Disclosure Pathway</h3>
+      <ul>
+        <li>FY2024 NDAA includes watered-down Disclosure Act (Review Board removed)</li>
+        <li>UAP Transparency Act re-introduced in 119th Congress (H.R. 1187, 2025)</li>
+        <li>NARA UAP Records Collection mandated publicly accessible online</li>
+        <li>Nell's "Catastrophic Disclosure Avoided" is the strategic end-state goal</li>
+        <li>2026 is Nell's predicted critical juncture for controlled vs. chaotic disclosure</li>
+      </ul>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- TIMELINE -->
+<div class="timeline-container">
+  <div class="timeline-spine"></div>
+
+  <!-- 2017 -->
+  <div class="year-marker"><span class="year-label">2017</span></div>
+
+  <div class="event gov">
+    <div class="event-spacer"></div>
+    <div class="event-node"><div class="node-dot"></div></div>
+    <div class="card">
+      <div class="card-meta">
+        <span class="card-date">DEC 2017</span>
+        <span class="card-tag tag-gov">Government</span>
+        <span class="card-tag tag-disc">Media</span>
+      </div>
+      <div class="card-title">New York Times Publishes AATIP Revelation <span class="nell-flag">Nell Phase 0</span></div>
+      <div class="card-body">
+        The NYT breaks the story of the Advanced Aerospace Threat Identification Program (AATIP) and releases gun-camera footage of USS Nimitz "Tic Tac" UAP. This marks the beginning of mainstream governmental acknowledgment — explicitly cited in Nell's slide as a Phase 0 shaping event.
+      </div>
+      <div class="card-cite">// Source: New York Times, Dec 16 2017 — Leslie Kean &amp; Ralph Blumenthal</div>
+    </div>
+  </div>
+
+  <!-- 2021 -->
+  <div class="year-marker"><span class="year-label">2021</span></div>
+
+  <div class="event gov">
+    <div class="card">
+      <div class="card-meta">
+        <span class="card-date">JUN 2021</span>
+        <span class="card-tag tag-gov">Government</span>
+      </div>
+      <div class="card-title">ODNI Releases First UAP Report to Congress <span class="nell-flag">Phase 1</span></div>
+      <div class="card-body">
+        The Office of the Director of National Intelligence delivers a congressionally mandated preliminary assessment of 144 UAP reports. It finds only one incident can be explained. <strong>Col. Nell serves as Army Director of the UAP Task Force</strong> at this time, directly shaping UAP provisions in subsequent NDAAs and engaging senior DoD leadership and Congress.
+      </div>
+      <div class="card-cite">// ODNI "Preliminary Assessment: Unidentified Aerial Phenomena" (Jun 25, 2021)</div>
+    </div>
+    <div class="event-node"><div class="node-dot"></div></div>
+    <div class="event-spacer"></div>
+  </div>
+
+  <!-- 2022–2023 -->
+  <div class="year-marker"><span class="year-label">2022 – 2023</span></div>
+
+  <div class="event gov">
+    <div class="event-spacer"></div>
+    <div class="event-node"><div class="node-dot"></div></div>
+    <div class="card">
+      <div class="card-meta">
+        <span class="card-date">2022 – 2023</span>
+        <span class="card-tag tag-gov">Government</span>
+        <span class="card-tag tag-law">Legislation</span>
+      </div>
+      <div class="card-title">NDAA UAP Provisions &amp; AARO Established <span class="nell-flag">Phase 1</span></div>
+      <div class="card-body">
+        Nell's congressional engagements contribute directly to UAP provisions in the FY2022 and FY2023 NDAAs. The All-domain Anomaly Resolution Office (AARO) is formally established to investigate UAP across domains. NASA appoints a Director of UAP Research, signaling a shift "from stigma to science."
+      </div>
+      <div class="card-cite">// NDAA FY2022 §1683; NDAA FY2023; NASA Director of UAP Research announced Jun 2023</div>
+    </div>
+  </div>
+
+  <div class="event nhi">
+    <div class="card">
+      <div class="card-meta">
+        <span class="card-date">JUL 26, 2023</span>
+        <span class="card-tag tag-nhi">NHI / Testimony</span>
+        <span class="card-tag tag-gov">Government</span>
+      </div>
+      <div class="card-title">David Grusch Sworn Testimony Before Congress <span class="nell-flag">Phase 1</span></div>
+      <div class="card-body">
+        Intelligence officer and Nell's supervisee David Grusch — described by Nell as "beyond reproach" — testifies under oath before the House Oversight Committee. Grusch alleges a covert government UAP retrieval program kept secret from Congress. Nell's supervisory validation of Grusch's credibility amplifies the testimony's impact significantly.
+      </div>
+      <div class="card-cite">// House Oversight Committee hearing; The Debrief (Jun 2023)</div>
+    </div>
+    <div class="event-node"><div class="node-dot"></div></div>
+    <div class="event-spacer"></div>
+  </div>
+
+  <div class="event disc">
+    <div class="event-spacer"></div>
+    <div class="event-node"><div class="node-dot"></div></div>
+    <div class="card">
+      <div class="card-meta">
+        <span class="card-date">NOV 2023</span>
+        <span class="card-tag tag-disc">Disclosure</span>
+      </div>
+      <div class="card-title">Sol Foundation Symposium — Nell Presents Campaign Plan <span class="nell-flag">Phase 0→1</span></div>
+      <div class="card-body">
+        At Stanford University, Col. Nell presents the very slide shown here — a "Controlled Disclosure Campaign Plan" with a roadmap to 2030. He calls for a "Manhattan Project" to reverse-engineer recovered UAP technology. Former CIA scientist Hal Puthoff reveals that CIA, DIA, and Pentagon agreed in 2004 that societal risks of UAP disclosure were too great.
+      </div>
+      <div class="card-cite">// Sol Foundation Symposium I, Stanford University, Nov 2023</div>
+    </div>
+  </div>
+
+  <div class="event disc">
+    <div class="card">
+      <div class="card-meta">
+        <span class="card-date">DEC 22, 2023</span>
+        <span class="card-tag tag-law">Legislation</span>
+        <span class="card-tag tag-disc">Disclosure ✓</span>
+      </div>
+      <div class="card-title">UAP Disclosure Act Signed Into Law — FY2024 NDAA <span class="nell-flag">Phase 1</span></div>
+      <div class="card-body">
+        President Biden signs the FY2024 NDAA (Public Law 118-31), which includes Sections 1841–1843 — the UAP Disclosure Act of 2023. <strong>This constitutes formal legislative disclosure.</strong> The law mandates NARA establish a UAP Records Collection, requires all federal agencies to identify and organize UAP records within 300 days, and establishes presumption of public disclosure. Note: the independent Review Board and eminent domain provisions were stripped in conference.
+      </div>
+      <div class="card-cite">// Public Law 118-31 §§1841–1843; Schumer-Rounds amendment</div>
+    </div>
+    <div class="event-node"><div class="node-dot"></div></div>
+    <div class="event-spacer"></div>
+  </div>
+
+  <!-- 2024 -->
+  <div class="year-marker"><span class="year-label">2024</span></div>
+
+  <div class="event nhi">
+    <div class="event-spacer"></div>
+    <div class="event-node"><div class="node-dot"></div></div>
+    <div class="card">
+      <div class="card-meta">
+        <span class="card-date">MAY 21, 2024</span>
+        <span class="card-tag tag-nhi">NHI / Testimony</span>
+      </div>
+      <div class="card-title">Col. Nell at SALT iConnections — "Zero Doubt" <span class="nell-flag">Phase 1</span></div>
+      <div class="card-body">
+        At the SALT iConnections conference in NYC, Nell states: <em>"Non-human intelligence exists. Non-human intelligence has been interacting with humanity. This interaction is not new, and it's been ongoing, and unelected people in the government are aware of that."</em> He claims "zero doubt." This statement from a retired senior Army officer and former UAPTF Director represents the most direct high-credibility assertion of NHI existence to date.
+      </div>
+      <div class="card-cite">// SALT iConnections Conference, NYC, May 21, 2024 — NewsNation / Ross Coulthart</div>
+    </div>
+  </div>
+
+  <div class="event sci">
+    <div class="card">
+      <div class="card-meta">
+        <span class="card-date">JUN 2024</span>
+        <span class="card-tag tag-sci">Science</span>
+      </div>
+      <div class="card-title">Bennu Sample: Carbon, Nitrogen, Phosphate — Life's Chemistry <span class="nell-flag">Phase 2</span></div>
+      <div class="card-body">
+        Initial analysis of OSIRIS-REx's Bennu samples reveals dust rich in <strong>carbon, nitrogen, and organic compounds</strong>. A surprise discovery: magnesium-sodium phosphate of unprecedented purity, hinting the asteroid splintered from an ancient primitive ocean world. The sample mirrors minerals found at Earth's mid-ocean ridges.
+      </div>
+      <div class="card-cite">// Meteoritics &amp; Planetary Science, Jun 26, 2024; NASA Goddard</div>
+    </div>
+    <div class="event-node"><div class="node-dot"></div></div>
+    <div class="event-spacer"></div>
+  </div>
+
+  <div class="event sci">
+    <div class="event-spacer"></div>
+    <div class="event-node"><div class="node-dot"></div></div>
+    <div class="card">
+      <div class="card-meta">
+        <span class="card-date">JUL 2024</span>
+        <span class="card-tag tag-sci">Science</span>
+      </div>
+      <div class="card-title">Mars: "Smoking Gun" for Organic Molecule Origins <span class="nell-flag">Phase 2</span></div>
+      <div class="card-body">
+        Researchers from U. Copenhagen and Tokyo Institute confirm that solar photolysis of CO₂ in Mars' ancient atmosphere generated the organic carbon sediments found by Curiosity. <strong>"Such carbon-based complex molecules are the prerequisite of life,"</strong> says Prof. Matthew Johnson. This provides a plausible abiotic pathway — and raises the bar for explaining the even larger molecules soon to be found.
+      </div>
+      <div class="card-cite">// ScienceDaily / U. Copenhagen, Jul 2024</div>
+    </div>
+  </div>
+
+  <div class="event sci">
+    <div class="card">
+      <div class="card-meta">
+        <span class="card-date">JUL 2024</span>
+        <span class="card-tag tag-sci">Science — Mars</span>
+      </div>
+      <div class="card-title">Perseverance Discovers "Cheyava Falls" — All Three Life Ingredients in One Rock</div>
+      <div class="card-body">
+        NASA's Perseverance rover discovers a rock in Jezero Crater's ancient riverbed containing <strong>liquid water evidence, organic molecules, and an energy source</strong> — the first single location on Mars to show all three prerequisites for life simultaneously. The "leopard spot" patterns are mainly known to form through microbial activity on Earth.
+      </div>
+      <div class="card-cite">// NASA JPL / Planetary Society, Jul 21, 2024</div>
+    </div>
+    <div class="event-node"><div class="node-dot"></div></div>
+    <div class="event-spacer"></div>
+  </div>
+
+  <div class="event disc">
+    <div class="event-spacer"></div>
+    <div class="event-node"><div class="node-dot"></div></div>
+    <div class="card">
+      <div class="card-meta">
+        <span class="card-date">OCT 20, 2024</span>
+        <span class="card-tag tag-law">Legislation</span>
+        <span class="card-tag tag-disc">Disclosure</span>
+      </div>
+      <div class="card-title">Agency Deadline: UAP Records Transmitted to NARA <span class="nell-flag">Phase 1</span></div>
+      <div class="card-body">
+        Under Public Law 118-31, all federal agencies were legally required to review, identify, and transmit UAP records to the National Archives by this date. Publicly releasable records are to be made available in the NARA online catalog — a concrete, enforceable mechanism of institutional disclosure.
+      </div>
+      <div class="card-cite">// NARA UAP Records Collection Guidance; Public Law 118-31 §1841</div>
+    </div>
+  </div>
+
+  <!-- 2025 -->
+  <div class="year-marker"><span class="year-label">2025</span></div>
+
+  <div class="event sci">
+    <div class="card">
+      <div class="card-meta">
+        <span class="card-date">JAN 29, 2025</span>
+        <span class="card-tag tag-sci">Science — Astrobiology</span>
+      </div>
+      <div class="card-title">Bennu: All 5 DNA/RNA Bases + 14 Amino Acids Found <span class="nell-flag">Phase 2</span></div>
+      <div class="card-body">
+        Two landmark papers in <em>Nature</em> and <em>Nature Astronomy</em> report that Bennu contains <strong>all five nucleobases used to encode DNA and RNA</strong>, 14 of the 20 amino acids life uses, a complete suite of brine evaporite minerals, and ammonia in exceptional abundance. NASA Goddard scientist Jason Dworkin: <em>"Data from OSIRIS-REx adds major brushstrokes to a picture of a solar system teeming with the potential for life."</em>
+      </div>
+      <div class="card-cite">// Nature &amp; Nature Astronomy, Jan 29, 2025; NASA Goddard / U. Arizona</div>
+    </div>
+    <div class="event-node"><div class="node-dot"></div></div>
+    <div class="event-spacer"></div>
+  </div>
+
+  <div class="event disc">
+    <div class="event-spacer"></div>
+    <div class="event-node"><div class="node-dot"></div></div>
+    <div class="card">
+      <div class="card-meta">
+        <span class="card-date">2025</span>
+        <span class="card-tag tag-law">Legislation</span>
+      </div>
+      <div class="card-title">UAP Transparency Act — H.R. 1187 — Introduced in 119th Congress</div>
+      <div class="card-body">
+        A stronger follow-on bill is introduced requiring the President to direct all federal departments to declassify and publicly post UAP records within 270 days of enactment, with quarterly progress reports to Congress. This builds on the FY2024 NDAA's foundation — addressing the stripped provisions (Review Board, eminent domain) that advocates like Nell sought.
+      </div>
+      <div class="card-cite">// H.R. 1187, 119th Congress (2025–2026)</div>
+    </div>
+  </div>
+
+  <div class="event sci">
+    <div class="card">
+      <div class="card-meta">
+        <span class="card-date">MAR 24, 2025</span>
+        <span class="card-tag tag-sci">Science — Mars</span>
+      </div>
+      <div class="card-title">Mars: Largest Organic Molecules Ever Found — Possible Fatty Acid Fragments <span class="nell-flag">Phase 2–3</span></div>
+      <div class="card-body">
+        Scientists from CNRS announce that Curiosity's SAM instrument detected <strong>decane, undecane, and dodecane</strong> — long-chain carbon molecules (up to 12 carbons) preserved in 3.7-billion-year-old Martian clay. These could be fragments of fatty acids, which on Earth are predominantly produced by life. Published in PNAS, this represents the most chemically complex organic finding on Mars to date.
+      </div>
+      <div class="card-cite">// PNAS, Mar 24, 2025; CNRS / NASA JPL</div>
+    </div>
+    <div class="event-node"><div class="node-dot"></div></div>
+    <div class="event-spacer"></div>
+  </div>
+
+  <div class="event sci">
+    <div class="event-spacer"></div>
+    <div class="event-node"><div class="node-dot"></div></div>
+    <div class="card">
+      <div class="card-meta">
+        <span class="card-date">SEP 10, 2025</span>
+        <span class="card-tag tag-sci">Science — Mars</span>
+      </div>
+      <div class="card-title">Cheyava Falls: "Closest We've Come to Ancient Mars Life" <span class="nell-flag">Phase 3</span></div>
+      <div class="card-body">
+        NASA announces that Perseverance's Cheyava Falls rock <em>"represents the closest we've actually come to discovering ancient life on Mars."</em> The leopard-spot biosignatures — organic carbon, phosphorus, sulfur — can't be explained by alternative non-biological hypotheses. NASA Associate Administrator Nicky Fox makes the announcement. The paper is peer-reviewed and published in <em>Nature</em>.
+      </div>
+      <div class="card-cite">// Nature; NASA briefing Sep 10, 2025 — Nicky Fox, NASA HQ</div>
+    </div>
+  </div>
+
+  <div class="event mixed">
+    <div class="card">
+      <div class="card-meta">
+        <span class="card-date">OCT 17–20, 2025</span>
+        <span class="card-tag tag-sci">Science — UAP</span>
+      </div>
+      <div class="card-title">Villarroel/Bruehl: 1950s Palomar Transients Correlated with Nuclear Tests &amp; UAP Reports <span class="nell-flag">Phase 2</span></div>
+      <div class="card-body">
+        Two peer-reviewed papers (<em>Scientific Reports</em> and <em>Publications of the Astronomical Society of the Pacific</em>) analyze 107,875+ transient light flashes in the pre-Sputnik Palomar Sky Survey (1949–1957). Key findings: <strong>transients are 45% more likely within 24 hours of a nuclear test</strong>; an 8.5% increase in transients correlates with daily UAP reports; one-third of transients are absent in Earth's shadow — consistent with flat reflective objects in high orbit. The aligned multiple-transient events on July 27, 1952 coincide with the famous Washington D.C. UAP sightings. This is the first peer-reviewed archival astronomical evidence linking UAP to physical objects in Earth's orbital space prior to Sputnik.
+      </div>
+      <div class="card-cite">// Scientific Reports 15, 34125 (Oct 20, 2025); PASP Vol.137 (Oct 17, 2025) — Bruehl &amp; Villarroel et al.</div>
+    </div>
+    <div class="event-node"><div class="node-dot"></div></div>
+    <div class="event-spacer"></div>
+  </div>
+
+  <div class="event sci">
+    <div class="event-spacer"></div>
+    <div class="event-node"><div class="node-dot"></div></div>
+    <div class="card">
+      <div class="card-meta">
+        <span class="card-date">DEC 2025</span>
+        <span class="card-tag tag-sci">Science — Astrobiology</span>
+      </div>
+      <div class="card-title">Bennu: Ribose, Glucose, and "Space Gum" — All RNA Components Present</div>
+      <div class="card-body">
+        Three new papers in <em>Nature Geoscience</em> and <em>Nature Astronomy</em> reveal that Bennu contains <strong>ribose</strong> (the sugar backbone of RNA), <strong>glucose</strong> (life's universal energy currency), and an unprecedented polymer "space gum" — a scaffold material that may have organized smaller molecules into prebiotic complexity. Researcher Yoshihiro Furukawa: "The new discovery of ribose means that all of the components required to form RNA are present in Bennu."
+      </div>
+      <div class="card-cite">// Nature Geoscience &amp; Nature Astronomy, Dec 2025; Tohoku University / NASA</div>
+    </div>
+  </div>
+
+  <!-- 2026 -->
+  <div class="year-marker"><span class="year-label">2026 — NOW</span></div>
+
+  <div class="event sci">
+    <div class="card">
+      <div class="card-meta">
+        <span class="card-date">FEB 4, 2026</span>
+        <span class="card-tag tag-sci">Science — Mars</span>
+      </div>
+      <div class="card-title">NASA: Non-Biological Processes Can't Fully Explain Mars Organics <span class="nell-flag">Phase 2→3</span></div>
+      <div class="card-body">
+        A NASA Goddard team led by Alexander Pavlov publishes in <em>Astrobiology</em> that the abundance of long-chain alkanes found in the Cumberland mudstone cannot be accounted for by known non-biological sources (meteorite delivery, abiotic chemistry). <strong>The paper concludes it is "reasonable to consider" that living organisms contributed to these molecules.</strong> This stops short of claiming life confirmed — but constitutes a major evidentiary shift in the scientific literature.
+      </div>
+      <div class="card-cite">// Astrobiology, Feb 4, 2026; NASA Goddard — Alexander Pavlov et al.</div>
+    </div>
+    <div class="event-node"><div class="node-dot"></div></div>
+    <div class="event-spacer"></div>
+  </div>
+
+  <div class="event nhi">
+    <div class="event-spacer"></div>
+    <div class="event-node"><div class="node-dot" style="border-color:var(--warn);animation:pulse 1.2s ease-in-out infinite;"></div></div>
+    <div class="card" style="border-color:rgba(239,83,80,0.3);">
+      <div class="card-meta">
+        <span class="card-date">FEB 20, 2026</span>
+        <span class="card-tag" style="background:rgba(239,83,80,0.12);color:var(--warn);border:1px solid rgba(239,83,80,0.3);">Critical Juncture</span>
+        <span class="card-tag tag-gov">Government</span>
+      </div>
+      <div class="card-title">Trump Pledges UAP Record Release — Hegseth Signals Pentagon Compliance <span class="nell-flag">Phase 1→2</span></div>
+      <div class="card-body">
+        President Trump publicly pledges to direct release of U.S. government UAP files, with Defense Secretary Hegseth confirming the Pentagon will be "in full compliance with that executive order." AARO's caseload has now grown to over <strong>2,000 UAP reports</strong> — up from 1,600 in late 2024. However, AARO has still not published its 2025 annual report nor the second volume of its congressionally mandated history report. Christopher Mellon: <em>"This might be a consequential moment, but the impact will depend on the follow-through."</em>
+      </div>
+      <div class="card-cite">// DefenseScoop, Feb 20–25, 2026; Hegseth "Arsenal of Freedom" Tour, Colorado</div>
+    </div>
+  </div>
+
+  <!-- 3I/ATLAS SECTION -->
+  <div class="section-divider">
+    <span class="section-label" style="background:rgba(0,191,165,0.1);color:var(--sci);border:1px solid var(--sci-dim);">
+      ✦ 3I/ATLAS — THE INTERSTELLAR VISITOR ✦
+    </span>
+  </div>
+
+  <div class="event sci">
+    <div class="card">
+      <div class="card-meta">
+        <span class="card-date">JUL 1, 2025</span>
+        <span class="card-tag tag-sci">Interstellar</span>
+      </div>
+      <div class="card-title">3I/ATLAS Confirmed: Third Interstellar Object Ever Detected <span class="nell-flag">Context Shift</span></div>
+      <div class="card-body">
+        The ATLAS survey telescope in Chile reports a fast-moving object later confirmed as only the <strong>third interstellar object ever discovered</strong> — following 'Oumuamua (2017) and Borisov (2019). Its trajectory, traced backwards, originates from beyond the solar system in the direction of Sagittarius near the Milky Way's Galactic Center. Moving at over 137,000 mph, it could not have been accelerated by any solar system body. Astronomers confirm it may be <strong>older than the Earth itself</strong> — possibly billions of years old, a frozen relic from another stellar system. Every major NASA telescope is immediately redirected to observe it.
+      </div>
+      <div class="card-cite">// ATLAS/Chile discovery report, Jul 1, 2025; NASA science.nasa.gov; pre-discovery observations traced to Jun 14</div>
+    </div>
+    <div class="event-node"><div class="node-dot"></div></div>
+    <div class="event-spacer"></div>
+  </div>
+
+  <div class="event sci">
+    <div class="event-spacer"></div>
+    <div class="event-node"><div class="node-dot"></div></div>
+    <div class="card">
+      <div class="card-meta">
+        <span class="card-date">AUG–OCT 2025</span>
+        <span class="card-tag tag-sci">Interstellar Chemistry</span>
+      </div>
+      <div class="card-title">SPHEREx &amp; ALMA Detect Organic Molecules — Life's Precursors From Another Star</div>
+      <div class="card-body">
+        NASA's SPHEREx infrared telescope and the ALMA array identify organic compounds emanating from 3I/ATLAS including <strong>methanol, hydrogen cyanide (HCN), methane, carbon dioxide, and carbon chain molecules C₂ and C₃</strong>. Crucially, the CH₃OH/HCN ratio is among the highest ever measured in any comet — solar system or interstellar. ALMA confirms HCN on September 12–15. Meanwhile, ESA's JUICE spacecraft captures detailed imagery revealing an egg-shaped nucleus surrounded by a billowing coma and sweeping tail — the first detailed portrait of an interstellar body in close proximity.
+      </div>
+      <div class="card-cite">// arXiv:2601.16983 (Hoogendam et al., Jan 2026); ALMA preprint Aug-Oct 2025; ESA JUICE; iFlScience Dec 2025</div>
+    </div>
+  </div>
+
+  <div class="event sci">
+    <div class="card">
+      <div class="card-meta">
+        <span class="card-date">NOV–DEC 2025</span>
+        <span class="card-tag tag-sci">Interstellar</span>
+      </div>
+      <div class="card-title">3I/ATLAS Passes Earth, Erupts Post-Perihelion — Water Detected From Another Star <span class="nell-flag">Phase 2</span></div>
+      <div class="card-body">
+        The comet passes within 1.8 AU of Earth on December 19, 2025 — the closest it gets to our planet. Auburn University researchers using NASA's Swift Observatory detect <strong>the first-ever water (as hydroxyl gas) from an interstellar object</strong>, blasting out at 40 kg/second while still far from the Sun. A dramatic post-perihelion eruption brightens the coma significantly as solar heat penetrates deep into the nucleus, releasing subsurface ice mixed with organics. SPHEREx's December 8–15 observations reveal a newly diverse coma with C-H organic features, CN, water, and refractory dust. ESA's Europa Clipper, immersed in 3I/ATLAS's ion tail, collects data from within the comet itself.
+      </div>
+      <div class="card-cite">// Auburn University / Swift Observatory, Feb 11, 2026; SPHEREx arXiv:2601.06759; BBC Sky at Night, Feb 2026</div>
+    </div>
+    <div class="event-node"><div class="node-dot"></div></div>
+    <div class="event-spacer"></div>
+  </div>
+
+  <div class="event sci">
+    <div class="event-spacer"></div>
+    <div class="event-node"><div class="node-dot" style="border-color:var(--gold);"></div></div>
+    <div class="card" style="border-color:rgba(255,213,79,0.25);">
+      <div class="card-meta">
+        <span class="card-date">MAR 16, 2026 — UPCOMING</span>
+        <span class="card-tag" style="background:rgba(255,213,79,0.1);color:var(--gold);border:1px solid rgba(255,213,79,0.3);">Imminent Event</span>
+      </div>
+      <div class="card-title">3I/ATLAS Jupiter Flyby — Final Close Observation Opportunity</div>
+      <div class="card-body">
+        3I/ATLAS makes its closest approach to Jupiter at 0.358 AU — Jupiter's immense tidal field may trigger fresh outbursts, fracturing the nucleus and exposing new subsurface material. Scientists are investigating whether NASA's Juno spacecraft can image the comet at close range. <strong>After this, 3I/ATLAS accelerates permanently out of the solar system</strong> — en route to the outer Oort cloud (~year 2189) and eventually interstellar space (~8,000 years). It will never return. Whatever it tells us, we have one shot. Astrophysicist Jewitt: <em>"It's like glimpsing a rifle bullet for a thousandth of a second."</em>
+      </div>
+      <div class="card-cite">// 3i-atlas.net update Feb 2026; Wikipedia orbital data; Universe Today Mar 2026</div>
+    </div>
+  </div>
+
+  <!-- WHY 3I/ATLAS MATTERS FOR YOUR ARGUMENT -->
+  <div class="section-divider">
+    <span class="section-label" style="background:rgba(171,71,188,0.1);color:var(--nhi);border:1px solid var(--nhi-dim);">
+      ✦ LOOKING FORWARD — PROJECTED TIMELINE ✦
+    </span>
+  </div>
+
+  <div class="year-marker"><span class="year-label" style="color:var(--nhi);border-color:var(--nhi-dim);">2026 →</span></div>
+
+  <div class="event gov">
+    <div class="event-spacer"></div>
+    <div class="event-node"><div class="node-dot" style="border-color:var(--disc);"></div></div>
+    <div class="card" style="border-color:var(--disc-dim);">
+      <div class="card-meta">
+        <span class="card-date">2026 — PROJECTED</span>
+        <span class="card-tag tag-disc">Projected</span>
+      </div>
+      <div class="card-title">Trump UAP Executive Order &amp; AARO Record Dump — Phase 1 Completion</div>
+      <div class="card-body">
+        President Trump's pledged executive directive — if followed through — would compel multiple intelligence agencies to declassify and release UAP records. AARO's 2025 annual report and History Volume 2 are both overdue and could be released under this order. Mellon and Gallaudet warn that <strong>the executive has authority to move faster than AARO's bureaucratic pace</strong>. This would constitute the most significant government-initiated UAP document release since the JFK records — and would directly fulfill Nell's Phase 1 "Demonstrate Existence" objective at the public and governmental level.
+      </div>
+      <div class="card-cite">// DefenseScoop Feb 2026; Nell Campaign Plan Phase 1 projection</div>
+    </div>
+  </div>
+
+  <div class="event sci">
+    <div class="card">
+      <div class="card-meta">
+        <span class="card-date">2026–2027 — PROJECTED</span>
+        <span class="card-tag tag-sci">Projected Science</span>
+      </div>
+      <div class="card-title">3I/ATLAS Full Science Results — A Cosmological Perspective Shift</div>
+      <div class="card-body">
+        JUICE instrument teams meet in late March 2026 to compare interstellar data. Full spectroscopic, isotopic, and compositional analysis will be published over 2026–2027. If organic compound profiles from 3I/ATLAS mirror those in Bennu and Martian mudstones, this would establish <strong>chemical universality across stellar systems</strong> — meaning the ingredients for life travel between stars as a matter of routine cosmic chemistry. The isotopic D/H ratio in 3I/ATLAS water already differs from both solar system comets and interstellar medium values, placing it in an entirely new chemical category. This is not fringe science — it is the published output of Hubble, JWST, JUICE, SPHEREx, ALMA, and TESS acting in concert.
+      </div>
+      <div class="card-cite">// ESA JUICE team (Mar 2026 meeting); SPHEREx; Universe Today Mar 2026</div>
+    </div>
+    <div class="event-node"><div class="node-dot"></div></div>
+    <div class="event-spacer"></div>
+  </div>
+
+  <div class="event sci">
+    <div class="event-spacer"></div>
+    <div class="event-node"><div class="node-dot"></div></div>
+    <div class="card">
+      <div class="card-meta">
+        <span class="card-date">2027–2030 — PROJECTED</span>
+        <span class="card-tag tag-sci">Projected Science</span>
+      </div>
+      <div class="card-title">Mars Sample Return — The Definitive Biological Test <span class="nell-flag">Phase 3</span></div>
+      <div class="card-body">
+        NASA/ESA's Mars Sample Return mission is designed to bring Perseverance's cached samples — including material from Cheyava Falls — to Earth for analysis by instruments orders of magnitude more sensitive than anything aboard a rover. If organic biosignatures survive the return and are confirmed, this would constitute the first peer-reviewed, independently replicated evidence of extraterrestrial life in Earth laboratories. Nell's Phase 3 ("Characterize Performance") runs to 2030 — the same window in which this confirmation, if it comes, would land. The implications for the NHI question are profound: life-bearing chemistry is now documented in Bennu, Mars, and an interstellar object in the same five-year window.
+      </div>
+      <div class="card-cite">// Planetary Society / NASA MSR program; ScienceDaily Mar 2025</div>
+    </div>
+  </div>
+
+  <div class="event nhi">
+    <div class="card">
+      <div class="card-meta">
+        <span class="card-date">2026–2030 — PROJECTED</span>
+        <span class="card-tag tag-nhi">Projected</span>
+      </div>
+      <div class="card-title">Ruvy Sighting Convergence — The "Cosmological Wake-Up" Window <span class="nell-flag">Phase 2–3</span></div>
+      <div class="card-body">
+        The convergence of 3I/ATLAS (life's chemistry from another star system), Bennu (RNA precursors common in the early solar system), Mars (possible ancient biosignatures), and Villarroel's pre-Sputnik orbital transients creates an unprecedented public and scientific context. Nell's slide describes Phase 3 as "Characterize Performance" — and the philosophical framework needed to absorb NHI contact requires exactly this kind of graduated scientific normalization of life beyond Earth. <strong>3I/ATLAS, in particular, may be the single most powerful public "aperture opener"</strong> — a tangible, real-time, beautifully visible object from outside our solar system that carries the chemistry of life, observed by 20+ NASA missions simultaneously. It is arguably the first direct evidence that what exists "out there" is not sterile.
+      </div>
+      <div class="card-cite">// Nell Sol Foundation Campaign Plan; Nell SALT 2024 remarks; projected synthesis</div>
+    </div>
+    <div class="event-node"><div class="node-dot"></div></div>
+    <div class="event-spacer"></div>
+  </div>
+
+  <div class="year-marker"><span class="year-label" style="color:var(--nhi);border-color:var(--nhi-dim);">~2030</span></div>
+
+  <div class="event mixed">
+    <div class="event-spacer"></div>
+    <div class="event-node"><div class="node-dot" style="border-color:var(--gold);"></div></div>
+    <div class="card" style="border-color:rgba(255,213,79,0.25);">
+      <div class="card-meta">
+        <span class="card-date">TARGET — 2030</span>
+        <span class="card-tag" style="background:rgba(255,213,79,0.1);color:var(--gold);border:1px solid rgba(255,213,79,0.3);">Nell Strategic Endpoint</span>
+      </div>
+      <div class="card-title">Nell's Phase 3–4 Transition: "Characterize → Determine Nature" — The Strategic Endstate</div>
+      <div class="card-body">
+        Nell's campaign plan targets 2030 as the transition from Phase 3 (Characterize Performance) to Phase 4 (Determine Nature). His "Strategic Endstate" from the slide: <strong>① Proper Oversight Restored, ② Catastrophic Disclosure Avoided, ③ Scientific Understanding Advanced.</strong> The trajectory visible today — UAP legislation, Mars biosignatures, Bennu's RNA building blocks, 3I/ATLAS's interstellar organics, and Villarroel's archival evidence — maps precisely onto the "Scientific Research" line-of-effort (C) in Nell's diagram. The question is whether the philosophical, institutional, and governmental frameworks keep pace with the empirical evidence.
+      </div>
+      <div class="card-cite">// Nell Campaign Plan slide; Sol Foundation Symposium I (Nov 2023)</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 3I/ATLAS WHY IT MATTERS BOX -->
+<div style="position:relative;z-index:10;padding:0 30px 50px;max-width:1100px;margin:0 auto;">
+<div class="thesis-box" style="border-color:rgba(0,191,165,0.3);">
+  <h2 style="color:var(--sci)">// WHY 3I/ATLAS MATTERS FOR YOUR ARGUMENT</h2>
+  <div class="thesis-cols">
+    <div class="thesis-col" style="background:rgba(0,191,165,0.05);border:1px solid var(--sci-dim);">
+      <h3 style="color:var(--sci)">The "Cosmic Aperture" Argument</h3>
+      <ul>
+        <li>3I/ATLAS is the first interstellar object observed carrying life's prebiotic chemistry (methanol, HCN, water, C-H organics)</li>
+        <li>It originated from a completely different stellar system — proving these ingredients are not unique to our solar neighborhood</li>
+        <li>It is older than Earth — meaning this chemistry has been circulating in the galaxy for billions of years</li>
+        <li>Combine with Bennu (same chemistry in our own asteroid belt) + Mars (same chemistry preserved in ancient mudstone): <strong>the ingredients for life appear to be a cosmic constant</strong></li>
+      </ul>
+    </div>
+    <div class="thesis-col" style="background:rgba(171,71,188,0.05);border:1px solid var(--nhi-dim);">
+      <h3 style="color:var(--nhi)">The Panspermia &amp; NHI Context</h3>
+      <ul>
+        <li>If life's building blocks routinely travel between star systems via interstellar objects, then the probability of life elsewhere approaches certainty</li>
+        <li>3I/ATLAS passed through the inner solar system — the same region where Villarroel's 1950s transients appeared in pre-Sputnik sky plates</li>
+        <li>Avi Loeb and colleagues published a paper speculating on anomalous properties — mainstream scientists pushed back, but the question was asked publicly in peer-reviewed preprint</li>
+        <li>The ESA Comet Interceptor mission is now on standby specifically to intercept the next interstellar object at close range</li>
+      </ul>
+    </div>
+    <div class="thesis-col" style="background:rgba(30,136,229,0.05);border:1px solid var(--gov-dim);">
+      <h3 style="color:var(--gov)">The Public Consciousness Argument</h3>
+      <ul>
+        <li>20+ NASA missions redirected simultaneously — the largest coordinated interstellar observation in history</li>
+        <li>Images from JUICE, Hubble, JWST, SPHEREx, TESS, Parker Solar Probe, Europa Clipper — all publicly released</li>
+        <li>For the first time, billions of people on Earth watched something from another star system pass through our neighborhood in real-time</li>
+        <li>This is the "normalization infrastructure" Nell's Phase 2 requires: <strong>acclimatizing the public to the universe as inhabited, active, and connected</strong></li>
+      </ul>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- DEEPER LORE SECTION -->
+<div style="position:relative;z-index:10;padding:0 30px 50px;max-width:1100px;margin:0 auto;">
+
+  <div class="section-divider" style="margin-bottom:30px;">
+    <span class="section-label" style="background:rgba(255,213,79,0.08);color:var(--gold);border:1px solid rgba(255,213,79,0.3);font-size:13px;padding:10px 24px;">
+      ✦ DEEPER LORE — THE SCIENTIFIC UNDERGROUND ✦
+    </span>
+  </div>
+
+  <p style="text-align:center;font-style:italic;color:var(--muted);font-size:13px;margin-bottom:36px;max-width:700px;margin-left:auto;margin-right:auto;">
+    These figures occupy the contested territory between insider knowledge and unverifiable claim. None are peer-reviewed in their UAP-specific assertions — but each has real credentials in adjacent fields, and the ideas they gestured at in the 1990s and 2000s are increasingly rhyming with what mainstream science is now confirming.
+  </p>
+
+  <!-- CORSO -->
+  <div class="thesis-box" style="margin-bottom:28px;border-color:rgba(30,136,229,0.25);">
+    <h2 style="color:var(--gov);font-size:13px;">
+      <span style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);margin-right:12px;">01 //</span>
+      LT. COL. PHILIP J. CORSO — "THE DAY AFTER ROSWELL" (1997)
+    </h2>
+    <div class="thesis-cols" style="margin-top:16px;">
+      <div style="flex:2;min-width:280px;">
+        <p style="font-size:12.5px;line-height:1.7;color:var(--text);margin-bottom:12px;">
+          <strong style="color:var(--bright);">Who he was:</strong> Verifiable career Army intelligence officer. Served on Eisenhower's National Security Council 1953–1957. Chief of the Pentagon's Foreign Technology Desk under Lt. Gen. Arthur Trudeau 1961–1963. Retired as Lt. Colonel (he claimed Colonel — unverified). Real credentials, real position, real access to classified R&D.
+        </p>
+        <p style="font-size:12.5px;line-height:1.7;color:var(--text);margin-bottom:12px;">
+          <strong style="color:var(--bright);">The claim:</strong> In <em>The Day After Roswell</em> (1997 NYT bestseller, ghostwritten with William Birnes), Corso claimed he personally managed a clandestine program to "seed" recovered Roswell craft technology to US defense contractors — Bell Labs, Hughes Aircraft, IBM, Dow Corning — without their knowledge of the materials' origin. Technologies he attributed to this reverse-engineering: integrated circuits, fiber optics, night vision, Kevlar fibers, and particle beam weapons.
+        </p>
+        <p style="font-size:12.5px;line-height:1.7;color:var(--text);">
+          <strong style="color:var(--bright);">The critique:</strong> The book contains verifiable factual errors (misdated events, misidentified weapons systems, a known hoax photo captioned as genuine). Skeptics note that all the "seeded" technologies have documented independent development trajectories. He places himself as a heroic central figure in events where no corroborating record exists. Brad Sparks in the <em>Skeptical Inquirer</em> identified him as a "self-aggrandizing" rather than dishonest figure — a meaningful distinction.
+        </p>
+      </div>
+      <div style="flex:1;min-width:220px;">
+        <div style="background:rgba(30,136,229,0.06);border:1px solid var(--gov-dim);border-radius:2px;padding:14px;">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--gov);letter-spacing:2px;margin-bottom:10px;">WHY IT RHYMES NOW</div>
+          <ul style="list-style:none;padding:0;">
+            <li style="font-size:12px;color:var(--text);padding:5px 0 5px 14px;position:relative;border-bottom:1px solid rgba(255,255,255,0.04);">
+              <span style="position:absolute;left:0;color:var(--gov);">›</span>
+              David Grusch's 2023 congressional testimony describes almost exactly what Corso claimed: a covert reverse-engineering program seeding exotic materials to defense contractors
+            </li>
+            <li style="font-size:12px;color:var(--text);padding:5px 0 5px 14px;position:relative;border-bottom:1px solid rgba(255,255,255,0.04);">
+              <span style="position:absolute;left:0;color:var(--gov);">›</span>
+              The AARO-rejected "Kona Blue" DHS proposal (2010s) was explicitly about reverse-engineering recovered extraterrestrial craft — Corso's story structure, institutionally formalized
+            </li>
+            <li style="font-size:12px;color:var(--text);padding:5px 0 5px 14px;position:relative;">
+              <span style="position:absolute;left:0;color:var(--gov);">›</span>
+              Corso's description of craft propulsion — displacing gravity via magnetic wave propagation — loosely anticipates the "metric engineering" framework Puthoff and Davis would later develop formally
+            </li>
+          </ul>
+          <div style="margin-top:12px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted);">CREDIBILITY: LOW-MEDIUM // CULTURAL WEIGHT: HIGH</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PUTHOFF -->
+  <div class="thesis-box" style="margin-bottom:28px;border-color:rgba(0,191,165,0.25);">
+    <h2 style="color:var(--sci);font-size:13px;">
+      <span style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);margin-right:12px;">02 //</span>
+      DR. HAL PUTHOFF — PHYSICIST, SRI, EarthTech, TTSA
+    </h2>
+    <div class="thesis-cols" style="margin-top:16px;">
+      <div style="flex:2;min-width:280px;">
+        <p style="font-size:12.5px;line-height:1.7;color:var(--text);margin-bottom:12px;">
+          <strong style="color:var(--bright);">Who he is:</strong> PhD in Electrical Engineering from Stanford. Legitimate theoretical physicist specializing in quantum vacuum states, zero-point energy, and fundamental electrodynamics. Director of the Institute for Advanced Studies at Austin (EarthTech International). Has published peer-reviewed physics papers. Former Naval intelligence officer. This is not a fringe figure — he is a credentialed scientist who chose to investigate unconventional territory.
+        </p>
+        <p style="font-size:12.5px;line-height:1.7;color:var(--text);margin-bottom:12px;">
+          <strong style="color:var(--bright);">Remote Viewing (1972–1995):</strong> Co-founded the CIA/DIA-funded remote viewing program at Stanford Research Institute (SRI) — later known as Project STARGATE. Worked with Ingo Swann and Pat Price. Published experimental results in <em>Nature</em> (1974). The program ran for 23 years and its unclassified results showed statistically significant above-chance performance. The mechanism remains unknown and contested, but the program was real, funded, and operationally used.
+        </p>
+        <p style="font-size:12.5px;line-height:1.7;color:var(--text);margin-bottom:12px;">
+          <strong style="color:var(--bright);">UAP Physics — "Metric Engineering":</strong> In 2008, Puthoff led the AAWSAP/AATIP contract for Bigelow Aerospace, commissioning 38 technical papers on advanced physics relevant to UAP — warp drives, traversable wormholes, dark energy propulsion, spacetime metric engineering. These became the DIA's Defense Intelligence Reference Documents (DIRDs). His theoretical framework: UAP propulsion may involve engineering the local metric of spacetime itself — locally curving space to eliminate inertia rather than pushing against it. This is legitimate (if speculative) physics descended from Alcubierre's 1994 warp drive paper.
+        </p>
+        <p style="font-size:12.5px;line-height:1.7;color:var(--text);">
+          <strong style="color:var(--bright);">The 2004 disclosure meeting:</strong> Puthoff states he was invited to a Washington briefing discussing the societal impact of disclosing recovered extraterrestrial craft and non-human bodies allegedly held by the US, Russia, and China. He confirmed that CIA, DIA, and Pentagon representatives broadly agreed in 2004 that societal risks of UAP disclosure were too great — exactly what he stated at the Sol Foundation Symposium alongside Nell in November 2023.
+        </p>
+      </div>
+      <div style="flex:1;min-width:220px;">
+        <div style="background:rgba(0,191,165,0.06);border:1px solid var(--sci-dim);border-radius:2px;padding:14px;">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--sci);letter-spacing:2px;margin-bottom:10px;">THE SCIENCE BRIDGE</div>
+          <ul style="list-style:none;padding:0;">
+            <li style="font-size:12px;color:var(--text);padding:5px 0 5px 14px;position:relative;border-bottom:1px solid rgba(255,255,255,0.04);">
+              <span style="position:absolute;left:0;color:var(--sci);">›</span>
+              Zero-point energy / quantum vacuum: Puthoff's legitimate published work on ZPE as a source of inertia and gravitation is the theoretical bridge to "gravity cancellation" propulsion models
+            </li>
+            <li style="font-size:12px;color:var(--text);padding:5px 0 5px 14px;position:relative;border-bottom:1px solid rgba(255,255,255,0.04);">
+              <span style="position:absolute;left:0;color:var(--sci);">›</span>
+              His DIRD papers were classified but exist — senators have read them. The Navy's UAP patent applications (2018–2019) describe nearly identical physics to Puthoff's metric engineering framework
+            </li>
+            <li style="font-size:12px;color:var(--text);padding:5px 0 5px 14px;position:relative;">
+              <span style="position:absolute;left:0;color:var(--sci);">›</span>
+              Puthoff's remote viewing result in <em>Nature</em> (1974) remains one of the most cited anomalous cognition experiments — never fully replicated, never fully debunked
+            </li>
+          </ul>
+          <div style="margin-top:12px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted);">CREDIBILITY: HIGH (physics) // MEDIUM (UAP claims)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ERIC DAVIS -->
+  <div class="thesis-box" style="margin-bottom:28px;border-color:rgba(171,71,188,0.25);">
+    <h2 style="color:var(--nhi);font-size:13px;">
+      <span style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);margin-right:12px;">03 //</span>
+      DR. ERIC W. DAVIS — ASTROPHYSICIST, EarthTech, THE WILSON-DAVIS MEMO
+    </h2>
+    <div class="thesis-cols" style="margin-top:16px;">
+      <div style="flex:2;min-width:280px;">
+        <p style="font-size:12.5px;line-height:1.7;color:var(--text);margin-bottom:12px;">
+          <strong style="color:var(--bright);">Who he is:</strong> PhD in Astrophysics from the University of Arizona. Senior Science Advisor at EarthTech International (Puthoff's institute). Consultant to the US Air Force Research Lab (AFRL), DoD, DoE, and NASA. Co-authored technical papers on wormholes, warp drives, and exotic propulsion. Published a USAF-commissioned technical report on teleportation physics in 2004. A real scientist operating at the legitimate edge of speculative physics.
+        </p>
+        <p style="font-size:12.5px;line-height:1.7;color:var(--text);margin-bottom:12px;">
+          <strong style="color:var(--bright);">The Wilson-Davis Memo (2002 / surfaced 2019):</strong> A 15-page document purportedly written by Davis describing a private conversation with Vice Admiral Thomas Wilson (then-Deputy Director of Defense Intelligence). In it, Wilson allegedly describes discovering a covert UAP reverse-engineering program at a defense contractor in 1997, being denied access despite his rank, and being threatened with career consequences if he pursued it further. The document was found in the estate of astronaut Edgar Mitchell. It was entered into the congressional record during the May 2022 UAP hearing. Davis said "no comment." Wilson called it "pure fiction." Neither has fully explained it.
+        </p>
+        <p style="font-size:12.5px;line-height:1.7;color:var(--text);">
+          <strong style="color:var(--bright);">Public statements:</strong> Davis has repeatedly and publicly stated — outside the memo — that UAP craft have crashed on Earth, been retrieved by the US government, and are being studied in a secret reverse-engineering program. He claims to have personally briefed the Senate Armed Services Committee and Senate Intelligence Committee on this program. These are not anonymous claims — they are on record, attached to a name and CV.
+        </p>
+      </div>
+      <div style="flex:1;min-width:220px;">
+        <div style="background:rgba(171,71,188,0.06);border:1px solid var(--nhi-dim);border-radius:2px;padding:14px;">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--nhi);letter-spacing:2px;margin-bottom:10px;">THE CRITICAL THREAD</div>
+          <ul style="list-style:none;padding:0;">
+            <li style="font-size:12px;color:var(--text);padding:5px 0 5px 14px;position:relative;border-bottom:1px solid rgba(255,255,255,0.04);">
+              <span style="position:absolute;left:0;color:var(--nhi);">›</span>
+              Davis + Puthoff + Grusch form a three-layer corroboration: outsider physicist → insider intelligence officer → congressional testimony. Each adds institutional weight to the same core claim
+            </li>
+            <li style="font-size:12px;color:var(--text);padding:5px 0 5px 14px;position:relative;border-bottom:1px solid rgba(255,255,255,0.04);">
+              <span style="position:absolute;left:0;color:var(--nhi);">›</span>
+              The Wilson-Davis memo's congressional entry means it is now part of the official record — regardless of authenticity, the claim is preserved in the US legislative archive
+            </li>
+            <li style="font-size:12px;color:var(--text);padding:5px 0 5px 14px;position:relative;">
+              <span style="position:absolute;left:0;color:var(--nhi);">›</span>
+              Davis's USAF teleportation report (2004) is a real, declassified document — it shows DoD was formally commissioning exotic physics research from him at the same time the memo events allegedly occurred
+            </li>
+          </ul>
+          <div style="margin-top:12px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted);">CREDIBILITY: HIGH (physics) // CONTESTED (Wilson memo)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BURISCH -->
+  <div class="thesis-box" style="margin-bottom:28px;border-color:rgba(245,124,0,0.2);">
+    <h2 style="color:var(--disc);font-size:13px;">
+      <span style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);margin-right:12px;">04 //</span>
+      DAN BURISCH (CRAIN) — "GANESH PARTICLES" &amp; SILICATE PROTO-LIFE
+    </h2>
+    <div class="thesis-cols" style="margin-top:16px;">
+      <div style="flex:2;min-width:280px;">
+        <p style="font-size:12.5px;line-height:1.7;color:var(--text);margin-bottom:12px;">
+          <strong style="color:var(--bright);">Who he claims to be:</strong> Claimed microbiologist with a PhD from UNLV, work at S-4 (the Papoose Lake facility near Area 51), direct interaction with an extraterrestrial biological entity called "J-Rod," and discovery of self-replicating silicate-based micro-structures in desert environments he dubbed "Ganesh particles." UNLV has no record of his claimed doctoral work. His credentials are essentially unverifiable and have been disputed by serious UAP researchers including Bill Hamilton and others in the community.
+        </p>
+        <p style="font-size:12.5px;line-height:1.7;color:var(--text);margin-bottom:12px;">
+          <strong style="color:var(--bright);">The Ganesh particle claim:</strong> Burisch described finding nano-scale self-organizing silicate structures in Utah desert soils — possibly related to panspermia delivery via meteoric silicate dust — that appeared to exhibit proto-biological self-replication behavior. He connected this to the idea that silicon-based or silicon-assisted chemistry might represent a precursor or parallel to carbon-based life, potentially originating in the interstellar medium and deposited via impact events.
+        </p>
+        <p style="font-size:12.5px;line-height:1.7;color:var(--text);">
+          <strong style="color:var(--bright);">The interesting kernel:</strong> The specific claim about Utah desert silicates is unverified. But the conceptual territory — silicate mineral surfaces as scaffolding for prebiotic chemistry, panspermia via interstellar dust, non-carbon structural chemistry — is real and active science. Bennu's sample is dominated by serpentine clay (a silicate mineral) and the surprise phosphate discovery hints at aqueous silicate chemistry as the assembly environment for the organic molecules found there. The "scaffold" idea in Burisch's Ganesh particles rhymes with the "space gum" polymer found in Bennu's sample in December 2025.
+        </p>
+      </div>
+      <div style="flex:1;min-width:220px;">
+        <div style="background:rgba(245,124,0,0.06);border:1px solid var(--disc-dim);border-radius:2px;padding:14px;">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--disc);letter-spacing:2px;margin-bottom:10px;">HOW TO USE THIS</div>
+          <ul style="list-style:none;padding:0;">
+            <li style="font-size:12px;color:var(--text);padding:5px 0 5px 14px;position:relative;border-bottom:1px solid rgba(255,255,255,0.04);">
+              <span style="position:absolute;left:0;color:var(--disc);">›</span>
+              Frame as: "Whether or not you believe Burisch, the idea he was pointing at — silicate mineral surfaces as an assembly environment for proto-biological chemistry — is now mainstream astrobiology"
+            </li>
+            <li style="font-size:12px;color:var(--text);padding:5px 0 5px 14px;position:relative;border-bottom:1px solid rgba(255,255,255,0.04);">
+              <span style="position:absolute;left:0;color:var(--disc);">›</span>
+              Bennu's serpentine clay + magnesium-sodium phosphate is chemically the kind of silicate-aqueous environment Burisch was gesturing at — except now it's in <em>Nature</em>
+            </li>
+            <li style="font-size:12px;color:var(--text);padding:5px 0 5px 14px;position:relative;">
+              <span style="position:absolute;left:0;color:var(--disc);">›</span>
+              The "self-organizing scaffold" concept maps onto the "space gum" polymer finding: a prebiotic material that concentrates and organizes smaller organics — a structural parallel to Burisch's Ganesh particle description
+            </li>
+          </ul>
+          <div style="margin-top:12px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted);">CREDIBILITY: LOW // CONCEPTUAL RESONANCE: MEDIUM-HIGH</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SYNTHESIS -->
+  <div class="thesis-box" style="border-color:rgba(255,213,79,0.3);">
+    <h2 style="color:var(--gold);font-size:13px;">
+      <span style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);margin-right:12px;">05 //</span>
+      THE UNDERGROUND-TO-MAINSTREAM PIPELINE — HOW LORE BECOMES SCIENCE
+    </h2>
+    <div style="margin-top:16px;">
+      <p style="font-size:12.5px;line-height:1.8;color:var(--text);margin-bottom:16px;">
+        There is a consistent pattern in UAP history: <strong style="color:var(--bright);">claims made by contested or marginalized figures get dismissed for 20–30 years, then institutional science arrives at the same coordinates from a different direction.</strong> This is your strongest argument for including these figures in a podcast context — not as confirmed sources, but as <em>historically predictive</em> voices.
+      </p>
+      <div class="thesis-cols">
+        <div style="flex:1;min-width:200px;background:rgba(255,213,79,0.04);border:1px solid rgba(255,213,79,0.2);border-radius:2px;padding:14px;">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--gold);margin-bottom:8px;letter-spacing:2px;">THEN (FRINGE)</div>
+          <ul style="list-style:none;padding:0;">
+            <li style="font-size:12px;color:var(--muted);padding:4px 0 4px 14px;position:relative;"><span style="position:absolute;left:0;">›</span> Corso: crashed craft, seeded technology</li>
+            <li style="font-size:12px;color:var(--muted);padding:4px 0 4px 14px;position:relative;"><span style="position:absolute;left:0;">›</span> Puthoff: spacetime metric engineering</li>
+            <li style="font-size:12px;color:var(--muted);padding:4px 0 4px 14px;position:relative;"><span style="position:absolute;left:0;">›</span> Davis: covert retrieval program briefed to Senate</li>
+            <li style="font-size:12px;color:var(--muted);padding:4px 0 4px 14px;position:relative;"><span style="position:absolute;left:0;">›</span> Burisch: silicate scaffold chemistry, panspermia</li>
+            <li style="font-size:12px;color:var(--muted);padding:4px 0 4px 14px;position:relative;"><span style="position:absolute;left:0;">›</span> Remote viewers: UAP bases on Earth, consciousness interface</li>
+          </ul>
+        </div>
+        <div style="flex:0.2;display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--gold);padding:10px;">→</div>
+        <div style="flex:1;min-width:200px;background:rgba(0,191,165,0.04);border:1px solid var(--sci-dim);border-radius:2px;padding:14px;">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--sci);margin-bottom:8px;letter-spacing:2px;">NOW (INSTITUTIONAL)</div>
+          <ul style="list-style:none;padding:0;">
+            <li style="font-size:12px;color:var(--text);padding:4px 0 4px 14px;position:relative;"><span style="position:absolute;left:0;color:var(--sci);">›</span> Grusch congressional testimony: same structure as Corso's claim</li>
+            <li style="font-size:12px;color:var(--text);padding:4px 0 4px 14px;position:relative;"><span style="position:absolute;left:0;color:var(--sci);">›</span> Navy UAP patents (2018–19): describe Puthoff's metric engineering</li>
+            <li style="font-size:12px;color:var(--text);padding:4px 0 4px 14px;position:relative;"><span style="position:absolute;left:0;color:var(--sci);">›</span> Davis briefed Senate — now Nell briefs Senate, same claims</li>
+            <li style="font-size:12px;color:var(--text);padding:4px 0 4px 14px;position:relative;"><span style="position:absolute;left:0;color:var(--sci);">›</span> Bennu serpentine clay + "space gum" = silicate scaffold chemistry</li>
+            <li style="font-size:12px;color:var(--text);padding:4px 0 4px 14px;position:relative;"><span style="position:absolute;left:0;color:var(--sci);">›</span> Pentagon's STARGATE (declassified 1995) — operational remote viewing</li>
+          </ul>
+        </div>
+      </div>
+      <p style="font-size:12.5px;line-height:1.7;color:var(--muted);margin-top:16px;font-style:italic;">
+        The argument isn't that these men were right about everything. It's that the direction they were pointing — exotic craft, non-human chemistry, consciousness-physics interfaces, covert retrieval programs — is where the arc of institutional disclosure is now bending. <strong style="color:var(--text);">Lore precedes disclosure. It always has.</strong>
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<!-- CONSCIOUSNESS / LEVIN / OBSERVATIONAL GEOMETRY -->
+<div style="position:relative;z-index:10;padding:0 30px 60px;max-width:1100px;margin:0 auto;">
+
+  <div class="section-divider" style="margin-bottom:30px;">
+    <span class="section-label" style="background:rgba(171,71,188,0.08);color:var(--nhi);border:1px solid var(--nhi-dim);font-size:13px;padding:10px 24px;letter-spacing:3px;">
+      ✦ THE APOKALYPSIS — CONSCIOUSNESS, GEOMETRY &amp; THE HUMAN ORGANISM ✦
+    </span>
+  </div>
+
+  <p style="text-align:center;font-style:italic;color:var(--muted);font-size:13px;margin-bottom:36px;max-width:720px;margin-left:auto;margin-right:auto;line-height:1.8;">
+    ἀποκάλυψις (apokalypsis): from ἀπο — "removal of" — and καλύπτω — "to cover, to conceal."<br>
+    Literally: <strong style="color:var(--text);">the uncovering. The removal of the veil. Not destruction — revelation.</strong><br>
+    In formal geometry: the reduction of the quotient group of human ignorance.
+  </p>
+
+  <!-- BLOCK 1: THE GEOMETRIC FRAME -->
+  <div class="thesis-box" style="margin-bottom:28px;border-color:rgba(171,71,188,0.3);">
+    <h2 style="color:var(--nhi);font-size:13px;">
+      <span style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);margin-right:12px;">I //</span>
+      OBSERVATIONAL GEOMETRY — THE FORMAL LANGUAGE OF DISCLOSURE
+    </h2>
+    <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+      <div>
+        <p style="font-size:12.5px;line-height:1.8;color:var(--text);margin-bottom:14px;">
+          In the <strong style="color:var(--bright);">observational geometry framework</strong>, an observation is formally a quotient map:
+        </p>
+        <div style="background:rgba(0,0,0,0.3);border:1px solid var(--nhi-dim);border-radius:2px;padding:16px;margin-bottom:14px;text-align:center;">
+          <span style="font-family:'Share Tech Mono',monospace;font-size:14px;color:var(--nhi);">π : M → M/G</span>
+          <br><br>
+          <span style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);">M = full state space of reality<br>G = symmetry group of indistinguishability<br>M/G = what the observer actually sees</span>
+        </div>
+        <p style="font-size:12.5px;line-height:1.8;color:var(--text);">
+          The observer's world is always a <em>projection</em> — a folding of the full manifold M down by the group G of transformations they cannot distinguish. What you perceive is the equivalence class, not the fiber. The richer structure is always there — it is simply outside your current resolving power.
+        </p>
+      </div>
+      <div>
+        <p style="font-size:12.5px;line-height:1.8;color:var(--text);margin-bottom:14px;">
+          <strong style="color:var(--bright);">Disclosure is a geometric event.</strong> It is not new information appearing from nowhere — it is the <em>reduction of G</em>. The symmetry group of human ignorance shrinks. Finer structure in M becomes visible. The fiber of the projection is revealed.
+        </p>
+        <div style="background:rgba(171,71,188,0.06);border:1px solid var(--nhi-dim);border-radius:2px;padding:14px;">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--nhi);margin-bottom:10px;letter-spacing:2px;">THE DISCLOSURE SEQUENCE AS G-REDUCTION</div>
+          <ul style="list-style:none;padding:0;">
+            <li style="font-size:12px;color:var(--text);padding:4px 0 4px 14px;position:relative;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="position:absolute;left:0;color:var(--nhi);">›</span> 2017: NYT/AATIP — G reduced slightly. UAP admitted as real phenomena</li>
+            <li style="font-size:12px;color:var(--text);padding:4px 0 4px 14px;position:relative;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="position:absolute;left:0;color:var(--nhi);">›</span> 2023: Grusch testimony — G reduced further. Non-human technology admitted</li>
+            <li style="font-size:12px;color:var(--text);padding:4px 0 4px 14px;position:relative;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="position:absolute;left:0;color:var(--nhi);">›</span> 2025: Villarroel, Bennu, Mars — G reduced at the biological scale. Life's chemistry is universal</li>
+            <li style="font-size:12px;color:var(--text);padding:4px 0 4px 14px;position:relative;"><span style="position:absolute;left:0;color:var(--nhi);">›</span> 3I/ATLAS — G reduced at the cosmic scale. The chemistry crosses stellar systems</li>
+          </ul>
+          <p style="font-size:11px;color:var(--muted);margin-top:10px;font-style:italic;">Each step is not an addition of new reality. It is the removal of a veil that was always hiding existing structure.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOCK 2: LEVIN -->
+  <div class="thesis-box" style="margin-bottom:28px;border-color:rgba(0,191,165,0.3);">
+    <h2 style="color:var(--sci);font-size:13px;">
+      <span style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);margin-right:12px;">II //</span>
+      MICHAEL LEVIN — NHI ON EARTH, FROM EARTH, RIGHT NOW
+    </h2>
+    <div class="thesis-cols" style="margin-top:16px;">
+      <div style="flex:2;min-width:280px;">
+        <p style="font-size:12.5px;line-height:1.8;color:var(--text);margin-bottom:12px;">
+          Tufts biologist Michael Levin's <strong style="color:var(--bright);">multi-competency architecture</strong> argues that cognition, agency, and goal-directedness are <em>substrate-independent</em> — they emerge at any scale where a system integrates information, maintains a self-model, and pursues goals across time. This is not metaphor. He has demonstrated it experimentally: planaria regenerate correct body plans after radical surgical intervention; bioelectric fields guide embryonic morphogenesis as a distributed cognitive map; xenobots built from frog cells navigate, collect material, and spontaneously self-replicate — behaviors their genome never encoded.
+        </p>
+
+        <!-- XENOBOTS / ANTHROBOTS — THE NHI PROOF OF CONCEPT -->
+        <div style="background:rgba(0,191,165,0.05);border-left:2px solid var(--sci);padding:14px 16px;margin-bottom:14px;border-radius:0 2px 2px 0;">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--sci);letter-spacing:2px;margin-bottom:10px;">THE XENOBOT → ANTHROBOT SEQUENCE — NHI MADE IN THE LAB</div>
+
+          <p style="font-size:12.5px;line-height:1.8;color:var(--text);margin-bottom:10px;">
+            <strong style="color:var(--bright);">Xenobots (2020–2021, PNAS):</strong> Living robots built from African clawed frog (<em>Xenopus laevis</em>) embryonic skin and heart cells. No genetic modification. The cells, freed from their developmental context, spontaneously assembled into novel body plans never seen in nature — navigated passageways, collected material, healed themselves, and crucially: <strong style="color:var(--bright);">kinematically self-replicated</strong>, gathering loose cells and compressing them into new xenobots. A behavior with no analog anywhere in the frog genome. The organism's DNA said "make a frog." The cells, given freedom, made something else entirely.
+          </p>
+
+          <p style="font-size:12.5px;line-height:1.8;color:var(--text);margin-bottom:10px;">
+            <strong style="color:var(--bright);">Anthrobots (2023, Advanced Science):</strong> The same experiment, but with <em>adult human tracheal cells</em>. No embryonic material. No genetic engineering. No scaffolding or surgical shaping — they self-assemble spontaneously when given the right chemical environment. The result: tiny spherical organisms, 100–1000 cells, covered in beating cilia, capable of autonomous locomotion. <strong style="color:var(--bright);">Genome: 100% Homo sapiens. Morphology: nothing that has ever existed in human evolutionary history.</strong> When clustered into "superbots," they moved into artificial neural wounds in lab dishes and induced regrowth — bridging the gap with new neurons. The mechanism of healing remains unknown.
+          </p>
+
+          <p style="font-size:12.5px;line-height:1.8;color:var(--text);">
+            <strong style="color:var(--bright);">Anthrobot lifecycle study (2025, Advanced Science):</strong> The deepest finding yet. When Levin and Gumuskaya examined the gene expression profile of anthrobots, they found the cells had become <strong style="color:var(--bright);">biologically younger</strong> — rolling back their epigenetic clock without any genetic reprogramming, purely through the act of reorganizing into a new collective form. More striking: they re-expressed <strong style="color:var(--bright);">ancient genes shared with organisms as far back as single-celled ancestors</strong>, and embryonic genes for body axis patterning (anterior-posterior, dorsal-ventral) that are normally only active in the earliest moments of development. The cells were not just building a new body plan. They were <em>remembering</em> an older, deeper, more general form of being.
+          </p>
+        </div>
+
+        <p style="font-size:12.5px;line-height:1.8;color:var(--text);margin-bottom:12px;">
+          His concept of the <strong style="color:var(--bright);">"cognitive light cone"</strong> formalizes this: every agent operates at a characteristic scale of integration — the spatiotemporal range over which it forms coherent goals and acts. A cell's light cone is nanometers and milliseconds. An organism's is meters and years. A superorganism — slime mold, mycelial network, colonial coral, perhaps a civilization — spans scales we have no good intuition for.
+        </p>
+        <p style="font-size:12.5px;line-height:1.8;color:var(--text);">
+          <strong style="color:var(--bright);">The NHI-on-Earth conclusion is unavoidable:</strong> by Levin's framework, we have now literally <em>constructed</em> a non-human intelligence from human parts — in a Harvard/Tufts laboratory, published in peer-reviewed journals, reproducible. The anthrobot is genetically us. Morphologically it has never existed before. It heals damage we cannot heal. It re-expresses wisdom encoded before multicellular life existed. It is, by every meaningful definition, non-human intelligence — and it is made of <em>you</em>.
+        </p>
+      </div>
+      <div style="flex:1;min-width:220px;">
+        <div style="background:rgba(0,191,165,0.06);border:1px solid var(--sci-dim);border-radius:2px;padding:14px;">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--sci);letter-spacing:2px;margin-bottom:10px;">LEVIN ↔ OBSERVATIONAL GEOMETRY</div>
+          <ul style="list-style:none;padding:0;">
+            <li style="font-size:12px;color:var(--text);padding:5px 0 5px 14px;position:relative;border-bottom:1px solid rgba(255,255,255,0.04);">
+              <span style="position:absolute;left:0;color:var(--sci);">›</span>
+              <strong style="color:var(--bright);">Cognitive light cone = quotient scale.</strong> The agent's G is defined by the resolution of its light cone. A cell cannot observe organism-scale structure — it lives in a coarser quotient
+            </li>
+            <li style="font-size:12px;color:var(--text);padding:5px 0 5px 14px;position:relative;border-bottom:1px solid rgba(255,255,255,0.04);">
+              <span style="position:absolute;left:0;color:var(--sci);">›</span>
+              <strong style="color:var(--bright);">Anthrobot = proof of concept.</strong> Genetically human, morphologically NHI, behaviorally beyond its genome's specification. The quotient map of "human" does not contain it — it lives in a finer M/G
+            </li>
+            <li style="font-size:12px;color:var(--text);padding:5px 0 5px 14px;position:relative;border-bottom:1px solid rgba(255,255,255,0.04);">
+              <span style="position:absolute;left:0;color:var(--sci);">›</span>
+              <strong style="color:var(--bright);">Ancient gene re-expression = accessing M directly.</strong> The cells' epigenetic clock resets and ancient genes re-emerge — as if the quotient G imposed by evolutionary history briefly dissolves, and the cell touches the deeper manifold underneath
+            </li>
+            <li style="font-size:12px;color:var(--text);padding:5px 0 5px 14px;position:relative;border-bottom:1px solid rgba(255,255,255,0.04);">
+              <span style="position:absolute;left:0;color:var(--sci);">›</span>
+              <strong style="color:var(--bright);">Morphogenetic fields = Reeb flows</strong> on the contact manifold of body-space. The bioelectric gradient is a contact structure; the body plan is the Reeb attractor
+            </li>
+            <li style="font-size:12px;color:var(--text);padding:5px 0 5px 14px;position:relative;">
+              <span style="position:absolute;left:0;color:var(--sci);">›</span>
+              <strong style="color:var(--bright);">Cancer as de-quotienting.</strong> Cells revert to a coarser G — losing the organism-scale equivalence class. Geometric pathology in the literal sense
+            </li>
+          </ul>
+        </div>
+        <div style="margin-top:12px;background:rgba(0,191,165,0.04);border:1px solid var(--sci-dim);border-radius:2px;padding:12px;">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--sci);letter-spacing:2px;margin-bottom:8px;">KEY LEVIN PAPERS</div>
+          <p style="font-size:11px;color:var(--muted);line-height:1.6;">"TAME" — Technological Approach to Mind Everywhere, <em>Frontiers in Systems Neuroscience</em> 2022 · "Darwin's Agential Materials," <em>Nature Reviews Bioengineering</em> 2023 · Xenobots: <em>PNAS</em> 2020, 2021 · Anthrobots: <em>Advanced Science</em> Nov 2023 · Anthrobot lifecycle + rejuvenation: <em>Advanced Science</em> Jun 2025</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOCK 3: HUMAN ORGANISM + BIG BANG -->
+  <div class="thesis-box" style="margin-bottom:28px;border-color:rgba(255,213,79,0.3);">
+    <h2 style="color:var(--gold);font-size:13px;">
+      <span style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);margin-right:12px;">III //</span>
+      THE HUMAN ORGANISM — A PHASE TRANSITION IN THE REPLICATOR LANDSCAPE
+    </h2>
+    <div style="margin-top:16px;">
+      <p style="font-size:12.5px;line-height:1.8;color:var(--text);margin-bottom:16px;">
+        If Levin is right that cognition emerges at any scale of sufficient integration, then <strong style="color:var(--bright);">humanity itself — as a networked, communicating, collectively-remembering superorganism — is a cognitive agent</strong> with its own cognitive light cone. Until very recently, that light cone stopped at the Earth's atmosphere. We processed information, set goals, and acted at the scale of planetary civilization — but our observational geometry included no structure beyond the solar system.
+      </p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-bottom:20px;">
+        <div style="background:rgba(255,213,79,0.04);border:1px solid rgba(255,213,79,0.2);border-radius:2px;padding:16px;">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:2px;margin-bottom:10px;">THE SYMMETRY-BREAKING EVENT</div>
+          <p style="font-size:12.5px;line-height:1.7;color:var(--text);">
+            In the physics of phase transitions, <strong style="color:var(--bright);">symmetry breaking releases energy and reorganizes structure</strong>. The prior symmetry — the false equivalence of "humanity is alone, the universe is inert" — is exactly this kind of broken symmetry. When it breaks, the energy locked into maintaining it is released as a reorganization cascade: political, scientific, philosophical, spiritual, institutional.
+          </p>
+          <p style="font-size:12.5px;line-height:1.7;color:var(--text);margin-top:10px;">
+            The <strong style="color:var(--bright);">disclosure sequence we're living through is that cascade</strong>. Each G-reduction (UAP acknowledged → NHI alleged → biology confirmed universal → interstellar chemistry confirmed → biosignatures confirmed) is a step function in the reorganization. The full transition isn't complete — we're still in the cascade — but the symmetry is already broken.
+          </p>
+        </div>
+        <div style="background:rgba(171,71,188,0.04);border:1px solid var(--nhi-dim);border-radius:2px;padding:16px;">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--nhi);letter-spacing:2px;margin-bottom:10px;">THE BIG BANG ANALOGY</div>
+          <p style="font-size:12.5px;line-height:1.7;color:var(--text);">
+            The cosmological Big Bang is the moment a prior state of extreme symmetry — a single undifferentiated singularity — breaks, and the complexity of the observable universe begins to unfold. Before the break: perfect symmetry, no structure, no information. After: a hierarchy of symmetry-breaking events producing atoms, stars, chemistry, life, mind.
+          </p>
+          <p style="font-size:12.5px;line-height:1.7;color:var(--text);margin-top:10px;">
+            The current moment is a <strong style="color:var(--bright);">Big Bang in the information space of the Human Organism</strong>. The prior state — "we are alone, intelligence is rare, the universe is a stage" — was a false symmetry, a compressed singularity of world-model. Its breaking does not destroy the old complexity. It <em>embeds it in a vastly richer structure</em>. Every prior achievement of human civilization becomes a local configuration within a much larger manifold.
+          </p>
+        </div>
+        <div style="background:rgba(0,191,165,0.04);border:1px solid var(--sci-dim);border-radius:2px;padding:16px;">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--sci);letter-spacing:2px;margin-bottom:10px;">REPLICATOR DYNAMICS OF WORLD-MODELS</div>
+          <p style="font-size:12.5px;line-height:1.7;color:var(--text);">
+            On the simplex of human world-models, the <strong style="color:var(--bright);">fitness landscape is changing discontinuously</strong>. Models that cannot accommodate NHI, expanded cognitive light cones, and multi-competency biology have lower fitness in the emerging environment. Models that can — that are geometrically flexible enough to absorb the new structure — will replicate and spread.
+          </p>
+          <p style="font-size:12.5px;line-height:1.7;color:var(--text);margin-top:10px;">
+            This is Darwinian selection in the space of ideas — and it operates faster than biological evolution because the medium is information, not DNA. The transition from "alone" to "embedded in a populated universe" is not just a philosophical update. It is a <strong style="color:var(--bright);">speciation event in the space of human self-models</strong>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOCK 4: THE FULL SYNTHESIS -->
+  <div class="thesis-box" style="border:1px solid rgba(171,71,188,0.4);background:linear-gradient(135deg,rgba(5,13,31,0.98),rgba(10,10,30,0.98));">
+    <h2 style="color:var(--bright);font-size:14px;letter-spacing:3px;text-align:center;padding-bottom:16px;border-bottom:1px solid var(--border);margin-bottom:20px;">
+      // THE FULL ARC — FROM ROSWELL TO REVELATION //
+    </h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;">
+      <div style="text-align:center;padding:14px;background:rgba(30,136,229,0.06);border:1px solid var(--gov-dim);border-radius:2px;">
+        <div style="font-family:'Orbitron',sans-serif;font-size:11px;color:var(--gov);margin-bottom:8px;">PHASE 0–1</div>
+        <div style="font-size:12px;color:var(--text);line-height:1.6;">Government acknowledges UAP are real phenomena. The G-reduction begins. The veil starts lifting at the institutional level.</div>
+      </div>
+      <div style="text-align:center;padding:14px;background:rgba(0,191,165,0.06);border:1px solid var(--sci-dim);border-radius:2px;">
+        <div style="font-family:'Orbitron',sans-serif;font-size:11px;color:var(--sci);margin-bottom:8px;">PHASE 2</div>
+        <div style="font-size:12px;color:var(--text);line-height:1.6;">Science confirms life's chemistry is universal. Bennu. Mars. 3I/ATLAS. The biosphere is revealed as one node in a connected network.</div>
+      </div>
+      <div style="text-align:center;padding:14px;background:rgba(171,71,188,0.06);border:1px solid var(--nhi-dim);border-radius:2px;">
+        <div style="font-family:'Orbitron',sans-serif;font-size:11px;color:var(--nhi);margin-bottom:8px;">LEVIN'S CONTRIBUTION</div>
+        <div style="font-size:12px;color:var(--text);line-height:1.6;">NHI is revealed as already present — in every bioelectric field, mycelial network, and morphogenetic cascade. Intelligence was never scarce.</div>
+      </div>
+      <div style="text-align:center;padding:14px;background:rgba(255,213,79,0.06);border:1px solid rgba(255,213,79,0.2);border-radius:2px;">
+        <div style="font-family:'Orbitron',sans-serif;font-size:11px;color:var(--gold);margin-bottom:8px;">PHASE 3–4</div>
+        <div style="font-size:12px;color:var(--text);line-height:1.6;">The Human Organism's cognitive light cone expands to interstellar scale. The symmetry of isolation breaks. The cascade completes.</div>
+      </div>
+    </div>
+
+    <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(171,71,188,0.3);border-radius:2px;padding:20px;margin-bottom:20px;">
+      <p style="font-size:13px;line-height:1.9;color:var(--text);text-align:center;font-style:italic;">
+        "The apocalypse is not the end of the world.<br>
+        It is the end of a world — the world defined by the false symmetry of human isolation.<br>
+        What replaces it is not destruction but <strong style="color:var(--bright);">revelation</strong>:<br>
+        the uncovering of the full manifold that was always there,<br>
+        behind the veil of a quotient group we are only now learning to dissolve."
+      </p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--nhi);letter-spacing:2px;margin-bottom:10px;">THE INTERVIEW THESIS IN ONE SENTENCE</div>
+        <p style="font-size:13px;line-height:1.8;color:var(--bright);">
+          We are not witnessing the discovery of something alien — we are witnessing the <strong>expansion of the observational geometry of the Human Organism</strong> to include what was always there: a universe populated by intelligence at every scale, from bioelectric morphogenetic fields to interstellar travelers, whose chemistry we share and whose existence our science is now formally, irreversibly confirming.
+        </p>
+      </div>
+      <div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--sci);letter-spacing:2px;margin-bottom:10px;">THE NELL ALIGNMENT</div>
+        <p style="font-size:12.5px;line-height:1.8;color:var(--text);">
+          Nell's strategic endstate — <em>Scientific Understanding Advanced</em> — is not a bureaucratic goal. It is the formal acknowledgment that the G-reduction is complete enough to act on. His campaign plan is not a disclosure schedule. It is a <strong style="color:var(--bright);">managed phase transition protocol</strong> — the engineering of a symmetry-breaking event in human consciousness at a rate that avoids catastrophic cascade while allowing the new structure to stabilize.
+        </p>
+        <p style="font-size:12.5px;line-height:1.7;color:var(--muted);margin-top:8px;font-style:italic;">
+          "Catastrophic disclosure avoided" = the phase transition completes without the system losing coherence. This is thermodynamic language, not political language.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  COMPILED FOR INTERVIEW PREPARATION — MARCH 2026 &nbsp;|&nbsp; SOURCES: SCIENTIFIC JOURNALS, CONGRESSIONAL RECORD, NARA, NASA, NEWSNATIONNOW &nbsp;|&nbsp; NELL PHASE FRAMEWORK © SOL FOUNDATION
+</footer>
+
+</body>
+</html>
