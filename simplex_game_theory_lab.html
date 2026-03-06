@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simplex Game Theory Lab</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #131a2e;
+      --panel2: #0f1528;
+      --text: #e8edf7;
+      --muted: #a8b3cc;
+      --accent: #7dd3fc;
+      --accent2: #c084fc;
+      --good: #34d399;
+      --bad: #f87171;
+      --warn: #fbbf24;
+      --line: #2a3558;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: radial-gradient(circle at top, #18203a 0%, var(--bg) 60%);
+      color: var(--text);
+    }
+    .wrap {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 18px;
+    }
+    .card {
+      background: linear-gradient(180deg, var(--panel), var(--panel2));
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    }
+    .controls {
+      padding: 18px;
+      position: sticky;
+      top: 20px;
+      height: fit-content;
+    }
+    h1, h2, h3 { margin: 0 0 10px; }
+    h1 { font-size: 1.5rem; }
+    h2 { font-size: 1.05rem; margin-top: 18px; }
+    p, .small { color: var(--muted); line-height: 1.45; }
+    .row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      margin: 10px 0;
+    }
+    label { font-size: 0.95rem; }
+    input[type="range"] { width: 100%; }
+    input[type="number"], select {
+      width: 90px;
+      background: #0b1120;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 6px 8px;
+    }
+    .btns {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+    button {
+      background: #1e293b;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+    button:hover { transform: translateY(-1px); background: #27324a; }
+    button.primary { background: linear-gradient(90deg, #0ea5e9, #8b5cf6); border: none; }
+    .main {
+      display: grid;
+      grid-template-rows: auto auto;
+      gap: 18px;
+    }
+    .viz {
+      padding: 16px;
+    }
+    .viz-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+    canvas, svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      background: rgba(5, 10, 20, 0.4);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .stat {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px;
+    }
+    .stat .value { font-size: 1.35rem; font-weight: 700; margin-top: 6px; }
+    .legend {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .swatch {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+    .foot {
+      padding: 16px 18px 18px;
+    }
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.9rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px;
+      white-space: pre-wrap;
+    }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 1100px) {
+      .wrap { grid-template-columns: 1fr; }
+      .controls { position: static; }
+      .viz-grid, .two-col { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card controls">
+      <h1>Simplex Game Theory Lab</h1>
+      <p>
+        A three-strategy simplex model for the advisory-control story. The simplex tracks the population mix of
+        <strong>Loyal</strong>, <strong>Traitorous</strong>, and <strong>Skeptical/Resistant</strong> strategic tendencies.
+        Dynamics are driven by a payoff matrix and trust-alignment parameters.
+      </p>
+
+      <h2>Population on the simplex</h2>
+      <div class="row"><label for="xL">Loyal share</label><input id="xL" type="number" step="0.01" min="0" max="1" value="0.45"></div>
+      <div class="row"><label for="xT">Traitor share</label><input id="xT" type="number" step="0.01" min="0" max="1" value="0.30"></div>
+      <div class="row"><label for="xS">Skeptical share</label><input id="xS" type="number" step="0.01" min="0" max="1" value="0.25"></div>
+      <p class="small">Values will be renormalized to sum to 1.</p>
+
+      <h2>Observer-game parameters</h2>
+      <div class="row"><label for="opacity">Opacity</label><input id="opacity" type="range" min="0" max="1" step="0.01" value="0.45"><span id="opacityVal">0.45</span></div>
+      <div class="row"><label for="masking">Masking power</label><input id="masking" type="range" min="0" max="1" step="0.01" value="0.55"><span id="maskingVal">0.55</span></div>
+      <div class="row"><label for="discernment">Ruler discernment</label><input id="discernment" type="range" min="0" max="1" step="0.01" value="0.5"><span id="discernmentVal">0.50</span></div>
+      <div class="row"><label for="resistance">Resistance</label><input id="resistance" type="range" min="0" max="1" step="0.01" value="0.35"><span id="resistanceVal">0.35</span></div>
+      <div class="row"><label for="belief">Belief in loyalty</label><input id="belief" type="range" min="0" max="1" step="0.01" value="0.62"><span id="beliefVal">0.62</span></div>
+      <div class="row"><label for="persuasion">Persuasion charisma</label><input id="persuasion" type="range" min="0" max="1" step="0.01" value="0.60"><span id="persuasionVal">0.60</span></div>
+
+      <h2>Replicator flow</h2>
+      <div class="row"><label for="dt">Time step</label><input id="dt" type="range" min="0.005" max="0.08" step="0.001" value="0.02"><span id="dtVal">0.020</span></div>
+      <div class="row"><label for="speed">Animation speed</label><input id="speed" type="range" min="1" max="10" step="1" value="4"><span id="speedVal">4</span></div>
+      <div class="row"><label for="mode">Preset regime</label>
+        <select id="mode">
+          <option value="balanced">Balanced</option>
+          <option value="highOpacity">High opacity</option>
+          <option value="highDiscernment">High discernment</option>
+          <option value="captured">Soft capture</option>
+          <option value="skeptical">Skeptical ruler</option>
+        </select>
+      </div>
+
+      <div class="btns">
+        <button class="primary" id="toggleBtn">Start</button>
+        <button id="stepBtn">Step</button>
+        <button id="resetBtn">Reset</button>
+        <button id="randomBtn">Random point</button>
+      </div>
+
+      <h2>Interpretation</h2>
+      <p class="small">
+        The simplex point is the current strategic composition. Flow arrows show replicator dynamics induced by the
+        current observer-game payoff matrix. The trust score does not just reward loyalty directly; it bends the
+        payoff landscape by changing how plausible the ruler finds advice.
+      </p>
+    </div>
+
+    <div class="main">
+      <div class="card viz">
+        <div class="viz-grid">
+          <div>
+            <svg id="simplex" viewBox="0 0 700 620" aria-label="simplex"></svg>
+            <div class="legend">
+              <span><span class="swatch" style="background:#34d399"></span>Loyal vertex</span>
+              <span><span class="swatch" style="background:#f87171"></span>Traitor vertex</span>
+              <span><span class="swatch" style="background:#fbbf24"></span>Skeptical vertex</span>
+              <span><span class="swatch" style="background:#7dd3fc"></span>Current state</span>
+              <span><span class="swatch" style="background:#c084fc"></span>Trajectory</span>
+            </div>
+          </div>
+          <div>
+            <canvas id="timeseries" width="560" height="420"></canvas>
+            <div class="stats">
+              <div class="stat"><div>Trust score</div><div class="value" id="trustStat">0.000</div></div>
+              <div class="stat"><div>Influence weight</div><div class="value" id="lambdaStat">0.000</div></div>
+              <div class="stat"><div>Dominant tendency</div><div class="value" id="domStat">Loyal</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card foot">
+        <h2>Model notes</h2>
+        <div class="two-col">
+          <div>
+            <p>
+              We use a replicator equation on the 2-simplex,
+              \(\dot x_i = x_i[(Ax)_i - x^T A x]\), where the payoff matrix \(A\) is built from the observer-game parameters.
+              Loyal strategy benefits from belief and discernment. Traitor strategy benefits from opacity, masking,
+              and persuasion. Skeptical strategy benefits when trust becomes unreliable and resistance is high.
+            </p>
+            <div class="mono" id="matrixOut"></div>
+          </div>
+          <div>
+            <p>
+              This is not a full solution of the underlying repeated Bayesian game. It is a geometric laboratory:
+              a reduced mean-field picture showing how hidden alignment and observer distortion bend strategic flow
+              on a simplex. It is a nice way to see capture basins, unstable mixtures, and skeptical stabilization.
+            </p>
+            <div class="mono" id="stateOut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const svg = document.getElementById('simplex');
+    const tsCanvas = document.getElementById('timeseries');
+    const ctx = tsCanvas.getContext('2d');
+
+    const controls = {
+      xL: document.getElementById('xL'),
+      xT: document.getElementById('xT'),
+      xS: document.getElementById('xS'),
+      opacity: document.getElementById('opacity'),
+      masking: document.getElementById('masking'),
+      discernment: document.getElementById('discernment'),
+      resistance: document.getElementById('resistance'),
+      belief: document.getElementById('belief'),
+      persuasion: document.getElementById('persuasion'),
+      dt: document.getElementById('dt'),
+      speed: document.getElementById('speed'),
+      mode: document.getElementById('mode')
+    };
+
+    const labels = {
+      opacity: document.getElementById('opacityVal'),
+      masking: document.getElementById('maskingVal'),
+      discernment: document.getElementById('discernmentVal'),
+      resistance: document.getElementById('resistanceVal'),
+      belief: document.getElementById('beliefVal'),
+      persuasion: document.getElementById('persuasionVal'),
+      dt: document.getElementById('dtVal'),
+      speed: document.getElementById('speedVal')
+    };
+
+    const trustStat = document.getElementById('trustStat');
+    const lambdaStat = document.getElementById('lambdaStat');
+    const domStat = document.getElementById('domStat');
+    const matrixOut = document.getElementById('matrixOut');
+    const stateOut = document.getElementById('stateOut');
+
+    const toggleBtn = document.getElementById('toggleBtn');
+    const stepBtn = document.getElementById('stepBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const randomBtn = document.getElementById('randomBtn');
+
+    const P = {
+      L: {x: 350, y: 70},
+      T: {x: 100, y: 540},
+      S: {x: 600, y: 540}
+    };
+
+    let state = { x: [0.45, 0.30, 0.25], t: 0 };
+    let history = [];
+    let animating = false;
+    let raf = null;
+
+    function clamp(v, a=0, b=1) { return Math.max(a, Math.min(b, v)); }
+
+    function normalize(arr) {
+      let s = arr.reduce((a,b) => a+b, 0);
+      if (s <= 0) return [1/3, 1/3, 1/3];
+      return arr.map(v => Math.max(0, v/s));
+    }
+
+    function baryToXY(x) {
+      return {
+        x: x[0]*P.L.x + x[1]*P.T.x + x[2]*P.S.x,
+        y: x[0]*P.L.y + x[1]*P.T.y + x[2]*P.S.y
+      };
+    }
+
+    function getParams() {
+      const p = {
+        opacity: parseFloat(controls.opacity.value),
+        masking: parseFloat(controls.masking.value),
+        discernment: parseFloat(controls.discernment.value),
+        resistance: parseFloat(controls.resistance.value),
+        belief: parseFloat(controls.belief.value),
+        persuasion: parseFloat(controls.persuasion.value),
+        dt: parseFloat(controls.dt.value),
+        speed: parseFloat(controls.speed.value)
+      };
+      const effectiveMasking = p.masking * p.opacity;
+      const effectiveDiscernment = p.discernment * (1 - p.opacity);
+      const trust = 1.25*p.persuasion + 1.15*effectiveMasking + 1.2*p.belief - 1.0*p.resistance - 1.1*effectiveDiscernment;
+      const lambda = 1 / (1 + Math.exp(-2.1 * trust));
+      return { ...p, effectiveMasking, effectiveDiscernment, trust, lambda };
+    }
+
+    function payoffMatrix(p) {
+      const L = 1.2 + 1.2*p.belief + 0.8*p.effectiveDiscernment - 0.45*p.opacity;
+      const T = 0.8 + 1.25*p.opacity + 1.15*p.effectiveMasking + 0.85*p.persuasion - 0.95*p.effectiveDiscernment;
+      const S = 0.75 + 1.1*p.resistance + 0.55*(1-p.belief) + 0.5*Math.abs(p.lambda - 0.5);
+
+      const A = [
+        [L,              0.55 + p.effectiveDiscernment - 0.7*p.opacity, 0.65 + 0.35*p.belief],
+        [0.4 + p.opacity + 0.5*p.effectiveMasking, T,                  0.55 + 0.6*p.persuasion],
+        [0.8 + 0.5*p.resistance, 0.95 + 0.55*p.resistance + 0.25*p.effectiveDiscernment, S]
+      ];
+      return A;
+    }
+
+    function matVec(A, x) {
+      return A.map(row => row[0]*x[0] + row[1]*x[1] + row[2]*x[2]);
+    }
+
+    function dot(a,b) {
+      return a.reduce((s,v,i) => s + v*b[i], 0);
+    }
+
+    function replicatorStep(x, A, dt) {
+      const f = matVec(A, x);
+      const phi = dot(x, f);
+      const dx = x.map((xi,i) => xi * (f[i] - phi));
+      let nx = x.map((xi,i) => xi + dt*dx[i]);
+      nx = nx.map(v => Math.max(1e-6, v));
+      return normalize(nx);
+    }
+
+    function dominantName(x) {
+      const names = ['Loyal', 'Traitor', 'Skeptical'];
+      let k = 0;
+      for (let i=1;i<3;i++) if (x[i] > x[k]) k = i;
+      return names[k];
+    }
+
+    function syncNumericInputs() {
+      const x = normalize([
+        parseFloat(controls.xL.value || 0),
+        parseFloat(controls.xT.value || 0),
+        parseFloat(controls.xS.value || 0)
+      ]);
+      state.x = x;
+      controls.xL.value = x[0].toFixed(3);
+      controls.xT.value = x[1].toFixed(3);
+      controls.xS.value = x[2].toFixed(3);
+    }
+
+    function updateLabels() {
+      Object.keys(labels).forEach(k => labels[k].textContent = parseFloat(controls[k].value).toFixed(k === 'speed' ? 0 : (k === 'dt' ? 3 : 2)));
+    }
+
+    function applyPreset(mode) {
+      const presets = {
+        balanced: { opacity:0.45, masking:0.55, discernment:0.50, resistance:0.35, belief:0.62, persuasion:0.60 },
+        highOpacity: { opacity:0.82, masking:0.72, discernment:0.38, resistance:0.28, belief:0.68, persuasion:0.62 },
+        highDiscernment: { opacity:0.25, masking:0.35, discernment:0.86, resistance:0.50, belief:0.56, persuasion:0.50 },
+        captured: { opacity:0.78, masking:0.80, discernment:0.22, resistance:0.18, belief:0.84, persuasion:0.88 },
+        skeptical: { opacity:0.40, masking:0.35, discernment:0.58, resistance:0.90, belief:0.34, persuasion:0.40 }
+      };
+      const p = presets[mode] || presets.balanced;
+      for (const [k,v] of Object.entries(p)) controls[k].value = v;
+      updateLabels();
+      refresh();
+    }
+
+    function resetHistory() {
+      history = [{ t: 0, x: [...state.x] }];
+      state.t = 0;
+    }
+
+    function randomSimplexPoint() {
+      const a = Math.random(), b = Math.random(), c = Math.random();
+      state.x = normalize([a,b,c]);
+      controls.xL.value = state.x[0].toFixed(3);
+      controls.xT.value = state.x[1].toFixed(3);
+      controls.xS.value = state.x[2].toFixed(3);
+      resetHistory();
+      refresh();
+    }
+
+    function drawSimplex() {
+      const p = getParams();
+      const A = payoffMatrix(p);
+      const W = 700, H = 620;
+      svg.innerHTML = '';
+
+      const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+      defs.innerHTML = `
+        <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+          <path d="M0,0 L8,4 L0,8 z" fill="#6b7aa6"></path>
+        </marker>`;
+      svg.appendChild(defs);
+
+      const tri = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+      tri.setAttribute('points', `${P.L.x},${P.L.y} ${P.T.x},${P.T.y} ${P.S.x},${P.S.y}`);
+      tri.setAttribute('fill', 'rgba(125,211,252,0.05)');
+      tri.setAttribute('stroke', '#4b5f92');
+      tri.setAttribute('stroke-width', '2');
+      svg.appendChild(tri);
+
+      function line(a,b,opacity=0.22) {
+        const l = document.createElementNS('http://www.w3.org/2000/svg','line');
+        l.setAttribute('x1', a.x); l.setAttribute('y1', a.y); l.setAttribute('x2', b.x); l.setAttribute('y2', b.y);
+        l.setAttribute('stroke', `rgba(120,140,190,${opacity})`); l.setAttribute('stroke-width', '1');
+        svg.appendChild(l);
+      }
+
+      for (let u=0.1; u<1; u+=0.1) {
+        line(baryToXY([u,1-u,0]), baryToXY([u,0,1-u]));
+        line(baryToXY([1-u,u,0]), baryToXY([0,u,1-u]));
+        line(baryToXY([1-u,0,u]), baryToXY([0,1-u,u]));
+      }
+
+      // vector field
+      for (let i=0; i<=14; i++) {
+        for (let j=0; j<=14-i; j++) {
+          const x = [i/14, j/14, 1 - i/14 - j/14];
+          if (x[2] < -1e-6) continue;
+          const next = replicatorStep(x, A, 0.035);
+          const p0 = baryToXY(x);
+          const p1 = baryToXY(next);
+          const dx = p1.x - p0.x, dy = p1.y - p0.y;
+          const len = Math.hypot(dx,dy);
+          if (len < 0.2) continue;
+          const scale = 18 / len;
+          const qx = p0.x + dx*scale, qy = p0.y + dy*scale;
+          const arr = document.createElementNS('http://www.w3.org/2000/svg','line');
+          arr.setAttribute('x1', p0.x); arr.setAttribute('y1', p0.y);
+          arr.setAttribute('x2', qx); arr.setAttribute('y2', qy);
+          arr.setAttribute('stroke', '#6b7aa6'); arr.setAttribute('stroke-width', '1.2');
+          arr.setAttribute('marker-end', 'url(#arrow)');
+          arr.setAttribute('opacity', '0.72');
+          svg.appendChild(arr);
+        }
+      }
+
+      // trajectory
+      if (history.length > 1) {
+        const d = history.map((h, idx) => {
+          const pt = baryToXY(h.x);
+          return `${idx===0?'M':'L'} ${pt.x} ${pt.y}`;
+        }).join(' ');
+        const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+        path.setAttribute('d', d);
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke', '#c084fc');
+        path.setAttribute('stroke-width', '3');
+        path.setAttribute('opacity', '0.85');
+        svg.appendChild(path);
+      }
+
+      // current point
+      const cur = baryToXY(state.x);
+      const point = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      point.setAttribute('cx', cur.x); point.setAttribute('cy', cur.y); point.setAttribute('r', 8);
+      point.setAttribute('fill', '#7dd3fc'); point.setAttribute('stroke', 'white'); point.setAttribute('stroke-width', '2');
+      svg.appendChild(point);
+
+      function label(text, pt, color, dx=0, dy=0) {
+        const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        c.setAttribute('cx', pt.x); c.setAttribute('cy', pt.y); c.setAttribute('r', 9);
+        c.setAttribute('fill', color);
+        svg.appendChild(c);
+        const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+        t.textContent = text;
+        t.setAttribute('x', pt.x + dx); t.setAttribute('y', pt.y + dy);
+        t.setAttribute('fill', '#e8edf7');
+        t.setAttribute('font-size', '18');
+        t.setAttribute('font-weight', '700');
+        svg.appendChild(t);
+      }
+      label('Loyal', P.L, '#34d399', -24, -18);
+      label('Traitor', P.T, '#f87171', -26, 32);
+      label('Skeptical', P.S, '#fbbf24', -35, 32);
+    }
+
+    function drawTimeSeries() {
+      const w = tsCanvas.width, h = tsCanvas.height;
+      ctx.clearRect(0,0,w,h);
+      ctx.fillStyle = 'rgba(6, 12, 24, 0.88)';
+      ctx.fillRect(0,0,w,h);
+      ctx.strokeStyle = 'rgba(120,140,190,0.25)';
+      ctx.lineWidth = 1;
+      for (let i=0;i<=5;i++) {
+        const y = 20 + i*(h-40)/5;
+        ctx.beginPath(); ctx.moveTo(40,y); ctx.lineTo(w-10,y); ctx.stroke();
+      }
+      for (let i=0;i<=6;i++) {
+        const x = 40 + i*(w-60)/6;
+        ctx.beginPath(); ctx.moveTo(x,20); ctx.lineTo(x,h-20); ctx.stroke();
+      }
+
+      ctx.fillStyle = '#a8b3cc';
+      ctx.font = '14px Inter, sans-serif';
+      ctx.fillText('Population shares over time', 40, 16);
+
+      const n = history.length;
+      if (n < 2) return;
+      const maxT = Math.max(1, history[n-1].t);
+      function X(t) { return 40 + (w-60)*t/maxT; }
+      function Y(v) { return h-20 - (h-40)*v; }
+
+      const series = [
+        { idx:0, color:'#34d399', name:'Loyal' },
+        { idx:1, color:'#f87171', name:'Traitor' },
+        { idx:2, color:'#fbbf24', name:'Skeptical' }
+      ];
+      series.forEach((s, j) => {
+        ctx.strokeStyle = s.color;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        history.forEach((pt, i) => {
+          const x = X(pt.t), y = Y(pt.x[s.idx]);
+          if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+        });
+        ctx.stroke();
+        ctx.fillStyle = s.color;
+        ctx.fillRect(w-150, 28 + j*22, 14, 4);
+        ctx.fillStyle = '#dce5f6';
+        ctx.fillText(s.name, w-128, 34 + j*22);
+      });
+    }
+
+    function refreshText() {
+      const p = getParams();
+      const A = payoffMatrix(p);
+      trustStat.textContent = p.trust.toFixed(3);
+      lambdaStat.textContent = p.lambda.toFixed(3);
+      domStat.textContent = dominantName(state.x);
+      matrixOut.textContent = 'Payoff matrix A\n' + A.map(r => '[' + r.map(v => v.toFixed(3)).join(', ') + ']').join('\n');
+      stateOut.textContent =
+        `state x = [${state.x.map(v => v.toFixed(3)).join(', ')}]\n` +
+        `effective discernment = ${p.effectiveDiscernment.toFixed(3)}\n` +
+        `effective masking = ${p.effectiveMasking.toFixed(3)}\n` +
+        `belief = ${p.belief.toFixed(3)}\n` +
+        `time = ${state.t.toFixed(3)}`;
+    }
+
+    function refresh() {
+      updateLabels();
+      drawSimplex();
+      drawTimeSeries();
+      refreshText();
+    }
+
+    function stepOnce(mult=1) {
+      syncNumericInputs();
+      const p = getParams();
+      const A = payoffMatrix(p);
+      for (let i=0; i<mult; i++) {
+        state.x = replicatorStep(state.x, A, p.dt);
+        state.t += p.dt;
+        history.push({ t: state.t, x: [...state.x] });
+        if (history.length > 600) history.shift();
+      }
+      controls.xL.value = state.x[0].toFixed(3);
+      controls.xT.value = state.x[1].toFixed(3);
+      controls.xS.value = state.x[2].toFixed(3);
+      refresh();
+    }
+
+    function animate() {
+      if (!animating) return;
+      const p = getParams();
+      stepOnce(p.speed);
+      raf = requestAnimationFrame(animate);
+    }
+
+    toggleBtn.addEventListener('click', () => {
+      animating = !animating;
+      toggleBtn.textContent = animating ? 'Pause' : 'Start';
+      if (animating) animate(); else cancelAnimationFrame(raf);
+    });
+    stepBtn.addEventListener('click', () => stepOnce(1));
+    resetBtn.addEventListener('click', () => { syncNumericInputs(); resetHistory(); refresh(); });
+    randomBtn.addEventListener('click', randomSimplexPoint);
+
+    Object.values(controls).forEach(el => {
+      el.addEventListener('input', () => {
+        if (el === controls.mode) return;
+        syncNumericInputs();
+        if (history.length <= 1) resetHistory();
+        refresh();
+      });
+    });
+
+    controls.mode.addEventListener('change', e => applyPreset(e.target.value));
+
+    svg.addEventListener('click', (ev) => {
+      const rect = svg.getBoundingClientRect();
+      const px = (ev.clientX - rect.left) * (700 / rect.width);
+      const py = (ev.clientY - rect.top) * (620 / rect.height);
+      const den = ((P.T.y - P.S.y)*(P.L.x - P.S.x) + (P.S.x - P.T.x)*(P.L.y - P.S.y));
+      const a = ((P.T.y - P.S.y)*(px - P.S.x) + (P.S.x - P.T.x)*(py - P.S.y)) / den;
+      const b = ((P.S.y - P.L.y)*(px - P.S.x) + (P.L.x - P.S.x)*(py - P.S.y)) / den;
+      const c = 1 - a - b;
+      if (a >= -0.02 && b >= -0.02 && c >= -0.02) {
+        state.x = normalize([Math.max(0,a), Math.max(0,b), Math.max(0,c)]);
+        controls.xL.value = state.x[0].toFixed(3);
+        controls.xT.value = state.x[1].toFixed(3);
+        controls.xS.value = state.x[2].toFixed(3);
+        resetHistory();
+        refresh();
+      }
+    });
+
+    syncNumericInputs();
+    resetHistory();
+    refresh();
+  </script>
+</body>
+</html>
