@@ -168,23 +168,7 @@
         Dynamics are driven by a payoff matrix and trust-alignment parameters.
       </p>
 
-      <h2>Population on the simplex</h2>
-      <div class="row"><label for="xL">Loyal share</label><input id="xL" type="number" step="0.01" min="0" max="1" value="0.45"></div>
-      <div class="row"><label for="xT">Traitor share</label><input id="xT" type="number" step="0.01" min="0" max="1" value="0.30"></div>
-      <div class="row"><label for="xS">Skeptical share</label><input id="xS" type="number" step="0.01" min="0" max="1" value="0.25"></div>
-      <p class="small">Values will be renormalized to sum to 1.</p>
-
-      <h2>Observer-game parameters</h2>
-      <div class="row"><label for="opacity">Opacity</label><input id="opacity" type="range" min="0" max="1" step="0.01" value="0.45"><span id="opacityVal">0.45</span></div>
-      <div class="row"><label for="masking">Masking power</label><input id="masking" type="range" min="0" max="1" step="0.01" value="0.55"><span id="maskingVal">0.55</span></div>
-      <div class="row"><label for="discernment">Ruler discernment</label><input id="discernment" type="range" min="0" max="1" step="0.01" value="0.5"><span id="discernmentVal">0.50</span></div>
-      <div class="row"><label for="resistance">Resistance</label><input id="resistance" type="range" min="0" max="1" step="0.01" value="0.35"><span id="resistanceVal">0.35</span></div>
-      <div class="row"><label for="belief">Belief in loyalty</label><input id="belief" type="range" min="0" max="1" step="0.01" value="0.62"><span id="beliefVal">0.62</span></div>
-      <div class="row"><label for="persuasion">Persuasion charisma</label><input id="persuasion" type="range" min="0" max="1" step="0.01" value="0.60"><span id="persuasionVal">0.60</span></div>
-
-      <h2>Replicator flow</h2>
-      <div class="row"><label for="dt">Time step</label><input id="dt" type="range" min="0.005" max="0.08" step="0.001" value="0.02"><span id="dtVal">0.020</span></div>
-      <div class="row"><label for="speed">Animation speed</label><input id="speed" type="range" min="1" max="10" step="1" value="4"><span id="speedVal">4</span></div>
+      <h2>Quick presets</h2>
       <div class="row"><label for="mode">Preset regime</label>
         <select id="mode">
           <option value="balanced">Balanced</option>
@@ -205,8 +189,7 @@
       <h2>Interpretation</h2>
       <p class="small">
         The simplex point is the current strategic composition. Flow arrows show replicator dynamics induced by the
-        current observer-game payoff matrix. The trust score does not just reward loyalty directly; it bends the
-        payoff landscape by changing how plausible the ruler finds advice.
+        current observer-game payoff matrix. The trust score bends the payoff landscape by changing how plausible the ruler finds advice.
       </p>
     </div>
 
@@ -214,6 +197,28 @@
       <div class="card viz">
         <div class="viz-grid">
           <div>
+            <div class="inset-controls card" style="margin-bottom:14px; padding:14px;">
+              <div class="two-col">
+                <div>
+                  <h2 style="margin-top:0;">Population on the simplex</h2>
+                  <div class="row"><label for="xL">Loyal share</label><input id="xL" type="number" step="0.01" min="0" max="1" value="0.45"></div>
+                  <div class="row"><label for="xT">Traitor share</label><input id="xT" type="number" step="0.01" min="0" max="1" value="0.30"></div>
+                  <div class="row"><label for="xS">Skeptical share</label><input id="xS" type="number" step="0.01" min="0" max="1" value="0.25"></div>
+                  <p class="small">Values are renormalized to sum to 1.</p>
+                </div>
+                <div>
+                  <h2 style="margin-top:0;">Observer-game parameters</h2>
+                  <div class="row"><label for="opacity">Opacity</label><input id="opacity" type="range" min="0" max="1" step="0.01" value="0.45"><span id="opacityVal">0.45</span></div>
+                  <div class="row"><label for="masking">Masking power</label><input id="masking" type="range" min="0" max="1" step="0.01" value="0.55"><span id="maskingVal">0.55</span></div>
+                  <div class="row"><label for="discernment">Ruler discernment</label><input id="discernment" type="range" min="0" max="1" step="0.01" value="0.5"><span id="discernmentVal">0.50</span></div>
+                  <div class="row"><label for="resistance">Resistance</label><input id="resistance" type="range" min="0" max="1" step="0.01" value="0.35"><span id="resistanceVal">0.35</span></div>
+                  <div class="row"><label for="belief">Belief in loyalty</label><input id="belief" type="range" min="0" max="1" step="0.01" value="0.62"><span id="beliefVal">0.62</span></div>
+                  <div class="row"><label for="persuasion">Persuasion charisma</label><input id="persuasion" type="range" min="0" max="1" step="0.01" value="0.60"><span id="persuasionVal">0.60</span></div>
+                  <div class="row"><label for="dt">Time step</label><input id="dt" type="range" min="0.005" max="0.08" step="0.001" value="0.02"><span id="dtVal">0.020</span></div>
+                  <div class="row"><label for="speed">Animation speed</label><input id="speed" type="range" min="1" max="10" step="1" value="4"><span id="speedVal">4</span></div>
+                </div>
+              </div>
+            </div>
             <svg id="simplex" viewBox="0 0 700 620" aria-label="simplex"></svg>
             <div class="legend">
               <span><span class="swatch" style="background:#34d399"></span>Loyal vertex</span>
@@ -224,7 +229,8 @@
             </div>
           </div>
           <div>
-            <canvas id="timeseries" width="560" height="420"></canvas>
+            <canvas id="surface3d" width="560" height="340"></canvas>
+            <canvas id="timeseries" width="560" height="420" style="margin-top:14px;"></canvas>
             <div class="stats">
               <div class="stat"><div>Trust score</div><div class="value" id="trustStat">0.000</div></div>
               <div class="stat"><div>Influence weight</div><div class="value" id="lambdaStat">0.000</div></div>
@@ -236,6 +242,7 @@
 
       <div class="card foot">
         <h2>Model notes</h2>
+        <p class="small">The top-right panel is a pseudo-3D lift of the simplex by an effective trust potential. Higher regions correspond to stronger advisory influence under the current observer parameters.</p>
         <div class="two-col">
           <div>
             <p>
@@ -263,6 +270,8 @@
     const svg = document.getElementById('simplex');
     const tsCanvas = document.getElementById('timeseries');
     const ctx = tsCanvas.getContext('2d');
+    const surfaceCanvas = document.getElementById('surface3d');
+    const sctx = surfaceCanvas.getContext('2d');
 
     const controls = {
       xL: document.getElementById('xL'),
@@ -523,6 +532,116 @@
       label('Skeptical', P.S, '#fbbf24', -35, 32);
     }
 
+    function liftedTrustAt(x, p) {
+      const loyal = x[0], traitor = x[1], skeptical = x[2];
+      const mixtureBias = 0.9*loyal*p.belief - 0.75*traitor*p.effectiveMasking + 0.35*skeptical*p.resistance;
+      const balanceTerm = 0.25*(loyal*traitor + loyal*skeptical - traitor*skeptical);
+      return p.trust + mixtureBias + balanceTerm;
+    }
+
+    function project3D(X, Y, Z) {
+      const scale = 155;
+      const px = 280 + scale*(X - Y)*0.92;
+      const py = 255 + scale*(0.52*(X + Y) - Z*0.42);
+      return { x:px, y:py };
+    }
+
+    function drawSurface3D() {
+      const w = surfaceCanvas.width, h = surfaceCanvas.height;
+      sctx.clearRect(0,0,w,h);
+      sctx.fillStyle = 'rgba(6, 12, 24, 0.92)';
+      sctx.fillRect(0,0,w,h);
+      const p = getParams();
+
+      const grid = [];
+      const N = 16;
+      let zmin = Infinity, zmax = -Infinity;
+      for (let i=0; i<=N; i++) {
+        for (let j=0; j<=N-i; j++) {
+          const x = [i/N, j/N, 1 - i/N - j/N];
+          const z = liftedTrustAt(x, p);
+          zmin = Math.min(zmin, z);
+          zmax = Math.max(zmax, z);
+          grid.push({ x, z });
+        }
+      }
+      const znorm = z => (z - zmin) / Math.max(1e-9, (zmax - zmin));
+
+      function baryBase(x) {
+        const X = x[0]*0.5 + x[2];
+        const Y = x[0]*0.866;
+        return { X, Y };
+      }
+
+      // mesh lines
+      for (let i=0; i<=N; i++) {
+        let pts1 = [], pts2 = [], pts3 = [];
+        for (let j=0; j<=N-i; j++) {
+          const a = [i/N, j/N, 1 - i/N - j/N];
+          const b1 = baryBase(a);
+          pts1.push({ ...project3D(b1.X, b1.Y, znorm(liftedTrustAt(a,p))), z: znorm(liftedTrustAt(a,p)) });
+        }
+        for (let j=0; j<=N-i; j++) {
+          const a = [j/N, i/N, 1 - i/N - j/N];
+          const b2 = baryBase(a);
+          pts2.push({ ...project3D(b2.X, b2.Y, znorm(liftedTrustAt(a,p))), z: znorm(liftedTrustAt(a,p)) });
+        }
+        for (let j=0; j<=N-i; j++) {
+          const a = [j/N, 1 - i/N - j/N, i/N];
+          if (a[1] < -1e-6) continue;
+          const b3 = baryBase(a);
+          pts3.push({ ...project3D(b3.X, b3.Y, znorm(liftedTrustAt(a,p))), z: znorm(liftedTrustAt(a,p)) });
+        }
+        [pts1, pts2, pts3].forEach(pts => {
+          if (pts.length < 2) return;
+          sctx.beginPath();
+          sctx.moveTo(pts[0].x, pts[0].y);
+          for (let k=1;k<pts.length;k++) sctx.lineTo(pts[k].x, pts[k].y);
+          sctx.strokeStyle = 'rgba(125, 211, 252, 0.28)';
+          sctx.lineWidth = 1;
+          sctx.stroke();
+        });
+      }
+
+      // filled current point and trajectory
+      if (history.length > 1) {
+        sctx.beginPath();
+        history.forEach((hpt, idx) => {
+          const b = baryBase(hpt.x);
+          const q = project3D(b.X, b.Y, znorm(liftedTrustAt(hpt.x,p)));
+          if (idx === 0) sctx.moveTo(q.x, q.y); else sctx.lineTo(q.x, q.y);
+        });
+        sctx.strokeStyle = '#c084fc';
+        sctx.lineWidth = 2.5;
+        sctx.stroke();
+      }
+
+      const vertices = [
+        { name:'L', x:[1,0,0], c:'#34d399' },
+        { name:'T', x:[0,1,0], c:'#f87171' },
+        { name:'S', x:[0,0,1], c:'#fbbf24' }
+      ];
+      vertices.forEach(v => {
+        const b = baryBase(v.x);
+        const q = project3D(b.X, b.Y, znorm(liftedTrustAt(v.x,p)));
+        sctx.fillStyle = v.c;
+        sctx.beginPath(); sctx.arc(q.x, q.y, 6, 0, Math.PI*2); sctx.fill();
+        sctx.fillStyle = '#e8edf7';
+        sctx.font = 'bold 14px Inter, sans-serif';
+        sctx.fillText(v.name, q.x + 8, q.y - 8);
+      });
+
+      const bc = baryBase(state.x);
+      const cur = project3D(bc.X, bc.Y, znorm(liftedTrustAt(state.x,p)));
+      sctx.fillStyle = '#7dd3fc';
+      sctx.beginPath(); sctx.arc(cur.x, cur.y, 7, 0, Math.PI*2); sctx.fill();
+      sctx.strokeStyle = '#ffffff'; sctx.lineWidth = 2; sctx.stroke();
+
+      sctx.fillStyle = '#a8b3cc';
+      sctx.font = '14px Inter, sans-serif';
+      sctx.fillText('3D trust surface over simplex', 18, 24);
+    }
+
     function drawTimeSeries() {
       const w = tsCanvas.width, h = tsCanvas.height;
       ctx.clearRect(0,0,w,h);
@@ -588,6 +707,7 @@
     function refresh() {
       updateLabels();
       drawSimplex();
+      drawSurface3D();
       drawTimeSeries();
       refreshText();
     }
