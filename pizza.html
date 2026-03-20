@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perception Study</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f4ef;
+    --surface: #ffffff;
+    --ink: #1a1814;
+    --ink-light: #6b6560;
+    --accent: #c0392b;
+    --accent-light: #e8d5d3;
+    --border: #e0dbd4;
+    --pizza-crust: #d4882a;
+    --pizza-sauce: #c0392b;
+    --pizza-cheese: #f0c060;
+    --pizza-missing: #f7f4ef;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    max-width: 680px;
+    width: 100%;
+    animation: fadeIn 0.4s ease;
+  }
+  .screen.active { display: flex; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* INTRO */
+  .intro-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 3rem 3.5rem;
+    text-align: center;
+  }
+
+  .study-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 1.5rem;
+  }
+
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.4rem;
+    line-height: 1.15;
+    margin-bottom: 1rem;
+    color: var(--ink);
+  }
+
+  .intro-body {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--ink-light);
+    max-width: 440px;
+    margin: 0 auto 2rem;
+  }
+
+  .id-field {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+    margin-bottom: 2rem;
+    width: 100%;
+    max-width: 320px;
+    text-align: left;
+  }
+  .id-field label {
+    font-size: 0.78rem;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.08em;
+    color: var(--ink-light);
+    text-transform: uppercase;
+  }
+  .id-field input {
+    width: 100%;
+    padding: 0.6rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.9rem;
+    background: var(--bg);
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .id-field input:focus { border-color: var(--ink); }
+
+  .btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.85rem 2.5rem;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-primary {
+    background: var(--ink);
+    color: var(--bg);
+  }
+  .btn-primary:hover { background: #333; }
+  .btn-primary:disabled { background: var(--border); color: var(--ink-light); cursor: not-allowed; }
+
+  /* TRIAL */
+  .trial-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 2rem;
+  }
+
+  .trial-counter {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+  }
+
+  .progress-dots {
+    display: flex;
+    gap: 6px;
+  }
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: background 0.3s;
+  }
+  .dot.active { background: var(--ink); }
+  .dot.done { background: var(--ink-light); }
+
+  .pizza-container {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .question-text {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.6rem;
+    text-align: center;
+    margin-bottom: 1.8rem;
+    line-height: 1.3;
+  }
+
+  .response-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  .response-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 500;
+    padding: 1rem 0.75rem;
+    border: 1.5px solid var(--border);
+    border-radius: 2px;
+    background: var(--surface);
+    color: var(--ink);
+    cursor: pointer;
+    transition: all 0.15s;
+    line-height: 1.3;
+    text-align: center;
+  }
+  .response-btn:hover {
+    border-color: var(--ink);
+    background: var(--bg);
+  }
+  .response-btn.selected {
+    border-color: var(--accent);
+    background: var(--accent-light);
+    color: var(--accent);
+  }
+
+  /* RESULTS */
+  .results-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 3rem 3.5rem;
+    width: 100%;
+  }
+
+  .results-card h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .results-subtitle {
+    font-size: 0.9rem;
+    color: var(--ink-light);
+    margin-bottom: 2rem;
+  }
+
+  .trial-summary {
+    border-top: 1px solid var(--border);
+    padding-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .trial-row {
+    display: grid;
+    grid-template-columns: 80px 1fr 1fr;
+    gap: 1rem;
+    align-items: center;
+    font-size: 0.88rem;
+  }
+
+  .trial-row .t-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+  }
+
+  .t-img-label {
+    font-size: 0.85rem;
+    color: var(--ink-light);
+  }
+
+  .t-response {
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .t-rt {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--ink-light);
+  }
+
+  .aggregate-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 2rem;
+    font-size: 0.88rem;
+    line-height: 1.8;
+    color: var(--ink-light);
+  }
+
+  .aggregate-box strong { color: var(--ink); }
+
+  .btn-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--ink);
+    border: 1.5px solid var(--border);
+  }
+  .btn-secondary:hover { border-color: var(--ink); }
+
+  /* Pizza SVGs */
+  svg.pizza { width: 220px; height: 220px; }
+</style>
+</head>
+<body>
+
+<!-- INTRO SCREEN -->
+<div class="screen active" id="screen-intro">
+  <div class="intro-card">
+    <div class="study-label">Perception Study · MATH&amp; 146</div>
+    <h1>How many pieces<br><em>are gone?</em></h1>
+    <p class="intro-body">
+      You will see three images of a pizza, one at a time. After each image, 
+      answer a single question. There are no right or wrong answers — 
+      respond with your first impression.
+    </p>
+    <div class="id-field">
+      <label for="student-id">Student ID (optional)</label>
+      <input type="text" id="student-id" placeholder="e.g. 12345" autocomplete="off">
+    </div>
+    <button class="btn btn-primary" id="start-btn" onclick="startExperiment()">Begin</button>
+  </div>
+</div>
+
+<!-- TRIAL SCREEN -->
+<div class="screen" id="screen-trial">
+  <div class="trial-header">
+    <span class="trial-counter" id="trial-counter">Trial 1 of 3</span>
+    <div class="progress-dots">
+      <div class="dot active" id="dot-0"></div>
+      <div class="dot" id="dot-1"></div>
+      <div class="dot" id="dot-2"></div>
+    </div>
+  </div>
+
+  <div class="pizza-container" id="pizza-container">
+    <!-- SVG injected here -->
+  </div>
+
+  <p class="question-text">How many pieces of pizza are gone?</p>
+
+  <div class="response-grid">
+    <button class="response-btn" onclick="recordResponse('one')">One piece</button>
+    <button class="response-btn" onclick="recordResponse('more')">More than one</button>
+    <button class="response-btn" onclick="recordResponse('unknown')">I don't know</button>
+  </div>
+</div>
+
+<!-- RESULTS SCREEN -->
+<div class="screen" id="screen-results">
+  <div class="results-card">
+    <h2>Your responses</h2>
+    <p class="results-subtitle">Three trials complete.</p>
+
+    <div class="trial-summary" id="trial-summary"></div>
+
+    <div class="aggregate-box" id="aggregate-box"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="downloadCSV()">Download my data</button>
+      <button class="btn btn-secondary" onclick="restart()">Start over</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Pizza SVGs ──────────────────────────────────────────────────────────────
+
+function pizzaSectorRemoved() {
+  // Circle pizza, quarter sector removed (top-right quadrant)
+  // Crust ring, cheese fill, missing wedge cut out
+  const cx = 110, cy = 110, r = 90, rim = 8;
+  // Missing: 0° to 90° (top-right quarter)
+  // We'll use clip-path / path approach
+  // Pizza fills 270° arc from 90° to 360° (going clockwise, so 90° to 360°)
+  // In SVG coords: 0° = right, clockwise positive
+  // Missing slice: from -90° (top) to 0° (right) → i.e. from 12 o'clock to 3 o'clock
+
+  const toRad = d => d * Math.PI / 180;
+  // We draw the pizza as the whole circle minus a wedge
+  // Use a path: move to center, line to edge at start angle, arc, line back
+  // The pizza (present): from 0° to 270° (leaving 270°→360° empty = top-right quarter)
+  // Let's say missing = 315° to 45° (top-right wedge, symmetric around 0°/right)
+  // Actually let's do missing = top quarter: -45° to 45° (i.e. 315° to 45°)
+
+  function arcPath(cx, cy, r, startDeg, endDeg) {
+    const s = toRad(startDeg), e = toRad(endDeg);
+    const x1 = cx + r * Math.cos(s), y1 = cy + r * Math.sin(s);
+    const x2 = cx + r * Math.cos(e), y2 = cy + r * Math.sin(e);
+    const large = (endDeg - startDeg) > 180 ? 1 : 0;
+    return `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2} Z`;
+  }
+
+  // Pizza spans from 45° to 315° (270° arc), missing 315°→405° (=45°)
+  const pizzaPath = arcPath(cx, cy, r, 45, 315);
+  const crustPath = arcPath(cx, cy, r - rim, 45, 315);
+
+  return `<svg class="pizza" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
+    <!-- background circle hint (plate) -->
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="#e8e0d8" opacity="0.4"/>
+    <!-- crust -->
+    <path d="${pizzaPath}" fill="#c4751a"/>
+    <!-- cheese -->
+    <path d="${crustPath}" fill="#f0c060"/>
+    <!-- sauce dots (toppings) -->
+    ${toppings(cx, cy, r - rim - 4)}
+    <!-- cut lines rendered over toppings -->
+    <line x1="${cx}" y1="${cy}" x2="${cx + r * Math.cos(toRad(45))}"  y2="${cy + r * Math.sin(toRad(45))}"  stroke="#3a1a00" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="${cx}" y1="${cy}" x2="${cx + r * Math.cos(toRad(315))}" y2="${cy + r * Math.sin(toRad(315))}" stroke="#3a1a00" stroke-width="2.5" stroke-linecap="round"/>
+  </svg>`;
+}
+
+function pizzaSlicesRemoved() {
+  // Same pizza, same proportion missing, but cut into 8 slices — 2 slices gone
+  const cx = 110, cy = 110, r = 90, rim = 8;
+  const toRad = d => d * Math.PI / 180;
+
+  // 8 equal slices, each 45°. Missing slices: 315°→360° and 0°→45° (same top-right wedge)
+  // Present slices: indices 1–6 out of 8 (0-indexed), i.e. angles 45° through 315°
+  let paths = '';
+  let cutLines = '';
+
+  // Draw 6 present slices
+  for (let i = 0; i < 8; i++) {
+    const startDeg = 45 + i * 45; // starts at 45, so slice 0 = 45→90, ..., slice 5 = 270→315
+    const endDeg = startDeg + 45;
+    if (startDeg >= 45 && endDeg <= 315) {
+      // present slice
+      const s = toRad(startDeg), e = toRad(endDeg);
+      const x1 = cx + r * Math.cos(s), y1 = cy + r * Math.sin(s);
+      const x2 = cx + r * Math.cos(e), y2 = cy + r * Math.sin(e);
+      // crust arc
+      const cx1 = cx + (r-rim) * Math.cos(s), cy1 = cy + (r-rim) * Math.sin(s);
+      const cx2 = cx + (r-rim) * Math.cos(e), cy2 = cy + (r-rim) * Math.sin(e);
+
+      paths += `<path d="M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2} Z" fill="#c4751a"/>`;
+      paths += `<path d="M ${cx} ${cy} L ${cx1} ${cy1} A ${r-rim} ${r-rim} 0 0 1 ${cx2} ${cy2} Z" fill="#f0c060"/>`;
+      // collect cut lines to draw later (over toppings)
+      cutLines += `<line x1="${cx}" y1="${cy}" x2="${x1}" y2="${y1}" stroke="#3a1a00" stroke-width="2.5" stroke-linecap="round"/>`;
+    }
+  }
+  // last cut line at 315°
+  const end = toRad(315);
+  cutLines += `<line x1="${cx}" y1="${cy}" x2="${cx + r*Math.cos(end)}" y2="${cy + r*Math.sin(end)}" stroke="#3a1a00" stroke-width="2.5" stroke-linecap="round"/>`;
+
+  return `<svg class="pizza" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="#e8e0d8" opacity="0.4"/>
+    ${paths}
+    ${toppings(cx, cy, r - rim - 4)}
+    <!-- cut lines rendered over toppings -->
+    ${cutLines}
+  </svg>`;
+}
+
+function toppings(cx, cy, maxR) {
+  const dotR = 7;
+  const buffer = 18; // angular buffer in degrees around cut lines
+  const dots = [
+    [cx - 30, cy + 35], [cx + 18, cy + 48], [cx - 52, cy + 12],
+    [cx + 42, cy + 20], [cx - 14, cy + 62], [cx + 28, cy - 35],
+    [cx - 42, cy - 28], [cx + 8,  cy - 52], [cx - 52, cy - 38],
+    [cx + 50, cy - 14], [cx - 18, cy - 18],
+  ].filter(([x, y]) => {
+    const d = Math.sqrt((x-cx)**2 + (y-cy)**2);
+    if (d > maxR - dotR - 4) return false;
+    const angle = (Math.atan2(y - cy, x - cx) * 180 / Math.PI + 360) % 360;
+    return !(angle > (315 - buffer) || angle < (45 + buffer));
+  });
+
+  return dots.map(([x, y]) =>
+    `<circle cx="${x}" cy="${y}" r="7" fill="#b03020" opacity="0.75"/>`
+  ).join('');
+}
+
+// ── Experiment logic ─────────────────────────────────────────────────────────
+
+const LABELS = {
+  coarse: 'Sector removed',
+  fine: 'Slices removed'
+};
+
+const RESPONSE_LABELS = {
+  one: 'One piece',
+  more: 'More than one',
+  unknown: "I don't know"
+};
+
+let order = [];      // ['coarse','fine','coarse'] or ['fine','coarse','fine']
+let currentTrial = 0;
+let trialStartTime = 0;
+let results = [];
+let studentId = '';
+
+function startExperiment() {
+  studentId = document.getElementById('student-id').value.trim() || 'anonymous';
+  // Randomize starting condition
+  const startCoarse = Math.random() < 0.5;
+  if (startCoarse) {
+    order = ['coarse', 'fine', 'coarse'];
+  } else {
+    order = ['fine', 'coarse', 'fine'];
+  }
+  currentTrial = 0;
+  results = [];
+  showTrial();
+  switchScreen('screen-trial');
+}
+
+function showTrial() {
+  // Update counter and dots
+  document.getElementById('trial-counter').textContent = `Trial ${currentTrial + 1} of 3`;
+  for (let i = 0; i < 3; i++) {
+    const dot = document.getElementById(`dot-${i}`);
+    dot.className = 'dot' + (i < currentTrial ? ' done' : i === currentTrial ? ' active' : '');
+  }
+
+  // Inject pizza image
+  const type = order[currentTrial];
+  const container = document.getElementById('pizza-container');
+  container.innerHTML = type === 'coarse' ? pizzaSectorRemoved() : pizzaSlicesRemoved();
+
+  // Clear any selected response buttons
+  document.querySelectorAll('.response-btn').forEach(b => b.classList.remove('selected'));
+
+  // Start timer
+  trialStartTime = Date.now();
+}
+
+function recordResponse(resp) {
+  const rt = Date.now() - trialStartTime;
+
+  // Visual feedback
+  document.querySelectorAll('.response-btn').forEach(b => b.classList.remove('selected'));
+  event.target.classList.add('selected');
+
+  // Store result
+  results.push({
+    trial: currentTrial + 1,
+    image: order[currentTrial],
+    response: resp,
+    rt_ms: rt
+  });
+
+  // Advance after brief pause
+  setTimeout(() => {
+    currentTrial++;
+    if (currentTrial < 3) {
+      showTrial();
+    } else {
+      showResults();
+    }
+  }, 350);
+}
+
+function showResults() {
+  switchScreen('screen-results');
+
+  // Build trial summary
+  const summary = document.getElementById('trial-summary');
+  summary.innerHTML = results.map((r, i) => `
+    <div class="trial-row">
+      <span class="t-label">Trial ${r.trial}</span>
+      <span class="t-img-label">${LABELS[r.image]}</span>
+      <div>
+        <div class="t-response">${RESPONSE_LABELS[r.response]}</div>
+        <div class="t-rt">${(r.rt_ms/1000).toFixed(2)}s</div>
+      </div>
+    </div>
+  `).join('');
+
+  // Aggregate note
+  const responses = results.map(r => r.response);
+  const switched = responses[0] !== responses[1] || responses[1] !== responses[2];
+  const hasUnknown = responses.includes('unknown');
+  const consistent = !switched;
+
+  let note = '';
+  if (consistent && !hasUnknown) {
+    note = `Your responses were <strong>consistent</strong> across all three images — you applied the same interpretation regardless of how the pizza was presented.`;
+  } else if (hasUnknown) {
+    note = `You responded <strong>"I don't know"</strong> at least once — your perception shifted as the images alternated.`;
+  } else {
+    note = `Your responses <strong>changed</strong> between images — the way the pizza was presented affected your answer.`;
+  }
+
+  document.getElementById('aggregate-box').innerHTML = note + `<br>Your starting image was: <strong>${LABELS[order[0]]}</strong>.`;
+}
+
+function downloadCSV() {
+  const header = 'student_id,trial,image_type,response,rt_ms,starting_image';
+  const rows = results.map(r =>
+    `${studentId},${r.trial},${r.image},${r.response},${r.rt_ms},${order[0]}`
+  );
+  const csv = [header, ...rows].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `pizza_study_${studentId}_${Date.now()}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function restart() {
+  currentTrial = 0;
+  results = [];
+  switchScreen('screen-intro');
+}
+
+function switchScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+</script>
+</body>
+</html>
