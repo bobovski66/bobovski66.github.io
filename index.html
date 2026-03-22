@@ -287,6 +287,14 @@
     }
   </style>
   <script>
+    // Category group toggle
+    function toggleCat(id, el) {
+      const panel = document.getElementById(id);
+      const isOpen = panel.style.display === 'block';
+      panel.style.display = isOpen ? 'none' : 'block';
+      el.classList.toggle('open', !isOpen);
+    }
+
     // Lightbox
     function openLightbox(src, alt) {
       const overlay = document.getElementById('lightboxOverlay');
@@ -379,10 +387,13 @@
     <h2>Connect</h2>
     <div class="connect-grid">
       <p>Facebook: <a href="https://www.facebook.com/ChristopherRaeLee/" target="_blank">ChristopherRaeLee</a></p>
-      <p>Instagram: <a href="https://www.instagram.com/trismegistus_bob/" target="_blank">trismegistus_bob</a></p>
       <p>YouTube: <a href="https://www.youtube.com/channel/UCGj_D58prjEd1G9BMgtoAyg" target="_blank">Christopher Lee-Jenkins</a></p>
-      <p>LinkedIn: <a href="https://www.linkedin.com/in/christopher-lee-jenkins-9ab028225/" target="_blank">Christopher Lee-Jenkins</a></p>
+      <p>Substack: <a href="https://substack.com/@christopherleejenkins" target="_blank">Christopher Lee-Jenkins</a></p>
     </div>
+    <p style="margin-top:1.2em; padding:0.9em 1.2em; background:rgba(198,170,88,0.07); border-left:3px solid rgba(198,170,88,0.4); border-radius:0 6px 6px 0; color:#ccc; font-size:0.98em;">
+      📺 <strong style="color:#c6aa58;">New videos on YouTube</strong> cover the interactive demonstrations and the Observational Geometry research program. <a href="https://www.youtube.com/channel/UCGj_D58prjEd1G9BMgtoAyg" target="_blank">Subscribe to follow along.</a><br>
+      ✍️ <strong style="color:#c6aa58;">The Substack</strong> is where I'll be laying out the OG framework in a more accessible, public-facing form. <a href="https://substack.com/@christopherleejenkins" target="_blank">Subscribe there too.</a>
+    </p>
   </div>
 
   <!-- LIGHTBOX -->
@@ -435,70 +446,313 @@
   <!-- DEMONSTRATIONS -->
   <div class="section">
     <h2>Demonstrations</h2>
+    <p style="color:#9a9ab0; font-size:0.97em; margin-bottom:1.4em;">Interactive tools, simulations, and explorers — organized by theme. Click a category to expand it.</p>
 
-    <p class="clickable-title" onclick="toggle('solitonSuperposition', this)">The Cosmic Dance of Solitons &amp; Superposition</p>
-    <div class="collapsible" id="solitonSuperposition">
-      <p>Explore the mesmerizing world of nonlinear wave interactions, where solitons collide and superpose in a cosmic ballet.</p>
+    <!-- ── OBSERVATIONAL GEOMETRY ── -->
+    <p class="clickable-title cat-header" onclick="toggleCat('catOG', this)" style="font-size:1.25em; font-family:'DM Serif Display',serif; font-weight:normal; border-bottom:1px solid rgba(198,170,88,0.2); padding-bottom:0.4em; margin-bottom:0;">Observational Geometry &amp; Evolutionary Dynamics</p>
+    <div class="collapsible cat-body" id="catOG">
+    <p style="color:#999; font-size:0.93em; margin:0.5em 0 0.8em;">These tools grew directly out of the OG research program. They let you watch the mathematics move — populations competing, probability landscapes curving, and the geometry of observation made visible.</p>
+
+    <p class="clickable-title" onclick="toggle('demoReplicator', this)">Replicator Dynamics Explorer</p>
+    <div class="collapsible" id="demoReplicator">
+      <p>An interactive simulation of how competing strategies evolve in a population over time. You can switch between game types: symmetric games (where populations settle to equilibria), cyclic games like Rock-Paper-Scissors (where strategies orbit forever without settling), and mixed cases that spiral. Built on the same folded symplectic geometry as the OG research program.</p>
+      <a href="replicator_dynamics.html">Go to Demonstration</a>
+    </div>
+
+    <p class="clickable-title" onclick="toggle('demoReplicator3d', this)">4-Strategy Replicator Dynamics (3-Simplex)</p>
+    <div class="collapsible" id="demoReplicator3d">
+      <p>Extends the replicator explorer into four competing strategies, visualized inside a three-dimensional tetrahedron. When one strategy goes extinct, the dynamics automatically collapse to a lower-dimensional system — you can watch the dimension drop in real time as populations hit the boundary faces, edges, and vertices of the simplex.</p>
+      <a href="replicator3d.html">Go to Demonstration</a>
+    </div>
+
+    <p class="clickable-title" onclick="toggle('demoGeomReplicator', this)">Geometric Replicator Dynamics</p>
+    <div class="collapsible" id="demoGeomReplicator">
+      <p>A more technically detailed version of the replicator explorer that makes the underlying geometry explicit. Trajectories are displayed in log-ratio coordinates (which handle the boundary naturally), and you can visualize the Shahshahani metric — the geometric ruler that measures how far apart two population distributions actually are in evolutionary terms. The gradient and Hamiltonian components of the flow can be toggled separately.</p>
+      <a href="geometric_replicator.html">Go to Demonstration</a>
+    </div>
+
+    <p class="clickable-title" onclick="toggle('demoGameTheory3d', this)">Replicator Dynamics: Information Geometry View</p>
+    <div class="collapsible" id="demoGameTheory3d">
+      <p>Adds an information-geometric layer to the replicator dynamics: the simplex is equipped with the Fisher information metric, which measures how distinguishable two probability distributions are. Ellipses on the simplex show where the geometry is highly curved (hard to distinguish nearby states) versus flat (easy). Shannon entropy, KL divergence, and Fisher-Rao distances are computed live as the trajectory evolves.</p>
+      <a href="gametheory3d.html">Go to Demonstration</a>
+    </div>
+
+    <p class="clickable-title" onclick="toggle('demoSimplexLab', this)">Simplex Game Theory Lab: The Advisory-Control Story</p>
+    <div class="collapsible" id="demoSimplexLab">
+      <p>A stylized application of replicator dynamics to a social scenario: a population of advisors split between Loyal, Traitorous, and Skeptical strategies, evolving under a payoff matrix shaped by trust, opacity, and persuasion parameters. A pseudo-3D lift of the simplex visualizes the trust potential landscape. An unusual demo that applies the abstract machinery to a very concrete (and pointed) setting.</p>
+      <a href="simplex_game_theory_lab.html">Go to Demonstration</a>
+    </div>
+
+    <p class="clickable-title" onclick="toggle('demoFisher', this)">Fisher Geometry Curvature Explorer</p>
+    <div class="collapsible" id="demoFisher">
+      <p>Visualizes the curvature of a neural network's loss landscape using Fisher information geometry. Think of it as a topographic map of the terrain that gradient descent has to navigate: red/yellow regions are steep and difficult, blue/purple regions are gentle. You can adjust the number of expert heads and gating strength to see how architectural choices reshape the optimization geometry.</p>
+      <a href="fisher_geometry_app.html">Go to Demonstration</a>
+    </div>
+
+    <p class="clickable-title" onclick="toggle('demoSoftmaxAtlas', this)">Softmax Atlas Viewer: Sphere, Torus, and RP²</p>
+    <div class="collapsible" id="demoSoftmaxAtlas">
+      <p>Three classic surfaces — the sphere, torus, and projective plane — rendered using softmax/Gudermannian coordinate charts. A temperature parameter τ rescales the logit direction, showing how the softmax function warps the coordinate grid. Drag to rotate, scroll to zoom.</p>
+      <a href="softmax_atlas_viewer.html">Go to Demonstration</a>
+    </div>
+
+    <p class="clickable-title" onclick="toggle('demoSoftmaxKnot', this)">Torus Knot on a Softmax Torus</p>
+    <div class="collapsible" id="demoSoftmaxKnot">
+      <p>A (p,q) torus knot — a curve that winds p times around one axis of a torus and q times around the other — rendered on a torus whose coordinates are parameterized by the softmax function. The temperature parameter stretches and compresses the parameter strip, revealing how the knot's trace changes under the softmax rescaling.</p>
+      <a href="softmax_torus_knot.html">Go to Demonstration</a>
+    </div>
+
+    <p class="clickable-title" onclick="toggle('demoEMScreen', this)">Contact-Descent EM Field Visualizer</p>
+    <div class="collapsible" id="demoEMScreen">
+      <p>An electromagnetic field simulator built on contact geometry rather than standard vector calculus. Electric and magnetic fields are generated from a bulk action via a Reeb channel — a geometric structure that governs how information flows through a contact manifold. An "overdrive" mode stresses the Reeb channel to simulate what happens when the geometric structure is pushed past its natural operating range.</p>
+      <a href="EM_Screen.html">Go to Demonstration</a>
+    </div>
+
+    <p class="clickable-title" onclick="toggle('demoTimeWarp', this)">Reeb Overload &amp; EM Time Dilation</p>
+    <div class="collapsible" id="demoTimeWarp">
+      <p>A real-time simulation of how a Reeb channel under load can dilate, compress, and even reverse the flow of an observer's internal time. When the channel is overloaded, the screen clock skips forward; when it is underloaded, it briefly runs backward. The live plots show the load integral, the dilation factor, and the accumulated screen time simultaneously.</p>
+      <a href="time_warp.html">Go to Demonstration</a>
+    </div>
+
+    </div><!-- /catOG -->
+
+    <!-- ── TOPOLOGY & GEOMETRY ── -->
+    <p class="clickable-title cat-header" onclick="toggleCat('catTopo', this)" style="font-size:1.25em; font-family:'DM Serif Display',serif; font-weight:normal; border-bottom:1px solid rgba(198,170,88,0.2); padding-bottom:0.4em; margin-bottom:0; margin-top:0.8em;">Topology &amp; Geometry</p>
+    <div class="collapsible cat-body" id="catTopo">
+
+    <p class="clickable-title" onclick="toggle('demoHopf', this)">Hopf Fibration — Stereoscopic Viewer</p>
+    <div class="collapsible" id="demoHopf">
+      <p>The Hopf fibration is one of the most beautiful structures in topology: the three-dimensional sphere (S³) can be decomposed into a family of circles, one sitting over each point of the ordinary two-dimensional sphere (S²). This viewer renders those circles via stereographic projection from S³ into three-dimensional space, with optional stereoscopic (cross-eye or parallel) viewing for a genuine sense of depth.</p>
+      <a href="hopf_stereo.html">Go to Demonstration</a>
+    </div>
+
+    <p class="clickable-title" onclick="toggle('demoTorusKnot', this)">(p,q) Torus Knot and Surface Viewer</p>
+    <div class="collapsible" id="demoTorusKnot">
+      <p>Interactively explore torus knots by adjusting the parameters p and q: the knot winds p times around the long axis of the torus and q times around the short axis. Different parameter choices produce dramatically different knotted curves, from simple loops to elaborate multi-strand braids.</p>
+      <a href="torus_knot_surface.html">Go to Demonstration</a>
+    </div>
+
+    <p class="clickable-title" onclick="toggle('demoTorusKnotPunk', this)">Torus Knot &amp; Holomorphic Surface Generator</p>
+    <div class="collapsible" id="demoTorusKnotPunk">
+      <p>A more elaborate variant of the torus knot viewer that also generates the holomorphic surface swept out by the knot — the complex-analytic surface whose boundary is the knot curve.</p>
+      <a href="torus_knot_surface_punk.html">Go to Demonstration</a>
+    </div>
+
+    <p class="clickable-title" onclick="toggle('demoFiniteTorus', this)">Finite Subgroups of the Torus: Zₘ × Zₙ Explorer</p>
+    <div class="collapsible" id="demoFiniteTorus">
+      <p>The surface of a torus is a group — you can add points on it the same way you add angles. This explorer visualizes the finite subgroups of that group: the discrete grids of points that form a closed system under addition. Adjust m and n to see how the subgroup lattice and generator paths change as the symmetry structure varies.</p>
+      <a href="FiniteSubgroupTorus.html">Go to Demonstration</a>
+    </div>
+
+    <p class="clickable-title" onclick="toggle('demoSoliton', this)">The Cosmic Dance of Solitons &amp; Superposition</p>
+    <div class="collapsible" id="demoSoliton">
+      <p>Solitons are waves with a remarkable property: they collide and pass through each other without breaking apart, emerging from a collision with the same shape they had going in. This simulation shows soliton solutions to the nonlinear Schrödinger equation — the same equation that governs light in optical fibers and matter waves in quantum systems.</p>
       <a href="NLS/index.html">Go to Demonstration</a>
     </div>
 
     <p class="clickable-title" onclick="toggle('demoPolyRoots', this)">Fascinating Patterns of Polynomial Roots</p>
     <div class="collapsible" id="demoPolyRoots">
-      <p>The roots of polynomials are plotted in the complex plane, revealing compelling and beautiful patterns.</p>
+      <p>Plot the roots of large families of polynomials in the complex plane and watch unexpected fractal-like patterns emerge. The roots of polynomials with restricted coefficients arrange themselves into intricate lace-like structures that no one would predict from the algebra alone.</p>
       <a href="PolyRoots/index.html">Go to Demonstration</a>
     </div>
 
+    <p class="clickable-title" onclick="toggle('demoFractal', this)">Mandelbrot &amp; Julia Set Gallery</p>
+    <div class="collapsible" id="demoFractal">
+      <p>A gallery of classic Mandelbrot and Julia sets — the most famous fractals in mathematics, generated by iterating a simple rule in the complex plane and coloring points by how quickly they escape to infinity.</p>
+      <a href="Fractal/index.html">Go to Demonstration</a>
+    </div>
+
+    <p class="clickable-title" onclick="toggle('demoMandelbulb', this)">Mandelbulb Explorer</p>
+    <div class="collapsible" id="demoMandelbulb">
+      <p>A 3D fractal explorer extending the Mandelbrot set into three dimensions using spherical and toroidal coordinate systems. Switch between Mandelbrot and Julia modes, adjust the power parameter to morph between organic and spiky geometries, and record a 10-second video of the rotating fractal. Four fundamentally different fractal objects live in the two coordinate systems × two iteration modes.</p>
+      <a href="mandelbulb-explorer.html">Go to Demonstration</a>
+    </div>
+
+    </div><!-- /catTopo -->
+
+    <!-- ── NUMBER THEORY & COMBINATORICS ── -->
+    <p class="clickable-title cat-header" onclick="toggleCat('catNum', this)" style="font-size:1.25em; font-family:'DM Serif Display',serif; font-weight:normal; border-bottom:1px solid rgba(198,170,88,0.2); padding-bottom:0.4em; margin-bottom:0; margin-top:0.8em;">Number Theory &amp; Combinatorics</p>
+    <div class="collapsible cat-body" id="catNum">
+
     <p class="clickable-title" onclick="toggle('demoFibo', this)">Fibonacci and Pascal's Triangle Diagonals</p>
     <div class="collapsible" id="demoFibo">
-      <p>Visualizes Pascal's Triangle and explores its diagonal sums, revealing a surprising connection to the Fibonacci sequence.</p>
+      <p>Pascal's triangle — the array of binomial coefficients — hides the Fibonacci sequence in its diagonal sums. This visualization makes that connection explicit, letting you watch the Fibonacci numbers emerge from a structure that looks, at first glance, like it has nothing to do with them.</p>
       <a href="Fibo/index.html">Go to Demonstration</a>
     </div>
 
     <p class="clickable-title" onclick="toggle('demoFloyd', this)">Floyd's Triangle Diagonals &amp; Combinatorial Sequences</p>
     <div class="collapsible" id="demoFloyd">
-      <p>Visualizes Floyd's Triangle and explores its diagonal sums, revealing intriguing number sequences like structured tetragonal anti-prism numbers.</p>
+      <p>Floyd's triangle is a simple arrangement of consecutive integers in a triangular array. Its diagonal sums produce surprising number sequences — including the tetragonal anti-prism numbers — that connect elementary combinatorics to three-dimensional geometry.</p>
       <a href="floyd.html">Go to Demonstration</a>
-    </div>
-
-    <p class="clickable-title" onclick="toggle('demoFractal', this)">Fractal Visualizations</p>
-    <div class="collapsible" id="demoFractal">
-      <p>A gallery of Mandelbrot and Julia sets.</p>
-      <a href="Fractal/index.html">Go to Demonstration</a>
-    </div>
-
-    <p class="clickable-title" onclick="toggle('demoFourier', this)">Fourier Interference Patterns</p>
-    <div class="collapsible" id="demoFourier">
-      <p>Explore the Fourier transform of interference patterns with high-resolution visualizations of spectral compositions.</p>
-      <a href="FourierInterference.html">Go to Demonstration</a>
-    </div>
-
-    <p class="clickable-title" onclick="toggle('demoInterference', this)">Dot Grid Rotator</p>
-    <div class="collapsible" id="demoInterference">
-      <p>Interactively rotate a dot grid and observe interference patterns as transformations create dynamic visual effects.</p>
-      <a href="interference.html">Go to Demonstration</a>
     </div>
 
     <p class="clickable-title" onclick="toggle('demoModular', this)">Modular Multiplication Visualization</p>
     <div class="collapsible" id="demoModular">
-      <p>A graphical representation of modular multiplication, revealing hidden structures in number theory through dynamic circular patterns.</p>
+      <p>Draw chords connecting numbers on a circle according to a multiplication rule in modular arithmetic — and watch intricate cardioid and nephroid curves appear. The same patterns that show up in the Mandelbrot set emerge from this elementary number-theoretic construction.</p>
       <a href="modular.html">Go to Demonstration</a>
     </div>
 
+    <p class="clickable-title" onclick="toggle('demoMultTables', this)">Multiplication Tables: Distinct Products and Asymptotics</p>
+    <div class="collapsible" id="demoMultTables">
+      <p>An interactive essay exploring how many distinct products appear in an n×n multiplication table — a question that turns out to connect to deep results in analytic number theory. The count grows much more slowly than you would expect, approaching triangular numbers in ways that Erdős and others spent decades understanding.</p>
+      <a href="mult_tables.html">Go to Demonstration</a>
+    </div>
+
+    <p class="clickable-title" onclick="toggle('demoIthroot', this)">The Transcendental Nature of i^(1/i)</p>
+    <div class="collapsible" id="demoIthroot">
+      <p>An illustrated essay on a remarkable fact: raising the imaginary unit i to the power 1/i produces a real number — specifically, e^(π/2) and its multiples. The derivation uses Euler's formula and the multi-valued complex logarithm, and the result is a small window into why complex analysis is so much stranger and richer than real analysis.</p>
+      <a href="ithroot.html">Go to Demonstration</a>
+    </div>
+
+    </div><!-- /catNum -->
+
+    <!-- ── PHYSICS & SIMULATION ── -->
+    <p class="clickable-title cat-header" onclick="toggleCat('catPhys', this)" style="font-size:1.25em; font-family:'DM Serif Display',serif; font-weight:normal; border-bottom:1px solid rgba(198,170,88,0.2); padding-bottom:0.4em; margin-bottom:0; margin-top:0.8em;">Physics &amp; Simulation</p>
+    <div class="collapsible cat-body" id="catPhys">
+
+    <p class="clickable-title" onclick="toggle('demoSolar', this)">Solar System Builder</p>
+    <div class="collapsible" id="demoSolar">
+      <p>Build your own planetary system from scratch: place suns, planets, moons, and asteroids, set their masses and initial velocities, and watch Newtonian gravity take over. The simulation tracks total energy and lets you see how small changes in initial conditions lead to wildly different orbital behaviors — from stable ellipses to chaotic ejections.</p>
+      <a href="solarsim.html">Go to Demonstration</a>
+    </div>
+
+    <p class="clickable-title" onclick="toggle('demoFourier', this)">Fourier Interference Patterns</p>
+    <div class="collapsible" id="demoFourier">
+      <p>Explore how interference patterns decompose into their frequency components. When two or more waves overlap, the resulting pattern contains information about both — and the Fourier transform is the mathematical tool that separates them back out. This visualization makes the spectral structure of interference visible.</p>
+      <a href="FourierInterference.html">Go to Demonstration</a>
+    </div>
+
+    <p class="clickable-title" onclick="toggle('demoInterference', this)">Dot Grid Rotator &amp; Moiré Patterns</p>
+    <div class="collapsible" id="demoInterference">
+      <p>Rotate a regular dot grid slightly and watch moiré patterns — large-scale interference structures — appear from the mismatch between the two grids. The patterns shift and morph continuously as the rotation angle changes, demonstrating how global structure can emerge from local regularity.</p>
+      <a href="interference.html">Go to Demonstration</a>
+    </div>
+
+    <p class="clickable-title" onclick="toggle('demoGalaxies', this)">Animated Bubble Universe</p>
+    <div class="collapsible" id="demoGalaxies">
+      <p>A generative art simulation that produces continuously evolving galaxy-like swirls from a simple iterative rule — the "Bubble Universe" algorithm originally written in QB64. Each run starts from a random seed and produces a unique, living pattern that never quite repeats.</p>
+      <a href="galaxies.html">Go to Demonstration</a>
+    </div>
+
+    <p class="clickable-title" onclick="toggle('demoGalaxiesTorus', this)">Bubble Universe on a Torus</p>
+    <div class="collapsible" id="demoGalaxiesTorus">
+      <p>The same Bubble Universe algorithm, but wrapped onto the surface of a three-dimensional torus. The result is a dynamically evolving point cloud that lives on a curved surface rather than a flat plane — a small demonstration of how topology changes the qualitative character of a dynamical system.</p>
+      <a href="galaxies_torus.html">Go to Demonstration</a>
+    </div>
+
+    </div><!-- /catPhys -->
+
+    <!-- ── STATISTICS & TEACHING ── -->
+    <p class="clickable-title cat-header" onclick="toggleCat('catStats', this)" style="font-size:1.25em; font-family:'DM Serif Display',serif; font-weight:normal; border-bottom:1px solid rgba(198,170,88,0.2); padding-bottom:0.4em; margin-bottom:0; margin-top:0.8em;">Statistics &amp; Teaching</p>
+    <div class="collapsible cat-body" id="catStats">
+
     <p class="clickable-title" onclick="toggle('demoNormal', this)">Normal Distribution Visualizer</p>
     <div class="collapsible" id="demoNormal">
-      <p>Dynamically adjust mean and standard deviation to see how the normal distribution curve changes in real time.</p>
+      <p>Adjust the mean and standard deviation of a normal distribution and watch the bell curve reshape in real time. A simple but essential tool for building intuition about what these two parameters actually control — and why the standard deviation is a measure of spread rather than location.</p>
       <a href="normal.html">Go to Demonstration</a>
     </div>
 
+    <p class="clickable-title" onclick="toggle('demoPizza', this)">Pizza Perception Study (MATH&amp; 146)</p>
+    <div class="collapsible" id="demoPizza">
+      <p>A classroom perception experiment from Introduction to Statistics. Three images of a pizza appear one at a time; after each, you record your first impression of how many slices are missing. There are no right or wrong answers — the point is to collect and later analyze the distribution of responses as real data, and to think about what "perception" means as a measurement process.</p>
+      <a href="pizza.html">Go to Demonstration</a>
+    </div>
+
+    <p class="clickable-title" onclick="toggle('demoPartialDeriv', this)">Partial Derivatives Matching Game</p>
+    <div class="collapsible" id="demoPartialDeriv">
+      <p>A drag-and-drop matching game for multivariable calculus: given a set of functions, match each one to its partial derivative with respect to x and its partial derivative with respect to y. A low-stakes way to build fluency with the mechanics of partial differentiation.</p>
+      <a href="partialderivgame.html">Go to Demonstration</a>
+    </div>
+
+    <p class="clickable-title" onclick="toggle('demoBizness', this)">Business Event Game Simulation</p>
+    <div class="collapsible" id="demoBizness">
+      <p>A card-based simulation of running a small business over a seven-day period. Random event cards affect daily costs and revenues, and the cumulative balance sheet updates as you progress. Built for illustrating probability, expected value, and variance in an applied setting.</p>
+      <a href="bizness_game_sim.html">Go to Demonstration</a>
+    </div>
+
+    </div><!-- /catStats -->
+
+    <!-- ── MUSIC & AUDIO ── -->
+    <p class="clickable-title cat-header" onclick="toggleCat('catMusic', this)" style="font-size:1.25em; font-family:'DM Serif Display',serif; font-weight:normal; border-bottom:1px solid rgba(198,170,88,0.2); padding-bottom:0.4em; margin-bottom:0; margin-top:0.8em;">Music &amp; Audio</p>
+    <div class="collapsible cat-body" id="catMusic">
+
+    <p class="clickable-title" onclick="toggle('demoSynth', this)">Web Synthesizer</p>
+    <div class="collapsible" id="demoSynth">
+      <p>A fully functional subtractive synthesizer running in the browser. Two oscillators with selectable waveforms (sine, square, sawtooth, triangle), an ADSR envelope, a low-frequency oscillator for vibrato and tremolo, a multi-mode filter, and an arpeggiator — all routable from a clickable keyboard. Built on the Web Audio API.</p>
+      <a href="synth.html">Go to Demonstration</a>
+    </div>
+
+    <p class="clickable-title" onclick="toggle('demoNoteTrainer', this)">Musical Note Trainer</p>
+    <div class="collapsible" id="demoNoteTrainer">
+      <p>An interactive ear- and eye-training tool for reading music notation. Notes appear on treble or bass clef staves (or both); you identify them by name. Practice mode, timed quiz, and challenge mode available, with support for sharps, flats, and ledger lines. Tracks accuracy and streak length.</p>
+      <a href="note-trainer.html">Go to Demonstration</a>
+    </div>
+
+    </div><!-- /catMusic -->
+
+    <!-- ── GRAPHS & NETWORKS ── -->
+    <p class="clickable-title cat-header" onclick="toggleCat('catGraphs', this)" style="font-size:1.25em; font-family:'DM Serif Display',serif; font-weight:normal; border-bottom:1px solid rgba(198,170,88,0.2); padding-bottom:0.4em; margin-bottom:0; margin-top:0.8em;">Graphs &amp; Networks</p>
+    <div class="collapsible cat-body" id="catGraphs">
+
+    <p class="clickable-title" onclick="toggle('demoGraphs', this)">Directed &amp; Undirected Graph Builder</p>
+    <div class="collapsible" id="demoGraphs">
+      <p>An interactive graph editor: click to add nodes, connect them with directed or undirected edges, toggle label mode to name vertices, and delete mode to remove them. A clean tool for sketching graph structures when working through problems in combinatorics, network theory, or topology.</p>
+      <a href="graphs.html">Go to Demonstration</a>
+    </div>
+
+    <p class="clickable-title" onclick="toggle('demoMathTree', this)">Mathematical Genealogy Tree</p>
+    <div class="collapsible" id="demoMathTree">
+      <p>An interactive visualization of mathematical ancestry — the advisor-student lineage that connects mathematicians across generations. Trace the academic family tree of historical and contemporary mathematicians to see how ideas and traditions propagate through the discipline.</p>
+      <a href="mathtree.html">Go to Demonstration</a>
+    </div>
+
+    </div><!-- /catGraphs -->
+
+    <!-- ── GAMES & CURIOSITIES ── -->
+    <p class="clickable-title cat-header" onclick="toggleCat('catGames', this)" style="font-size:1.25em; font-family:'DM Serif Display',serif; font-weight:normal; border-bottom:1px solid rgba(198,170,88,0.2); padding-bottom:0.4em; margin-bottom:0; margin-top:0.8em;">Games &amp; Curiosities</p>
+    <div class="collapsible cat-body" id="catGames">
+
+    <p class="clickable-title" onclick="toggle('demoHiQ', this)">Hi-Q / Peg Solitaire</p>
+    <div class="collapsible" id="demoHiQ">
+      <p>The classic peg solitaire puzzle: jump pegs over adjacent pegs to remove them, with the goal of finishing with exactly one peg remaining. Playable on the standard English cross board (33 holes) or a triangular board of variable size. Includes undo, hint, and the ability to choose your starting empty hole.</p>
+      <a href="HiQ.html">Go to Demonstration</a>
+    </div>
+
+    <p class="clickable-title" onclick="toggle('demoEldritch', this)">Eldritch Inquiries: A Lovecraftian Mystery Game</p>
+    <div class="collapsible" id="demoEldritch">
+      <p>A text-based investigation game with a sanity meter. Explore locations, gather clues in a detective's notebook, and attempt to solve the case before your grip on reality gives way entirely. A small, atmospheric exercise in horror-adjacent game design.</p>
+      <a href="EldritchInquiries.html">Go to Demonstration</a>
+    </div>
+
+    <p class="clickable-title" onclick="toggle('demoMoire', this)">Interactive Moiré Wheel Builder</p>
+    <div class="collapsible" id="demoMoire">
+      <p>Build and layer rotating wheels of concentric rings or radial spokes, then watch moiré interference patterns emerge from their overlap. Control rotation speed, line density, opacity, and blend mode for each wheel independently. Layouts can be saved and reloaded.</p>
+      <a href="demoivre_wheel.html">Go to Demonstration</a>
+    </div>
+
+    </div><!-- /catGames -->
+
+    <!-- ── HISTORY & CULTURE ── -->
+    <p class="clickable-title cat-header" onclick="toggleCat('catHistory', this)" style="font-size:1.25em; font-family:'DM Serif Display',serif; font-weight:normal; border-bottom:1px solid rgba(198,170,88,0.2); padding-bottom:0.4em; margin-bottom:0; margin-top:0.8em;">History &amp; Culture</p>
+    <div class="collapsible cat-body" id="catHistory">
+
     <p class="clickable-title" onclick="toggle('demoDinoChrono', this)">Paleontology, Plate Tectonics, and Evolution Timeline</p>
     <div class="collapsible" id="demoDinoChrono">
-      <p>An interactive timeline exploring the history of paleontology, the evolution of dinosaurs, and the development of plate tectonics.</p>
+      <p>An interactive timeline tracing the parallel histories of paleontology, dinosaur evolution, and the development of plate tectonic theory — showing how scientific understanding of deep time and continental drift evolved alongside each other over two centuries.</p>
       <a href="dino_chrono.html">Go to Demonstration</a>
     </div>
+
+    <p class="clickable-title" onclick="toggle('demoUAP', this)">UAP Disclosure Timeline</p>
+    <div class="collapsible" id="demoUAP">
+      <p>An annotated timeline of governmental, scientific, and legislative developments related to UAP (Unidentified Aerial Phenomena) disclosure, organized around Karl Nell's five-phase campaign plan. Tracks the arc from the 2021 UAPTF establishment through ongoing scientific findings — including recent astrobiology results from Mars — toward projected phases of characterization and determination of nature.</p>
+      <a href="UAP_Timeline.html">Go to Demonstration</a>
+    </div>
+
+    </div><!-- /catHistory -->
+
   </div>
 
   <div class="footer">
-    <p>&copy; 2025 Christopher Lee-Jenkins</p>
+    <p>&copy; 2026 Christopher Lee-Jenkins</p>
   </div>
 
 </div>
