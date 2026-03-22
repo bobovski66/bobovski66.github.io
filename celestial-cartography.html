@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Celestial Cartography</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#05060f;
+  --bg2:#090b1a;
+  --bg3:#0d1128;
+  --gold:#c9a84c;
+  --gold2:#e8c96a;
+  --gold3:#5a4820;
+  --gold4:#3a2e12;
+  --silver:#98a8c0;
+  --cream:#d4c8b0;
+  --dim:#484060;
+  --fire:rgba(155,48,30,0.55);
+  --earth:rgba(85,65,30,0.5);
+  --air:rgba(32,75,110,0.5);
+  --water:rgba(24,44,82,0.55);
+  --trine:#40b865;
+  --square:#c03530;
+  --conj:#d8d0b8;
+  --oppo:#d06020;
+  --sext:#4070c0;
+  --quin:#7040a0;
+  --semi:#906830;
+}
+
+html,body{height:100%;background:var(--bg);color:var(--cream);font-family:'Crimson Text',Georgia,serif;font-size:15px;line-height:1.5;overflow-x:hidden}
+
+/* starfield */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(circle,rgba(255,255,255,.85) 0,rgba(255,255,255,.85) .4px,transparent .8px) 14% 18%/1px 1px,
+    radial-gradient(circle,rgba(255,255,255,.6) 0,rgba(255,255,255,.6) .3px,transparent .6px) 73% 7%/1px 1px,
+    radial-gradient(circle,rgba(255,255,255,.7) 0,rgba(255,255,255,.7) .35px,transparent .7px) 91% 33%/1px 1px,
+    radial-gradient(circle,rgba(255,255,255,.5) 0,rgba(255,255,255,.5) .3px,transparent .6px) 28% 67%/1px 1px,
+    radial-gradient(circle,rgba(200,210,255,.7) 0,rgba(200,210,255,.7) .4px,transparent .8px) 55% 84%/1px 1px,
+    radial-gradient(circle,rgba(255,255,255,.4) 0,rgba(255,255,255,.4) .3px,transparent .6px) 43% 11%/1px 1px,
+    radial-gradient(circle,rgba(255,255,255,.6) 0,rgba(255,255,255,.6) .35px,transparent .7px) 86% 58%/1px 1px,
+    radial-gradient(circle,rgba(255,255,255,.5) 0,rgba(255,255,255,.5) .28px,transparent .56px) 8% 51%/1px 1px,
+    radial-gradient(circle,rgba(255,255,255,.8) 0,rgba(255,255,255,.8) .45px,transparent .9px) 62% 25%/1px 1px,
+    radial-gradient(circle,rgba(200,180,255,.5) 0,rgba(200,180,255,.5) .3px,transparent .6px) 19% 88%/1px 1px,
+    radial-gradient(circle,rgba(255,255,255,.7) 0,rgba(255,255,255,.7) .4px,transparent .8px) 79% 92%/1px 1px,
+    radial-gradient(circle,rgba(255,240,200,.6) 0,rgba(255,240,200,.6) .35px,transparent .7px) 37% 42%/1px 1px,
+    radial-gradient(circle,rgba(255,255,255,.4) 0,rgba(255,255,255,.4) .25px,transparent .5px) 96% 15%/1px 1px,
+    radial-gradient(circle,rgba(255,255,255,.55) 0,rgba(255,255,255,.55) .3px,transparent .6px) 5% 75%/1px 1px,
+    radial-gradient(circle,rgba(200,220,255,.65) 0,rgba(200,220,255,.65) .38px,transparent .76px) 48% 58%/1px 1px;
+  background-color:transparent;
+  background-repeat:no-repeat
+}
+
+#app{
+  position:relative;z-index:1;
+  display:grid;
+  grid-template-rows:auto 1fr;
+  grid-template-columns:270px 1fr 320px;
+  grid-template-areas:"hdr hdr hdr""ctl chart ai";
+  min-height:100vh
+}
+
+/* HEADER */
+header{
+  grid-area:hdr;
+  padding:14px 24px;
+  border-bottom:1px solid var(--gold3);
+  background:linear-gradient(to right,#090b1a,transparent);
+  display:flex;align-items:center;gap:12px
+}
+header h1{
+  font-family:'Cinzel',serif;font-weight:900;font-size:1.1rem;
+  letter-spacing:.3em;color:var(--gold2);
+  text-shadow:0 0 40px rgba(200,170,80,.35)
+}
+header .sub{font-size:.78rem;color:var(--dim);letter-spacing:.12em;margin-top:1px}
+
+/* CONTROLS */
+#ctl{
+  grid-area:ctl;
+  padding:18px 14px;
+  border-right:1px solid var(--gold4);
+  overflow-y:auto;
+  background:linear-gradient(to bottom,var(--bg2),var(--bg));
+  scrollbar-width:thin;scrollbar-color:var(--gold4) transparent
+}
+
+.sect{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.22em;color:var(--gold3);text-transform:uppercase;margin-bottom:9px;padding-bottom:4px;border-bottom:1px solid var(--gold4)}
+
+.fg{margin-bottom:7px}
+.fg label{display:block;font-size:.73rem;color:var(--silver);margin-bottom:3px;letter-spacing:.04em}
+.fg input{
+  width:100%;background:var(--bg3);border:1px solid var(--gold4);
+  border-radius:2px;padding:5px 8px;
+  color:var(--cream);font-family:'Crimson Text',serif;font-size:.88rem;
+  outline:none;transition:border-color .18s
+}
+.fg input:focus{border-color:var(--gold);box-shadow:0 0 10px rgba(200,168,76,.15)}
+
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+
+.btn{
+  display:block;width:100%;padding:7px 10px;
+  background:transparent;border:1px solid var(--gold4);
+  border-radius:2px;color:var(--silver);
+  font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;
+  cursor:pointer;transition:all .18s;margin-bottom:7px
+}
+.btn:hover{border-color:var(--gold);color:var(--gold2);background:rgba(200,168,76,.05)}
+.btn-draw{
+  border-color:var(--gold);color:var(--gold);
+  margin-top:14px;font-size:.72rem;padding:10px;
+  letter-spacing:.2em
+}
+.btn-draw:hover{background:rgba(200,168,76,.1);box-shadow:0 0 24px rgba(200,168,76,.18)}
+
+hr.div{border:none;border-top:1px solid var(--gold4);margin:14px 0}
+
+/* CHART */
+#chart-wrap{
+  grid-area:chart;
+  display:flex;align-items:center;justify-content:center;
+  padding:16px;position:relative;overflow:hidden
+}
+#chart-wrap::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse at center,rgba(25,20,50,.3) 0%,transparent 65%)
+}
+#chart-svg{
+  max-width:100%;max-height:100%;
+  filter:drop-shadow(0 0 50px rgba(60,45,100,.5))
+}
+
+/* ANALYSIS */
+#ai{
+  grid-area:ai;
+  padding:18px 14px;
+  border-left:1px solid var(--gold4);
+  overflow-y:auto;background:linear-gradient(to bottom,var(--bg2),var(--bg));
+  display:flex;flex-direction:column;gap:14px;
+  scrollbar-width:thin;scrollbar-color:var(--gold4) transparent
+}
+.ai-hdr{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.22em;color:var(--gold3);text-transform:uppercase;padding-bottom:4px;border-bottom:1px solid var(--gold4)}
+
+#readout{font-size:.88rem;line-height:1.75;color:var(--cream);white-space:pre-wrap}
+.placeholder{color:var(--dim);font-style:italic;font-size:.85rem}
+
+.prow{display:flex;align-items:center;gap:7px;padding:4px 0;border-bottom:1px solid rgba(90,72,32,.15)}
+.pg{width:18px;text-align:center;font-size:.95rem}
+.pn{flex:1;color:var(--silver);font-size:.78rem}
+.pd{color:var(--gold);font-variant-numeric:tabular-nums;font-size:.8rem;min-width:52px}
+.ps{color:var(--cream);font-size:.8rem;min-width:90px}
+.pr{color:#c04050;font-size:.65rem;margin-left:2px}
+
+.asp-row{display:flex;align-items:center;gap:6px;padding:2px 0}
+.asp-swatch{flex-shrink:0}
+.asp-nm{color:var(--silver);font-size:.78rem;flex:1}
+.asp-orb{color:var(--gold3);font-size:.72rem}
+
+/* tooltip */
+#tip{
+  position:fixed;background:var(--bg3);border:1px solid var(--gold3);
+  border-radius:3px;padding:7px 11px;font-size:.82rem;
+  pointer-events:none;opacity:0;transition:opacity .15s;z-index:200
+}
+
+/* spinner */
+.spin{
+  display:inline-block;width:13px;height:13px;
+  border:1.5px solid var(--gold3);border-top-color:var(--gold);
+  border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;margin-right:7px
+}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* aspect badge */
+.asp-badge{
+  display:inline-block;padding:1px 6px;border-radius:2px;
+  font-size:.72rem;font-family:'Cinzel',serif;margin-right:4px
+}
+
+@media(max-width:860px){
+  #app{grid-template-columns:1fr;grid-template-areas:"hdr""ctl""chart""ai"}
+  #ctl,#ai{border:none;border-bottom:1px solid var(--gold4)}
+  #chart-wrap{min-height:420px}
+}
+</style>
+</head>
+<body>
+<div id="app">
+<header>
+  <div>
+    <h1>CELESTIAL CARTOGRAPHY</h1>
+    <div class="sub">Planetary ephemeris · House systems · AI pattern analysis</div>
+  </div>
+</header>
+
+<aside id="ctl">
+  <p class="sect">Location</p>
+  <div class="fg"><label>Latitude (°N+)</label><input id="lat" type="number" step=".0001" value="47.0417" placeholder="47.0417"></div>
+  <div class="fg"><label>Longitude (°E+)</label><input id="lng" type="number" step=".0001" value="-122.8168" placeholder="-122.8168"></div>
+  <div class="fg"><label>GMT Offset (h)</label><input id="tz" type="number" step=".5" value="-7" placeholder="-7"></div>
+  <button class="btn" onclick="getLocation()">⊕ Get My Location</button>
+
+  <hr class="div">
+  <p class="sect">Date & Time</p>
+  <div class="g2">
+    <div class="fg"><label>Year</label><input id="yr" type="number" value="2026"></div>
+    <div class="fg"><label>Month</label><input id="mo" type="number" min="1" max="12" value="3"></div>
+  </div>
+  <div class="g2">
+    <div class="fg"><label>Day</label><input id="dy" type="number" min="1" max="31" value="22"></div>
+    <div class="fg"><label>Hour</label><input id="hr" type="number" min="0" max="23" value="12"></div>
+  </div>
+  <div class="g2">
+    <div class="fg"><label>Minutes</label><input id="mn" type="number" min="0" max="59" value="0"></div>
+    <div class="fg"><label>Seconds</label><input id="sc" type="number" min="0" max="59" value="0"></div>
+  </div>
+  <button class="btn" onclick="getNow()">◷ Current Time</button>
+
+  <button class="btn btn-draw" onclick="mainDraw()">✦ DRAW CHART</button>
+
+  <hr class="div">
+  <p class="sect" style="margin-bottom:8px">Aspect Types</p>
+  <div id="legend" style="display:flex;flex-direction:column;gap:3px"></div>
+</aside>
+
+<section id="chart-wrap">
+  <svg id="chart-svg" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
+    <text x="300" y="308" text-anchor="middle" font-family="Cinzel,serif" font-size="12" fill="rgba(90,80,140,.4)">Enter date · location · draw</text>
+  </svg>
+</section>
+
+<aside id="ai">
+  <p class="ai-hdr">Cosmic Patterns</p>
+  <div id="readout"><span class="placeholder">Draw a chart to receive an AI interpretation of the current planetary configurations and their symbolic significance.</span></div>
+  <hr style="border-color:var(--gold4)">
+  <p class="ai-hdr">Planetary Positions</p>
+  <div id="ptable"></div>
+  <hr style="border-color:var(--gold4)">
+  <p class="ai-hdr">Active Aspects</p>
+  <div id="asptable"></div>
+</aside>
+</div>
+<div id="tip"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════════════════════════
+const DEG=Math.PI/180,RAD=180/Math.PI;
+
+const SIGNS=[
+  {name:'Aries',      g:'♈',el:'fire', c:'rgba(155,48,30,.55)'},
+  {name:'Taurus',     g:'♉',el:'earth',c:'rgba(85,65,30,.5)'},
+  {name:'Gemini',     g:'♊',el:'air',  c:'rgba(32,75,110,.5)'},
+  {name:'Cancer',     g:'♋',el:'water',c:'rgba(24,44,82,.55)'},
+  {name:'Leo',        g:'♌',el:'fire', c:'rgba(155,48,30,.55)'},
+  {name:'Virgo',      g:'♍',el:'earth',c:'rgba(85,65,30,.5)'},
+  {name:'Libra',      g:'♎',el:'air',  c:'rgba(32,75,110,.5)'},
+  {name:'Scorpio',    g:'♏',el:'water',c:'rgba(24,44,82,.55)'},
+  {name:'Sagittarius',g:'♐',el:'fire', c:'rgba(155,48,30,.55)'},
+  {name:'Capricorn',  g:'♑',el:'earth',c:'rgba(85,65,30,.5)'},
+  {name:'Aquarius',   g:'♒',el:'air',  c:'rgba(32,75,110,.5)'},
+  {name:'Pisces',     g:'♓',el:'water',c:'rgba(24,44,82,.55)'},
+];
+
+const PLIST=[
+  {k:'sun',    n:'Sun',     g:'☉', c:'#f0c040'},
+  {k:'moon',   n:'Moon',    g:'☽', c:'#c0c8d8'},
+  {k:'mercury',n:'Mercury', g:'☿', c:'#a0b4c4'},
+  {k:'venus',  n:'Venus',   g:'♀', c:'#d4a060'},
+  {k:'mars',   n:'Mars',    g:'♂', c:'#c04030'},
+  {k:'jupiter',n:'Jupiter', g:'♃', c:'#b09060'},
+  {k:'saturn', n:'Saturn',  g:'♄', c:'#988070'},
+  {k:'uranus', n:'Uranus',  g:'⛢', c:'#60a0b0'},
+  {k:'neptune',n:'Neptune', g:'♆', c:'#4060a0'},
+  {k:'pluto',  n:'Pluto',   g:'♇', c:'#806090'},
+];
+
+const ASPECTS=[
+  {nm:'Conjunction', ang:0,   orb:8, c:'#d8d0b8',d:''},
+  {nm:'Sextile',     ang:60,  orb:6, c:'#4070c0',d:'5,4'},
+  {nm:'Square',      ang:90,  orb:8, c:'#c03530',d:''},
+  {nm:'Trine',       ang:120, orb:8, c:'#40b865',d:''},
+  {nm:'Opposition',  ang:180, orb:8, c:'#d06020',d:'7,3'},
+  {nm:'Quincunx',    ang:150, orb:3, c:'#7040a0',d:'2,4'},
+  {nm:'Semi-sextile',ang:30,  orb:2, c:'#806830',d:'1,3'},
+];
+
+// Orbital elements at J2000.0 (Meeus Table 31.a)
+// Ldot,wdot = degrees per Julian century  edot = per century
+const OE={
+  mercury:{L0:252.2503,Ld:149472.6749,a:.38710,e0:.20563,ed:.00002, w0:77.4564, wd:.1594, i:7.0050,om:48.3310},
+  venus:  {L0:181.9798,Ld:58517.8156, a:.72333,e0:.00677,ed:-.00004,w0:131.5637,wd:0,     i:3.3947,om:76.6799},
+  earth:  {L0:100.4664,Ld:35999.3720, a:1.0000,e0:.01671,ed:-.00004,w0:102.9373,wd:.3225, i:0,     om:0},
+  mars:   {L0:355.4330,Ld:19140.2993, a:1.52366,e0:.09341,ed:.00009,w0:336.0602,wd:.4472, i:1.8497,om:49.5581},
+  jupiter:{L0:34.3515, Ld:3034.9057,  a:5.20260,e0:.04854,ed:.00016,w0:14.3312, wd:0,     i:1.3033,om:100.4641},
+  saturn: {L0:50.0775, Ld:1222.1138,  a:9.53707,e0:.05551,ed:-.00034,w0:93.0568,wd:.3200, i:2.4886,om:113.6655},
+  uranus: {L0:314.0550,Ld:428.4882,   a:19.1914,e0:.04638,ed:-.00027,w0:173.0052,wd:0,    i:.7732, om:74.0060},
+  neptune:{L0:304.2207,Ld:218.4570,   a:30.0690,e0:.00946,ed:.00006, w0:48.1247, wd:0,    i:1.7700,om:131.7841},
+  pluto:  {L0:238.9588,Ld:145.1878,   a:39.4450,e0:.24880,ed:.00006, w0:224.068, wd:0,    i:17.142,om:110.303},
+};
+
+// ═══════════════════════════════════════════════════════
+// ASTRONOMY ENGINE
+// ═══════════════════════════════════════════════════════
+function mod360(x){return((x%360)+360)%360}
+
+function julianDay(yr,mo,dy,hr,mn,sc,tz){
+  const ut=hr+mn/60+sc/3600-tz;
+  let y=yr,m=mo,d=dy+ut/24;
+  if(m<=2){y--;m+=12}
+  const A=Math.floor(y/100),B=2-A+Math.floor(A/4);
+  return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(m+1))+d+B-1524.5
+}
+
+function obliquity(T){return 23.439291111-T*(0.013004167+T*(0.000000164-T*0.000000504))}
+
+function greenwichST(jd){
+  const T=(jd-2451545)/36525;
+  return mod360(280.46061837+360.98564736629*(jd-2451545)+T*T*.000387933-T*T*T/38710000)
+}
+
+// Sun (Meeus Ch 25)
+function sunLon(T){
+  const L0=mod360(280.46646+T*(36000.76983+T*.0003032));
+  const M=mod360(357.52911+T*(35999.05029-T*.0001537))*DEG;
+  const e=0.016708634-T*(0.000042037+T*.0000001267);
+  const C=(1.9146-T*(0.004817-T*.000014))*Math.sin(M)+(0.019993-T*.000101)*Math.sin(2*M)+.00029*Math.sin(3*M);
+  const om=125.04-1934.136*T;
+  return mod360(L0+C-.00569-.00478*Math.sin(om*DEG))
+}
+
+// Moon (Meeus Ch 47, main series)
+function moonLon(T){
+  const L0=mod360(218.3164477+481267.88123421*T);
+  const M =mod360(357.5291092+35999.0502909*T)*DEG;
+  const Mm=mod360(134.9633964+477198.8675055*T)*DEG;
+  const D =mod360(297.8501921+445267.1114034*T)*DEG;
+  const F =mod360(93.2720950 +483202.0175233*T)*DEG;
+  const E =1-.002516*T;
+  const SL=
+    6288774*Math.sin(Mm)+1274027*Math.sin(2*D-Mm)+658314*Math.sin(2*D)+
+    213618*Math.sin(2*Mm)-185116*E*Math.sin(M)-114332*Math.sin(2*F)+
+    58793*Math.sin(2*D-2*Mm)+57066*E*Math.sin(2*D-M-Mm)+53322*Math.sin(2*D+Mm)+
+    45758*E*Math.sin(2*D-M)-40923*E*Math.sin(M-Mm)-34720*Math.sin(D)-
+    30383*E*Math.sin(M+Mm)+15327*Math.sin(2*D-2*F)+10980*Math.sin(Mm-2*F)+
+    10675*Math.sin(4*D-Mm)+10034*Math.sin(3*Mm)+8548*Math.sin(4*D-2*Mm)-
+    7888*E*Math.sin(2*D+M-Mm)-6766*E*Math.sin(2*D+M)-5163*Math.sin(D-Mm)+
+    4987*E*Math.sin(D+M)+4036*E*Math.sin(2*D-M+Mm)+3994*Math.sin(2*D+2*Mm)+
+    3861*Math.sin(4*D)+3665*Math.sin(2*D-3*Mm)-2689*E*Math.sin(M-2*Mm)+
+    2390*E*Math.sin(2*D-M-2*Mm)-2348*Math.sin(D+Mm)+2236*E*Math.sin(2*D-2*M)-
+    2120*E*Math.sin(M+2*Mm)+2048*E*Math.sin(2*D-2*M-Mm)-1773*Math.sin(2*D+Mm-2*F)-
+    1595*Math.sin(2*D+2*F)+1215*E*Math.sin(4*D-M-Mm)-1110*Math.sin(2*Mm+2*F)-
+    892*Math.sin(3*D-Mm)-810*E*Math.sin(2*D+M+Mm)+759*E*Math.sin(4*D-M-2*Mm)-
+    713*E*E*Math.sin(2*M-Mm)-700*E*Math.sin(2*D+2*M-Mm)+691*E*Math.sin(2*D+M-2*Mm)+
+    596*E*Math.sin(2*D-M-2*F)+549*Math.sin(4*D+Mm)+537*Math.sin(4*Mm)+
+    520*E*Math.sin(4*D-M)-487*Math.sin(D-2*Mm);
+  return mod360(L0+SL/1e6)
+}
+
+// Moon North Node (mean)
+function northNode(T){return mod360(125.0445479-1934.1362608*T+.0020762*T*T+T*T*T/467410)}
+
+// Heliocentric ecliptic XYZ (Meeus orbital mechanics)
+function helioXYZ(oe,T){
+  const e=oe.e0+oe.ed*T;
+  const wlon=(oe.w0+oe.wd*T)*DEG;       // longitude of perihelion (rad)
+  const om=oe.om*DEG;                   // ascending node (rad)
+  const inc=oe.i*DEG;                   // inclination (rad)
+  const L=mod360(oe.L0+oe.Ld*T)*DEG;   // mean longitude (rad)
+  let M=L-wlon;                         // mean anomaly (rad)
+  // normalise M to [-π,π]
+  while(M>Math.PI)M-=2*Math.PI;
+  while(M<-Math.PI)M+=2*Math.PI;
+
+  // Newton-Raphson for eccentric anomaly
+  let E=M;
+  for(let k=0;k<8;k++)E-=(E-e*Math.sin(E)-M)/(1-e*Math.cos(E));
+
+  const xO=oe.a*(Math.cos(E)-e);
+  const yO=oe.a*Math.sqrt(1-e*e)*Math.sin(E);
+  const argPeri=wlon-om;                // argument of perihelion
+
+  const sO=Math.sin(om),cO=Math.cos(om);
+  const sI=Math.sin(inc),cI=Math.cos(inc);
+  const sW=Math.sin(argPeri),cW=Math.cos(argPeri);
+
+  const X=(cO*cW-sO*sW*cI)*xO+(-cO*sW-sO*cW*cI)*yO;
+  const Y=(sO*cW+cO*sW*cI)*xO+(-sO*sW+cO*cW*cI)*yO;
+  const Z=(sW*sI)*xO+(cW*sI)*yO;
+  return{X,Y,Z}
+}
+
+function geocLon(p,e){
+  return mod360(Math.atan2(p.Y-e.Y,p.X-e.X)*RAD)
+}
+
+// Retrograde: compare lon at T vs T+1day
+function isRetro(oe,T,exyz){
+  const dt=1/36525;
+  const eT=helioXYZ(OE.earth,T+dt);
+  const lon1=geocLon(helioXYZ(oe,T),exyz);
+  const lon2=geocLon(helioXYZ(oe,T+dt),eT);
+  let d=mod360(lon2-lon1);if(d>180)d-=360;
+  return d<0
+}
+
+// Ascendant & MC (Meeus Ch 10)
+function calcAngles(jd,lat,lon){
+  const gst=greenwichST(jd);
+  const lst=mod360(gst+lon);
+  const ramc=lst*DEG;
+  const T=(jd-2451545)/36525;
+  const eps=obliquity(T)*DEG;
+  const latR=lat*DEG;
+  const y=-Math.cos(ramc);
+  const x=Math.sin(ramc)*Math.cos(eps)+Math.tan(latR)*Math.sin(eps);
+  const asc=mod360(Math.atan2(y,x)*RAD);
+  // MC
+  const mc=mod360(Math.atan2(Math.sin(ramc)/Math.cos(eps),Math.cos(ramc))*RAD);
+  return{asc,mc}
+}
+
+function calcAll(jd){
+  const T=(jd-2451545)/36525;
+  const eXYZ=helioXYZ(OE.earth,T);
+  const pos={};
+  pos.sun={lon:sunLon(T),retro:false};
+  pos.moon={lon:moonLon(T),retro:false};
+  for(const k of['mercury','venus','mars','jupiter','saturn','uranus','neptune','pluto']){
+    const xyz=helioXYZ(OE[k],T);
+    pos[k]={lon:geocLon(xyz,eXYZ),retro:isRetro(OE[k],T,eXYZ)};
+  }
+  pos._node={lon:northNode(T),retro:false};
+  return pos
+}
+
+function getSign(lon){return SIGNS[Math.floor(lon/30)]}
+function fmtPos(lon){
+  const d=Math.floor(lon%30),m=Math.floor((lon%1)*60);
+  return`${d}°${String(m).padStart(2,'0')}' ${getSign(lon).g} ${getSign(lon).name}`
+}
+function fmtShort(lon){
+  const d=Math.floor(lon%30),m=Math.floor((lon%1)*60);
+  return`${d}°${String(m).padStart(2,'0')}'`
+}
+
+function getAspects(pos){
+  const keys=Object.keys(pos).filter(k=>k!=='_node');
+  const res=[];
+  for(let i=0;i<keys.length;i++)for(let j=i+1;j<keys.length;j++){
+    let d=Math.abs(pos[keys[i]].lon-pos[keys[j]].lon);
+    if(d>180)d=360-d;
+    for(const asp of ASPECTS){
+      const orb=Math.abs(d-asp.ang);
+      if(orb<=asp.orb){res.push({p1:keys[i],p2:keys[j],...asp,orb});break}
+    }
+  }
+  return res
+}
+
+// ═══════════════════════════════════════════════════════
+// SVG CHART
+// ═══════════════════════════════════════════════════════
+const CX=300,CY=300;
+const R0=285,RZ=250,RW=205,RP=170,RA=88;
+
+function ns(tag,attrs={},txt){
+  const el=document.createElementNS('http://www.w3.org/2000/svg',tag);
+  for(const[k,v]of Object.entries(attrs))el.setAttribute(k,String(v));
+  if(txt!=null)el.textContent=txt;
+  return el
+}
+
+// ecliptic lon → SVG angle: ASC maps to 180° (left), CCW for increasing lon
+function l2a(lon,asc){return mod360(180-(lon-asc))}
+
+function polar(r,aDeg){
+  const a=aDeg*DEG;return{x:CX+r*Math.cos(a),y:CY+r*Math.sin(a)}
+}
+
+function arcPath(r,a1,a2){
+  // arc from SVG angle a1 to a2 (both in degrees)
+  // Going counterclockwise (sweep=0) since increasing lon → decreasing SVG angle
+  const p1=polar(r,a1),p2=polar(r,a2);
+  const large=Math.abs(a1-a2)>180?1:0;
+  return`${p1.x} ${p1.y} A ${r} ${r} 0 ${large} 0 ${p2.x} ${p2.y}`
+}
+
+function renderWheel(pos,asc,mc){
+  const svg=document.getElementById('chart-svg');
+  svg.innerHTML='';
+
+  // ── DEFS ──────────────────────────────────────────────
+  const defs=ns('defs');
+  
+  // Center nebula gradient
+  const cg=ns('radialGradient',{id:'cg',cx:'50%',cy:'50%',r:'50%'});
+  cg.appendChild(ns('stop',{offset:'0%','stop-color':'#18153a','stop-opacity':'1'}));
+  cg.appendChild(ns('stop',{offset:'55%','stop-color':'#0e0b20','stop-opacity':'1'}));
+  cg.appendChild(ns('stop',{offset:'100%','stop-color':'#060510','stop-opacity':'1'}));
+  defs.appendChild(cg);
+
+  // Glow filter
+  const glow=ns('filter',{id:'glow',x:'-30%',y:'-30%',width:'160%',height:'160%'});
+  const blur=ns('feGaussianBlur',{in:'SourceGraphic',stdDeviation:'2.5',result:'b'});
+  const mg=ns('feMerge');
+  mg.appendChild(ns('feMergeNode',{in:'b'}));
+  mg.appendChild(ns('feMergeNode',{in:'SourceGraphic'}));
+  glow.appendChild(blur);glow.appendChild(mg);
+  defs.appendChild(glow);
+
+  // Planet glow (softer)
+  const pg=ns('filter',{id:'pglow',x:'-50%',y:'-50%',width:'200%',height:'200%'});
+  pg.appendChild(ns('feGaussianBlur',{in:'SourceGraphic',stdDeviation:'3',result:'pb'}));
+  const pm=ns('feMerge');
+  pm.appendChild(ns('feMergeNode',{in:'pb'}));
+  pm.appendChild(ns('feMergeNode',{in:'SourceGraphic'}));
+  pg.appendChild(pm);defs.appendChild(pg);
+
+  svg.appendChild(defs);
+
+  // ── BACKGROUND ────────────────────────────────────────
+  svg.appendChild(ns('circle',{cx:CX,cy:CY,r:R0,fill:'url(#cg)'}));
+
+  // ── ZODIAC RING ───────────────────────────────────────
+  for(let s=0;s<12;s++){
+    const a1=l2a(s*30,asc), a2=l2a((s+1)*30,asc);
+    const po1=polar(R0,a1),po2=polar(R0,a2);
+    const pi1=polar(RZ,a1),pi2=polar(RZ,a2);
+    const d=`M ${po1.x} ${po1.y} A ${R0} ${R0} 0 0 0 ${po2.x} ${po2.y} L ${pi2.x} ${pi2.y} A ${RZ} ${RZ} 0 0 1 ${pi1.x} ${pi1.y} Z`;
+    svg.appendChild(ns('path',{d,fill:SIGNS[s].c}));
+    
+    // Sign glyph
+    const midA=l2a(s*30+15,asc);
+    const mp=polar((R0+RZ)/2,midA);
+    svg.appendChild(ns('text',{x:mp.x,y:mp.y,'text-anchor':'middle','dominant-baseline':'central',
+      'font-size':'13',fill:'rgba(212,200,176,.92)',style:"font-family:'Crimson Text',serif"},SIGNS[s].g));
+  }
+
+  // Zodiac ring borders
+  svg.appendChild(ns('circle',{cx:CX,cy:CY,r:R0,fill:'none',stroke:'#c9a84c','stroke-width':'.6'}));
+  svg.appendChild(ns('circle',{cx:CX,cy:CY,r:RZ,fill:'none',stroke:'#c9a84c','stroke-width':'.5'}));
+
+  // Sign dividers
+  for(let s=0;s<12;s++){
+    const a=l2a(s*30,asc)*DEG;
+    const po=polar(R0,l2a(s*30,asc)),pi=polar(RZ,l2a(s*30,asc));
+    svg.appendChild(ns('line',{x1:po.x,y1:po.y,x2:pi.x,y2:pi.y,stroke:'#c9a84c','stroke-width':'.8'}));
+  }
+
+  // Degree ticks (every 5°, major every 30°)
+  for(let d=0;d<360;d+=5){
+    const a=l2a(d,asc);
+    const isMaj=d%30===0;
+    const r1=RZ,r2=isMaj?RZ-10:RZ-5;
+    const p1=polar(r1,a),p2=polar(r2,a);
+    svg.appendChild(ns('line',{x1:p1.x,y1:p1.y,x2:p2.x,y2:p2.y,
+      stroke:isMaj?'#5a4820':'#2a2018','stroke-width':isMaj?'.8':'.4'}));
+  }
+
+  // ── WHEEL ─────────────────────────────────────────────
+  svg.appendChild(ns('circle',{cx:CX,cy:CY,r:RW,fill:'none',stroke:'#2a2018','stroke-width':'.5'}));
+
+  // House cusps (equal house from ASC)
+  for(let h=0;h<12;h++){
+    const hLon=mod360(asc+h*30);
+    const a=l2a(hLon,asc);
+    const isAngular=h%3===0;
+    const p1=polar(RZ-11,a),p2=polar(isAngular?RA:RW+6,a);
+    svg.appendChild(ns('line',{x1:p1.x,y1:p1.y,x2:p2.x,y2:p2.y,
+      stroke:isAngular?'#8a6020':'#2a2018',
+      'stroke-width':isAngular?'1':'.4',
+      'stroke-dasharray':isAngular?'':'3,3'}));
+  }
+
+  // House numbers
+  for(let h=0;h<12;h++){
+    const midLon=mod360(asc+h*30+15);
+    const a=l2a(midLon,asc);
+    const rm=(RW+RA)/2+10;
+    const p=polar(rm,a);
+    svg.appendChild(ns('text',{x:p.x,y:p.y,'text-anchor':'middle','dominant-baseline':'central',
+      'font-size':'7.5',fill:'rgba(90,80,100,.5)',style:"font-family:'Cinzel',serif"},String(h+1)));
+  }
+
+  // Angle labels (ASC/DSC/MC/IC)
+  const angles={ASC:asc,DSC:mod360(asc+180),MC:mc,IC:mod360(mc+180)};
+  for(const[lbl,lon]of Object.entries(angles)){
+    const a=l2a(lon,asc);
+    const p=polar(R0+12,a);
+    svg.appendChild(ns('text',{x:p.x,y:p.y,'text-anchor':'middle','dominant-baseline':'central',
+      'font-size':'6.5',fill:'#c9a84c',style:"font-family:'Cinzel',serif"},lbl));
+  }
+
+  // ── ASPECT FIELD ──────────────────────────────────────
+  svg.appendChild(ns('circle',{cx:CX,cy:CY,r:RA,fill:'rgba(5,5,12,.65)',stroke:'#1e1830','stroke-width':'.5'}));
+
+  // Aspect lines
+  const aspects=getAspects(pos);
+  for(const asp of aspects){
+    const k1=asp.p1,k2=asp.p2;
+    if(!pos[k1]||!pos[k2])continue;
+    const a1=l2a(pos[k1].lon,asc)*DEG,a2=l2a(pos[k2].lon,asc)*DEG;
+    const pp1=polar(RA,l2a(pos[k1].lon,asc)),pp2=polar(RA,l2a(pos[k2].lon,asc));
+    const op=0.12+.5*(1-asp.orb/Math.max(...ASPECTS.map(a=>a.orb)));
+    svg.appendChild(ns('line',{x1:pp1.x,y1:pp1.y,x2:pp2.x,y2:pp2.y,
+      stroke:asp.c,'stroke-width':'.9','stroke-dasharray':asp.d,opacity:String(op)}));
+  }
+
+  // ── NORTH NODE ────────────────────────────────────────
+  if(pos._node){
+    const a=l2a(pos._node.lon,asc);
+    const pm=polar(RP,a);
+    svg.appendChild(ns('circle',{cx:pm.x,cy:pm.y,r:'9',fill:'rgba(5,5,12,.7)',stroke:'rgba(100,80,150,.6)','stroke-width':'.6'}));
+    svg.appendChild(ns('text',{x:pm.x,y:pm.y,'text-anchor':'middle','dominant-baseline':'central',
+      'font-size':'9',fill:'rgba(140,110,190,.85)',style:"font-family:'Crimson Text',serif"},'☊'));
+    const pt=polar(RZ-2,a);
+    svg.appendChild(ns('circle',{cx:pt.x,cy:pt.y,r:'2.5',fill:'rgba(140,110,190,.6)'}));
+  }
+
+  // ── PLANETS ───────────────────────────────────────────
+  // Stagger overlapping planets
+  const pAngles={};
+  for(const p of PLIST){
+    if(!pos[p.k])continue;
+    pAngles[p.k]=l2a(pos[p.k].lon,asc);
+  }
+  const staggered={...pAngles};
+  const sortedK=Object.keys(pAngles).sort((a,b)=>pAngles[a]-pAngles[b]);
+  for(let i=0;i<sortedK.length;i++){
+    for(let j=i+1;j<sortedK.length;j++){
+      let d=Math.abs(staggered[sortedK[i]]-staggered[sortedK[j]]);
+      if(d>180)d=360-d;
+      if(d<14)staggered[sortedK[j]]+=10;
+    }
+  }
+
+  for(const p of PLIST){
+    if(!pos[p.k])continue;
+    const origA=l2a(pos[p.k].lon,asc);
+    const a=staggered[p.k];
+    const pp=polar(RP,a);
+    const pw=polar(RZ-1,origA);
+    const pIn=polar(RP-12,a);
+
+    // Line from wheel mark to planet
+    svg.appendChild(ns('line',{x1:pw.x,y1:pw.y,x2:pIn.x,y2:pIn.y,
+      stroke:p.c,'stroke-width':'.4',opacity:'.45'}));
+
+    // Wheel mark
+    svg.appendChild(ns('circle',{cx:pw.x,cy:pw.y,r:'2.2',fill:p.c,opacity:'.8'}));
+
+    // Planet circle
+    svg.appendChild(ns('circle',{cx:pp.x,cy:pp.y,r:'11',fill:'rgba(5,5,12,.8)',
+      stroke:p.c,'stroke-width':'.7',filter:'url(#pglow)'}));
+
+    // Glyph
+    const ge=ns('text',{x:pp.x,y:pp.y,'text-anchor':'middle','dominant-baseline':'central',
+      'font-size':'10.5',fill:p.c,style:"font-family:'Crimson Text',serif;cursor:pointer",
+      'data-key':p.k},p.g);
+    ge.addEventListener('mouseenter',e=>showTip(e,p,pos[p.k].lon,pos[p.k].retro));
+    ge.addEventListener('mouseleave',hideTip);
+    svg.appendChild(ge);
+
+    // Retrograde indicator
+    if(pos[p.k].retro){
+      svg.appendChild(ns('text',{x:pp.x+7,y:pp.y-7,'text-anchor':'middle','dominant-baseline':'central',
+        'font-size':'6',fill:'#c04050'},'R'));
+    }
+  }
+
+  // ── CENTER ORNAMENT ───────────────────────────────────
+  svg.appendChild(ns('circle',{cx:CX,cy:CY,r:'6',fill:'none',stroke:'#3a2e18','stroke-width':'.6'}));
+  svg.appendChild(ns('circle',{cx:CX,cy:CY,r:'2',fill:'#3a2e18'}));
+  for(let a=0;a<360;a+=45){
+    const p1=polar(3,a),p2=polar(6,a);
+    svg.appendChild(ns('line',{x1:p1.x,y1:p1.y,x2:p2.x,y2:p2.y,stroke:'#5a4820','stroke-width':'.5'}));
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// UI HELPERS
+// ═══════════════════════════════════════════════════════
+function showTip(e,p,lon,retro){
+  const sign=getSign(lon);
+  const d=Math.floor(lon%30),m=Math.floor((lon%1)*60);
+  document.getElementById('tip').innerHTML=
+    `<span style="color:${p.c}">${p.g} ${p.n}</span>${retro?' <span style="color:#c04050;font-size:.75rem">℞</span>':''}<br>${d}°${String(m).padStart(2,'0')}' ${sign.g} ${sign.name}`;
+  document.getElementById('tip').style.opacity='1';
+  document.getElementById('tip').style.left=(e.clientX+14)+'px';
+  document.getElementById('tip').style.top=(e.clientY-8)+'px';
+}
+function hideTip(){document.getElementById('tip').style.opacity='0'}
+
+function getLocation(){
+  if(!navigator.geolocation)return alert('Geolocation not available');
+  navigator.geolocation.getCurrentPosition(p=>{
+    document.getElementById('lat').value=p.coords.latitude.toFixed(4);
+    document.getElementById('lng').value=p.coords.longitude.toFixed(4);
+    document.getElementById('tz').value=(-new Date().getTimezoneOffset()/60);
+  },()=>alert('Could not get location'));
+}
+
+function getNow(){
+  const n=new Date();
+  document.getElementById('yr').value=n.getFullYear();
+  document.getElementById('mo').value=n.getMonth()+1;
+  document.getElementById('dy').value=n.getDate();
+  document.getElementById('hr').value=n.getHours();
+  document.getElementById('mn').value=n.getMinutes();
+  document.getElementById('sc').value=n.getSeconds();
+  document.getElementById('tz').value=-n.getTimezoneOffset()/60;
+}
+
+function updatePTable(pos,asc){
+  const el=document.getElementById('ptable');
+  el.innerHTML='';
+  for(const p of PLIST){
+    if(!pos[p.k])continue;
+    const lon=pos[p.k].lon,retro=pos[p.k].retro;
+    const sign=getSign(lon);
+    const row=document.createElement('div');
+    row.className='prow';
+    row.innerHTML=`<span class="pg" style="color:${p.c}">${p.g}</span>
+      <span class="pn">${p.n}</span>
+      <span class="pd">${fmtShort(lon)}</span>
+      <span class="ps">${sign.g} ${sign.name}</span>
+      ${retro?'<span class="pr">℞</span>':''}`;
+    el.appendChild(row);
+  }
+  // North Node
+  if(pos._node){
+    const lon=pos._node.lon;const sign=getSign(lon);
+    const row=document.createElement('div');
+    row.className='prow';
+    row.innerHTML=`<span class="pg" style="color:rgba(140,110,190,.85)">☊</span>
+      <span class="pn">N. Node</span>
+      <span class="pd">${fmtShort(lon)}</span>
+      <span class="ps">${sign.g} ${sign.name}</span>`;
+    el.appendChild(row);
+  }
+}
+
+function updateAspTable(pos){
+  const el=document.getElementById('asptable');
+  el.innerHTML='';
+  const asps=getAspects(pos);
+  if(!asps.length){el.innerHTML='<span class="placeholder">No major aspects active.</span>';return}
+  for(const asp of asps){
+    const p1=PLIST.find(p=>p.k===asp.p1),p2=PLIST.find(p=>p.k===asp.p2);
+    if(!p1||!p2)continue;
+    const row=document.createElement('div');
+    row.className='asp-row';
+    row.innerHTML=`
+      <svg class="asp-swatch" width="22" height="10">
+        <line x1="0" y1="5" x2="22" y2="5" stroke="${asp.c}" stroke-width="1.5" stroke-dasharray="${asp.d||''}"/>
+      </svg>
+      <span style="color:${p1.c};font-size:.8rem">${p1.g}</span>
+      <span style="font-size:.72rem;color:var(--silver)">${asp.nm}</span>
+      <span style="color:${p2.c};font-size:.8rem">${p2.g}</span>
+      <span style="color:var(--gold3);font-size:.72rem;margin-left:auto">${asp.orb.toFixed(1)}°</span>`;
+    el.appendChild(row);
+  }
+}
+
+function buildLegend(){
+  const el=document.getElementById('legend');
+  for(const asp of ASPECTS){
+    const row=document.createElement('div');
+    row.className='asp-row';
+    row.innerHTML=`
+      <svg class="asp-swatch" width="26" height="10">
+        <line x1="0" y1="5" x2="26" y2="5" stroke="${asp.c}" stroke-width="1.5" stroke-dasharray="${asp.d||''}"/>
+      </svg>
+      <span class="asp-nm">${asp.nm}</span>
+      <span class="asp-orb">±${asp.orb}°</span>`;
+    el.appendChild(row);
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// AI ANALYSIS
+// ═══════════════════════════════════════════════════════
+async function getAI(pos,asc,mc){
+  const readout=document.getElementById('readout');
+  readout.innerHTML='<span class="spin"></span><span style="color:var(--dim)">Consulting the cosmic record…</span>';
+
+  const posLines=PLIST.map(p=>{
+    if(!pos[p.k])return null;
+    const sign=getSign(pos[p.k].lon);
+    return`${p.n}: ${fmtShort(pos[p.k].lon)} ${sign.name}${pos[p.k].retro?' ℞':''} (${sign.el})`
+  }).filter(Boolean).join('\n');
+
+  const aspLines=getAspects(pos).map(a=>{
+    const p1=PLIST.find(p=>p.k===a.p1),p2=PLIST.find(p=>p.k===a.p2);
+    if(!p1||!p2)return null;
+    return`${p1.n} ${a.nm} ${p2.n} (orb ${a.orb.toFixed(1)}°)`
+  }).filter(Boolean).join('\n')||'None active';
+
+  const ascSign=getSign(asc);
+  const mcSign=getSign(mc);
+
+  const prompt=`You are an eloquent, insightful astrologer with deep knowledge of symbolic interpretation. Given the following planetary positions and aspects, write a rich, flowing interpretation (~280 words) of the cosmic moment — its dominant themes, tensions, and opportunities. Write in continuous prose, not bullet points. Be specific about the planetary configurations. Avoid generic platitudes.
+
+ASCENDANT: ${Math.floor(asc%30)}° ${ascSign.name} · MC: ${Math.floor(mc%30)}° ${mcSign.name}
+
+PLANETS:
+${posLines}
+
+ACTIVE ASPECTS:
+${aspLines}
+
+Interpret the dominant themes, the most striking configurations, and what this celestial moment suggests — for individual reflection and the collective mood.`;
+
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    const data=await resp.json();
+    const txt=data.content?.[0]?.text;
+    if(txt){
+      readout.textContent='';
+      let i=0;
+      const iv=setInterval(()=>{
+        i+=4;readout.textContent=txt.slice(0,i);
+        if(i>=txt.length){readout.textContent=txt;clearInterval(iv)}
+      },12);
+    }else{
+      readout.innerHTML=`<span class="placeholder">API returned no content. ${JSON.stringify(data.error||'')}</span>`;
+    }
+  }catch(err){
+    readout.innerHTML=`<span class="placeholder">Could not reach Anthropic API: ${err.message}</span>`;
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// MAIN
+// ═══════════════════════════════════════════════════════
+function mainDraw(){
+  const yr=+document.getElementById('yr').value||2026;
+  const mo=+document.getElementById('mo').value||3;
+  const dy=+document.getElementById('dy').value||22;
+  const hr=+document.getElementById('hr').value||12;
+  const mn=+document.getElementById('mn').value||0;
+  const sc=+document.getElementById('sc').value||0;
+  const lat=+document.getElementById('lat').value||47;
+  const lng=+document.getElementById('lng').value||-122.5;
+  const tz=+document.getElementById('tz').value||0;
+
+  const jd=julianDay(yr,mo,dy,hr,mn,sc,tz);
+  const pos=calcAll(jd);
+  const{asc,mc}=calcAngles(jd,lat,lng);
+
+  renderWheel(pos,asc,mc);
+  updatePTable(pos,asc);
+  updateAspTable(pos);
+  getAI(pos,asc,mc);
+}
+
+// ── INIT ──────────────────────────────────────────────
+buildLegend();
+getNow();
+</script>
+</body>
+</html>
