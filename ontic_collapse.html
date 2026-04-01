@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Observational Collapse / Reconstruction</title>
+<style>
+  :root{
+    --bg:#080b14;
+    --panel:rgba(14,18,31,.84);
+    --text:#eef2ff;
+    --shadow:0 24px 70px rgba(0,0,0,.38);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    min-height:100%;
+    background:radial-gradient(circle at 50% -10%, rgba(127,119,221,.12), transparent 35%),
+               radial-gradient(circle at 100% 0%, rgba(29,158,117,.10), transparent 28%),
+               linear-gradient(180deg, #05070d 0%, #09111c 100%);
+    color:var(--text);
+    font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    padding:12px;
+  }
+  .shell{max-width:1080px;margin:0 auto}
+  .toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
+  .group{display:flex;gap:10px;flex-wrap:wrap}
+  button{
+    border:1px solid rgba(255,255,255,.10);
+    background:rgba(255,255,255,.035);
+    color:var(--text);
+    padding:12px 16px;
+    border-radius:14px;
+    font-size:14px;
+    cursor:pointer;
+    transition:.18s ease;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
+  }
+  button:hover{background:rgba(255,255,255,.07)}
+  button.active{background:rgba(127,119,221,.22); border-color:rgba(127,119,221,.35)}
+  .frame{
+    background:rgba(14,18,31,.84);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:24px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+    padding:16px;
+  }
+  canvas{
+    display:block;
+    width:100%;
+    height:auto;
+    border-radius:20px;
+    background:linear-gradient(180deg, rgba(12,18,34,.96) 0%, rgba(5,11,22,.98) 100%);
+    border:1px solid rgba(255,255,255,.06);
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="toolbar">
+    <div class="group">
+      <button id="stackedBtn" class="active">Stacked</button>
+      <button id="spreadBtn">Spread</button>
+    </div>
+    <div class="group">
+      <button id="pauseBtn">Pause</button>
+      <button id="resetBtn">Observe</button>
+      <button id="fullBtn">Fullscreen</button>
+    </div>
+  </div>
+  <div class="frame">
+    <canvas id="cvs" width="1040" height="760"></canvas>
+  </div>
+</div>
+<script>
+(() => {
+  const canvas = document.getElementById('cvs');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  const BASE_COLORS = [
+    {r:127,g:119,b:221},
+    {r:29,g:158,b:117},
+    {r:186,g:117,b:23},
+    {r:216,g:90,b:48},
+    {r:55,g:138,b:221},
+  ];
+
+  const COLORS = BASE_COLORS.slice();
+
+  const S = {
+    paused:false,
+    mode:'stacked',
+    frame:0,
+    t:0,
+    OX: W/2,
+    OY: 470,
+    FY: 165,
+    PY: 690,
+    bins: 9,
+    future: Array.from({length:5}, () => new Float32Array(9)),
+    past: Array.from({length:5}, () => new Float32Array(9)),
+    futureParticles: [],
+    pastParticles: [],
+    ontic: [],
+    attention: new Float32Array(5),
+    filterCentersDyn: new Float32Array(5),
+    filterGain: new Float32Array(5),
+    filterFlow: new Float32Array(5),
+    observerQ:0,
+    mismatch:0,
+  };
+
+  const qCenters = [-1,-0.72,-0.42,-0.14,0,0.14,0.42,0.72,1];
+  const baseFilterCenters = [-0.88,-0.36,0,0.34,0.86];
+  const filterWidths  = [0.22,0.18,0.16,0.18,0.24];
+  const filterWarp    = [1.05,1.15,1.35,1.1,0.95];
+
+  const lerp = (a,b,t) => a + (b-a)*t;
+  const clamp = (x,a,b) => Math.max(a, Math.min(b, x));
+  const alpha = (c,a) => `rgba(${c.r},${c.g},${c.b},${a})`;
+  function shuffleActiveColors(){
+    const perm = BASE_COLORS.slice();
+    for(let i=perm.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [perm[i], perm[j]] = [perm[j], perm[i]];
+    }
+    for(let i=0;i<perm.length;i++) COLORS[i] = perm[i];
+  }
+
+  const pastChannelIndex = c => COLORS.length - 1 - c;
+  const pastColor = c => COLORS[pastChannelIndex(c)];
+  function softmax(logits){
+    const m = Math.max(...logits);
+    const ex = logits.map(v => Math.exp(v-m));
+    const s = ex.reduce((a,b)=>a+b,0) || 1;
+    return ex.map(v => v/s);
+  }
+  function blur1D(arr){
+    const out = new Float32Array(arr.length);
+    for(let i=0;i<arr.length;i++){
+      const l = arr[Math.max(0,i-1)], c = arr[i], r = arr[Math.min(arr.length-1,i+1)];
+      out[i] = 0.25*l + 0.5*c + 0.25*r;
+    }
+    return out;
+  }
+  function coneHalfWidth(y){
+    if (y <= S.OY) {
+      const a = (S.OY - y) / (S.OY - S.FY);
+      return 42 + a * 370;
+    }
+    const a = (y - S.OY) / (S.PY - S.OY);
+    return 34 + a * 170;
+  }
+  function qToX(q,y){ return S.OX + q * coneHalfWidth(y) * 0.92; }
+  function binIndexFromQ(q){
+    let best = 0, bestD = Infinity;
+    for(let i=0;i<qCenters.length;i++){
+      const d = Math.abs(q - qCenters[i]);
+      if(d < bestD){ bestD = d; best = i; }
+    }
+    return best;
+  }
+
+  // b-style radial/log progress adapted to cone depth
+  function foldProgressFuture(y){
+    const r0 = 10, r1 = (S.OY - S.FY) + r0;
+    const r = clamp(S.OY - y + r0, r0, r1);
+    return 1 - Math.log(r / r0) / Math.log(r1 / r0);
+  }
+  function foldProgressPast(y){
+    const r0 = 10, r1 = (S.PY - S.OY) + r0;
+    const r = clamp(y - S.OY + r0, r0, r1);
+    return Math.log(r / r0) / Math.log(r1 / r0);
+  }
+
+  function futureRegularity(x,t){
+    return Math.sin(x*0.017+t*0.35)*11
+         + Math.sin(x*0.061-t*0.77)*5.8
+         + Math.sin(x*0.19+t*1.1)*2.8
+         + Math.sin(x*0.63-t*1.85)*1.2;
+  }
+  function futureSmooth(x,t){ return Math.sin(x*0.015+t*0.32)*7 + Math.sin(x*0.031-t*0.19)*4; }
+  function pastFractal(x,t){
+    return Math.sin(x*0.022-t*0.31)*10
+         + Math.sin(x*0.081+t*0.83)*5.3
+         + Math.sin(x*0.27-t*1.35)*2.4
+         + Math.sin(x*0.92+t*2.2)*1.3;
+  }
+  function pastSmooth(x,t){ return Math.sin(x*0.012-t*0.24)*7 + Math.sin(x*0.024+t*0.16)*3.5; }
+
+  // filter geometry + quotient/Fisher style interaction
+  function centersFor(dir='future'){
+    const dyn = Array.from(S.filterCentersDyn);
+    if(dir === 'past') return dyn.slice().reverse().map(c => -c);
+    return dyn;
+  }
+
+  function updateAttentionState(){
+    const futureMass = COLORS.map((_,c) => S.future[c].reduce((a,b)=>a+b,0));
+    const pastMass = COLORS.map((_,c) => S.past[c].reduce((a,b)=>a+b,0));
+    const futTotal = futureMass.reduce((a,b)=>a+b,0) || 1;
+    const pastTotal = pastMass.reduce((a,b)=>a+b,0) || 1;
+
+    let qNum=0, qDen=0, mismatch=0;
+    for(let i=0;i<S.bins;i++){
+      let f=0, p=0;
+      for(let c=0;c<5;c++){ f += S.future[c][i]; p += S.past[c][S.bins-1-i]; }
+      qNum += qCenters[i]*f; qDen += f;
+      mismatch += Math.abs(f-p);
+    }
+    const observerQTarget = qDen > 0 ? qNum/qDen : 0;
+    S.observerQ = lerp(S.observerQ, observerQTarget, 0.05);
+    S.mismatch = lerp(S.mismatch, mismatch/(qDen+18), 0.05);
+
+    for(let c=0;c<5;c++){
+      const fShare = futureMass[c]/futTotal;
+      const pShare = pastMass[pastChannelIndex(c)]/pastTotal;
+      const err = fShare - pShare;
+      const target = clamp(0.55 + 1.8*err + 0.7*(fShare-0.2), -1.3, 1.3);
+      S.attention[c] = lerp(S.attention[c], target, 0.08);
+    }
+
+    const qBias = 0.18*Math.tanh(1.8*S.observerQ);
+    for(let c=0;c<5;c++){
+      const side = (c-2)/2;
+      const sep = 0.08*S.attention[c]*side;
+      const breathing = 0.03*Math.sin(S.t*0.7 + c*0.9 + 2.3*S.mismatch);
+      S.filterFlow[c] = lerp(S.filterFlow[c], 0.25*S.attention[c] + 0.4*S.mismatch, 0.06);
+      S.filterCentersDyn[c] = clamp(baseFilterCenters[c] + qBias + sep + breathing, -0.95, 0.95);
+      S.filterGain[c] = clamp(1 + 0.65*S.attention[c] + 0.55*S.mismatch, 0.45, 2.3);
+    }
+  }
+  function filterResponses(q, y, dir='future', seed=0){
+    const u = dir === 'future' ? foldProgressFuture(y) : foldProgressPast(y);
+    const sharpen = dir === 'future' ? lerp(0.55, 1.5, u) : lerp(1.35, 0.58, u);
+    const fisher = 1 / Math.max(0.18, 1 - 0.82*q*q);
+    const wave = 0.05*Math.sin(2.1*S.t + 7*q + seed);
+    const centers = centersFor(dir);
+    const vals = centers.map((c,i) => {
+      const flow = dir === 'future' ? S.filterFlow[i] : S.filterFlow[4-i];
+      const localCenter = c + 0.06*Math.sin(S.t*0.7 + i*1.4 + 3*u + 0.8*flow) + (dir==='past' ? 0.035*Math.cos(seed+i) : 0);
+      const dq = (q - localCenter) * fisher * filterWarp[i];
+      const width = (filterWidths[i] / sharpen) * (1 - 0.12*Math.tanh(flow));
+      const core = Math.exp(-(dq*dq)/(2*width*width));
+      const bias = 0.18 + 0.22*Math.cos(S.t*0.45 + i*1.1 + (dir==='future' ? 1.7*u : -1.2*u));
+      const gain = dir === 'future' ? S.filterGain[i] : S.filterGain[4-i];
+      return Math.max(0.001, gain*core*(1+bias) + wave + 0.04);
+    });
+    return softmax(vals.map(v => 3.3*Math.log(v)));
+  }
+  function quotientFromProb(p, dir='future'){
+    let q = 0;
+    const centers = centersFor(dir);
+    for(let i=0;i<p.length;i++) q += p[i] * centers[i];
+    return clamp(q, -1, 1);
+  }
+
+  function seedOntic(){
+    S.ontic = [];
+    for(let i=0;i<300;i++){
+      const neutral = 0.10 + Math.random()*0.13;
+      S.ontic.push({
+        x: 70 + Math.random()*(W-140),
+        y: 44 + Math.random()*110,
+        vx: (Math.random()-0.5)*0.08,
+        vy: 0.04 + Math.random()*0.10,
+        r: Math.random()<0.08 ? 5 + Math.random()*6 : 0.7 + Math.random()*1.9,
+        a: neutral,
+        phase: Math.random()*10,
+      });
+    }
+  }
+
+  function spawnFuture(){
+    const x = 70 + Math.random()*(W-140);
+    const q0 = clamp((x - S.OX) / (coneHalfWidth(S.FY)*0.98), -1, 1);
+    S.futureParticles.push({
+      s:0,
+      onticX:x,
+      q0,
+      q:q0,
+      y:54 + Math.random()*90,
+      x,
+      p:[0.2,0.2,0.2,0.2,0.2],
+      sz:0.85 + Math.random()*1.55,
+      seed: Math.random()*10,
+      deposited:false,
+      fade:1,
+    });
+  }
+
+  function spawnPast(){
+    const flat = new Array(S.bins).fill(0).map((_,i)=>{
+      let s=0; for(let c=0;c<5;c++) s += S.future[c][i];
+      return s;
+    });
+    const total = flat.reduce((a,b)=>a+b,0);
+    if(total < 14) return;
+    let r = Math.random()*total, idx = 0;
+    for(let i=0;i<flat.length;i++){ r -= flat[i]; if(r <= 0){ idx = i; break; } }
+
+    const chanMass = COLORS.map((_,c) => S.future[c][idx]);
+    let chanTotal = chanMass.reduce((a,b)=>a+b,0); if(chanTotal <= 0) chanTotal = 1;
+    const pObs = chanMass.map(v => v/chanTotal);
+    const qObs = quotientFromProb(pObs, 'future');
+    const qTarget = clamp(-qObs + (Math.random()-0.5)*0.18, -1, 1);
+
+    S.pastParticles.push({
+      s:0,
+      y:S.OY + 10,
+      qStart:qObs,
+      qTarget,
+      q:qObs,
+      p:pObs.slice(),
+      sz:0.9 + Math.random()*1.5,
+      err:0.3 + Math.random()*0.8,
+      seed: Math.random()*10,
+      deposited:false,
+    });
+  }
+
+  function decayBins(){
+    for(let c=0;c<5;c++) for(let i=0;i<S.bins;i++) S.future[c][i] *= 0.993;
+    const mirrored = Array.from({length:5}, (_,c) => blur1D(S.future[c]));
+    for(let c=0;c<5;c++){
+      const src = pastChannelIndex(c);
+      const rev = Float32Array.from(mirrored[src]).reverse();
+      for(let i=0;i<S.bins;i++){
+        const noise = 0.09 * Math.sin(S.t*2.1 + c*1.7 + i*0.9);
+        const target = Math.max(0, rev[i] * (0.82 + noise));
+        S.past[c][i] = lerp(S.past[c][i], target, 0.08);
+      }
+    }
+  }
+
+  function updateFuture(p){
+    p.s += 0.0075 + 0.0018*Math.random();
+    const u = clamp(p.s, 0, 1.18);
+    const eased = (1 - Math.exp(-3.6*Math.min(u,1))) / (1 - Math.exp(-3.6));
+    p.y = u <= 1 ? lerp(56, S.OY - 4, eased) : lerp(S.OY - 4, S.OY + 8, (u-1)/0.18);
+
+    const pFilt = filterResponses(p.q0, Math.min(p.y,S.OY-4), 'future', p.seed);
+    p.p = pFilt;
+    const qFilter = quotientFromProb(pFilt, 'future');
+    p.q = clamp(lerp(p.q0, qFilter, 0.82*Math.min(u,1)), -1, 1);
+
+    const width = coneHalfWidth(Math.min(p.y,S.OY-2));
+    const reg = foldProgressFuture(Math.min(p.y,S.OY-2));
+    const xBase = S.OX + p.q * width * 0.92;
+    const rough = (1-reg) * 0.15 * futureRegularity(width*p.q*1.9 + p.y*0.21, S.t + p.seed);
+    const smooth = reg * 0.10 * futureSmooth(width*p.q*1.3 - p.y*0.1, S.t + 0.5*p.seed);
+    const aperturePull = u > 0.92 ? (u-0.92)/0.26 : 0;
+    p.x = lerp(xBase + rough + smooth, S.OX + p.q*10, clamp(aperturePull,0,1));
+    p.fade = u > 1 ? 1 - (u-1)/0.18 : 1;
+
+    if(u >= 0.985 && !p.deposited){
+      const bi = binIndexFromQ(p.q);
+      for(let c=0;c<5;c++) S.future[c][bi] = Math.min(108, S.future[c][bi] + 1.9*p.p[c]);
+      p.deposited = true;
+    }
+    return u < 1.18;
+  }
+
+  function updatePast(p){
+    p.s += 0.009 + 0.0015*Math.random();
+    const u = clamp(p.s, 0, 1);
+    const eased = Math.pow(u, 0.9);
+    p.y = lerp(S.OY + 10, S.PY - 10, eased);
+
+    const qRecon = lerp(p.qStart, p.qTarget, 0.8*u);
+    const pFilt = filterResponses(qRecon, p.y, 'past', p.seed);
+    // reconstruct observed mixture with error around mirrored quotient state
+    p.p = softmax(pFilt.map((v,i) => Math.log(v + 1e-6) + 1.1*Math.log(p.p[i] + 1e-6) + 0.15*(Math.random()-0.5)));
+    p.q = clamp(quotientFromProb(p.p, 'past') + (1-u)*0.05*Math.sin(p.seed + 8*u), -1, 1);
+
+    const width = coneHalfWidth(p.y);
+    const nearObs = Math.exp(-4.0*u);
+    const xBase = S.OX + p.q * width * 0.92;
+    const rough = nearObs * 0.22 * pastFractal(width*p.q*1.6 + p.y*0.15, S.t + p.seed);
+    const smooth = (1-nearObs) * 0.12 * pastSmooth(width*p.q*1.2 - p.y*0.08, S.t - p.seed*0.2);
+    const memoryErr = p.err * (1-u) * (Math.random()-0.5) * 5;
+    p.x = xBase + rough + smooth + memoryErr;
+
+    if(u >= 1 && !p.deposited){
+      const bi = binIndexFromQ(p.q);
+      for(let c=0;c<5;c++) S.past[c][bi] = Math.min(108, S.past[c][bi] + 0.9*p.p[pastChannelIndex(c)]);
+      p.deposited = true;
+    }
+    return u < 1.02;
+  }
+
+  function drawBackground(){
+    ctx.clearRect(0,0,W,H);
+    const grad = ctx.createLinearGradient(0,0,0,H);
+    grad.addColorStop(0, 'rgba(9,14,28,0.98)');
+    grad.addColorStop(1, 'rgba(4,10,20,1)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0,0,W,H);
+
+    ctx.strokeStyle = 'rgba(127,119,221,0.18)';
+    ctx.setLineDash([7,5]);
+    ctx.strokeRect(60, 34, W-120, 178);
+    ctx.setLineDash([]);
+    ctx.fillStyle = 'rgba(127,119,221,0.04)';
+    ctx.fillRect(60, 34, W-120, 178);
+
+    // ontic stream with stochastic observer-relative tinting from filter influence
+    for(const d of S.ontic){
+      d.x += d.vx + 0.03*Math.sin(S.t*0.8 + d.phase + d.y*0.02);
+      d.y += d.vy;
+      if(d.y > S.FY-2){
+        d.y = 40 + Math.random()*18;
+        d.x = 70 + Math.random()*(W-140);
+      }
+      if(d.x < 70) d.x = W-70;
+      if(d.x > W-70) d.x = 70;
+      const qOntic = clamp((d.x - S.OX)/(coneHalfWidth(S.FY)*0.98), -1, 1);
+      const infl = filterResponses(qOntic, S.FY+10, 'future', d.phase);
+      const observeAmt = Math.pow(clamp((d.y-70)/(S.FY-70),0,1), 1.2);
+      const noise = infl.map((v,i)=> Math.max(0.0001, v*(0.72 + 0.95*Math.random()) + observeAmt*0.12*Math.abs(Math.sin(S.t*2.4 + d.phase*1.7 + i*1.3))));
+      const total = noise.reduce((a,b)=>a+b,0);
+      const probs = noise.map(v=>v/total);
+      let pick = Math.random(), acc=0, chosen=0;
+      for(let i=0;i<probs.length;i++){
+        acc += probs[i];
+        if(pick <= acc){ chosen = i; break; }
+      }
+      const mix = 0.16 + 0.64*observeAmt;
+      let rr = lerp(214, COLORS[chosen].r, mix),
+          gg = lerp(224, COLORS[chosen].g, mix),
+          bb = lerp(255, COLORS[chosen].b, mix);
+      for(let i=0;i<5;i++){
+        rr = lerp(rr, COLORS[i].r, probs[i]*0.22*observeAmt);
+        gg = lerp(gg, COLORS[i].g, probs[i]*0.22*observeAmt);
+        bb = lerp(bb, COLORS[i].b, probs[i]*0.22*observeAmt);
+      }
+      const a = d.a + 0.04*Math.sin(S.t + d.phase) + 0.04*observeAmt;
+      ctx.beginPath();
+      ctx.arc(d.x,d.y,d.r*(0.96 + 0.10*observeAmt),0,Math.PI*2);
+      ctx.fillStyle = `rgba(${rr|0},${gg|0},${bb|0},${a})`;
+      ctx.fill();
+      if(d.r > 4.4){
+        ctx.strokeStyle = `rgba(${rr|0},${gg|0},${bb|0},${Math.min(0.24,a+0.04)})`;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+    }
+
+    // filter bank near horizon
+    const bandY = 182;
+    for(let i=0;i<5;i++){
+      const q = S.filterCentersDyn[i];
+      const x = qToX(q, bandY + 6*S.filterFlow[i]);
+      const w = coneHalfWidth(bandY) * filterWidths[i] * (1.85 + 0.18*S.filterGain[i]);
+      const h = 38 + i*3 + 11*Math.max(0,S.filterFlow[i]);
+      const g = ctx.createRadialGradient(x, bandY, 1, x, bandY, Math.max(16,w));
+      g.addColorStop(0, alpha(COLORS[i],0.14 + 0.06*Math.max(0,S.filterGain[i]-1)));
+      g.addColorStop(0.65, alpha(COLORS[i],0.05 + 0.03*Math.max(0,S.filterFlow[i])));
+      g.addColorStop(1, alpha(COLORS[i],0));
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.ellipse(x, bandY, Math.max(20,w), h, 0, 0, Math.PI*2);
+      ctx.fill();
+    }
+
+    ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([6,5]);
+    ctx.beginPath(); ctx.moveTo(60,S.FY); ctx.lineTo(W-60,S.FY); ctx.stroke();
+    ctx.setLineDash([]);
+
+    const fillFuture = ctx.createLinearGradient(0,S.FY,0,S.OY);
+    fillFuture.addColorStop(0,'rgba(29,158,117,0.07)');
+    fillFuture.addColorStop(1,'rgba(29,158,117,0.02)');
+    ctx.fillStyle = fillFuture;
+    ctx.beginPath();
+    ctx.moveTo(S.OX,S.OY); ctx.lineTo(S.OX-coneHalfWidth(S.FY),S.FY); ctx.lineTo(S.OX+coneHalfWidth(S.FY),S.FY); ctx.closePath();
+    ctx.fill();
+
+    const fillPast = ctx.createLinearGradient(0,S.OY,0,S.PY);
+    fillPast.addColorStop(0,'rgba(186,117,23,0.06)');
+    fillPast.addColorStop(1,'rgba(186,117,23,0.02)');
+    ctx.fillStyle = fillPast;
+    ctx.beginPath();
+    ctx.moveTo(S.OX,S.OY); ctx.lineTo(S.OX-coneHalfWidth(S.PY),S.PY); ctx.lineTo(S.OX+coneHalfWidth(S.PY),S.PY); ctx.closePath();
+    ctx.fill();
+
+    ctx.strokeStyle = 'rgba(186,117,23,0.88)';
+    ctx.lineWidth = 2.1;
+    ctx.beginPath(); ctx.moveTo(S.OX,S.OY); ctx.lineTo(S.OX-coneHalfWidth(S.FY),S.FY); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(S.OX,S.OY); ctx.lineTo(S.OX+coneHalfWidth(S.FY),S.FY); ctx.stroke();
+    ctx.strokeStyle = 'rgba(186,117,23,0.44)';
+    ctx.lineWidth = 1.8;
+    ctx.setLineDash([8,5]);
+    ctx.beginPath(); ctx.moveTo(S.OX,S.OY); ctx.lineTo(S.OX-coneHalfWidth(S.PY),S.PY); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(S.OX,S.OY); ctx.lineTo(S.OX+coneHalfWidth(S.PY),S.PY); ctx.stroke();
+    ctx.setLineDash([]);
+
+    drawRegularityCurves();
+    drawAxes();
+    drawLabels();
+  }
+
+  function drawRegularityCurves(){
+    const levelsF = [214, 278, 344];
+    for(let k=0;k<levelsF.length;k++){
+      const y = levelsF[k];
+      const hw = coneHalfWidth(y)*0.66;
+      const x0 = S.OX - hw, x1 = S.OX + hw;
+      const mix = foldProgressFuture(y);
+      ctx.beginPath();
+      for(let i=0;i<=120;i++){
+        const x = lerp(x0,x1,i/120);
+        const dy = (1-mix)*0.34*futureRegularity(x-S.OX,S.t) + mix*0.34*futureSmooth(x-S.OX,S.t);
+        i===0 ? ctx.moveTo(x,y+dy) : ctx.lineTo(x,y+dy);
+      }
+      ctx.strokeStyle = [alpha(COLORS[3],0.48), alpha(COLORS[0],0.46), alpha(COLORS[1],0.42)][k];
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
+    }
+
+    const levelsP = [530, 595, 650];
+    const pastCurveColors = [alpha(COLORS[1],0.40), alpha(COLORS[0],0.38), alpha(COLORS[2],0.34)];
+    for(let k=0;k<levelsP.length;k++){
+      const y = levelsP[k];
+      const hw = coneHalfWidth(y)*0.72;
+      const x0 = S.OX - hw, x1 = S.OX + hw;
+      const u = foldProgressPast(y);
+      const nearObs = Math.exp(-3.4*u);
+      ctx.beginPath();
+      for(let i=0;i<=120;i++){
+        const x = lerp(x0,x1,i/120);
+        const dy = nearObs*0.34*pastFractal(x-S.OX,S.t) + (1-nearObs)*0.34*pastSmooth(x-S.OX,S.t);
+        i===0 ? ctx.moveTo(x,y+dy) : ctx.lineTo(x,y+dy);
+      }
+      ctx.strokeStyle = pastCurveColors[k];
+      ctx.lineWidth = 1.25;
+      ctx.stroke();
+    }
+  }
+
+  function drawAxes(){
+    ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(S.OX, 220); ctx.lineTo(S.OX, H-70); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(95, S.OY); ctx.lineTo(W-88, S.OY); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.18)';
+    ctx.beginPath(); ctx.moveTo(W-88,S.OY); ctx.lineTo(W-101,S.OY-7); ctx.lineTo(W-101,S.OY+7); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(S.OX,220); ctx.lineTo(S.OX-7,233); ctx.lineTo(S.OX+7,233); ctx.closePath(); ctx.fill();
+  }
+
+  function drawLabels(){
+    ctx.font = '700 12px system-ui, sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.62)';
+    ctx.textAlign = 'center';
+    ctx.fillText('ontic space', S.OX, 54);
+    ctx.font = '600 11px system-ui, sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.26)';
+    ctx.fillText('attention filters / quotient interaction', S.OX, 196);
+
+    ctx.textAlign = 'left';
+    ctx.fillStyle = alpha(COLORS[2],0.82);
+    ctx.font = '600 11px system-ui, sans-serif';
+    ctx.fillText('future collapse', 112, 270);
+    ctx.fillText('observed quotient', 112, 286);
+
+    ctx.fillStyle = 'rgba(255,255,255,0.42)';
+    ctx.fillText('past reconstruction', 112, 610);
+    ctx.fillText('memory with error', 112, 626);
+
+    ctx.fillStyle = 'rgba(255,255,255,0.25)';
+    ctx.textAlign = 'right';
+    ctx.fillText('fold / horizon', W-92, S.FY-7);
+
+    ctx.textAlign = 'center';
+    ctx.fillStyle = alpha(COLORS[2],0.8);
+    ctx.fillText('observer', S.OX, S.OY+30);
+  }
+
+  function drawParticles(){
+    for(const p of S.futureParticles){
+      for(let c=0;c<5;c++){
+        if(p.p[c] < 0.05) continue;
+        const spread = (c-2)*1.1*(1-p.p[c]);
+        ctx.beginPath();
+        ctx.arc(p.x + spread, p.y, p.sz * (0.8 + p.p[c]), 0, Math.PI*2);
+        ctx.fillStyle = alpha(COLORS[c], (0.03 + 0.82*p.p[c]) * (p.fade || 1));
+        ctx.fill();
+      }
+    }
+    for(const p of S.pastParticles){
+      const boundaryShrink = 1 - 0.52*Math.pow(Math.abs(p.q), 1.65);
+      for(let c=0;c<5;c++){
+        if(p.p[c] < 0.05) continue;
+        const spread = (c-2)*1.2*(1-p.p[c]);
+        const r = Math.max(0.42, p.sz * (0.8 + 0.92*p.p[c]) * boundaryShrink);
+        ctx.beginPath();
+        ctx.arc(p.x + spread, p.y, r, 0, Math.PI*2);
+        ctx.fillStyle = alpha(pastColor(c), 0.02 + 0.48*p.p[c]);
+        ctx.fill();
+      }
+    }
+  }
+
+  function drawHistogram(){
+    const bins = S.bins;
+    const cellW = 22;
+    const gap = 8;
+    const totalW = bins*cellW + (bins-1)*gap;
+    const x0 = S.OX - totalW/2;
+    const scale = 1.42;
+
+    ctx.strokeStyle = 'rgba(255,255,255,0.10)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x0-12, S.OY); ctx.lineTo(x0+totalW+12, S.OY); ctx.stroke();
+
+    if(S.mode === 'stacked'){
+      for(let i=0;i<bins;i++){
+        const bx = x0 + i*(cellW+gap);
+        let up = 0, down = 0;
+        for(let c=0;c<5;c++){
+          const hF = Math.min(106, S.future[c][i]) * scale;
+          const hP = Math.min(106, S.past[c][i]) * scale;
+          if(hF > 0.6){
+            ctx.fillStyle = alpha(COLORS[c], 0.76);
+            ctx.fillRect(bx, S.OY-up-hF, cellW, hF);
+            up += hF;
+          }
+          if(hP > 0.6){
+            ctx.fillStyle = alpha(pastColor(c), 0.38);
+            ctx.fillRect(bx, S.OY+down, cellW, hP);
+            down += hP;
+          }
+        }
+      }
+    } else {
+      const innerGap = 1.2;
+      const w = (cellW - innerGap*4) / 5;
+      for(let i=0;i<bins;i++){
+        const bx = x0 + i*(cellW+gap);
+        for(let c=0;c<5;c++){
+          const xx = bx + c*(w+innerGap);
+          const hF = Math.min(106, S.future[c][i]) * scale;
+          const hP = Math.min(106, S.past[c][i]) * scale;
+          if(hF > 0.6){
+            ctx.fillStyle = alpha(COLORS[c], 0.80);
+            ctx.fillRect(xx, S.OY-hF, w, hF);
+          }
+          if(hP > 0.6){
+            ctx.fillStyle = alpha(pastColor(c), 0.42);
+            ctx.fillRect(xx, S.OY, w, hP);
+          }
+        }
+      }
+    }
+  }
+
+  function drawObserver(){
+    ctx.beginPath(); ctx.arc(S.OX, S.OY, 7.2, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(186,117,23,0.98)'; ctx.fill();
+    ctx.beginPath(); ctx.arc(S.OX, S.OY, 14, 0, Math.PI*2);
+    ctx.strokeStyle = 'rgba(186,117,23,0.28)'; ctx.lineWidth = 1.1; ctx.stroke();
+  }
+
+  function step(){
+    if(!S.paused){
+      S.frame++;
+      S.t += 0.014;
+      if(S.futureParticles.length < 420){ spawnFuture(); if(Math.random() < 0.55) spawnFuture(); }
+      if(S.pastParticles.length < 180 && S.frame % 3 === 0) spawnPast();
+      S.futureParticles = S.futureParticles.filter(updateFuture);
+      S.pastParticles = S.pastParticles.filter(updatePast);
+      decayBins();
+      updateAttentionState();
+    }
+    drawBackground();
+    drawParticles();
+    drawHistogram();
+    drawObserver();
+    requestAnimationFrame(step);
+  }
+
+  function reset(){
+    shuffleActiveColors();
+    for(let c=0;c<5;c++){ S.future[c].fill(0); S.past[c].fill(0); }
+    S.futureParticles.length = 0;
+    S.pastParticles.length = 0;
+    S.frame = 0;
+    S.t = 0;
+    seedOntic();
+    S.attention.fill(0);
+    S.filterFlow.fill(0);
+    for(let i=0;i<5;i++){ S.filterCentersDyn[i] = baseFilterCenters[i]; S.filterGain[i] = 1; }
+    S.observerQ = 0;
+    S.mismatch = 0;
+    S.paused = false;
+    const pauseBtn = document.getElementById('pauseBtn');
+    if(pauseBtn) pauseBtn.textContent = 'Pause';
+  }
+
+  document.getElementById('stackedBtn').addEventListener('click', () => {
+    S.mode = 'stacked';
+    document.getElementById('stackedBtn').classList.add('active');
+    document.getElementById('spreadBtn').classList.remove('active');
+  });
+  document.getElementById('spreadBtn').addEventListener('click', () => {
+    S.mode = 'spread';
+    document.getElementById('spreadBtn').classList.add('active');
+    document.getElementById('stackedBtn').classList.remove('active');
+  });
+  document.getElementById('pauseBtn').addEventListener('click', (e) => {
+    S.paused = !S.paused;
+    e.target.textContent = S.paused ? 'Resume' : 'Pause';
+  });
+  document.getElementById('resetBtn').addEventListener('click', reset);
+  document.getElementById('fullBtn').addEventListener('click', async () => {
+    if(document.fullscreenElement) await document.exitFullscreen();
+    else await document.querySelector('.frame').requestFullscreen();
+  });
+
+  shuffleActiveColors();
+  seedOntic();
+  step();
+})();
+</script>
+</body>
+</html>
