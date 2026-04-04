@@ -64,8 +64,12 @@ body::before{
   grid-template-rows:auto 1fr;
   grid-template-columns:270px 1fr 320px;
   grid-template-areas:"hdr hdr hdr""ctl chart ai";
-  min-height:100vh
+  height:100vh;overflow:hidden;
+  transition:grid-template-columns .22s ease
 }
+#app.hide-left{ grid-template-columns:0px 1fr 320px }
+#app.hide-right{ grid-template-columns:270px 1fr 0px }
+#app.hide-left.hide-right{ grid-template-columns:0px 1fr 0px }
 
 /* HEADER */
 header{
@@ -87,9 +91,10 @@ header .sub{font-size:.78rem;color:var(--dim);letter-spacing:.12em;margin-top:1p
   grid-area:ctl;
   padding:18px 14px;
   border-right:1px solid var(--gold4);
-  overflow-y:auto;
+  overflow-y:auto;overflow-x:hidden;
   background:linear-gradient(to bottom,var(--bg2),var(--bg));
-  scrollbar-width:thin;scrollbar-color:var(--gold4) transparent
+  scrollbar-width:thin;scrollbar-color:var(--gold4) transparent;
+  min-width:0;min-height:0
 }
 
 .sect{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.22em;color:var(--gold3);text-transform:uppercase;margin-bottom:9px;padding-bottom:4px;border-bottom:1px solid var(--gold4)}
@@ -127,13 +132,15 @@ hr.div{border:none;border-top:1px solid var(--gold4);margin:14px 0}
 #chart-wrap{
   grid-area:chart;
   display:flex;align-items:center;justify-content:center;
-  padding:16px;position:relative;overflow:hidden
+  padding:12px;position:relative;overflow:hidden;
+  min-width:0;min-height:0
 }
 #chart-wrap::before{
   content:'';position:absolute;inset:0;pointer-events:none;
   background:radial-gradient(ellipse at center,rgba(25,20,50,.3) 0%,transparent 65%)
 }
 #chart-svg{
+  width:100%;height:100%;
   max-width:100%;max-height:100%;
   filter:drop-shadow(0 0 50px rgba(60,45,100,.5))
 }
@@ -143,9 +150,11 @@ hr.div{border:none;border-top:1px solid var(--gold4);margin:14px 0}
   grid-area:ai;
   padding:18px 14px;
   border-left:1px solid var(--gold4);
-  overflow-y:auto;background:linear-gradient(to bottom,var(--bg2),var(--bg));
+  overflow-y:auto;overflow-x:hidden;
+  background:linear-gradient(to bottom,var(--bg2),var(--bg));
   display:flex;flex-direction:column;gap:14px;
-  scrollbar-width:thin;scrollbar-color:var(--gold4) transparent
+  scrollbar-width:thin;scrollbar-color:var(--gold4) transparent;
+  min-width:0;min-height:0
 }
 .ai-hdr{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.22em;color:var(--gold3);text-transform:uppercase;padding-bottom:4px;border-bottom:1px solid var(--gold4)}
 
@@ -185,23 +194,49 @@ hr.div{border:none;border-top:1px solid var(--gold4);margin:14px 0}
   font-size:.72rem;font-family:'Cinzel',serif;margin-right:4px
 }
 
+/* panel toggles */
+.toggle-panel{
+  background:transparent;border:1px solid var(--gold4);border-radius:2px;
+  color:var(--dim);font-size:.7rem;padding:3px 8px;cursor:pointer;
+  font-family:'Cinzel',serif;letter-spacing:.08em;transition:all .15s;
+  white-space:nowrap
+}
+.toggle-panel:hover{border-color:var(--gold);color:var(--gold)}
+.toggle-panel.active{border-color:var(--gold);color:var(--gold);background:rgba(200,168,76,.07)};padding:5px 2px!important;font-size:.6rem!important;letter-spacing:.05em!important;margin-bottom:0!important;text-align:center}
+.step-btn.active-step{border-color:var(--gold)!important;color:var(--gold)!important;background:rgba(200,168,76,.08)!important}
+.play-row{display:flex;gap:5px;margin-bottom:7px}
+.play-row .btn{flex:1;padding:8px 4px;font-size:.75rem;letter-spacing:.08em;margin-bottom:0}
+.play-row .btn-play{flex:2;border-color:var(--gold);color:var(--gold)}
+.play-row .btn-play.playing{border-color:#40b865;color:#40b865;background:rgba(64,184,101,.07)}
+#apikey-wrap{font-size:.68rem;color:var(--dim);margin-bottom:8px;line-height:1.4;margin-top:-4px}
+
 @media(max-width:860px){
-  #app{grid-template-columns:1fr;grid-template-areas:"hdr""ctl""chart""ai"}
+  #app{grid-template-columns:1fr!important;grid-template-areas:"hdr""chart""ctl""ai";height:auto;overflow:auto}
   #ctl,#ai{border:none;border-bottom:1px solid var(--gold4)}
-  #chart-wrap{min-height:420px}
+  #chart-wrap{min-height:90vw}
+  .toggle-panel{display:none}
 }
 </style>
 </head>
 <body>
 <div id="app">
 <header>
-  <div>
+  <div style="flex:1">
     <h1>CELESTIAL CARTOGRAPHY</h1>
     <div class="sub">Planetary ephemeris · House systems · AI pattern analysis</div>
+  </div>
+  <div style="display:flex;gap:6px;align-items:center">
+    <button class="toggle-panel active" id="tog-ctl" onclick="togglePanel('left')" title="Toggle controls">⊞ Controls</button>
+    <button class="toggle-panel active" id="tog-ai"  onclick="togglePanel('right')" title="Toggle analysis">Analysis ⊞</button>
   </div>
 </header>
 
 <aside id="ctl">
+  <p class="sect">AI Analysis</p>
+  <div class="fg"><label>Anthropic API Key</label><input id="apikey" type="password" placeholder="sk-ant-…" autocomplete="off" spellcheck="false"></div>
+  <div id="apikey-wrap">For AI interpretation only. Never leaves this page.</div>
+
+  <hr class="div">
   <p class="sect">Location</p>
   <div class="fg"><label>Latitude (°N+)</label><input id="lat" type="number" step=".0001" value="47.0417" placeholder="47.0417"></div>
   <div class="fg"><label>Longitude (°E+)</label><input id="lng" type="number" step=".0001" value="-122.8168" placeholder="-122.8168"></div>
@@ -227,6 +262,26 @@ hr.div{border:none;border-top:1px solid var(--gold4);margin:14px 0}
   <button class="btn btn-draw" onclick="mainDraw()">✦ DRAW CHART</button>
 
   <hr class="div">
+  <p class="sect" style="margin-bottom:8px">Time Travel</p>
+  <div style="display:flex;gap:4px;margin-bottom:6px">
+    <button class="btn step-btn active-step" id="sb-1h"  onclick="setStep(1,this)">1h</button>
+    <button class="btn step-btn"             id="sb-6h"  onclick="setStep(6,this)">6h</button>
+    <button class="btn step-btn"             id="sb-1d"  onclick="setStep(24,this)">1d</button>
+    <button class="btn step-btn"             id="sb-1w"  onclick="setStep(168,this)">1w</button>
+    <button class="btn step-btn"             id="sb-1m"  onclick="setStep(720,this)">1mo</button>
+  </div>
+  <div class="play-row">
+    <button class="btn" title="Step back" onclick="stepAndDraw(-1)">◀◀</button>
+    <button class="btn btn-play" id="playbtn" onclick="togglePlay()">▶ PLAY</button>
+    <button class="btn" title="Step forward" onclick="stepAndDraw(1)">▶▶</button>
+  </div>
+  <div id="play-spd" style="display:flex;align-items:center;gap:6px;margin-bottom:12px">
+    <span style="font-size:.65rem;color:var(--dim);letter-spacing:.08em">SPEED</span>
+    <input id="spd-range" type="range" min="80" max="1200" value="400" step="40"
+      style="flex:1;accent-color:var(--gold);height:3px;cursor:pointer"
+      oninput="if(playing){clearInterval(playIv);playIv=setInterval(autoStep,1200-+this.value)}">
+    <span style="font-size:.65rem;color:var(--dim)">faster</span>
+  </div>
   <p class="sect" style="margin-bottom:8px">Aspect Types</p>
   <div id="legend" style="display:flex;flex-direction:column;gap:3px"></div>
 </aside>
@@ -821,10 +876,21 @@ ${aspLines}
 
 Interpret the dominant themes, the most striking configurations, and what this celestial moment suggests — for individual reflection and the collective mood.`;
 
+  const apiKey=(document.getElementById('apikey').value||'').trim();
+  if(!apiKey){
+    readout.innerHTML=`<span class="placeholder">Enter your Anthropic API key in the panel to enable AI interpretation.</span>`;
+    return;
+  }
+
   try{
     const resp=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':apiKey,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
       body:JSON.stringify({
         model:'claude-sonnet-4-20250514',
         max_tokens:1000,
@@ -849,9 +915,105 @@ Interpret the dominant themes, the most striking configurations, and what this c
 }
 
 // ═══════════════════════════════════════════════════════
+// TIME TRAVEL
+// ═══════════════════════════════════════════════════════
+let currentStep=1; // hours
+let playing=false;
+let playIv=null;
+
+function setStep(h,btn){
+  currentStep=h;
+  document.querySelectorAll('.step-btn').forEach(b=>b.classList.remove('active-step'));
+  if(btn)btn.classList.add('active-step');
+}
+
+function jdToFields(jd){
+  // Convert JD back to local calendar using current TZ offset
+  const tz=+document.getElementById('tz').value||0;
+  const jdLocal=jd+tz/24;
+  let z=Math.floor(jdLocal+0.5);
+  let f=jdLocal+0.5-z;
+  let A;
+  if(z<2299161){A=z}else{const al=Math.floor((z-1867216.25)/36524.25);A=z+1+al-Math.floor(al/4)}
+  const B=A+1524;
+  const C=Math.floor((B-122.1)/365.25);
+  const D=Math.floor(365.25*C);
+  const E=Math.floor((B-D)/30.6001);
+  const dayFrac=B-D-Math.floor(30.6001*E)+f;
+  const day=Math.floor(dayFrac);
+  const hFrac=(dayFrac-day)*24;
+  const hr=Math.floor(hFrac);
+  const mFrac=(hFrac-hr)*60;
+  const mn=Math.floor(mFrac);
+  const sc=Math.floor((mFrac-mn)*60);
+  const month=E<14?E-1:E-13;
+  const year=month>2?C-4716:C-4715;
+  document.getElementById('yr').value=year;
+  document.getElementById('mo').value=month;
+  document.getElementById('dy').value=day;
+  document.getElementById('hr').value=hr;
+  document.getElementById('mn').value=mn;
+  document.getElementById('sc').value=sc;
+}
+
+function drawChartOnly(){
+  const yr=+document.getElementById('yr').value||2026;
+  const mo=+document.getElementById('mo').value||3;
+  const dy=+document.getElementById('dy').value||22;
+  const hr=+document.getElementById('hr').value||12;
+  const mn=+document.getElementById('mn').value||0;
+  const sc=+document.getElementById('sc').value||0;
+  const lat=+document.getElementById('lat').value||47;
+  const lng=+document.getElementById('lng').value||-122.5;
+  const tz=+document.getElementById('tz').value||0;
+  const jd=julianDay(yr,mo,dy,hr,mn,sc,tz);
+  const pos=calcAll(jd);
+  const{asc,mc}=calcAngles(jd,lat,lng);
+  renderWheel(pos,asc,mc);
+  _lastDrawPos=pos;_lastDrawAsc=asc;_lastDrawMc=mc;
+  updatePTable(pos,asc);
+  updateAspTable(pos);
+}
+
+function stepAndDraw(dir){
+  const yr=+document.getElementById('yr').value||2026;
+  const mo=+document.getElementById('mo').value||3;
+  const dy=+document.getElementById('dy').value||22;
+  const hr=+document.getElementById('hr').value||12;
+  const mn=+document.getElementById('mn').value||0;
+  const sc=+document.getElementById('sc').value||0;
+  const tz=+document.getElementById('tz').value||0;
+  const jd=julianDay(yr,mo,dy,hr,mn,sc,tz)+(dir*currentStep/24);
+  jdToFields(jd);
+  drawChartOnly();
+}
+
+function autoStep(){stepAndDraw(1)}
+
+function togglePlay(){
+  playing=!playing;
+  const btn=document.getElementById('playbtn');
+  if(playing){
+    btn.textContent='⏸ PAUSE';
+    btn.classList.add('playing');
+    const delay=Math.max(80,1200-+document.getElementById('spd-range').value);
+    playIv=setInterval(autoStep,delay);
+    drawChartOnly();
+  }else{
+    btn.textContent='▶ PLAY';
+    btn.classList.remove('playing');
+    clearInterval(playIv);playIv=null;
+  }
+}
+
+// ═══════════════════════════════════════════════════════
 // MAIN
 // ═══════════════════════════════════════════════════════
 function mainDraw(){
+  // stop any animation
+  if(playing){playing=false;clearInterval(playIv);playIv=null;
+    const btn=document.getElementById('playbtn');
+    btn.textContent='▶ PLAY';btn.classList.remove('playing')}
   const yr=+document.getElementById('yr').value||2026;
   const mo=+document.getElementById('mo').value||3;
   const dy=+document.getElementById('dy').value||22;
@@ -867,6 +1029,7 @@ function mainDraw(){
   const{asc,mc}=calcAngles(jd,lat,lng);
 
   renderWheel(pos,asc,mc);
+  _lastDrawPos=pos;_lastDrawAsc=asc;_lastDrawMc=mc;
   updatePTable(pos,asc);
   updateAspTable(pos);
   getAI(pos,asc,mc);
@@ -875,6 +1038,28 @@ function mainDraw(){
 // ── INIT ──────────────────────────────────────────────
 buildLegend();
 getNow();
+
+// Resize observer — redraw chart whenever the chart area changes size
+let _lastDrawPos=null,_lastDrawAsc=null,_lastDrawMc=null;
+const _chartObs=new ResizeObserver(()=>{
+  if(_lastDrawPos)renderWheel(_lastDrawPos,_lastDrawAsc,_lastDrawMc);
+});
+_chartObs.observe(document.getElementById('chart-wrap'));
+
+// Panel collapse
+function togglePanel(side){
+  const app=document.getElementById('app');
+  if(side==='left'){
+    const hidden=app.classList.toggle('hide-left');
+    const btn=document.getElementById('tog-ctl');
+    btn.classList.toggle('active',!hidden);
+    btn.textContent=hidden?'⊞ Controls':'⊞ Controls';
+  }else{
+    const hidden=app.classList.toggle('hide-right');
+    const btn=document.getElementById('tog-ai');
+    btn.classList.toggle('active',!hidden);
+  }
+}
 </script>
 </body>
 </html>
