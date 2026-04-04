@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Psychotronic Universe — CIA-RDP96-00792R000400330013-4</title>
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+    options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea'] }
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Share+Tech+Mono&family=Oswald:wght@300;400;500&display=swap');
+
+  :root {
+    --bg: #0d1117;
+    --paper: #f2ede3;
+    --paper-dark: #e2dbc8;
+    --ink: #1a1a24;
+    --ink-mid: #3a3a4a;
+    --ink-faded: #6a6a7a;
+    --accent: #1a3a6a;
+    --accent-light: #2a5aaa;
+    --red: #7a1a1a;
+    --green: #1a5a2a;
+    --rule: #4a4a6a;
+    --mono: #1a1a2a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -20%, #1a2a4a 0%, transparent 100%);
+    font-family: 'Source Serif 4', Georgia, serif;
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 40px 20px 80px;
+  }
+
+  /* CIA header bar */
+  .cia-bar {
+    max-width: 820px;
+    margin: 0 auto 0;
+    background: var(--accent);
+    color: #c8d8f8;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    padding: 6px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 2px 2px 0 0;
+  }
+
+  .document {
+    max-width: 820px;
+    margin: 0 auto;
+    background: var(--paper);
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+    box-shadow:
+      0 0 0 1px #2a3a5a,
+      0 8px 32px rgba(0,0,0,0.6),
+      0 32px 80px rgba(0,0,0,0.4);
+    position: relative;
+  }
+
+  /* Cover */
+  .cover {
+    padding: 50px 80px;
+    border-bottom: 3px solid var(--accent);
+    background: linear-gradient(to bottom, #e8f0f8 0%, var(--paper) 60%);
+    position: relative;
+  }
+
+  .cover-stamp {
+    display: inline-block;
+    border: 2.5px solid var(--green);
+    color: var(--green);
+    font-family: 'Oswald', sans-serif;
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: 5px;
+    padding: 4px 16px;
+    text-transform: uppercase;
+    transform: rotate(-2deg);
+    position: absolute;
+    top: 44px;
+    right: 80px;
+    opacity: 0.85;
+  }
+
+  .cover-docid {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--accent);
+    margin-bottom: 36px;
+  }
+
+  .cover-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 28px;
+    font-weight: 400;
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+
+  .cover-subtitle {
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    font-size: 16px;
+    color: var(--ink-mid);
+    margin-bottom: 36px;
+  }
+
+  .cover-meta {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-faded);
+    line-height: 2;
+    border-top: 1px solid var(--paper-dark);
+    padding-top: 16px;
+    margin-top: 24px;
+  }
+
+  .cover-meta span {
+    color: var(--accent);
+    font-weight: bold;
+  }
+
+  .contents-box {
+    margin-top: 32px;
+    border: 1px solid var(--rule);
+    padding: 20px 24px;
+    background: rgba(255,255,255,0.4);
+  }
+
+  .contents-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--paper-dark);
+    padding-bottom: 6px;
+  }
+
+  .toc-item {
+    display: flex;
+    align-items: baseline;
+    margin-bottom: 8px;
+    font-size: 12px;
+  }
+
+  .toc-id {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    min-width: 40px;
+    border: 1px solid var(--accent);
+    padding: 1px 4px;
+    margin-right: 10px;
+    text-align: center;
+  }
+
+  .toc-text {
+    font-family: 'Source Serif 4', serif;
+    flex: 1;
+    color: var(--ink-mid);
+  }
+
+  .toc-dots {
+    flex: 1;
+    border-bottom: 1px dotted var(--paper-dark);
+    margin: 0 8px;
+    min-width: 20px;
+  }
+
+  .toc-author {
+    font-style: italic;
+    font-size: 11px;
+    color: var(--ink-faded);
+  }
+
+  /* Page layout */
+  .page {
+    padding: 48px 80px;
+    position: relative;
+  }
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--accent);
+  }
+
+  .page-header-left {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    color: var(--accent-light);
+    line-height: 1.6;
+  }
+
+  .page-header-right {
+    font-family: 'Oswald', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--ink-faded);
+    border: 1px solid var(--paper-dark);
+    padding: 3px 10px;
+  }
+
+  /* Article title blocks */
+  .article-header {
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--paper-dark);
+  }
+
+  .article-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--ink);
+    line-height: 1.3;
+    margin-bottom: 10px;
+  }
+
+  .article-subtitle {
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--ink-mid);
+    margin-bottom: 14px;
+  }
+
+  .article-byline {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-mid);
+    line-height: 1.8;
+  }
+
+  .article-byline .name {
+    font-family: 'Oswald', sans-serif;
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: var(--accent);
+  }
+
+  /* Body text */
+  p.body {
+    font-family: 'Source Serif 4', serif;
+    font-size: 13.5px;
+    line-height: 1.9;
+    text-align: justify;
+    margin-bottom: 16px;
+    color: var(--ink);
+  }
+
+  /* Section headings */
+  h2.sec {
+    font-family: 'Oswald', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 28px 0 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--paper-dark);
+  }
+
+  h3.subsec {
+    font-family: 'Oswald', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--ink-mid);
+    margin: 20px 0 10px;
+  }
+
+  /* Equations */
+  .eq-block {
+    background: rgba(255,255,255,0.55);
+    border-left: 3px solid var(--accent);
+    padding: 16px 24px;
+    margin: 20px 0;
+    font-size: 15px;
+    position: relative;
+  }
+
+  .eq-block .eq-num {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-faded);
+  }
+
+  .eq-system {
+    background: rgba(255,255,255,0.55);
+    border-left: 3px solid var(--accent);
+    border-top: 1px solid var(--paper-dark);
+    border-bottom: 1px solid var(--paper-dark);
+    padding: 14px 24px;
+    margin: 20px 0;
+  }
+
+  /* Figures */
+  .figure-box {
+    background: rgba(255,255,255,0.6);
+    border: 1px solid var(--paper-dark);
+    padding: 24px;
+    margin: 24px 0;
+    text-align: center;
+  }
+
+  .figure-caption {
+    font-family: 'Source Serif 4', serif;
+    font-size: 12px;
+    font-style: italic;
+    color: var(--ink-mid);
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+
+  .figure-svg {
+    display: inline-block;
+    margin-bottom: 12px;
+  }
+
+  .figure-legend {
+    text-align: left;
+    display: inline-block;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-mid);
+    line-height: 1.8;
+    border-top: 1px solid var(--paper-dark);
+    padding-top: 10px;
+    margin-top: 10px;
+    width: 100%;
+  }
+
+  /* Section divider */
+  .section-break {
+    border: none;
+    border-top: 2px solid var(--accent);
+    margin: 48px 0;
+    position: relative;
+  }
+
+  .section-break::after {
+    content: attr(data-label);
+    position: absolute;
+    top: -9px;
+    left: 0;
+    background: var(--paper);
+    padding: 0 12px 0 0;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--accent);
+  }
+
+  /* Literature / footnotes */
+  .footnote {
+    font-family: 'Source Serif 4', serif;
+    font-size: 11.5px;
+    color: var(--ink-mid);
+    border-top: 1px solid var(--paper-dark);
+    padding-top: 12px;
+    margin-top: 24px;
+    font-style: italic;
+  }
+
+  .footnote .fn-mark {
+    font-size: 10px;
+    vertical-align: super;
+    font-style: normal;
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  /* Errata box */
+  .errata-box {
+    background: rgba(122,26,26,0.06);
+    border: 1px solid rgba(122,26,26,0.25);
+    padding: 14px 18px;
+    margin: 20px 0;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    line-height: 2;
+    color: var(--red);
+  }
+
+  .errata-box .errata-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+    color: var(--red);
+    text-transform: uppercase;
+  }
+
+  /* JPI symbol block */
+  .jpi-block {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin: 24px 0;
+    padding: 16px;
+    background: rgba(255,255,255,0.4);
+    border: 1px solid var(--paper-dark);
+  }
+
+  .jpi-legend {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    line-height: 2;
+    color: var(--ink-mid);
+  }
+
+  .jpi-name {
+    font-family: 'Oswald', sans-serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  /* AVIRG newsletter section */
+  .newsletter-header {
+    background: var(--accent);
+    color: #c8d8f8;
+    padding: 14px 20px;
+    margin-bottom: 0;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    line-height: 1.9;
+  }
+
+  .newsletter-header .nl-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 16px;
+    letter-spacing: 3px;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+
+  .report-byline {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    text-align: right;
+    color: var(--ink-mid);
+    border-bottom: 1px solid var(--paper-dark);
+    padding-bottom: 10px;
+    margin-bottom: 16px;
+    line-height: 1.8;
+  }
+
+  .report-title {
+    font-family: 'Source Serif 4', serif;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: underline;
+    margin-bottom: 14px;
+    color: var(--ink);
+  }
+
+  /* Energy triangle SVG legend */
+  .var-legend {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    line-height: 2;
+    color: var(--ink-mid);
+    text-align: left;
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 32px;
+  }
+
+  /* Footer */
+  .doc-footer {
+    background: var(--accent);
+    color: #8aa8d8;
+    text-align: center;
+    padding: 16px 30px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    line-height: 1.8;
+  }
+
+  @media (max-width: 640px) {
+    .page { padding: 36px 24px; }
+    .cover { padding: 40px 24px; }
+    .cover-stamp { right: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cia-bar">
+  <span>APPROVED FOR RELEASE 2000/08/11</span>
+  <span>CIA-RDP96-00792R000400330013-4</span>
+  <span>UNCLASSIFIED / TRANSLATION</span>
+</div>
+
+<div class="document">
+
+  <!-- COVER -->
+  <div class="cover">
+    <div class="cover-stamp">Unclassified</div>
+
+    <div class="cover-docid">CIA-RDP96-00792R000400330013-4 &nbsp;·&nbsp; TRANSLATION &nbsp;·&nbsp; APPROVED FOR RELEASE 2000/08/11</div>
+
+    <div class="cover-title">The Psychotronic Universe</div>
+    <div class="cover-subtitle">Collected translations from the Japan Psychotronics Institute</div>
+
+    <div class="contents-box">
+      <div class="contents-title">Contents</div>
+
+      <div class="toc-item">
+        <span class="toc-id">A</span>
+        <span class="toc-text">The Psychotronic Universe<br>
+          <span class="toc-author">Attraction and gravitation: where bodies give rise to an inherent "pan-psychist consciousness quantity"</span>
+        </span>
+      </div>
+      <div class="toc-item">
+        <span class="toc-id">B</span>
+        <span class="toc-text">The Vacuum Hypothesis<br>
+          <span class="toc-author">Vacuum as a sea of virtual positive and negative energies</span>
+        </span>
+      </div>
+      <div class="toc-item">
+        <span class="toc-id">C</span>
+        <span class="toc-text">The Era of a New Science Which Can Measure Consciousness Itself<br>
+          <span class="toc-author">The interaction of consciousness and matter (energy)</span>
+        </span>
+      </div>
+      <div class="toc-item">
+        <span class="toc-id">D</span>
+        <span class="toc-text">The 21st Century: The Era of New Science and New Technology<br>
+          <span class="toc-author">Beyond modern physics — the emergence of psychotronics</span>
+        </span>
+      </div>
+      <div class="toc-item">
+        <span class="toc-id">E</span>
+        <span class="toc-text">AVIRG Newsletter Reports on Inomata's Theory</span>
+      </div>
+    </div>
+
+    <div class="cover-meta">
+      <span>AUTHOR:</span> INOMATA Shuji (Chairman, Japan Psychotronics Institute)<br>
+      Doctor of Engineering, in charge of research, Electronics General Research Institute<br>
+      <span>SOURCE:</span> Japan Psychotronics Institute (JPI) / AVIRG Vol. 21, No. 3 (July 1985)
+    </div>
+  </div>
+
+  <!-- ARTICLE A: THE PSYCHOTRONIC UNIVERSE -->
+  <div class="page">
+    <div class="page-header">
+      <div class="page-header-left">
+        CIA-RDP96-00792R000400330013-4<br>
+        TRANSLATION — UNCLASSIFIED
+      </div>
+      <div class="page-header-right">A</div>
+    </div>
+
+    <div class="article-header">
+      <div class="article-title">The Psychotronic Universe</div>
+      <div class="article-subtitle">Attraction and gravitation: where bodies give rise to an inherent "pan-psychist consciousness quantity"</div>
+      <div class="article-byline">
+        <div class="name">INOMATA Shuji</div>
+        Chairman, Japan Psychotronics Institute
+      </div>
+    </div>
+
+    <p class="body">The "consciousness, matter, energy triangle" proposed by the author, i.e. a formula of the interchange of "consciousness," "matter" and energy, has had great repercussions in the scientific world both at home and abroad. The existence of such a conversion formula was predicted by the English astronomer V.A. Firsoff. He stated that, "Mind (i.e. consciousness — author) is a universal entity or interaction of the same level as electricity or gravity and we can expect a formula similar to Einstein's famous $e = mc^2$ to exist for it" (see: Arthur Koestler, "The Holon Revolution," published by Kosaku-sha). That in concrete terms is what the author has obtained. The actual derivation of this conversion formula is extremely simple, as shown below, but the influence it will have on the world view of scientists is incalculable.</p>
+
+    <p class="body">Newton's formula of universal gravitation can be stated and transformed as follows (cgs units):</p>
+
+    <div class="eq-block">
+      $$G = 6.66 \times 10^{-8}$$
+      $$f = -G\frac{M_1 N_2}{r^2}\,\hat{r}^0 = \frac{(i\,G^{1/2}M_1)(i\,G^{1/2}M_2)}{r^2}\,\hat{r}^0$$
+      <span class="eq-num">(1)</span>
+    </div>
+
+    <p class="body">where $i = \sqrt{-1}$ and $\hat{r}^0$ is a unit vector showing the direction of $r$.</p>
+
+    <p class="body">If we put:</p>
+
+    <div class="eq-system">
+      $$\begin{cases} Q_1 = i\,G^{1/2}M_1 \\ Q_2 = i\,G^{1/2}M_2 \end{cases}$$
+      <div style="text-align:right; font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--ink-faded); margin-top:4px;">(2)</div>
+    </div>
+
+    <p class="body">then equation (1) can be expressed as follows:</p>
+
+    <div class="eq-block">
+      $$f = \frac{Q_1 Q_2}{r^2}\,\hat{r}^0$$
+      <span class="eq-num">(3)</span>
+    </div>
+
+    <p class="body">This is nothing but Coulomb's formula in a vacuum shown in escgs units. Expressing this in words: "The universal gravitational pull between bodies $M_1$ and $M_2$ is equal to the gravitational pull between the virtual charges $Q_1$ and $Q_2$ given by equation (2)." Given that the quantity of virtual charge is considered to be "the pan-psychist consciousness quantity," the conclusion is that the cause of gravity or the attractive force lies in the pan-psychist consciousness that a body possesses. Thus when matter $M$ (gravitational mass and inertial mass together) is destroyed through the collapse of gravity, etc. without being converted into energy by Einstein's relationship $e = mc^2$, it turns out that it is being converted into pan-psychist consciousness of the order of $Q = G^{1/2}M$. Judging from paranormal and non-paranormal experimental facts, it is possible for the pan-psychist consciousness $Q = G^{1/2}M$, i.e. "virtual energy," to be converted into real energy. In that case, if we require that the energy $E$ of matter directly converted into energy be equal to the energy $E'$ when it is converted into real energy through the pan-psychist consciousness $Q$ (law of conservation of ultra-energy), then the conversion coefficient for the pan-psychist consciousness $Q$ and real energy $E$ can be summarised as follows:</p>
+
+    <div class="eq-block">
+      $$E = MC^2 = kQ = kG^{1/2}M$$
+      <span class="eq-num">(4)</span>
+    </div>
+
+    <div class="eq-block">
+      $$k = \frac{MC^2}{G^{1/2}M} = \frac{C^2}{G^{1/2}}$$
+      <span class="eq-num">(5)</span>
+    </div>
+
+    <p class="body">The formula for the interchange of consciousness, matter and energy can be illustrated as in Fig. 1. Thus the matter $\leftrightarrow$ energy conversion is realised as atomic power and the energy $\leftrightarrow$ matter conversion is realised by the creation of electron-positron pairs (matter) due to invasion of the vacuum by photons. Similarly, it is thought that the other conversions, "consciousness $\leftrightarrow$ matter" and "consciousness $\leftrightarrow$ energy," are bi-directional. Moreover, at the time of the paranormal powers dispute, it was reported that the mass of a spoon bent by a boy with paranormal powers had decreased by 3 mg. A debate sprang up as to whether such a thing could happen, but from the standpoint of the conversion formula mentioned here, such things are perfectly possible. The mass in question was converted into "consciousness." A similar report by a physicist at London University appeared in the British scientific journal <em>Nature</em>. There it was stated that part of a semi-conductor material inside a capsule was destroyed under the influence of Uri Geller. Einstein's relationship $e = mc^2$ was proved by the Hiroshima and Nagasaki atom bombs 40 years ago, after he propounded the theory of special relativity. Now, with the consciousness $\leftrightarrow$ energy conversion formula $E = C^2/G^{1/2}Q$, we have entered the stage where it is being applied as a "virtual energy" device using electrical and magnetic fields. What is shown by the consciousness $-$ matter $-$ energy conversion formula is that our universe is not only a material universe visible to the eye and tangible, but also consists of a non-material universe. These two universes are mutually connected by the conversion formula. The eastern world of mind and matter as one, and the oriental view of the universe as everything is emptiness<span class="fn-mark">†</span> (matter $\leftrightarrow$ consciousness), emptiness is everything (consciousness $\leftrightarrow$ matter), nothing is destroyed and nothing increases, nothing is born and nothing dies (the law of conservation of ultra-energy), which is mentioned by Sakyamuni in the Prajña-paramita-sutra, is identical to the "psychotronic view of the universe" we have described here, and it will have major significance quantitatively and scientifically.</p>
+
+    <div class="footnote">
+      <span class="fn-mark">†</span> This is the phrase, from the Wisdom sutra, commonly rendered "All is vanity." (Tr.)
+    </div>
+
+    <!-- Figure 1 -->
+    <div class="figure-box">
+      <div class="figure-caption">Fig. 1 — The consciousness, matter, energy relationship</div>
+      <svg width="280" height="200" viewBox="0 0 280 200" class="figure-svg">
+        <!-- Triangle -->
+        <polygon points="140,20 30,170 250,170" fill="none" stroke="#1a3a6a" stroke-width="1.5"/>
+        <!-- Internal lines -->
+        <line x1="140" y1="20" x2="140" y2="170" stroke="#1a3a6a" stroke-width="1" stroke-dasharray="5,3"/>
+        <line x1="30" y1="170" x2="250" y2="170" stroke="#1a3a6a" stroke-width="1.5"/>
+        <!-- Labels -->
+        <text x="140" y="12" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="13" fill="#1a3a6a" font-weight="bold">Q</text>
+        <text x="20" y="178" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="12" fill="#1a1a24">M</text>
+        <text x="258" y="178" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="12" fill="#1a1a24">E</text>
+        <!-- Edge labels -->
+        <text x="72" y="100" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="9" fill="#3a3a4a" transform="rotate(-60,72,100)">Q = G^½M</text>
+        <text x="210" y="100" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="9" fill="#3a3a4a" transform="rotate(60,210,100)">E = C²/G^½ · Q</text>
+        <text x="140" y="185" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="9" fill="#3a3a4a">E = MC²</text>
+      </svg>
+      <div class="figure-legend">
+        M = gravitational mass and inertial mass &nbsp;|&nbsp; E = energy<br>
+        Q = consciousness &nbsp;|&nbsp; G = universal gravitational constant &nbsp;|&nbsp; C = speed of light
+      </div>
+    </div>
+
+    <div class="jpi-block">
+      <svg width="70" height="70" viewBox="0 0 70 70">
+        <polygon points="35,5 5,60 65,60" fill="none" stroke="#1a3a6a" stroke-width="2"/>
+        <polygon points="35,20 15,55 55,55" fill="none" stroke="#1a3a6a" stroke-width="1" stroke-dasharray="3,2"/>
+        <text x="35" y="13" text-anchor="middle" font-size="8" font-family="Share Tech Mono,monospace" fill="#1a3a6a">C</text>
+        <text x="8" y="63" font-size="8" font-family="Share Tech Mono,monospace" fill="#1a3a6a">M</text>
+        <text x="58" y="63" font-size="8" font-family="Share Tech Mono,monospace" fill="#1a3a6a">E</text>
+        <text x="35" y="48" text-anchor="middle" font-size="7" font-family="Share Tech Mono,monospace" fill="#6a6a7a">I</text>
+      </svg>
+      <div>
+        <div class="jpi-name">Japan Psychotronics Institute (JPI) Symbol</div>
+        <div class="jpi-legend">
+          C = consciousness &nbsp;&nbsp; E = energy<br>
+          M = matter &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; I = information
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ARTICLE B: THE VACUUM HYPOTHESIS -->
+  <hr class="section-break" data-label="SECTION B — TRANSLATION">
+  <div class="page">
+    <div class="page-header">
+      <div class="page-header-left">CIA-RDP96-00792R000400330013-4 · TRANSLATION</div>
+      <div class="page-header-right">B</div>
+    </div>
+
+    <div class="article-header">
+      <div class="article-title">The Vacuum Hypothesis</div>
+      <div class="article-subtitle">Vacuum as a sea of virtual positive and negative energies</div>
+      <div class="article-byline">
+        <div class="name">INOMATA Shuji</div>
+        Chairman, Japan Psychotronics Institute
+      </div>
+    </div>
+
+    <p class="body">Looking from the viewpoint of psychotronics as a "new science," the concept of "vacuum," i.e. Dirac's vacuum theory, in physics presents problems which do not accord with reality. As is well known, Dirac defined a vacuum as a sea of real negative energy, but what has been suggested by experiments in psychotronics is that a vacuum is rather a sea of virtual positive and negative energies. Dirac's electron theory relates to the two energy levels, positive and negative (see Fig. 1), such that:</p>
+
+    <div class="eq-block">
+      $$E = \pm\, c\sqrt{m^2 c^2 + p^2}$$
+      <span class="eq-num">(1)</span>
+    </div>
+
+    <p class="body">where $E$ is energy, $p$ the amount of motion (for the uni-dimensional case) and $c$ the speed of light. Dirac regarded the mathematically obtained negative energy level as something of real existence, and assuming the level to be filled by the "donkey electrons" of Prof. Fushimi Yasuharu, he defined it as a vacuum not itself dependent upon observation. If an electron escaped from that vacuum, its hole could be regarded as a positron having positive energy and positive charge. This is the creation of electron-positron pairs by photons and he assumed the reverse process was the mechanism of photon creation and the elimination of the electron-positron pairs. However, in this theory an infinitely large negative energy occurs, so that this cannot be said by any means to be a complete theory, as Dirac himself suggested. Above all, the aspects of this theory which presuppose a "matterless ether" do not accord with the realities of the new science of psychotronics. The author's proposal is whether we can take $c$ as it is in (1) and consider a further level of virtual positive and negative energies where $m \to im$ and $p \to ip$, $i$ being the imaginary unit (see Fig. 2):</p>
+
+    <div class="eq-block">
+      $$iE = \pm\, i\,c\sqrt{m^2 c^2 + p^2}$$
+      <span class="eq-num">(2)</span>
+    </div>
+
+    <p class="body">A real negative energy level is possible mathematically but in the real world such a level is in fact assumed not to occur and is disregarded. It is as if, when we are solving a real wave-motion equation, a trailing wave and a leading wave appear, but the leading wave is assumed not to exist and so is disregarded. Let us try considering the creation of electron-positron pairs merely in terms of the real positive energy level and the virtual positive and negative energy levels (see Fig. 3).</p>
+
+    <p class="body">It is thought first of all that when the virtual level is empty, the electrons release complex energy $mc^2 + imc^2$, i.e. "real photons" and "virtual photons." The virtual negative energy level is filled and then the virtual energy $2imc^2$, i.e. the virtual photons, is absorbed. The virtual positive energy level is also completely filled. If we assume this state of affairs, the electrons of the positive real energy level can exist stably without falling into the virtual energy level. Thus a vacuum is to be defined as a sea of negative virtual energy and positive virtual energy. This may be considered to be the matterless ether. The positive and negative virtual energies cancel each other out and so an infinity of virtual energy does not arise: only the finite difference is observed. Now, when real and virtual photons of energy $2mc^2 + 2imc^2$ are driven into the vacuum, normal electrons are created from the negative virtual energy state, at $mc^2 + imc^2$. A negative virtual energy hole appears and it displays a positive electrical charge; the remaining real energy $mc^2$ supplies its mass and $imc^2$ (a positron) fills the hole created in the sea of virtual energy. But when positrons and negatrons meet and are destroyed, the reverse of the above process occurs and real and virtual photons $2mc^2 + 2imc^2$ are released. In the case of creation and destruction of electrons and positrons due to real and virtual photons, the law of energy conservation is satisfied. On the other hand, it is possible for real energy to be removed from the sea of positive and negative virtual energies and in that case, proceeding from the theory of infinite $-$ finite $=$ infinite, it is possible to tap the limitless real energy. The various paranormal phenomena due to the action of consciousness are thus energy driven events.</p>
+
+    <p class="body">It goes without saying that the image of a vacuum as a sea of positive and negative energies also conforms to that of eastern philosophy which says that a vacuum is a sea of "ch'i" (air/spirit) governed by the negative and positive principles of Yin and Yang.</p>
+
+    <div class="errata-box">
+      <div class="errata-title">Typographical Corrections (Previous Articles)</div>
+      No. 1 &nbsp; Page 21, eq. (5) &nbsp; → &nbsp; $-\, +\, pV$<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; eq. (6) &nbsp; → &nbsp; $Q \to 0$<br>
+      No. 3 &nbsp; Page 22, eq. (1) &nbsp; → &nbsp; $N_2 \to M_2$
+    </div>
+
+    <!-- Figures B-1,2,3 -->
+    <div class="figure-box">
+      <div class="figure-caption">Fig. 1 — Dirac energy levels (real domain)</div>
+      <svg width="180" height="180" viewBox="0 0 180 180">
+        <line x1="90" y1="10" x2="90" y2="170" stroke="#1a3a6a" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="10" y1="90" x2="170" y2="90" stroke="#1a3a6a" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="96" y="16" font-family="Share Tech Mono,monospace" font-size="10" fill="#1a3a6a">↑E</text>
+        <text x="155" y="88" font-family="Share Tech Mono,monospace" font-size="10" fill="#1a3a6a">→P</text>
+        <!-- Upper parabola -->
+        <path d="M40,150 Q90,30 140,150" fill="none" stroke="#1a3a6a" stroke-width="1.5"/>
+        <!-- Lower parabola -->
+        <path d="M40,30 Q90,150 140,30" fill="none" stroke="#3a3a4a" stroke-width="1.5" stroke-dasharray="4,2"/>
+        <text x="145" y="155" font-family="Share Tech Mono,monospace" font-size="9" fill="#1a3a6a">mc²</text>
+        <text x="137" y="32" font-family="Share Tech Mono,monospace" font-size="9" fill="#3a3a4a">-mc²</text>
+        <text x="34" y="160" font-family="Share Tech Mono,monospace" font-size="9" fill="#6a6a7a">×</text>
+        <text x="80" y="100" font-family="Share Tech Mono,monospace" font-size="9" fill="#6a6a7a">0</text>
+      </svg>
+      <div class="figure-caption" style="margin-top:20px;">Fig. 2 — Virtual energy domain ($m \to im$, $p \to ip$)</div>
+      <svg width="180" height="180" viewBox="0 0 180 180">
+        <line x1="90" y1="10" x2="90" y2="170" stroke="#1a3a6a" stroke-width="1.5"/>
+        <line x1="10" y1="90" x2="170" y2="90" stroke="#1a3a6a" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="96" y="16" font-family="Share Tech Mono,monospace" font-size="10" fill="#1a3a6a">↑iE</text>
+        <text x="150" y="88" font-family="Share Tech Mono,monospace" font-size="10" fill="#1a3a6a">→iP</text>
+        <path d="M40,150 Q90,30 140,150" fill="none" stroke="#2a5aaa" stroke-width="1.5"/>
+        <path d="M40,30 Q90,150 140,30" fill="none" stroke="#2a5aaa" stroke-width="1.5" stroke-dasharray="4,2"/>
+        <text x="138" y="155" font-family="Share Tech Mono,monospace" font-size="9" fill="#2a5aaa">imc²</text>
+        <text x="128" y="32" font-family="Share Tech Mono,monospace" font-size="9" fill="#2a5aaa">-imc²</text>
+        <text x="80" y="100" font-family="Share Tech Mono,monospace" font-size="9" fill="#6a6a7a">0</text>
+      </svg>
+      <div class="figure-caption" style="margin-top:20px;">Fig. 3 — Combined real and virtual energy levels</div>
+      <svg width="280" height="180" viewBox="0 0 280 180">
+        <line x1="140" y1="10" x2="140" y2="170" stroke="#1a3a6a" stroke-width="1.5"/>
+        <line x1="10" y1="90" x2="270" y2="90" stroke="#1a3a6a" stroke-width="1"/>
+        <text x="146" y="16" font-family="Share Tech Mono,monospace" font-size="10" fill="#1a3a6a">mc²</text>
+        <!-- Real positive branch -->
+        <path d="M80,170 L140,30" fill="none" stroke="#1a3a6a" stroke-width="1.5"/>
+        <!-- Virtual positive axis -->
+        <text x="230" y="88" font-family="Share Tech Mono,monospace" font-size="9" fill="#2a5aaa">imc²</text>
+        <text x="20" y="88" font-family="Share Tech Mono,monospace" font-size="9" fill="#2a5aaa">-imc²</text>
+        <text x="134" y="160" font-family="Share Tech Mono,monospace" font-size="9" fill="#6a6a7a">×</text>
+        <text x="134" y="175" font-family="Share Tech Mono,monospace" font-size="9" fill="#6a6a7a">-mc²</text>
+        <text x="130" y="100" font-family="Share Tech Mono,monospace" font-size="9" fill="#6a6a7a">0</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ARTICLE C: THE ERA OF A NEW SCIENCE -->
+  <hr class="section-break" data-label="SECTION C — TRANSLATION">
+  <div class="page">
+    <div class="page-header">
+      <div class="page-header-left">CIA-RDP96-00792R000400330013-4 · TRANSLATION</div>
+      <div class="page-header-right">C</div>
+    </div>
+
+    <div class="article-header">
+      <div class="article-title">The Era of a New Science<br>Which Can Measure Consciousness Itself</div>
+      <div class="article-subtitle">The interaction of consciousness and matter (energy)</div>
+      <div class="article-byline">
+        <div class="name">INOMATA Shuji</div>
+        Chairman, Japan Psychotronics Institute
+      </div>
+    </div>
+
+    <p class="body">Initially it was difficult to establish the new science of "psychotronics" in physics. It has, however, become possible to formulate a quantitative and scientific argument concerning the interaction of consciousness and matter (energy). I intend here to discuss quantitatively the interaction of consciousness and matter from the standpoint of a complex theory of thermodynamics and a composite theory of electromagnetics and gravitation. For a concrete model I shall rely on the combustion of magnetically activated fuel oil. I shall adopt the "consciousness energy" extraction process.</p>
+
+    <h2 class="sec">Complex Thermodynamic Theory and Virtual Energy</h2>
+
+    <p class="body">In general, in catalytic processes where "virtual energy" intervenes, instead of the Carnot-Clausius type of thermodynamics the following complex theory of thermodynamics obtains, where temperature and heat quantity have been complexed. Taking $i = \sqrt{-1}$:</p>
+
+    <div class="eq-block">
+      $$T = T_1 + i\,T_2 \qquad Q = Q_1 + i\,Q_2$$
+      <span class="eq-num">(1)</span>
+    </div>
+
+    <p class="body">$T_1$ is the temperature actually measured on the thermometer and $iT_2$ is the imaginary temperature inferred from the state of the matter, whilst $Q_1$ is the real quantity of heat and $iQ_2$ is the virtual quantity of heat.</p>
+
+    <p class="body">Referring only to reversible systems, the changes in real entropy obtained from (1) are of two kinds:</p>
+
+    <div class="eq-block">
+      $$\Delta S_1 = \frac{\Delta Q_1}{T_1}$$
+      <span class="eq-num">(2)</span>
+    </div>
+
+    <div class="eq-block">
+      $$\Delta S_2 = \frac{i\,\Delta Q_2}{i\,T_2} = \frac{\Delta Q_2}{T_2}$$
+      <span class="eq-num">(3)</span>
+    </div>
+
+    <p class="body">Thus, in general, the entropy change can be expressed as the sum of an energy change due to the real state and an entropy change due to the virtual state. Thus:</p>
+
+    <div class="eq-block">
+      $$\Delta S = \Delta S_1 + \Delta S_2$$
+      <span class="eq-num">(4)</span>
+    </div>
+
+    <p class="body">Accordingly, the First Law of Thermodynamics expanded into the complex domain becomes a law of energy conservation where virtual energy has been added to real energy. With regard to the Second Law, however, the possibility arises of a reduction in entropy $\Delta S_2$ in a thermal isolation system due to the inflow of negative virtual energy, and this fact gives rise to all the phenomena peculiar to consciousness that cannot be conceived of in conventional physics. Referring now to the magnetically activated fuel oil, its Gibbs free energy $G_0$ is given by:</p>
+
+    <div class="eq-block">
+      $$G_0 = U - T_1 S_1 - T_2 S_2 + pV$$
+      <span class="eq-num">(5)</span>
+    </div>
+
+    <p class="body">where $U$ is the internal energy, $T_1$ the real temperature, $T_2$ the virtual temperature, $S_1$ the entropy due to the real state, $S_2$ the entropy due to the virtual state, $p$ pressure and $V$ volume. In normal thermodynamics, which does not have the terms $T_2$, $S_2$, given the fact that the entropy of a thermal isolation system cannot reduce, if temperature $T_2$ and pressure $p$ are fixed, then the Gibbs free energy $G_0$ cannot increase:</p>
+
+    <div class="eq-block">
+      $$dG_0 \leq Q$$
+      <span class="eq-num">(6)</span>
+    </div>
+
+    <p class="body">However, according to the Second Law of Complex Thermodynamics, it is possible for a reduction of entropy $S_2$ due to the virtual state to occur in a thermal isolation system, and the constraint of (6) vanishes, so that free energy, i.e. energy which can be used, increases. In this case, because the entropy in the external part of the physical world does not increase, there is no reduction in the free energy there. Thus, if we consider only the real world without considering the "virtual world," free energy can be created — the theory of created energy. In equation (5), when $U$, $T_1$, $T_2$, $pV$ and $S_1$ are fixed and $G_0$ increases only by $T_2\Delta S_2$, the amount of virtual energy flowing in is:</p>
+
+    <div class="eq-block">
+      $$Q_2 = T_2\,\Delta S_2 < 0$$
+      <span class="eq-num">(7)</span>
+    </div>
+
+    <p class="body">This negative virtual energy $Q_2$, in accordance with the conclusions of the composite electromagnetic-gravitation theory, is related by the following equations to the virtual magnetic monopole $\rho_m$:</p>
+
+    <div class="eq-system">
+      $$Q_2 = g^{-1}\rho_m \qquad g = \frac{G^{1/2}}{C^2}$$
+      <div style="text-align:right; font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--ink-faded); margin-top:4px;">(8)</div>
+    </div>
+
+    <p class="body">where $G$ is the universal gravitational constant and $C$ is the speed of light. Here the virtual magnetic monopole can be equated to consciousness. Thus, taking the viewpoint of this theory, even if our fuel oil is not actually activated by magnetism, and even if it is activated by the virtual magnetic monopole itself which has become detached from the "consciousness" magnetic pole, it shows that it is possible to extract consciousness energy through the combustion process. The characteristics of water activated by the action of magnetism, and indeed the interaction of consciousness and matter (energy) in the brain can be explained by such a paradigm. At last we, in the 20th century, have entered an era where we can measure consciousness itself.</p>
+
+    <h2 class="sec">Literature</h2>
+    <p class="body">The author: "The theory of created energy" — published by the JPI</p>
+  </div>
+
+  <!-- ARTICLE D: THE 21ST CENTURY -->
+  <hr class="section-break" data-label="SECTION D — TRANSLATION">
+  <div class="page">
+    <div class="page-header">
+      <div class="page-header-left">CIA-RDP96-00792R000400330013-4 · TRANSLATION</div>
+      <div class="page-header-right">D</div>
+    </div>
+
+    <div class="article-header">
+      <div class="article-title">The 21st Century:<br>The Era of New Science and New Technology</div>
+      <div class="article-subtitle">Beyond modern physics — the emergence of psychotronics</div>
+      <div class="article-byline">
+        <div class="name">INOMATA Shuji</div>
+        Chairman, Japan Psychotronics Institute<br>
+        Doctor of Engineering, in charge of research, Electronics General Research Institute
+      </div>
+    </div>
+
+    <p class="body">In the beginning, West European philosophy, which formed the foundation of modern physics, was a reductionist two-dimensional theory of mind and matter which said it was possible to explain all the world's phenomena in physical and chemical terms. The main reason why modern science has now reached an impasse is that it has neglected the category of "consciousness," something non-existent that has to do with matter (energy). However, in recent years eastern philosophies have been looked at again as part of a re-formulation of western philosophy, so that for example they appeared in a seminar<span class="fn-mark">1</span> entitled "Science and Consciousness" held in Cordoba, Spain, in 1979. Here the concept of "space" in which "existence" and "non-existence" are interrelated was, though expressed in other words, nothing other than the existence and functioning of a matterless ether. It has not been possible to explain virtual energy (energy of paranormal phenomena) by the relationship between matter and energy in conventional physics ($e = mc^2$). What has been required is a re-formulation and re-organisation of western science with the inclusion of the category of "consciousness" and what has been born as a result of that is the new science of P S Y C H O T R O N I C S.</p>
+
+    <h2 class="sec">I — The Consciousness – Energy – Matter Triangle</h2>
+
+    <p class="body">Consciousness is a "virtual physical quantity," "virtual energy," and is the imaginary part of a complex electromagnetic field, and thus is "virtual timespace." Consciousness, in the relationship between it and matter, displays catalytic phenomena in respect of and integration of electromagnetic and gravitational fields, which have posed difficulties in conventional physics, are easily resolved from the standpoint of complex electromagnetic field theory, so that an energy triangle relating to "virtual energy" or "ethereal energy"<span class="fn-mark">2</span> can be derived and the energy relationships in paranormal phenomena scientifically understood. The author announced this at the 5th Psychotronics International Conference held in Bratislava, Czechoslovakia, from 6–10 June last year. It caused a great sensation. An age is now beginning when we can pursue the engineering applications of "virtual energy."</p>
+
+    <h2 class="sec">II — Re-formulation of Science (Uni-dimensional theory of energy)</h2>
+
+    <h3 class="subsec">A. Re-formulation of Electromagnetics (Existence of a virtual information channel)</h3>
+
+    <p class="body">The conventional Maxwell electromagnetic equations are complexed and divided into a real part and an imaginary part. Taking $\mathbf{E} = \mathbf{E}_1 + i\mathbf{E}_2$, $\mathbf{H} = \mathbf{H}_1 + i\mathbf{H}_2$ as imaginary units:</p>
+
+    <div class="eq-block">
+      <strong>[II 1]</strong>
+      $$\begin{cases}
+        \nabla \cdot \mathbf{E} = 4\pi\rho_e & \nabla \times \mathbf{E}_1 = -\dfrac{1}{c}\dfrac{\partial \mathbf{H}_1}{\partial t} \\[6pt]
+        \nabla \cdot \mathbf{H}_1 = 0 & \nabla \times \mathbf{H}_1 = \dfrac{1}{c}\dfrac{\partial \mathbf{E}_1}{\partial t} + \dfrac{4\pi}{c}\mathbf{J}_e
+      \end{cases}$$
+    </div>
+
+    <div class="eq-block">
+      <strong>[II 2]</strong>
+      $$\begin{cases}
+        \nabla \cdot i\mathbf{H}_2 = 4\pi\,i\,\rho_m & \nabla \times (i\mathbf{H}_2) = \dfrac{1}{c}\dfrac{\partial(i\mathbf{E}_2)}{\partial t} \\[6pt]
+        \nabla \cdot (i\mathbf{E}_2) = 0 & \nabla \times (i\mathbf{E}_2) = -\dfrac{1}{c}\dfrac{\partial(i\mathbf{H}_2)}{\partial t} + \dfrac{4\pi}{c}\,i\,\mathbf{J}_m
+      \end{cases}$$
+    </div>
+
+    <p class="body">This is the complex electromagnetic field theory and from this the existence of an abnormality of the law of causality, a "virtual electromagnetic wave," can be predicted. If this theory is correct, in future we can expect revolutionary means of transmitting information to be developed. This theory was developed by the author.</p>
+
+    <h3 class="subsec">B. Re-organisation of the Theory of Special Relativity (Matterless ether as an information medium)</h3>
+
+    <p class="body">G. Feinberg conceived of a complex timespace [II 3] $\Delta X = \Delta X_1 - i\Delta X_2$, $\Delta t = \Delta t_1 - i\Delta t_2$ and conceived distance of the complex timespace as:</p>
+
+    <div class="eq-block">
+      <strong>[II 4]</strong>
+      $$S^2 = S\,S^* = \Delta X_1^2 + \Delta X_2^2 - c^2\Delta t_1^2 - c^2\Delta t_2^2$$
+    </div>
+
+    <p class="body">where $c$ is the speed of light and $i = \sqrt{-1}$ is the imaginary unit. $(-\Delta X_2, -\Delta T_2)$ is a blind spot in the theory of special relativity and is the matterless ether, i.e. the "virtual timespace." If for this space we assume $\Delta X_2 \to 0$, $\Delta t_2 \to 0$, then it reverts to the usual four-dimensional Minkowski space.</p>
+
+    <h3 class="subsec">C. Expanding the Concept of Time (The phenomenon of consciousness as a time medium)</h3>
+
+    <p class="body">The previous concept of time was based on Newtonian mechanics and great changes were brought about in this absolute timespace by Einstein's theory of special relativity. Subsequent to this, the author has conceived of the possibility that the uniformity of the "flow of time" can be broken by the action of consciousness, even in the same system of coordinates, without having to consider "motion close to the speed of light."</p>
+
+    <h3 class="subsec">D. Re-organisation of Thermodynamics (The lizard's tail reversal of time)</h3>
+
+    <p class="body">The phenomenon of the formation or destruction of metal by the action of consciousness is thought to be due to entropy changes caused by consciousness acting as a time medium. The problem lies in the conservation of energy as stipulated by the First Law of Thermodynamics, and consequently there is a need to expand this to a law of ultra-energy conservation which will embrace "virtual heat quantities."</p>
+
+    <h3 class="subsec">E. Re-organisation of Quantum Mechanics (External system and internal system)</h3>
+
+    <div class="eq-block">
+      <strong>[II 5]</strong>
+      $$Aua = aua \qquad \begin{cases} A = A_1 + i\,A_2 \\ a = a_1 + i\,a_2 \end{cases}$$
+    </div>
+
+    <p class="body">where $A_1$, $A_2$ are Hermitian action elements, $a_1$, $a_2$ are real number eigenvalues, and $i$ is the imaginary unit. The inherent energy is complexed, from which follows an expanded formula which deals with the material world at the same time as thermodynamics. The physical side of this world is an external system and the consciousness side is an internal system. An interaction between the two can be considered, and this will probably lead to a great leap forward in modern physics where matter and energy are all. This expansion is due to A.J. Karunai (?).</p>
+
+    <div class="figure-box">
+      <div class="figure-caption">The Energy Triangle (from Seminar: "Science and Consciousness")</div>
+      <svg width="260" height="200" viewBox="0 0 260 200">
+        <polygon points="130,15 20,170 240,170" fill="none" stroke="#1a3a6a" stroke-width="1.5"/>
+        <line x1="20" y1="170" x2="240" y2="170" stroke="#1a3a6a" stroke-width="1.5"/>
+        <text x="130" y="10" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="11" fill="#1a3a6a" font-weight="bold">Q₂</text>
+        <text x="10" y="178" font-family="Share Tech Mono,monospace" font-size="11" fill="#1a1a24" font-weight="bold">M</text>
+        <text x="244" y="178" font-family="Share Tech Mono,monospace" font-size="11" fill="#1a1a24" font-weight="bold">E</text>
+        <text x="62" y="97" font-family="Share Tech Mono,monospace" font-size="9" fill="#3a3a4a" transform="rotate(-63,62,97)">Q₂ = G^½M</text>
+        <text x="196" y="97" font-family="Share Tech Mono,monospace" font-size="9" fill="#3a3a4a" transform="rotate(63,196,97)">E = g⁻¹Q₂</text>
+        <text x="130" y="186" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="9" fill="#3a3a4a">E = MC²</text>
+      </svg>
+      <div class="figure-legend">
+        M = gravitational and inertial mass &nbsp;|&nbsp; E = energy<br>
+        Q₂ = virtual charge (virtual magnetic monopole)<br>
+        G = gravitational constant &nbsp;|&nbsp; g = G^½/C² &nbsp;|&nbsp; C = speed of light
+      </div>
+    </div>
+
+    <div class="footnote">
+      <span class="fn-mark">1</span> Theme: "Science and Consciousness." Panellists: Fritjof Capra (USA) — "Physics and Taoism"; Brian Josephson (UK), Nobel Prize winner — "Hindu Meditation"; O.C. de Borgalle (France), Henri Poincaré Research Institute — "Indian Philosophy."<br>
+      <span class="fn-mark">2</span> "Ethereal energy" refers to the virtual energy component in this framework.
+    </div>
+  </div>
+
+  <!-- SECTION E: AVIRG NEWSLETTER -->
+  <hr class="section-break" data-label="SECTION E — AVIRG NEWSLETTER">
+  <div class="newsletter-header">
+    <div class="nl-title">Audiovisual Information Research Group (AVIRG)</div>
+    Vol. 21, No. 3 · July 1985<br>
+    Secretary: N. Otsu · Mathematical Information Research Group, Electronics General Research Institute<br>
+    1-1-4 Imezono, Sakuramura, Niihari-gun, Ibaraki Prefecture 305 · Tel: 0298-54-5461
+  </div>
+
+  <div class="page" style="padding-top:32px;">
+
+    <h2 class="sec" style="margin-top:0;">I. July Meeting Report</h2>
+
+    <!-- Report 1 -->
+    <div class="report-byline">
+      <strong>1) On Inomata's Theory</strong><br>
+      K. Kanemori (Tsukuba University)
+    </div>
+
+    <p class="body">If I were asked to try and explain what Inomata's theory is in simple terms, I believe that it concerns hypothetical systems into which physical values possessing negative norms are actively introduced.</p>
+
+    <p class="body">In conventional physics, the area where negative norms pose major problems is probably in quantum field theory. That is to say, if we try to relate the theory of relativity to quantum theory, it is inevitable that situations will arise in which the norm for a vector of state will be negative. As this means negative probability, it is regarded as physically having no reality and is called a "ghost." Currently, dealing with such "ghosts" is an important matter also in gauge theories where the rapid march continues from electroweak unification theories to a grand unifying theory.</p>
+
+    <p class="body">Negative norms in Inomata's theory are not vectors of state of quantum theory but vectors of electric and magnetic fields. He takes phenomena for which conventional physics has found no explanation, such as electrostatic cooling or the divergence of point charges, and looks directly at the contribution of invisible quantities. Physical quantities which cannot be observed are equated from a positivist standpoint to non-existence. Whether one regards the introduction of these into a theory in a positive manner as reckless or daring depends in the first place on one's philosophical standpoint. Nevertheless, Inomata's theory which at the outset was based on the principle of realism and the law of discovery, undeniably is always pregnant with metaphysical characteristics that must be said to be intrinsic. Whether it can be elevated to a scientific level or not depends on its logical consistency and whether it can be proved.</p>
+
+    <p class="body">Looking first at the Maxwell equations, the symmetry between electricity and magnetism is broken. He regards the symmetry obscured here as latent and postulates that, by introducing magnetic currents as invisible physical quantities, the Maxwell equations thus rendered symmetrical can hold for generalized electrical and magnetic fields (fields in which positive norm vectors and negative norm vectors are superimposed in three-dimensional space). If we develop these generalized Maxwell equations mathematically, they can be divided into positive norm Maxwell equations and negative norm Maxwell equations, and if one finds the Coulomb force for a Maxwell equation based on negative norms one obtains the inverse square law with a minus sign. As this is in the same form as the law of universal gravitation, if one assumes that $Q_m = G^{1/2}M$ ($Q_m$: invisible magnetic charge, $M$: gravitational mass) then the force of the two will be equal. Inomata calls this "the unification of electromagnetic fields and gravitational fields." Here is the clue to proof of Inomata's theory.</p>
+
+    <p class="body">For example, it is a well known fact that if a current is passed through a coil, its weight decreases. If we interpret this as an Inomata flow, the invisible magnetic charge is taken to have been converted to gravitational mass. If we accept this to be true the following may be expected. Because the invisible magnetic charge possesses a quantized value, the weight change corresponding thereto should also be quantizable. If quantized weight changes could be observed against continuous changes in voltage, this should provide powerful background for this hypothesis of electromagnetic-gravitational unification. The slowing down of time in strong gravitational fields can be confirmed by red shifts in the spectra from heavy fixed stars. Given this, the slowing down of time may also be expected as a result of negative norm magnetic fields. As the Coulomb force can also be repulsive compared with gravity which is always an attractive force, the acceleration of time could also be possible. Inomata calls this the "time catalyst function."</p>
+
+    <p class="body">If time slowed down, solid bodies decelerate. In thermo-dynamic terms this would be manifested as a reduction in temperature and loss of quantity of heat. An explanation of electrostatic cooling could be expected here. As the reduction in the quantity of heat supplies negative entropy, this would perhaps introduce a new situation in information science too.</p>
+
+    <!-- Report 2 -->
+    <hr style="border:none;border-top:1px solid var(--paper-dark);margin:32px 0;">
+
+    <div class="report-byline">
+      <strong>Report of Lecture on Inomata's Theory</strong><br>
+      Lecturer: K. Kanemori (Tsukuba Univ.) / Y. Tsuji (Nichiden C + C Res.)
+    </div>
+
+    <p class="body">The lecture by Mr. Kanemori concerned the logical structure of Inomata's theory which seeks to reorganise Western science which is built on the foundation of modern physics, and he sought to explain it on the basis of his own ideas. Inomata's theory, which develops the relationship between matter and energy in current physics on the premise of the existence of "virtual" physical quantities which cannot be seen in three-dimensional space, is a new attempt to incorporate Oriental concepts into Western science and consequently it seems to contain some hypotheses which are difficult to understand in logical terms.</p>
+
+    <p class="body">In this lecture Mr. Kanemori first of all posited the existence of the virtual magnetic charge which is the starting point of Inomata's theory, and established the need for the hypotheses used in the derivation of the complex electromagnetic theory from Maxwell's electromagnetic equations. Concerning Inomata's unification of electromagnetic and gravitational fields where he says universal gravitation and a virtual Coulomb force are equivalent from the standpoint of complex electromagnetic theory, he says that the fact that a coil loses weight when a current is passed through it could possibly provide one proof for this if gradual weight changes could be observed in response to changes in voltage. However in his own explanation he emphasised that if the psychotronic triangular relationship (mass, energy, virtual magnetic charge) proposed to explain scientifically paranormal phenomena such as the levitation of objects, really holds, then a logical contradiction is produced in the derived hypothesis and partial revision is needed.</p>
+
+    <p class="body">He also gave a conceptual interpretation of consciousness in Inomata's theory saying that if one assumes the law of increasing entropy on the cosmic scale implies natural passive unidirectional motion, then gravity and a virtual magnetic charge exist as factors in creating a world with localised order. The examination of how this differs from the images we normally associate with the words, and which are difficult to conceive of except for Man, contained some extremely interesting points when viewed from his position as a specialist in theoretical physics.</p>
+
+    <p class="body">This lecture, which concentrated throughout on an explanation of the logical structure of Inomata's theory, seemed to be a good articulate exposition. It made the Inomata theory, which seeks to reorganise physics against a background of his ideas, feel like something very personal even to the author with his sketchy comprehension of the borders of theoretical physics, but much more elaboration and debate like this lecture is needed so that a more precise theory can be developed, and diligent research is also important to provide evidence for the theory. We look forward to seeing the results of Mr. Kanemori's future endeavours in this field.</p>
+
+    <!-- Report 3 -->
+    <hr style="border:none;border-top:1px solid var(--paper-dark);margin:32px 0;">
+
+    <div class="report-byline">
+      <strong>Report on "The New Science and Information Science"</strong><br>
+      Lecturer: S. Inomata (Elec. Gen. Res. Inst.)<br>
+      Reporter: Y. Shima (Hitachi Central Research Inst.)
+    </div>
+
+    <p class="body">This was a lecture on Dr. Inomata's bold and vigorous attempt to reconstruct the new science introducing the concept of consciousness to matter. In particular he set out in this lecture his philosophical ideas as to how "psychotronics," which treat consciousness as a science, began.</p>
+
+    <p class="body">Consciousness is described in for example the dictionary Kojien as "internal mental activity of pure perception in contrast to sensory perception." How this mental activity of "consciousness" can be handled in computers is the subject of much debate as one of the future visions of computers in the twenty first century. This lecture was extremely interesting from this standpoint also. The content of the lecture was also deeply concerned with the fundamentals of current physics and contained much that was beyond the range of the reporter's understanding. I was able to comprehend it only in a piecemeal fashion, and therefore apologise if my report contains inaccuracies.</p>
+
+    <p class="body">First of all, Dr. Inomata considered the need to understand the philosophies at the heart of physics which go back to Newton's era in order to be able to introduce the concept of consciousness into physics. Newtonian dynamics were constructed without solving two important problems, namely the causes of attraction, and the working of consciousness. Modern physics since Newton has also left behind these problems and therefore Nature in the natural sciences, in Inomata's words, has come to be treated in terms of a dry mechanistic theory.</p>
+
+    <p class="body">The discussion next turned to the accommodation of the workings of consciousness in the natural sciences. Inomata believes that the three elements of matter, energy and consciousness and a formula between them can be established by complex mathematical expressions. On the basis of this conversion formula, consciousness can be converted to matter or energy. Conversely, he believes that matter and energy too can be converted and he claims that what is known as consciousness can thereby be measured.</p>
+
+    <p class="body">He also explained the analogy between thermodynamics and information theory using the example of entropy. According to Inomata, in the information theory due to Shannon, information simply goes on disintegrating, and he emphasised that a new information theory is needed which incorporates the concept of consciousness so as to create information at the information source or to put in order disorganised external information at the receiving end. His discussion abounded in suggestions such as whether the problem-solving logic in computers and pattern recognition really adhere to conventional physicochemical theories.</p>
+
+    <p class="body">This lecture may be seen as a significant discussion with implications for information science in the twenty first century. I hope his diligent endeavours will break open new ground in the new science.</p>
+
+    <!-- Inomata's own lecture report -->
+    <hr style="border:none;border-top:1px solid var(--paper-dark);margin:32px 0;">
+
+    <div class="report-byline">
+      <strong>The New Science and Information Science</strong><br>
+      Lecturer: S. Inomata (General Electronics Research Institute)
+    </div>
+
+    <p class="body">In the last few decades phenomena have been reported worldwide which do not conform to the framework of "modern physics" and have presented a considerable crisis for our science, that is, our rational perception of the world. The author would like to think that the origin of such confusion in our 'knowledge' goes back to Newton's "Mathematical Principles of Natural Philosophy." On the basis of the thesis "hypotheses non fingo" Newton avoided indicating the primary factors in gravity and pleaded that he could not but exclude that minute something which permeates and is concealed within matter in general — that is the "spiritus" of function of "consciousness." In fact Newton is said to have tried but failed to develop a theory of gravity using a matterless ether, i.e. "consciousness."</p>
+
+    <p class="body">My efforts over the last ten years may be described as an attempt to introduce the "consciousness parameter" to the theories of modern physics and to perfect somewhat more our scientific understanding of the world. The overall idea has already been made known, but its salient point in essence concerns the "complexing" of all the physical theories. For example, complexing of current electromagnetic theory results in a complex theory of electromagnetics and can bring a rational theoretical solution to the unification of electromagnetics and gravity which has been regarded as difficult in conventional physics. The law of energy conservation in conventional physics, which can be described as the unification of the laws of the conservation of mass and energy, has been further expanded to a "law of conservation of ultra-energy" which takes account of mass, energy and "consciousness." Complex thermodynamics has also provided significant insights concerning the Second Law of Thermodynamics. Put another way, if one considers the relationship between this new scientific paradigm and information science, the following two points come to mind.</p>
+
+    <p class="body">Firstly, neurophysiological research on the brain previously was conducted from a reductionist, physicochemical standpoint under the influence of modern physics, but viewed from the standpoint of the conversion formula for "consciousness," "matter" and "energy" (law of conservation of ultra-energy) advocated by the author, this cannot be said scientifically to be the correct approach. J.C. Eccles in his "Neuro-physiological Basis of the Mind" said that consciousness affects the neurone synapses and that spacetime patterns of neurone stimulation are related to "consciousness." This is compatible with our new paradigm. Furthermore, because conventional thermodynamics have been reorganized and the concept of entropy expanded, effects will probably emerge on information theory. Even in conventional thermodynamics, the Second Law can be broken in systems with little freedom (Boltzmann breakage of Second Law) and in the new thermodynamics, breakage can be imagined due to "virtual energy" (the action of consciousness). In Shannon's information theory, the creative processes for information and also the mechanism of entropy reduction in processes of perception cannot be explained. When one considers that difficulties of pattern recognition over the last 450 years, these are paradigmatic difficulties rather than lack of ability on the part of researchers.</p>
+  </div>
+
+  <div class="doc-footer">
+    CIA-RDP96-00792R000400330013-4 · UNCLASSIFIED · APPROVED FOR RELEASE 2000/08/11<br>
+    Japan Psychotronics Institute (JPI) · Translations by AVIRG · Electronics General Research Institute
+  </div>
+
+</div>
+</body>
+</html>
