@@ -1,0 +1,1700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Energy from the Vacuum — NRC Public Hearing Submission, 2006</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap');
+
+  :root {
+    --ink: #1a1714;
+    --ink-mid: #3d3630;
+    --ink-faint: #7a6f65;
+    --paper: #f5f0e8;
+    --paper-warm: #ede8dc;
+    --paper-cool: #f8f5ef;
+    --rule: #c8bfaf;
+    --rule-strong: #9a8f82;
+    --accent: #8b3020;
+    --accent-light: #c4523a;
+    --highlight: rgba(220, 190, 60, 0.35);
+    --highlight-strong: rgba(220, 190, 60, 0.6);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: #2a2520;
+    color: var(--ink);
+    font-family: 'Libre Baskerville', Georgia, serif;
+    font-size: 15px;
+    line-height: 1.75;
+  }
+
+  /* ── SPINE / SIDEBAR ─────────────────────────────── */
+  .spine {
+    position: fixed;
+    top: 0; left: 0;
+    width: 56px;
+    height: 100vh;
+    background: var(--accent);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 0;
+    z-index: 100;
+  }
+  .spine-title {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: rgba(255,255,255,0.75);
+    text-transform: uppercase;
+    margin-top: 12px;
+  }
+  .spine-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.35);
+    margin: 8px 0;
+  }
+
+  /* ── NAV ─────────────────────────────────────────── */
+  .toc-panel {
+    position: fixed;
+    top: 0; left: 56px;
+    width: 220px;
+    height: 100vh;
+    background: #221e1b;
+    overflow-y: auto;
+    padding: 28px 16px;
+    z-index: 99;
+    border-right: 1px solid #3a3028;
+  }
+  .toc-panel h2 {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    margin-bottom: 16px;
+  }
+  .toc-panel a {
+    display: block;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+    text-decoration: none;
+    padding: 5px 8px;
+    border-radius: 4px;
+    line-height: 1.4;
+    transition: all 0.15s;
+    margin-bottom: 2px;
+  }
+  .toc-panel a:hover {
+    color: rgba(255,255,255,0.9);
+    background: rgba(255,255,255,0.07);
+  }
+  .toc-section {
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin: 14px 0 4px 8px;
+  }
+
+  /* ── MAIN CONTENT ────────────────────────────────── */
+  .main {
+    margin-left: 276px;
+    padding: 0 0 80px;
+  }
+
+  /* ── HEADER ─────────────────────────────────────── */
+  .masthead {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 56px 64px 48px;
+    border-bottom: 4px solid var(--accent);
+  }
+  .masthead .provenance {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent-light);
+    margin-bottom: 20px;
+  }
+  .masthead h1 {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    margin-bottom: 12px;
+  }
+  .masthead .subtitle {
+    font-style: italic;
+    font-size: 17px;
+    color: rgba(245,240,232,0.65);
+    margin-bottom: 32px;
+    line-height: 1.5;
+  }
+  .meta-row {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+    border-top: 1px solid rgba(255,255,255,0.12);
+    padding-top: 20px;
+  }
+  .meta-item label {
+    display: block;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    margin-bottom: 3px;
+  }
+  .meta-item span {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+  }
+
+  /* ── DOCUMENT SECTIONS ───────────────────────────── */
+  .doc-section {
+    background: var(--paper);
+    margin: 28px 28px 0;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  }
+  .section-header {
+    background: var(--paper-warm);
+    border-bottom: 2px solid var(--rule);
+    padding: 16px 36px;
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+  }
+  .section-num {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    min-width: 32px;
+  }
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--ink-mid);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .section-type {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 10px;
+    color: var(--ink-faint);
+    font-style: italic;
+    margin-left: auto;
+  }
+  .section-body {
+    padding: 36px 52px;
+  }
+
+  /* ── TYPOGRAPHY ──────────────────────────────────── */
+  p { margin-bottom: 1.2em; }
+  h2 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 1.8em 0 0.6em;
+    color: var(--ink);
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 6px;
+  }
+  h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 1.4em 0 0.5em;
+    color: var(--ink-mid);
+  }
+  h4 {
+    font-size: 14px;
+    font-weight: 700;
+    margin: 1.2em 0 0.4em;
+    color: var(--ink-mid);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  strong { font-weight: 700; }
+  em { font-style: italic; }
+  u { text-decoration: underline; }
+
+  /* ── SPECIAL TEXT CLASSES ────────────────────────── */
+  .handwritten-note {
+    font-family: 'Courier Prime', monospace;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--ink-mid);
+    background: var(--paper-warm);
+    border-left: 3px solid var(--rule-strong);
+    padding: 8px 16px;
+    margin: 12px 0;
+  }
+  .highlighted {
+    background: var(--highlight);
+    padding: 0 2px;
+  }
+  .highlighted-strong {
+    background: var(--highlight-strong);
+    padding: 0 2px;
+  }
+  .underline-key { text-decoration: underline; }
+  .bold-key { font-weight: 700; }
+
+  /* ── DISPLAY QUOTE (handout-style) ──────────────── */
+  .big-display {
+    text-align: center;
+    padding: 36px 20px;
+    border: 2px solid var(--rule);
+    border-radius: 2px;
+    margin: 24px 0;
+    background: var(--paper-cool);
+  }
+  .big-display .word1 { font-size: 52px; font-weight: 700; display: block; letter-spacing: -0.02em; margin-bottom: -8px; }
+  .big-display .word2 { font-size: 22px; display: block; font-style: italic; color: var(--ink-mid); margin: 4px 0; }
+  .big-display .word3 { font-size: 52px; font-weight: 700; display: block; letter-spacing: -0.02em; }
+  .big-display .acronym { font-size: 17px; font-style: normal; color: var(--ink-faint); }
+  .big-display .tagline { font-size: 16px; font-weight: 700; margin-top: 16px; }
+  .big-display .body-text { font-size: 15px; margin-top: 14px; max-width: 560px; margin-left: auto; margin-right: auto; }
+
+  /* ── FORM FACSIMILE ─────────────────────────────── */
+  .form-facsimile {
+    font-family: 'Source Sans 3', sans-serif;
+    border: 1px solid var(--rule-strong);
+    padding: 24px 28px;
+    background: #fff;
+    max-width: 520px;
+    margin: 0 auto;
+    font-size: 14px;
+  }
+  .form-header {
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 8px;
+    margin-bottom: 14px;
+  }
+  .form-row {
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+  .form-label { font-weight: 600; }
+  .form-value {
+    display: inline-block;
+    border-bottom: 1px solid #aaa;
+    min-width: 200px;
+    padding: 0 4px;
+    font-style: italic;
+  }
+  .form-checkbox {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 1px solid #888;
+    vertical-align: middle;
+    margin-right: 4px;
+    text-align: center;
+    line-height: 12px;
+    font-size: 10px;
+  }
+  .form-checkbox.checked { background: #333; color: #fff; }
+  .form-note {
+    font-style: italic;
+    font-size: 12px;
+    color: var(--ink-faint);
+    margin-top: 16px;
+    border-top: 1px solid var(--rule);
+    padding-top: 10px;
+  }
+
+  /* ── REFERENCE LIST ─────────────────────────────── */
+  .ref-list { list-style: none; }
+  .ref-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--rule);
+    font-size: 14px;
+  }
+  .ref-date {
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--accent);
+    display: inline-block;
+    min-width: 120px;
+  }
+
+  /* ── BOOK LIST ──────────────────────────────────── */
+  .book-list { list-style: decimal; padding-left: 24px; }
+  .book-list li {
+    margin-bottom: 12px;
+    font-size: 14px;
+  }
+  .book-title { font-weight: 700; }
+  .book-meta { font-family: 'Source Sans 3', sans-serif; font-size: 12px; color: var(--ink-faint); }
+
+  /* ── EMAIL / LETTER ──────────────────────────────── */
+  .letter-wrapper {
+    background: #fff;
+    border: 1px solid var(--rule);
+    padding: 40px 48px;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .letter-header {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 13px;
+    margin-bottom: 24px;
+    line-height: 1.6;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 16px;
+  }
+  .letter-header .field { margin-bottom: 3px; }
+  .letter-header .field strong { display: inline-block; min-width: 60px; }
+  .letterhead {
+    text-align: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--ink);
+  }
+  .letterhead .name { font-size: 26px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+  .letterhead .addr { font-family: 'Source Sans 3', sans-serif; font-size: 12px; color: var(--ink-faint); margin-top: 4px; }
+
+  /* ── PATENT / LEGAL ──────────────────────────────── */
+  .patent-body {
+    font-size: 14px;
+    line-height: 1.85;
+  }
+  .patent-body .line-num {
+    font-family: 'Courier Prime', monospace;
+    font-size: 11px;
+    color: var(--ink-faint);
+    display: inline-block;
+    width: 28px;
+    user-select: none;
+  }
+  .patent-title {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 20px;
+    background: var(--highlight);
+    margin-bottom: 24px;
+    line-height: 1.4;
+  }
+  .patent-section-head {
+    text-align: center;
+    font-weight: 700;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 28px 0 16px;
+    padding: 8px;
+    background: var(--highlight-strong);
+  }
+  .numbered-para {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 8px;
+  }
+  .para-num {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 12px;
+    color: var(--ink-faint);
+    min-width: 24px;
+    padding-top: 2px;
+  }
+  .ref-entry {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--rule);
+    font-size: 14px;
+  }
+  .ref-num {
+    font-weight: 700;
+    color: var(--accent);
+    margin-right: 8px;
+  }
+  .comment-block {
+    background: var(--highlight);
+    border-left: 4px solid #c8a000;
+    padding: 12px 16px;
+    margin: 12px 0;
+    font-size: 13.5px;
+  }
+  .comment-label {
+    font-weight: 700;
+    color: #6a5000;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* ── DIAGRAM ─────────────────────────────────────── */
+  .diagram-wrap {
+    background: #fff;
+    border: 1px solid var(--rule);
+    padding: 24px;
+    margin: 20px 0;
+    overflow-x: auto;
+  }
+  .diagram-caption {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 12px;
+    color: var(--ink-faint);
+    text-align: center;
+    margin-top: 12px;
+    font-style: italic;
+  }
+  svg text { font-family: 'Source Sans 3', sans-serif; }
+
+  /* ── ACADEMIC PAPER ──────────────────────────────── */
+  .paper-abstract {
+    background: var(--paper-warm);
+    border: 1px solid var(--rule);
+    padding: 20px 24px;
+    margin: 20px 0;
+    font-size: 14px;
+    font-style: italic;
+  }
+  .paper-journal {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 11px;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+  }
+  .paper-byline {
+    font-size: 13px;
+    color: var(--ink-mid);
+    margin-bottom: 4px;
+  }
+  .paper-affil {
+    font-size: 12px;
+    font-style: italic;
+    color: var(--ink-faint);
+    margin-bottom: 16px;
+  }
+
+  /* ── FIGURE ──────────────────────────────────────── */
+  .fig-label {
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--ink-mid);
+  }
+  .fig-caption {
+    font-size: 13px;
+    font-style: italic;
+    color: var(--ink-mid);
+    margin-top: 6px;
+  }
+
+  /* ── OBJECTIVES LIST ─────────────────────────────── */
+  .obj-list {
+    list-style: none;
+    padding: 0;
+  }
+  .obj-list li {
+    padding: 8px 0 8px 28px;
+    border-bottom: 1px solid var(--rule);
+    font-size: 14px;
+    position: relative;
+  }
+  .obj-list li::before {
+    content: "◆";
+    position: absolute;
+    left: 4px;
+    color: var(--accent);
+    font-size: 10px;
+    top: 12px;
+  }
+
+  /* ── ADVANTAGES LIST ─────────────────────────────── */
+  .adv-list {
+    list-style: none; padding: 0;
+  }
+  .adv-list li {
+    padding: 10px 0 10px 32px;
+    border-bottom: 1px solid var(--rule);
+    font-size: 14px;
+    position: relative;
+    line-height: 1.6;
+  }
+  .adv-list li::before {
+    content: "•";
+    position: absolute;
+    left: 8px;
+    color: var(--accent);
+    font-size: 18px;
+    top: 6px;
+  }
+
+  /* ── CALLOUT ─────────────────────────────────────── */
+  .callout {
+    border: 2px solid var(--accent);
+    padding: 16px 20px;
+    margin: 20px 0;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .callout-cop {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent);
+    display: block;
+    margin-top: 4px;
+  }
+
+  /* ── DIVIDER ─────────────────────────────────────── */
+  .rule-thin { border: none; border-top: 1px solid var(--rule); margin: 24px 0; }
+  .rule-thick { border: none; border-top: 2px solid var(--rule-strong); margin: 32px 0; }
+  .page-break-marker {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 10px;
+    color: var(--ink-faint);
+    text-align: right;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+    border-top: 1px dashed var(--rule);
+    padding-top: 8px;
+    margin-top: 32px;
+  }
+
+  /* ── RESPONSIVE ─────────────────────────────────── */
+  @media (max-width: 900px) {
+    .toc-panel { display: none; }
+    .main { margin-left: 56px; }
+    .section-body { padding: 24px 28px; }
+    .masthead { padding: 36px 28px 28px; }
+    .letter-wrapper { padding: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SPINE -->
+<div class="spine">
+  <div class="spine-dot"></div>
+  <div class="spine-title">EFTV · NRC 2006 · Bearden / Wade</div>
+  <div class="spine-dot"></div>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<nav class="toc-panel">
+  <h2>Contents</h2>
+  <div class="toc-section">Preamble</div>
+  <a href="#s01">Speaker Registration</a>
+  <a href="#s02">EFTV Handout</a>
+  <div class="toc-section">Bearden Website</div>
+  <a href="#s03">Sampling of Items</a>
+  <a href="#s04">Books &amp; Resources</a>
+  <a href="#s05">NRAM Diagram</a>
+  <a href="#s06">Energy Density</a>
+  <a href="#s07">Bearden Comments</a>
+  <div class="toc-section">Correspondence</div>
+  <a href="#s08">Bearden Email (July 2006)</a>
+  <a href="#s09">Chuck Wade Letter</a>
+  <a href="#s10">MEG Energy Flow Diagram</a>
+  <div class="toc-section">Provisional Patent</div>
+  <a href="#s11">PPA · References</a>
+  <a href="#s12">PPA · Background</a>
+  <a href="#s13">PPA · Summary</a>
+  <a href="#s14">PPA · Drawings</a>
+  <a href="#s15">PPA · Detailed Description</a>
+  <a href="#s16">PPA · Ramifications &amp; Scope</a>
+  <div class="toc-section">Appendix</div>
+  <a href="#s17">Bohren (1983)</a>
+  <a href="#s18">Paul &amp; Fischer (1983)</a>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- MASTHEAD -->
+  <header class="masthead">
+    <div class="provenance">NRC Public Hearing Submission · August 2006</div>
+    <h1>Energy from the Vacuum</h1>
+    <div class="subtitle">A document packet submitted by Chuck Wade (Gallup, NM) at an NRC public hearing,<br>
+    based on the work of Dr. Thomas E. Bearden and the NRAM Provisional Patent Application.</div>
+    <div class="meta-row">
+      <div class="meta-item"><label>Submitter</label><span>Chuck Wade, P.O. Box 27, Gallup, NM 87305</span></div>
+      <div class="meta-item"><label>Primary Author</label><span>Thomas E. Bearden (Lt. Col., USA, Ret.) &amp; Kenneth D. Moore</span></div>
+      <div class="meta-item"><label>Source Website</label><span>www.cheniere.org</span></div>
+      <div class="meta-item"><label>Pages</label><span>~50 (scanned original)</span></div>
+    </div>
+  </header>
+
+  <!-- ── SECTION 1: SPEAKER FORM ──────────────────── -->
+  <div class="doc-section" id="s01">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <span class="section-title">Speaker Registration Form</span>
+      <span class="section-type">NRC Form · Exhibit #1</span>
+    </div>
+    <div class="section-body">
+      <div class="form-facsimile">
+        <div class="form-header">Speakers — Please Print Clearly</div>
+        <div class="form-row"><span class="form-label">Name:</span> <span class="form-value">Chuck Wade</span></div>
+        <div class="form-row"><span class="form-label">Affiliation:</span> <span class="form-value">None</span></div>
+        <div class="form-row">
+          <span class="form-label">Session:</span>
+          <span class="form-checkbox">□</span> Afternoon
+          <span class="form-checkbox checked">✓</span> Evening
+          <span class="form-checkbox">□</span> Both
+        </div>
+        <div class="form-row">
+          <span class="form-label">Providing a document to add to transcript?</span>
+          <span class="form-checkbox checked">✓</span> Yes &nbsp;
+          <span class="form-checkbox">□</span> No
+        </div>
+        <div class="handwritten-note">
+          <em>Wish to enter NEB [NRC?] website</em>
+        </div>
+        <div class="form-row">
+          <span class="form-label">Add you to our mailing list?</span>
+          <span class="form-checkbox">□</span> Yes
+          <span class="form-checkbox checked">✓</span> No
+        </div>
+        <div class="form-row"><span class="form-label">Address:</span> <span class="form-value">Already filled out — Another Card</span></div>
+        <div class="form-row" style="padding-left:16px;"><span class="form-value">Chuck Wade, Box 27</span></div>
+        <div class="form-row" style="padding-left:16px;"><span class="form-value">Gallup, N.M. 87305</span></div>
+        <div class="form-note">Exhibit #1</div>
+      </div>
+
+      <div style="margin-top:28px;">
+        <div class="handwritten-note">
+          Website of Dr. Tom Bearden:<br>
+          <strong>www.cheniere.org</strong>
+        </div>
+        <div class="handwritten-note">
+          "Energy from the Vacuum" — PPP for: Adapted NRAM Effect, placed into public domain July 2006 and given to the people of the world.<br>
+          <strong>COP = 18</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 2: EFTV HANDOUT ──────────────────── -->
+  <div class="doc-section" id="s02">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <span class="section-title">Energy from the Vacuum — Public Handout</span>
+      <span class="section-type">Promotional Document · p. 1</span>
+    </div>
+    <div class="section-body">
+      <div class="handwritten-note">See page 4 for diagram of: Adapted "NRAM" Effect. — (Chuck Wade)</div>
+
+      <div class="big-display">
+        <span class="word1">ENERGY</span>
+        <span class="word2">from the</span>
+        <span class="word3">VACUUM</span>
+        <div class="acronym">(EFTV)</div>
+        <div class="tagline">Is: THE ENERGY IN SPACE ITSELF</div>
+        <div class="body-text">
+          <p>The vacuum is <u>not</u> inert and featureless, but <strong>alive</strong> with throbbing energy and vitality.</p>
+          <p>Inventors, using nanotechnology and other means, have <u>discovered</u> how to tap the Energy from the Vacuum!!!</p>
+          <p>There is still serious work to be done on controlling this inexhaustible energy supply. Once the energy from the vacuum is tapped and controlled, the impact upon our civilization will be incalculable. Oil, coal, nuclear, hydropower will become <strong>obsolete</strong>—and so will many of our worries about pollution of our environment.*</p>
+        </div>
+      </div>
+
+      <div style="border:1px solid var(--ink); padding:12px 16px; font-size:13px; text-align:center; margin:16px 0;">
+        This handout is "right to copy." Please study, copy, and distribute this document to assist and encourage the development of Energy from the Vacuum. Our children and their children, and generations to come, will reap the benefits of our efforts.
+      </div>
+      <p style="font-size:13px;">* <em>Energy from the Vacuum</em>, Dr. Tom Bearden, Chapter 4</p>
+    </div>
+  </div>
+
+  <!-- ── SECTION 3: SAMPLING ──────────────────────── -->
+  <div class="doc-section" id="s03">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <span class="section-title">Sampling of Items from Tom Bearden's Website</span>
+      <span class="section-type">Reference List · www.cheniere.org · p. 2</span>
+    </div>
+    <div class="section-body">
+      <ul class="ref-list">
+        <li>
+          <span class="ref-date">August 4, 2004</span>
+          Correspondence by Dr. Tom Bearden. Points out that Dr. Bearden is a Retired Lt. Colonel (U.S. Army). He was held in high esteem in the development of the Patriot Missile and other projects to safeguard our wonderful country. Now he is working toward the acceptance of self-powering generators that ONLY use Energy from the Vacuum (EFTV) to solve our Unnecessary Energy Crisis.
+        </li>
+        <li>
+          <span class="ref-date">July 13, 2001</span>
+          Paper by Dr. Tom Bearden states, "All the coal, oil, natural gas, etc. ever burned, and all the nuclear fuel rods ever used, and all the hydroelectric dams ever built, have directly added NOT ONE SINGLE WATT to the power line. Not one!"
+        </li>
+        <li>
+          <span class="ref-date">July 16, 2000</span>
+          Letter from Dr. Tom Bearden to several different professors and others. He states, <strong>"Any competent physics department or electrical engineering department….ought to be able to replicate a MEG example and test it successfully."</strong>
+        </li>
+        <li>
+          <span class="ref-date">August 11, 2002</span>
+          Paper by Dr. Tom Bearden, "Oceans of Free Energy," explains the processes to capture and control both the "A" and "B" waves.
+        </li>
+        <li>
+          <span class="ref-date">January 28, 2006</span>
+          Correspondence by Dr. Tom Bearden: "As pointed out by eminent scientists such as Feinman, Wheeler, and many others, the standard CEM/EE model taught to all our electrical engineers is the biggest <strong>piece of scientific junk</strong> ever propagated by the scientific community."
+        </li>
+        <li>
+          <span class="ref-date">2006</span>
+          Paper by Dr. Tom Bearden, "Engineering the Active Vacuum," on the Asymmetrical Aharonov–Bohm Effect and Magnetic Vector Potential "A" vs. Magnetic Field "B."
+        </li>
+        <li>
+          <span class="ref-date">December 2, 2002</span>
+          Paper by Dr. Tom Bearden, "Source Charge, Van Flandern Waterfall, and Leyton Geometry" discusses "the source charge problem."
+        </li>
+        <li>
+          <span class="ref-date">May 30, 2006</span>
+          Correspondence by Dr. Tom Bearden: "What is the Source Charge (simple version)." "Okay, we'll try. But first, please understand that, since the source charge problem's solution resisted the scientists for nearly 100 years, it obviously isn't going to be 'too simple.' Otherwise those sharp young doctoral candidates and post-docs would have solved it long ago."
+        </li>
+        <li>
+          <span class="ref-date">May 28, 2006</span>
+          Paper by Dr. Tom Bearden explains the difference between the definitions of zero point energy (ZPE) and energy from the vacuum (EFTV). <em>[Note by Chuck Wade: Up till now I have used these two energy terms interchangeably, but no more. There is a huge difference. Zero point energy is "observable," while energy from the vacuum is "virtual," "non-observable."]</em>
+        </li>
+        <li>
+          <span class="ref-date">Undated</span>
+          Excerpted from Dr. Tom Bearden's book, <em>Excalibur Briefing</em>. This article explains that Dr. T. Henry Moray had a working <strong>SELF POWERING GENERATOR</strong>, and that he applied for a patent for the device July 13, 1931 (seventy-six years ago). The patent has not been issued to this date, although the Morays still keep the application current.
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ── SECTION 4: BOOKS ──────────────────────────── -->
+  <div class="doc-section" id="s04">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <span class="section-title">Books, Booklets &amp; Other Resources</span>
+      <span class="section-type">Resource List · p. 3</span>
+    </div>
+    <div class="section-body">
+      <h3>Books &amp; Booklets by Tom Bearden and Others</h3>
+      <p style="font-size:13px; color:var(--ink-faint); margin-bottom:16px;">http://www.cheniere.org/books/</p>
+      <ol class="book-list">
+        <li>
+          <span class="book-title">Energy from the Vacuum: Concepts and Principles</span><br>
+          <span class="book-meta">September 2002 · 951 pages · Details the science of the Motionless Electromagnetic Generator, U.S. Patent No. 6,362,718.</span>
+        </li>
+        <li>
+          <span class="book-title">Free Energy Generation: Circuits &amp; Schematics — 20 Bedini-Bearden Years</span><br>
+          <span class="book-meta">October 2006 · Details how to build a quick-charging battery charger and reveals the real secrets of Negative Energy.</span>
+        </li>
+        <li>
+          <span class="book-title">Excalibur Briefing: Explaining Paranormal Phenomena</span><br>
+          <span class="book-meta">Second Edition — Revised and Expanded · 1980, 1988</span>
+        </li>
+        <li>
+          <span class="book-title">Oblivion: America at the Brink</span><br>
+          <span class="book-meta">October 2005</span>
+        </li>
+        <li>
+          <span class="book-title">The Secret World of Magnets</span><br>
+          <span class="book-meta">by Howard Johnson · Originally published 1970</span>
+        </li>
+        <li>
+          <span class="book-title">Towards a New Electromagnetics, Part IV: Vectors and Mechanisms Clarified</span><br>
+          <span class="book-meta">1983 · Downloadable from www.cheniere.org</span>
+        </li>
+      </ol>
+
+      <h3 style="margin-top:28px;">Other Resources</h3>
+      <ol class="book-list">
+        <li>
+          <span class="book-title">Internal Combustion</span> by Edwin Black<br>
+          <span class="book-meta">How corporations and governments addicted the world to oil and derailed the alternatives. 2006</span>
+        </li>
+        <li>
+          <span class="book-title">The Free-Energy Device Handbook</span><br>
+          <span class="book-meta">A compilation of patents and reports, compiled by David Hatcher Childress. 1994</span>
+        </li>
+        <li>
+          <span class="book-title">thejoecell.com</span><br>
+          <span class="book-meta">One of many inventions proposing to generate overunity effects; the Joe Cell is a type of electrostatic generator.</span>
+        </li>
+      </ol>
+
+      <div class="callout" style="margin-top:24px; text-align:center;">
+        <strong>Energy from the Vacuum™ — A Documentary Series</strong><br>
+        available from Cheniere Press, www.cheniere.org<br>
+        Disc 1 released 2006. Disc 2 to be released 2007.
+      </div>
+
+      <div class="callout" style="font-size:13px; margin-top:16px;">
+        <strong>Safety Warning (from original sidebar):</strong> Be extremely cautious and safety conscious when working with or around Energy from the Vacuum devices. There is so much energy involved, one can be seriously electrocuted or burned. Example: The MEG can easily spike over 25,000+ volts. Heat amplification can put out 18 times more energy than is put in at over 2000°F. The quick-charging battery charger can put out peak pulse power of 300 kW that is useable and achievable, with most of the energy being freely furnished from the vacuum environment via the E-amp effect. Don't be afraid to experiment with these devices, but <strong>DO BE SAFE</strong>, and Good Luck with your experiments.
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 5: NRAM DIAGRAM ───────────────────── -->
+  <div class="doc-section" id="s05">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <span class="section-title">Adapted NRAM Diagram</span>
+      <span class="section-type">Technical Diagram · p. 4</span>
+    </div>
+    <div class="section-body">
+      <h3>Adapted Negative Resonance Absorption of the Medium</h3>
+      <p style="font-size:13px; color:var(--ink-faint); margin-bottom:8px;">
+        Increasing the Coefficient of Performance of Electromagnetic Power Systems by Extracting and Using Excess EM Energy from the Heaviside Energy Flow Component.
+        A Provisional Patent Application for the NRAM process was placed on the website www.cheniere.org in July 2006 and freely given to the people of the world.
+      </p>
+
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 760 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:760px;display:block;margin:auto;">
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#333"/>
+            </marker>
+          </defs>
+          <!-- background -->
+          <rect x="0" y="0" width="760" height="420" fill="#fafaf7"/>
+
+          <!-- TITLE area -->
+          <text x="380" y="22" text-anchor="middle" font-weight="700" font-size="13" fill="#1a1714">ADAPTED NEGATIVE RESONANCE ABSORPTION OF THE MEDIUM</text>
+
+          <!-- Conductor bar -->
+          <rect x="80" y="120" width="520" height="30" fill="#c8c8c8" stroke="#666" stroke-width="1"/>
+          <text x="80" y="115" font-size="10" fill="#555" font-weight="600">CONDUCTOR</text>
+
+          <!-- Drude electron gas dots inside conductor -->
+          <g fill="#888" opacity="0.5">
+            <circle cx="120" cy="135" r="5"/><circle cx="160" cy="135" r="5"/><circle cx="200" cy="135" r="5"/>
+            <circle cx="240" cy="135" r="5"/><circle cx="280" cy="135" r="5"/><circle cx="320" cy="135" r="5"/>
+            <circle cx="360" cy="135" r="5"/><circle cx="400" cy="135" r="5"/><circle cx="440" cy="135" r="5"/>
+            <circle cx="480" cy="135" r="5"/><circle cx="520" cy="135" r="5"/><circle cx="560" cy="135" r="5"/>
+          </g>
+          <text x="380" y="140" text-anchor="middle" font-size="9" fill="#555" font-style="italic">Drude electron gas</text>
+
+          <!-- Heaviside component arrows (top) -->
+          <g fill="none" stroke="#8b3020" stroke-width="2" marker-end="url(#arr)">
+            <line x1="60" y1="75" x2="140" y2="75"/>
+            <line x1="160" y1="75" x2="240" y2="75"/>
+            <line x1="260" y1="75" x2="340" y2="75"/>
+            <line x1="360" y1="75" x2="440" y2="75"/>
+            <line x1="460" y1="75" x2="540" y2="75"/>
+            <line x1="560" y1="75" x2="640" y2="75"/>
+            <line x1="660" y1="75" x2="720" y2="75"/>
+          </g>
+          <text x="380" y="60" text-anchor="middle" font-size="10" fill="#8b3020" font-weight="700">Huge Heaviside component (nondiverged) → ⑥</text>
+
+          <!-- Heaviside component arrows (bottom) -->
+          <g fill="none" stroke="#8b3020" stroke-width="2" marker-end="url(#arr)">
+            <line x1="60" y1="195" x2="140" y2="195"/>
+            <line x1="160" y1="195" x2="240" y2="195"/>
+            <line x1="260" y1="195" x2="340" y2="195"/>
+            <line x1="360" y1="195" x2="440" y2="195"/>
+            <line x1="460" y1="195" x2="540" y2="195"/>
+            <line x1="560" y1="195" x2="640" y2="195"/>
+            <line x1="660" y1="195" x2="720" y2="195"/>
+          </g>
+          <text x="380" y="215" text-anchor="middle" font-size="10" fill="#8b3020" font-weight="700">Huge Heaviside component (nondiverged) → ⑥</text>
+
+          <!-- Poynting arrows (small, into conductor) -->
+          <g fill="none" stroke="#2255aa" stroke-width="1.2" marker-end="url(#arr)">
+            <line x1="160" y1="95" x2="160" y2="118"/>
+            <line x1="280" y1="95" x2="280" y2="118"/>
+            <line x1="400" y1="95" x2="400" y2="118"/>
+            <line x1="520" y1="95" x2="520" y2="118"/>
+            <line x1="160" y1="175" x2="160" y2="152"/>
+            <line x1="280" y1="175" x2="280" y2="152"/>
+            <line x1="400" y1="175" x2="400" y2="152"/>
+            <line x1="520" y1="175" x2="520" y2="152"/>
+          </g>
+          <text x="200" y="108" font-size="8" fill="#2255aa">Poynting component (diverged) ⑤</text>
+
+          <!-- Legend boxes -->
+          <rect x="10" y="230" width="185" height="72" fill="#fff" stroke="#bbb" stroke-width="0.8" rx="2"/>
+          <text x="18" y="245" font-size="9" fill="#333" font-weight="600">1. DIPOLE formed by rotating shaft</text>
+          <text x="18" y="258" font-size="9" fill="#333">   of the generator. A dipole = 2</text>
+          <text x="18" y="270" font-size="9" fill="#333">   opposite charges separated by</text>
+          <text x="18" y="282" font-size="9" fill="#333">   a little bit of distance.</text>
+          <text x="18" y="296" font-size="9" fill="#333" font-weight="600">2. VIRTUAL PARTICLES cannot be</text>
+
+          <rect x="200" y="230" width="185" height="72" fill="#fff" stroke="#bbb" stroke-width="0.8" rx="2"/>
+          <text x="208" y="245" font-size="9" fill="#333" font-weight="600">4. BROKEN SYMMETRY: where</text>
+          <text x="208" y="258" font-size="9" fill="#333">   something virtual has become</text>
+          <text x="208" y="270" font-size="9" fill="#333">   observable.</text>
+          <text x="208" y="284" font-size="9" fill="#333" font-weight="600">5. POYNTING COMPONENT</text>
+          <text x="208" y="296" font-size="9" fill="#333" font-weight="600">6. HEAVISIDE COMPONENT</text>
+
+          <rect x="390" y="230" width="365" height="140" fill="#fffbe8" stroke="#c8a000" stroke-width="1" rx="2"/>
+          <text x="398" y="246" font-size="9" fill="#333" font-weight="600">10. MEDIUM: nano-sized particle with diameter of mid-section</text>
+          <text x="398" y="259" font-size="9" fill="#333">    of infrared frequency. One part heat at infrared frequency</text>
+          <text x="398" y="272" font-size="9" fill="#333">    is absorbed by the medium. THE MEDIUM WILL SELF RESONATE</text>
+          <text x="398" y="285" font-size="9" fill="#333">    at which time 17 PARTS (17 times as much) of the huge</text>
+          <text x="398" y="298" font-size="9" fill="#333">    Heaviside component diverges and is absorbed into the</text>
+          <text x="398" y="311" font-size="9" fill="#333">    self-resonating charged medium. Then it is re-radiated out</text>
+          <text x="398" y="324" font-size="9" fill="#333" font-weight="700">    as useable heat. COP = 18</text>
+          <text x="398" y="340" font-size="9" fill="#333" font-weight="600">12. 18 TIMES MORE HEAT ENERGY re-radiated than the one part</text>
+          <text x="398" y="353" font-size="9" fill="#333">    of Poynting component from the infrared heat source.</text>
+          <text x="398" y="366" font-size="9" fill="#333">    Excess heat energy comes from the Heaviside component</text>
+          <text x="398" y="379" font-size="9" fill="#333">    transformed into heat energy.</text>
+          <text x="398" y="395" font-size="9" fill="#555" font-style="italic">13. Remainder of Heaviside component goes back into the vacuum, wasted.</text>
+
+          <!-- 7, 8, 9 labels -->
+          <text x="208" y="318" font-size="9" fill="#333" font-weight="600">7. INFRARED LIGHT TUBE</text>
+          <text x="208" y="332" font-size="9" fill="#333" font-weight="600">8. POYNTING COMPONENT →</text>
+          <text x="208" y="344" font-size="9" fill="#333">   transformed into infrared heat energy.</text>
+          <text x="208" y="358" font-size="9" fill="#333" font-weight="600">9. INFRARED LIGHT ENERGY enters the medium.</text>
+
+          <!-- 11 -->
+          <text x="10" y="318" font-size="9" fill="#333" font-weight="600">3. VIRTUAL PARTICLES</text>
+          <text x="10" y="330" font-size="9" fill="#333">   consolidate until ejected</text>
+          <text x="10" y="342" font-size="9" fill="#333">   from the dipole as visible,</text>
+          <text x="10" y="354" font-size="9" fill="#333">   measurable, useable photons.</text>
+          <text x="10" y="372" font-size="9" fill="#333" font-weight="600">11. NEGATIVE HEAVISIDE</text>
+          <text x="10" y="384" font-size="9" fill="#333">    COMPONENT DIVERGED</text>
+
+        </svg>
+        <div class="diagram-caption">Adapted NRAM diagram by Chuck Wade, based on Bearden's provisional patent application. COP = 18.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 6: ENERGY DENSITY ────────────────── -->
+  <div class="doc-section" id="s06">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <span class="section-title">Energy Density of the Vacuum</span>
+      <span class="section-type">From Tom Bearden's Website · p. 5</span>
+    </div>
+    <div class="section-body">
+      <h2>Energy Density of the Vacuum</h2>
+      <p>The energy density of the vacuum potential is enormous, even mind-boggling. While scientists have estimated that energy by various means, a reasonable calculation is given by Wheeler and Misner in their <em>Geometrodynamics</em>. In that calculation, Wheeler and Misner apply the formalism of general relativity to the zero point energy of vacuum. The fabric of space appears as a turbulent virtual plasma consisting of particles whose size is on the order of Planck's length — some 10<sup>−33</sup> cm. The energy density of the electric flux passing through each particle is enormous: It is <strong>10<sup>93</sup> grams per cubic centimeter</strong>, expressed in mass units (i.e., the energy per cubic centimeter has been divided by c<sup>2</sup>).</p>
+      <p>And that's just using the <em>spatial energy</em> density (the "decompressed" or ordinary energy). The energy density of the vacuum is appreciably greater than what physicists normally calculate, because they do not calculate the additional <em>time-energy</em> density portion of the vacuum stress. If we also allow for the time-energy (the "compressed" energy), we restore that c<sup>2</sup> division factor, producing on the order of <strong>10<sup>110</sup> grams per cubic centimeter</strong>, or — in energy terms — on the order of <strong>10<sup>127</sup> joules per cubic centimeter</strong>.</p>
+      <p style="font-size:13px; color:var(--ink-faint);">J. A. Wheeler and C. Misner, <em>Geometrodynamics</em>, Academic Press, New York, 1962.</p>
+    </div>
+  </div>
+
+  <!-- ── SECTION 7: BEARDEN COMMENTS ──────────────── -->
+  <div class="doc-section" id="s07">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <span class="section-title">Tom Bearden Comments</span>
+      <span class="section-type">From cheniere.org · p. 6</span>
+    </div>
+    <div class="section-body">
+      <p>There are many ways to extract energy from the seething vacuum. Unfortunately, at present our scientific community takes a bizarre stance. In particle physics it is well known that the active vacuum is incredibly energetic. Calculations by leading physicists such as Wheeler show that a cubic centimeter of vacuum (about the tip of one's little finger in volume) has so much raw energy in it that, if condensed into matter, there would be more matter than is observable in the universe through the largest telescope! So even a tiny efficiency of tapping could and will extract all the energy anyone could wish.</p>
+      <p>However, in classical Maxwell-Heaviside electrodynamics (as used in electrical engineering), the same scientific community now assumes in the model that the vacuum is <strong>absolutely inert!</strong></p>
+      <p>The model also assumes that the local spacetime is flat, so no energy from curved spacetime can be forthcoming, according to that inane model. Then the model assumes that all EM fields, potentials, and every joule of EM energy in the universe is produced by their associated source charges — right out of nothing at all, with no energy input to the charge at all, but with continuous energy flow from it.</p>
+    </div>
+  </div>
+
+  <!-- ── SECTION 8: EMAIL ──────────────────────────── -->
+  <div class="doc-section" id="s08">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <span class="section-title">Bearden Email — July 23, 2006</span>
+      <span class="section-type">Email Correspondence · pp. 1–6 of 6</span>
+    </div>
+    <div class="section-body">
+      <div class="letter-wrapper">
+        <div class="letter-header">
+          <div class="field"><strong>From:</strong> Tom Bearden [soliton@bellsouth.net]</div>
+          <div class="field"><strong>Sent:</strong> Sunday, July 23, 2006 6:29 PM</div>
+          <div class="field"><strong>To:</strong> Correspondent</div>
+          <div class="field"><strong>Subject:</strong> RE: New Page Created</div>
+        </div>
+
+        <p>Hi John,</p>
+        <p>Just for information, and I hope things go well with you.</p>
+        <p>Cheers,<br>Tom</p>
+        <hr class="rule-thin">
+
+        <p>Dear (correspondent):</p>
+        <p>Got a real chuckle out of the "word to the wise" advice. The NEC stated:</p>
+
+        <blockquote style="font-style:italic; border-left:3px solid var(--rule-strong); padding-left:20px; margin:16px 0; color:var(--ink-mid);">
+          <p><em>"A Word to the Wise:</em></p>
+          <p><em>You've heard the saying, 'He who is one step ahead is a genius; he who is two steps ahead is a crack pot.' That saying applies to the world of ideas. In the marketplace, it can be rephrased as follows: 'He who is one step ahead is very rich; he who is two steps ahead is very dead — or at least very persecuted.' If you have a 'two steps ahead' technology that is nearly ready for introduction into the market, you might consider purposely ratcheting it back a notch or two so that it resembles a 'one step ahead' technology. Then, once you have your foot in the door, and your reputation established firmly, the 'two steps ahead' will only be one step ahead. Probably the only way a two-steps-ahead technology could be introduced would be through open source, <u>where a simple set of plans for an easy-to-build device are published openly for the world, impossible to stop by the powers that be.</u>"</em></p>
+        </blockquote>
+
+        <p>Right on!</p>
+
+        <p><span class="highlighted">There is a very important overunity energy technology in that "two steps ahead" region that could indeed be fairly quickly developed, that provides a heat amplification process (with the excess energy for the amplification freely received from the local excited vacuum — from the long-neglected giant Heaviside curled energy flow component that Lorentz arbitrarily discarded circa 1894).</span> The basic overunity energy process and its results are <strong>solidly replicated experimentally</strong> in the hard physics literature (optical physics) since 1967. COP = 18 results are routinely achieved for the optimized IR experiments every year, in various labs and universities around the world.</p>
+
+        <p>But those researchers do not know of the presence (or existence!) of the long-discarded giant Heaviside energy flow component. So they still do not really comprehend where and how the excess input energy is received by the self-oscillating charged particles in the experiment. <span class="highlighted">It is not received from the usual and normal Poynting component, but instead is received in the unusual and almost unknown giant <u>non-Poynting</u> energy flow component.</span></p>
+
+        <p>So the scientists in that field never discuss the thermodynamics of the process, lest they be called "crackpots" and "dirty old perpetual motion nuts". They hardly dare say "excess emission". Instead, they use the term "negative resonance absorption" instead of "excess emission". They only discuss the "increase in reaction cross section" of the self-resonant charges of the absorbing and re-radiating medium.</p>
+
+        <p><u>And they <em>emphasize</em> use of the tortuous term, <strong>"negative resonance absorption of the medium"</strong> (i.e., NRAM for short).</u></p>
+
+        <hr class="rule-thin">
+        <h3>The Heaviside–Poynting History</h3>
+
+        <p>Two scientists were responsible for the independent discovery of EM energy flow through space, in the 1880s. Before then, that concept does not appear in the theory. The two scientists were Heaviside and Poynting. Poynting got the direction wrong by 90 degrees, assuming the energy flow directly into the wire. So he considered only the diverged component of the energy flow. But he published prestigiously, since he was an important professor.</p>
+
+        <p>Heaviside, who never even attended university and was self-taught, considered the entire energy flow component experienced with circuits, including not only <u>the very tiny diverged Poynting component</u>, but also an additional extraordinarily large nondiverged curled energy flow component that just remains flowing through space outside and along the conductors, and does not get diverged into the conductors (normally). <span class="highlighted">This latter component is a startling billion to a trillion times as large in magnitude as is the familiar but relatively "tiny" Poynting diverged component.</span></p>
+
+        <p>Faced with the fact that every generator and battery already outputs tremendously more energy than is input to the generator by cranking its shaft, Lorentz simply disposed of the problem since he could not solve it. He reasoned that <em>"it has no physical significance,"</em> because it does not interact and thus does nothing at all. <span class="highlighted">He thus simply integrated the overall energy flow vector around a closed surface arbitrarily assumed around any volume element of interest. That neatly disposes of the nondiverged giant Heaviside component, while retaining the far smaller Poynting component that gets diverged into the circuit to power it.</span></p>
+
+        <p>See: H. A. Lorentz, <em>Vorlesungen über Theoretische Physik an der Universität Leiden</em>, Vol. V, <em>Die Maxwellsche Theorie</em> (1900–1902), "Die Energie im elektromagnetischen Feld," p. 179–186. Figure 25 on p. 185 shows the Lorentz concept of integrating the Poynting vector around a closed cylindrical surface surrounding a volumetric element.</p>
+
+        <hr class="rule-thin">
+
+        <p>Quoting Oliver Heaviside:</p>
+        <blockquote style="font-style:italic; border-left:3px solid var(--rule-strong); padding-left:20px; margin:16px 0; color:var(--ink-mid);">
+          "It [the energy transfer flow] takes place, in the vicinity of the wire, very nearly parallel to it, with a slight slope towards the wire…. Prof. Poynting, on the other hand, holds a different view, representing the transfer as nearly perpendicular to a wire, i.e., with a slight departure from the vertical. This difference of a quadrant can, I think, only arise from what seems to be a misconception on his part as to the nature of the electric field in the vicinity of a wire supporting electric current. <u>The lines of electric force are nearly perpendicular to the wire. The departure from perpendicularity is usually so small that I have sometimes spoken of them as being perpendicular to it, as they practically are, <em>before I recognized the great physical importance of the slight departure. It causes the convergence of energy into the wire.</em></u>" [Oliver Heaviside, <em>Electrical Papers</em>, Vol. 2, 1887, p. 94].
+        </blockquote>
+
+        <p>Heaviside later realized that his giant curled energy flow component had gravitational significance. See H. J. Josephs, "The Heaviside papers found at Paignton in 1957," <em>The Institution of Electrical Engineers Monograph</em> No. 319, Jan. 1959, p. 70–76. Heaviside's hand-written notes containing his theory of electrogravitation were found beneath the floor boards in his little garret apartment.</p>
+
+        <p>Laithwaite felt that Heaviside's postulation that a flux of gravitational energy combines with the (E×H) electromagnetic energy flux, could shake the foundations of physics. Extracting from Laithwaite: <em>"Heaviside had originally written the energy flow as S = (E×H) + G, where G is a circuital flux. Poynting had only written S = (E×H). Taking p to be the density of matter and e the intensity of a gravitational force, Heaviside found that the circuital flux G can be expressed as pu − ce, where u represents the velocity of p and c is a constant."</em> [E. R. Laithwaite, "Oliver Heaviside — establishment shaker," <em>Electrical Review</em>, 211(16), Nov. 12, 1982, p. 44–45].</p>
+
+        <p><strong>To see how present electrodynamicists still arbitrarily discard the giant Heaviside curled energy flow component</strong>, and use Lorentz's inadequate "no physical significance" argument to justify it, we quote Jackson:</p>
+        <blockquote style="font-style:italic; border-left:3px solid var(--rule-strong); padding-left:20px; margin:16px 0; color:var(--ink-mid);">
+          "…the Poynting vector is arbitrary to the extent that the curl of any vector field can be added to it. Such an added term can, however, have no physical consequences. Hence it is customary to make the specific choice…" [J. D. Jackson, <em>Classical Electrodynamics</em>, Second Edition, Wiley, 1975, p. 237].
+        </blockquote>
+
+        <hr class="rule-thin">
+        <h3>The NRAM Process &amp; Patent</h3>
+
+        <p><span class="highlighted">NRAM experiments prove that the Heaviside energy flow component really is there, and at least a little bit of it can be freely tapped and extracted.</span> If the curvature of spacetime is rhythmically curved in oscillating fashion at the same frequency as the curled component input, then some of that giant Heaviside component is diverged into the medium. The self-resonating charged particles absorb both diverged components a priori, so thus re-emit more Poynting energy flow than was in the original input Poynting energy flow component. The conservation of energy law is conserved, and the thermodynamic efficiency is always less than 100%, yet the COP = 18.</p>
+
+        <p>So the process is quite analogous to a common home heat pump, which has an efficiency of about 50% and yet a COP = 3.0 to 4.0. That is because additional heat energy is received freely (or almost freely) from the external environment, in addition to the operator's paid electrical energy input.</p>
+
+        <p><span class="highlighted-strong">For the NRAM process, my colleague Ken Moore and I solved the "source" problem of where and how the excess energy is input in non-Poynting form, so that more Poynting energy emission occurs than is in the input Poynting component. We also obtained (in October 2005) a provisional patent application on the adapted NRAM process, particularly for application to steam boilers of current on-line electrical power plants (and other applications).</span></p>
+
+        <p>It appears that <span class="highlighted">a reasonable COP = 4.0 or so could be obtained in a real power plant steam boiler by the less-than-optimum adapted NRAM process.</span></p>
+
+        <p>In that case, were the adapted process successfully developed (which would cost probably about $40 million), <span class="highlighted">it could be applied to most of our present electrical power plants, to reduce their consumption of hydrocarbon fuel (or nuclear fuel rods) by about 75%</span>, while providing the normal heat to the boilers, thus furnishing the normal steam and so the normal electrical power to the grid.</p>
+
+        <p><span class="highlighted">Also, a simple additional change allows the use of controlled feedback with a staged unit, so that — once the improved power plant is on line and smoothly powering its grid and its loads — the controlled feedback can be switched in. At that point, all further consumption of fuel (or fuel rods) can cease, and the system will become "self-powered"</span>, taking all the required input heat energy directly from the long-neglected Heaviside component (of the modified vacuum).</p>
+
+        <p>Since Ken and I are a bit long in the tooth for any vast new projects and all the hassle involved, <span class="highlighted">we then just placed the PPA on my website, www.cheniere.org, and freely donated it to the public domain — to everyone. So anyone worldwide, who wishes to develop and use the process, is quite free to do so.</span> We were hoping that some of the giant electrical power companies and large labs in a foreign nation (<span class="highlighted-strong">our own DoE and national labs obviously are <strong>not going to do anything at all fundamentally to permanently solve the energy crisis</strong></span>) would take an interest and get it done.</p>
+
+        <p>The PPA is: T. E. Bearden and K. D. Moore, <span class="highlighted">"<strong>Increasing the Coefficient of Performance of Electromagnetic Power Systems by Extracting and Using Excess EM Energy from the Heaviside Energy Flow Component</strong>,"</span> October, 2005. It is attached (pages 7–42) and available freely for downloading at http://www.cheniere.org/techpapers/PPA%20Increasing%20COP%20by%20addnl%20extractn%20from%20flow1a.doc.</p>
+
+        <p><span class="highlighted"><strong>Let's hope someone picks up the NRAM heat amplification ball and runs with it.</strong></span> The process also could of course be added in to modified home, office, and building heat pumps etc., and to a number of basic heating processes and heating needs.</p>
+
+        <p><strong>By passing the PPA and its adapted process into public domain, anyone who wishes to can pick it up and run with it.</strong></p>
+
+        <p>Ironically, one of the scientists in the field titled a paper very provocatively: Craig F. Bohren, "How can a particle absorb more than the light incident on it?" <em>American Journal of Physics</em>, 51(4), Apr. 1983, p. 323–327. The abstract states that, under nonlinear conditions, <span class="highlighted">a particle can absorb more energy than is in the light incident on it.</span> [<strong>Comment: That obviously is false, since it would contradict the conservation of energy law. The correct statement would be: "Under nonlinear conditions, a particle can absorb more energy than is in the <em>Poynting</em> light component incident on it. That is because the long-unaccounted giant Heaviside curled component is also incident on it.</strong>]</p>
+
+        <p>Metallic particles at ultraviolet frequencies are one class of such particles and insulating particles at infrared frequencies are another. <strong>For independent replication, see also H. Paul and R. Fischer</strong> [Comment on "How can a particle absorb more than the light incident on it?"], <em>Am. J. Phys.</em>, 51(4), Apr. 1983, p. 327. <strong>The [optimized] Bohren experiment is repeatable and produces COP = 18.</strong></p>
+
+        <div class="callout">
+          <strong>In other words, for IR one uses a medium comprised of certain sized dielectric particles that are charged. One feeds that medium with a laser, and the particles of the medium go into self-resonance at the frequency being fed. These self-resonating particles absorb 18 times as much energy as was in the normal Poynting energy flow input, so that the self-resonating medium now emits some 18 times as much IR Poynting energy flow as was in the Poynting component fed into it.</strong>
+        </div>
+
+        <p>The original papers in the NRAM field — that in fact stimulated the field itself — appear to be Russian:</p>
+        <ul style="font-size:13px; padding-left:24px; line-height:2;">
+          <li>V. S. Letokhov, "Generation of light by a scattering medium with negative resonance absorption," <em>Zh. Eksp. Teor. Fiz.</em>, Vol. 53, 1967, p. 1442.</li>
+          <li>V. S. Letokhov, "Generation of light by a scattering medium with negative resonance absorption," <em>Sov. Phys. JETP</em>, 26(4), Apr. 1968, p. 835–839.</li>
+          <li>V. S. Letokhov, "Stimulated emission of an ensemble of scattering particles with negative absorption," <em>ZhETF Plasma</em>, 5(8), Apr. 15, 1967, p. 262–265.</li>
+        </ul>
+
+        <p style="margin-top:24px;">Very best wishes,<br><strong>Tom</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 9: WADE LETTER ────────────────────── -->
+  <div class="doc-section" id="s09">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <span class="section-title">Chuck Wade Cover Letter &amp; PPA Index</span>
+      <span class="section-type">Letter · August 3, 2006 · p. 7</span>
+    </div>
+    <div class="section-body">
+      <div class="letter-wrapper">
+        <div class="letterhead">
+          <div class="name">Chuck Wade</div>
+          <div class="addr">P.O. Box 27 · Gallup, New Mexico 87305 · (505) 722-3377 · wades@cia-g.com</div>
+        </div>
+        <p style="font-family:'Source Sans 3',sans-serif; font-size:13px; margin-bottom:20px;">Thursday, August 3, 2006</p>
+        <p>A brief index with commentary for the PPA document follows.</p>
+        <table style="width:100%; border-collapse:collapse; font-size:13px; margin:20px 0;">
+          <tr style="border-bottom:1px solid var(--rule);">
+            <td style="padding:6px 12px 6px 0; font-weight:600; white-space:nowrap; color:var(--accent);">Pages 1–10</td>
+            <td style="padding:6px 0;">References cited, and comments</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--rule);">
+            <td style="padding:6px 12px 6px 0; font-weight:600; white-space:nowrap; color:var(--accent);">Pages 10–22</td>
+            <td style="padding:6px 0;">Background of the invention</td>
+          </tr>
+          <tr>
+            <td colspan="2" style="padding:12px 0; font-style:italic; font-weight:600;">
+              The adage that "a picture is worth a thousand words" is so true in the following three figures, which show that energy can be extracted from the vacuum:
+            </td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--rule);">
+            <td style="padding:6px 12px 6px 0; font-weight:600; white-space:nowrap; color:var(--accent);">Page 23</td>
+            <td style="padding:6px 0;">Figures 1 and 2 show the difference between the small Poynting (diverged) energy flow component (which is the only wave that is caught to furnish the electricity in use today) and the HUGE Heaviside component (nondiverged) which is being completely ignored up to today.</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--rule);">
+            <td style="padding:6px 12px 6px 0; font-weight:600; white-space:nowrap; color:var(--accent);">Page 24</td>
+            <td style="padding:6px 0;">Figure 3 shows the HUGE Heaviside component (some diverged) and shows that part of the Heaviside wave can be caught.</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--rule);">
+            <td style="padding:6px 12px 6px 0; font-weight:600; white-space:nowrap; color:var(--accent);">Pages 24–29</td>
+            <td style="padding:6px 0;">Figures 4–12 show how the NRAM is configured.</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--rule);">
+            <td style="padding:6px 12px 6px 0; font-weight:600; white-space:nowrap; color:var(--accent);">Pages 30–32</td>
+            <td style="padding:6px 0;">Detailed Description of the Preferred Embodiment.</td>
+          </tr>
+          <tr>
+            <td style="padding:6px 12px 6px 0; font-weight:600; white-space:nowrap; color:var(--accent);">Pages 32–35</td>
+            <td style="padding:6px 0;">Summary Ramifications and Scope summarizes the PPA and the NRAM process.</td>
+          </tr>
+        </table>
+        <p>Hoping this information will be of benefit to you—</p>
+        <p style="margin-top:16px; font-style:italic; font-size:16px;">Chuck Wade</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 10: MEG DIAGRAM ───────────────────── -->
+  <div class="doc-section" id="s10">
+    <div class="section-header">
+      <span class="section-num">10</span>
+      <span class="section-title">MEG Energy Flow Contours</span>
+      <span class="section-type">Diagram from cheniere.org · p. 7A</span>
+    </div>
+    <div class="section-body">
+      <p>From <code>http://www.cheniere.org/images/meg/f4.jpg</code></p>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 600 340" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:600px;display:block;margin:auto;">
+          <rect x="0" y="0" width="600" height="340" fill="#f0f4ff"/>
+          <!-- Transmission line conductors -->
+          <rect x="240" y="130" width="16" height="80" fill="#c0344a" rx="4"/>
+          <rect x="344" y="130" width="16" height="80" fill="#c0344a" rx="4"/>
+          <text x="248" y="125" font-size="9" fill="#444" text-anchor="middle">−</text>
+          <text x="352" y="125" font-size="9" fill="#444" text-anchor="middle">+</text>
+          <!-- Poynting contour ellipses (small, near wire) -->
+          <g fill="none" stroke="#4466cc" stroke-width="1" opacity="0.7">
+            <ellipse cx="300" cy="170" rx="30" ry="14"/>
+            <ellipse cx="300" cy="170" rx="50" ry="24"/>
+            <ellipse cx="300" cy="170" rx="72" ry="36"/>
+            <ellipse cx="300" cy="170" rx="96" ry="50"/>
+          </g>
+          <!-- Heaviside component (large arrows, nonlocal) -->
+          <g fill="none" stroke="#8b3020" stroke-width="1.5" opacity="0.6" marker-end="url(#arr)">
+            <line x1="40" y1="60" x2="40" y2="280"/>
+            <line x1="100" y1="50" x2="100" y2="290"/>
+            <line x1="500" y1="50" x2="500" y2="290"/>
+            <line x1="560" y1="60" x2="560" y2="280"/>
+          </g>
+          <!-- Labels -->
+          <rect x="4" y="140" width="90" height="55" fill="rgba(255,255,255,0.85)" rx="2"/>
+          <text x="8" y="153" font-size="8" fill="#8b3020" font-weight="700">NONLOCAL</text>
+          <text x="8" y="163" font-size="7" fill="#8b3020">(Nondivergent)</text>
+          <text x="8" y="173" font-size="7" fill="#555">This huge Heaviside</text>
+          <text x="8" y="182" font-size="7" fill="#555">component misses the</text>
+          <text x="8" y="191" font-size="7" fill="#555">circuit and is wasted.</text>
+
+          <rect x="504" y="140" width="90" height="40" fill="rgba(255,255,255,0.85)" rx="2"/>
+          <text x="508" y="153" font-size="8" fill="#8b3020" font-weight="700">NONLOCAL</text>
+          <text x="508" y="163" font-size="7" fill="#8b3020">(Nondivergent)</text>
+
+          <rect x="200" y="235" width="200" height="40" fill="rgba(255,255,255,0.85)" rx="2"/>
+          <text x="205" y="248" font-size="7" fill="#333">Thin "sheath" Poynting component</text>
+          <text x="205" y="259" font-size="7" fill="#333">strikes surface charges and is</text>
+          <text x="205" y="270" font-size="7" fill="#333">diverged into conductors to power the circuit.</text>
+
+          <text x="300" y="320" text-anchor="middle" font-size="11" fill="#333" font-weight="600">Figure 4. Energy flow contours surrounding a transmission line.</text>
+          <text x="300" y="334" text-anchor="middle" font-size="9" fill="#777">Contours in watts/sq. meter. Nonlocal Heaviside component dwarfs the Poynting component.</text>
+        </svg>
+        <div class="diagram-caption">Reconstructed from Figure 4, Bearden's MEG energy flow diagram (originally from cheniere.org).</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 11: PPA REFERENCES ───────────────── -->
+  <div class="doc-section" id="s11">
+    <div class="section-header">
+      <span class="section-num">11</span>
+      <span class="section-title">Provisional Patent Application — References</span>
+      <span class="section-type">Bearden &amp; Moore · PPA pp. 1–9 · Exhibit pp. 8–10</span>
+    </div>
+    <div class="section-body">
+      <div class="patent-title">
+        Increasing the Coefficient of Performance of Electromagnetic Power Systems<br>
+        by Extracting and Using Excess EM Energy from the<br>
+        Heaviside Energy Flow Component
+      </div>
+      <div style="font-family:'Source Sans 3',sans-serif; font-size:13px; margin-bottom:20px;">
+        <div><strong>Inventors:</strong> Thomas E. Bearden, Huntsville, AL 35801-1351</div>
+        <div style="margin-left:80px;">Kenneth D. Moore, Huntsville, AL 35801</div>
+      </div>
+
+      <h3>References Cited</h3>
+      <div class="ref-entry">
+        <span class="ref-num">1.</span>
+        <strong>Bearden, Thomas E. (2005)</strong> "Errors and Omissions in the CEM/EE Model." The paper presents and discusses known serious errors and falsities that have been in the classical EM and electrical engineering model since it was put together in the 1880s, and since 1892 when the already-seriously-curtailed Maxwell-Heaviside equations were further arbitrarily symmetrized by Lorentz. By his symmetrical regauging, Lorentz obtained simpler equations easier to solve analytically, but in so doing he arbitrarily discarded all asymmetrical Maxwellian systems. Nature does not discard them; Lorentz did and our electrical power engineers still do.
+        <div class="comment-block"><span class="comment-label">Comment</span>The present invention deliberately uses an asymmetrical Maxwellian system to provide a novel excess EM energy collection directly from a previously unaccounted free flow of EM energy from the external vacuum environment. In addition to the accounted Poynting energy flow, there also is and always has been an unaccounted and huge Heaviside curled component of energy flow which was also discarded arbitrarily by Lorentz. The resulting system does not ever emit more energy than its total energy input, when one understands and accounts the previously unaccounted huge Heaviside input component. Thus the thermodynamic efficiency ξ of the resulting system always remains ξ ≤ 100%, but its thermodynamic coefficient of performance COP is permitted to be COP &gt; 1.0.</div>
+      </div>
+
+      <div class="ref-entry">
+        <span class="ref-num">2.</span>
+        <strong>Bearden, T. E. (2000)</strong> "Giant Negentropy from the Common Dipole," <em>Proceedings of Congress 2000</em>, St. Petersburg, Russia, Vol. 1 (86–98). Also published in <em>Journal of New Energy</em>, 5(1), Summer 2000, p. 11–23. This paper presents the solution to the long-vexing source charge problem: how a charge can continually pour out real observable EM energy (real photons) at light speed in all directions, but have no observable output. The charge absorbs disordered virtual state energy from the vacuum, reorders them, coherently integrates the virtual state energy excitations into the next quantum level excitation, and then abruptly decays by emitting an observable photon.
+      </div>
+
+      <div class="ref-entry">
+        <span class="ref-num">3.</span>
+        <strong>Bearden, T. E. (2002)</strong> <em>Energy from the Vacuum: Concepts and Principles</em>. Cheniere Press, Santa Barbara, CA. Chapter 3. "Giant Negentropy, Dark Energy, Spiral Galaxies and Acceleration of the Expanding Universe."
+      </div>
+
+      <div class="ref-entry">
+        <span class="ref-num">4.</span>
+        <strong>Bohren, Craig F. (1983)</strong> "How can a particle absorb more than the light incident on it?" <em>Am. J. Phys.</em> 51(4). (323–327). Under nonlinear conditions, a charged particle can absorb more energy than is [conventionally considered to be] in the light incident on it. [We strongly note that the conventional view only accounts the Poynting energy flow component of the total energy input, and ignores the huge Heaviside input component that is nonetheless present and many orders of magnitude greater.]
+        <div class="comment-block"><span class="comment-label">Comment</span>When the charged particles in a medium are self-resonant at the same frequency of the light energy that is input to the medium, the medium can re-radiate up to 18 times as much energy as is in the Poynting component of the input energy. Gains of 3.0 to 4.0 can be achieved in conventional practice, and under certain circumstances the optimum 18 can be approached by multiple stages each having cross-feed forward and backward with all the rest.</div>
+      </div>
+
+      <div class="ref-entry">
+        <span class="ref-num">5–7.</span>
+        <strong>Electrician, The (1891)</strong> editorial on energy transfer; <strong>Evans, D. J. &amp; Rondoni, L. (2002)</strong> — rigorous demonstration that systems continuously producing negative entropy are theoretically permissible; <strong>Evans, M. W. et al. (2000)</strong> "Classical Electrodynamics without the Lorentz Condition: Extracting Energy from the Vacuum," <em>Physica Scripta</em>, 61 (513–517) — proves that an asymmetrical system freely receives excess energy currents from its vacuum environment.
+      </div>
+
+      <div class="ref-entry">
+        <span class="ref-num">8–10.</span>
+        <strong>Feynman, Leighton &amp; Sands</strong>, <em>The Feynman Lectures on Physics</em>. Addison-Wesley, 1964. Various quotations on the nature of EM fields and force.
+      </div>
+
+      <div class="ref-entry">
+        <span class="ref-num">11–12.</span>
+        <strong>Halliday &amp; Resnick</strong>, <em>Fundamentals of Physics</em>, Third Edition Extended, Vol. II. Notes on self-induced EMF, Lenz's law, and the Poynting vector.
+      </div>
+
+      <div class="ref-entry">
+        <span class="ref-num">13–15.</span>
+        <strong>Heaviside, Oliver</strong> (1885–1887) "Electromagnetic Induction and Its Propagation." <em>The Electrician</em>; (1887) <em>Electrical Papers</em>, Vol. 2; (1893) "On the Forces, Stresses, and Fluxes of Energy in the Electromagnetic Field." <em>Phil. Trans. Roy. Soc. London</em>, 183A.
+      </div>
+
+      <div class="ref-entry">
+        <span class="ref-num">16.</span>
+        <strong>Heaviside, Oliver</strong>. Unpublished notes. See Josephs (1959). Heaviside realized that his enormous extra nondiverged energy flow component had substantial gravitational consequences, since it was a substantial change in the local density flow of space, and thus a curvature of spacetime.
+        <div class="comment-block"><span class="comment-label">Comment</span>We cite these notes to point out that use of excess energy from the Heaviside component involves use of a deliberately curved spacetime, and this effect does not appear in normal CEM/EE where only special relativity is involved and the model assumes spacetime to be flat.</div>
+      </div>
+
+      <div class="ref-entry">
+        <span class="ref-num">17–18.</span>
+        <strong>Jackson, J. D.</strong> (1999) <em>Classical Electrodynamics</em>, 3rd edn; (1975) 2nd edn. Jackson's symmetrical regauging and the arbitrary Lorentz condition. Notes that the Poynting vector is "arbitrary to the extent that the curl of any vector field can be added to it. Such an added term can, however, have no physical consequences." <em>[Note: this statement is only approximately true in rigorously flat spacetime.]</em>
+      </div>
+
+      <div class="ref-entry">
+        <span class="ref-num">19.</span>
+        <strong>Josephs, H. J. (1959)</strong> "The Heaviside papers found at Paignton in 1957." <em>IEE Monograph</em> No. 319. Heaviside's hand-written notes containing his theory of electrogravitation, found beneath the floor boards of his little garret apartment 32 years after his death.
+      </div>
+
+      <div class="ref-entry">
+        <span class="ref-num">20–21.</span>
+        <strong>Kondepudi &amp; Prigogine (1999)</strong> <em>Modern Thermodynamics</em>; <strong>Laithwaite, E. R. (1982)</strong> "Oliver Heaviside — establishment shaker." <em>Electrical Review</em>, 211(16).
+      </div>
+
+      <div class="ref-entry">
+        <span class="ref-num">22–23.</span>
+        <strong>Lee, T. D. (1956)</strong> "Question of Parity Conservation in Weak Interactions," <em>Physical Review</em> 104(1); (1957) "Remarks on Possible Noninvariance under Time Reversal and Charge Conjugation," <em>Physical Review</em>, 106(2).
+      </div>
+
+      <div class="ref-entry">
+        <span class="ref-num">24–27.</span>
+        <strong>Letokhov, V. S. (1967, 1968)</strong> Three foundational NRAM papers (Zh. Eksp. Teor. Fiz.; Sov. Phys. JETP; ZhETF Plasma); (1995) "Laser Maxwell's Demon," <em>Contemp. Phys.</em> 36(4).
+      </div>
+
+      <div class="ref-entry">
+        <span class="ref-num">28.</span>
+        <strong>Lorentz, H. A. (1931)</strong> <em>Vorlesungen über Theoretische Physik an der Universität Leiden</em>, Vol. V. Figure 25 on p. 185 shows the Lorentz concept of integrating the Poynting vector around a closed cylindrical surface. Lorentz reasoned the Heaviside component "had no physical significance, because it does nothing."
+      </div>
+
+      <div class="ref-entry">
+        <span class="ref-num">29.</span>
+        <strong>Maxwell, James Clerk (1878)</strong> "Tait's Thermodynamics II," <em>Nature</em> 17 (278–280): "The truth of the second law is…a statistical, not a mathematical, truth, for it depends on the fact that the bodies we deal with consist of millions of molecules…Hence the second law of thermodynamics is continually being violated."
+      </div>
+
+      <div class="ref-entry">
+        <span class="ref-num">30–31.</span>
+        <strong>Paul, H. &amp; Fischer, R. (1983)</strong> [Comment on Bohren], <em>Am. J. Phys.</em> 51(4) — independently validated the Bohren-type experiment, which is repeatable and produces COP = 18. <strong>Poynting, J. H. (1885)</strong> — Poynting's original paper; Poynting got the direction of the flow wrong by 90°, corrected by Heaviside.
+      </div>
+
+      <div class="ref-entry">
+        <span class="ref-num">32.</span>
+        <strong>Sweet, Floyd &amp; Bearden, T. E. (1991)</strong> "Utilizing Scalar Electromagnetics to Tap Vacuum Energy," <em>Proc. 26th IECEC</em>, Boston (370–375). Sweet's device produced 500 watts for a 330 microwatt input, COP = 1,500,000.
+      </div>
+
+      <div class="ref-entry">
+        <span class="ref-num">33.</span>
+        <strong>Wu, C. S. et al. (1957)</strong> "Experimental Test of Parity Conservation in Beta Decay," <em>Physical Review</em>, Vol. 105, p. 1413. Experimentally proved Lee and Yang's prediction of broken symmetry in physics. Nobel Prize awarded in December 1957.
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 12: PPA BACKGROUND ───────────────── -->
+  <div class="doc-section" id="s12">
+    <div class="section-header">
+      <span class="section-num">12</span>
+      <span class="section-title">PPA — Background of the Invention</span>
+      <span class="section-type">PPA pp. 10–13 · Exhibit pp. 17–20</span>
+    </div>
+    <div class="section-body">
+      <div class="patent-body">
+        <div class="patent-section-head">Background of the Invention</div>
+
+        <h3>1. Field of the Invention</h3>
+        <p>This invention relates to the field of electromagnetic power generation. Specifically it relates to systems (i) receiving some of their EM energy from the operator while also freely receiving additional excess EM energy from the active environment, thereby (ii) outputting more useful EM energy than is input by the operator alone, and thus (iii) acting as an <em>energy amplifier</em> or an <em>energy amplifying stage</em> that channels and directs and uses additional energy from the environment in addition to that energy furnished by the operator, thereby freely increasing the COP of the system beyond COP = 1.0. The receipt of excess EM energy freely from the environment is from the previously unaccounted giant Heaviside curled energy flow component, far greater than the accounted Poynting energy flow component.</p>
+
+        <p>This giant Heaviside curled energy flow component accompanying every EM system was discovered by Heaviside in the 1880s, but it posed a great puzzle due to (i) its enormity, as compared to the feeble Poynting energy flow component, and (ii) its certification that from any generator, battery, or other energy source there pours forth enormously more EM energy flow than the energy that is contained in the relatively feeble mechanical energy input to the shaft of the generator or the feeble chemical energy dissipated in a battery. Since the problem could not be solved (the physics was not as yet even born that explained it), this bothersome Heaviside component was arbitrarily discarded by Lorentz in the 1890s because — since it was normally nondiverged and did nothing — it was thought to have "no physical significance." Actually Lorentz's discarding of that component was motivated by the desperate need to just get rid of it, in order to "save" the conservation of energy law since all electrodynamicists erroneously believed (and most still erroneously believe to this day) that the only energy input to an operating generator is the mechanical shaft energy.</p>
+
+        <p>Free receipt by a system of usable excess converted Heaviside energy flow violates Lorentz symmetry of the system. Thus the standard Lorentz invariant vector equations of classical electromagnetics and electrical engineering cannot and do not describe the operation of the system in such mode because they already exclude any accounting of the experimentally proven Heaviside component and any such free contribution from it.</p>
+
+        <p><strong>The present invention is the first electrical power invention which deliberately utilizes excess energy freely received from the universally-available Heaviside nondiverged energy flow component</strong>, converting a portion of it to an extra Poynting diverged energy flow freely available and usable by the system in powering its loads.</p>
+
+        <h3>2. Summary of the Invention's Operation</h3>
+        <p>The excess EM energy necessary for the amplified output (and for COP&gt;1.0) is freely furnished from the external dynamic EM environment rather than by the operator, and conservation of energy is obeyed at all times. The system is therefore <em>asymmetric</em> — so that it is one of those Maxwellian asymmetric systems arbitrarily discarded by Lorentz and by present electrical engineering. The operation of the invention is analogous to that of a common heat pump. The thermodynamic efficiency ξ of the system is ξ ≤ 100%, but because of the free input of excess energy from the environment the system can permissibly produce COP &gt; 1.0.</p>
+
+        <p>With sufficient energy amplification, a portion of the overall amplified energy output may be extracted and fed back to the operator's energy input section. By using clamped positive feedback and adjusting and controlling the feedback as the system input energy needs vary, the feedback energy input may be made equal to the otherwise necessary operator's input and in phase, whereupon the operator's input may be disconnected so that the system is "self-powered," with all its energy input being furnished by the active environment. The self-powering system is a <em>nonequilibrium steady state (NESS) thermodynamic system</em> freely receiving all its EM energy from the environment, and outputting a large fraction of that environmental energy input as a free energy output to usefully power loads or furnish energy that is transferred to other systems and processes.</p>
+
+        <h3>3. Background</h3>
+        <p>Accompanying every accounted diverged Poynting linear energy flow in and around EM circuits and systems there is an accompanying but unaccounted much larger — but usually nondiverged — Heaviside <em>curled</em> energy flow, discovered by Oliver Heaviside in the 1880s and arbitrarily discarded by Lorentz circa the 1890s. By sufficiently curving local spacetime and thus violating the "flat spacetime" assumption of classical electrodynamics, the curled Heaviside energy flow component develops a divergent component since in curved spacetime vector analysis is incomplete and the divergence of the curl is not zero.</p>
+
+        <p>Such curved spacetime operation does appear in physics and the fundamental mechanism is experimentally proven in that area known as <em>negative resonance absorption of the medium (NRAM)</em>, though inadequately understood because the Heaviside component is not accounted by scientists working in that area.</p>
+
+        <p>The performance of such freely and asymmetrically regauging systems obeys the thermodynamics of Prigogine's dissipative systems far from thermodynamic equilibrium. The system violates the conventional CEM assumption of Lorentz symmetry since that symmetry is broken by any appreciable curvature of spacetime and by any excess extra energy input from the environment. It permissibly violates the "near equilibrium" second law of thermodynamics, which only applies to the entropic decay of previously excited systems from near-equilibrium back to equilibrium. Violation of the restricted second law is already known and accepted for steady state systems far from equilibrium, and for many other effects listed by Kondepudi and Prigogine (1999) in their standard textbook <em>Modern Thermodynamics</em>, p. 459. Even Maxwell long ago pointed out that every many-particle system continually violates the second law of thermodynamics (Maxwell, 1878).</p>
+
+        <h3>6. Related Art</h3>
+        <p>There is believed to be no prior understood art in such asymmetrically self-regauging EM power systems deliberately utilizing excess energy input from the active Heaviside energy flow component — previously unaccounted in every system's environment — in order to produce an EM energy amplifier with respect to the operator's EM energy input.</p>
+
+        <p>However, those optical scientists working in the area of physics known as <em>negative resonance absorption of the medium (NRAM)</em> appear to be unwittingly generating the basic effect. Scientists in that field are unaware of the long-neglected Heaviside energy flow component, and apparently none of them has recognized the basic spacetime curvature mechanism providing their surprising but well proven (since 1967) results. Extending and clarifying their proven results in thermodynamic terms, since 1967 they have found that a medium comprised of self-resonating charged particles…will then output from the medium some <strong>18 times as much Poynting energy flow as was contained in the Poynting component of the energy flow that was input by the operator.</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 13: PPA SUMMARY ───────────────────── -->
+  <div class="doc-section" id="s13">
+    <div class="section-header">
+      <span class="section-num">13</span>
+      <span class="section-title">PPA — Summary of the Invention</span>
+      <span class="section-type">PPA pp. 15–24</span>
+    </div>
+    <div class="section-body">
+      <div class="patent-section-head">Summary of the Invention</div>
+      <p>Selected principal objects of the present invention:</p>
+      <ul class="obj-list">
+        <li>To provide a system for providing increased electrical power and mechanical shaft power to power loads, using excess energy freely furnished from the previously untapped and unaccounted Heaviside curled energy flow component available in every system but previously unused.</li>
+        <li>To provide a system for asymmetrically regauging itself by converting a fraction of the available Heaviside curled energy flow into diverged Poynting energy flow, via a medium of charged particles in self-oscillation at the center frequency of the conventional EM energy input to said medium.</li>
+        <li>To provide a system for increasing its energy collecting reaction cross section in a given Poynting energy flow input, so that an oscillating curvature of local spacetime is produced by the oscillating energy density of the charged particle, hence inducing an oscillating curvature of spacetime affecting and diverging a portion of the Heaviside energy flow component.</li>
+        <li>To provide a means whereby additional Poynting (diverged) energy is freely received by the system from the huge unaccounted and unused Heaviside energy flow component, thereby enabling COP &gt; 1.0 operation as an open nonequilibrium steady state (NESS) thermodynamic system freely receiving usable excess energy from its active external environment.</li>
+        <li>To provide an asymmetric Maxwellian system, of the type discarded by Lorentz's and electrical engineering's arbitrary symmetrization of the Maxwell-Heaviside equations, so that the invention operates beyond the symmetrized limitations imposed by Lorentz symmetry and Lorentz invariant equations.</li>
+        <li>To provide an energy-amplifying system stage, utilizing excess energy freely input by the system's active environment, whereby such stages induce a momentary sharply increased pulsations of Poynting energy flow across the collecting charges.</li>
+        <li>To provide the above system attributes in a system suitable for addition to and modification of present steam boilers in conventional electrical power plants, whether nuclear or hydrocarbon burning, in this fashion the said boiler can provide the same amount of output heat energy but with appreciably reduced consumption of hydrocarbons or nuclear fuel.</li>
+        <li>To provide an energy-amplifying system which enables a fuel-free jet engine, using compressed and superheated input air, dramatically reducing or halting its consumption of hydrocarbon fuel while simultaneously extending the range and speed of the aircraft.</li>
+        <li>To provide an energy-amplifying system which enables a battlefield mobile vehicle to dramatically reduce or halt its consumption of hydrocarbon fuel while simultaneously extending the range and speed of the vehicle. This accomplishes a dramatic reduction in the logistics effort required by ground forces, making them ever more mobile and sustainable.</li>
+      </ul>
+
+      <h3 style="margin-top:24px;">Advantages</h3>
+      <ul class="adv-list">
+        <li>Dramatic reduction or elimination of hydrocarbon fuel consumption, nuclear fuel consumption, solar radiation power consumption, wind power consumption, and geological heat consumption in present power systems.</li>
+        <li>Dramatic reduction of present atmospheric pollution and biospheric damage from energy-related power systems, including by modifying those appropriate power plants already installed and operating.</li>
+        <li>Use of a vast new ubiquitous source of EM energy — the previously ignored Heaviside energy flow component which exists for any EM circuit or system, and which can be locally tapped at any location in the universe — to produce excess EM energy input to the system directly from the environment.</li>
+        <li>Ability for electrical power systems to become self-powering in operation, freely drawing all their necessary energy input from the ubiquitous and enormous Heaviside component created in surrounding space by the system itself, but previously ignored and unaccounted.</li>
+        <li>Dramatic lessening of the dependence of present electrical power systems upon their present oil, coal, natural gas, and nuclear fuel resources, so that the world usage of such fuels will dramatically decline.</li>
+        <li>Elimination of the increasing pressure for energy wars and forceful competition to secure minimum requirements for increasingly limited energy fuels, fuel transport, oil refining, and other related energy processes.</li>
+        <li>Stability in the prices and maintenance of required energy demands so that national economies can remain strong and based on cheap, clean energy while simultaneously cleaning up the biosphere from present harshly polluting energy-related processes and facilities.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ── SECTION 14: DRAWINGS ──────────────────────── -->
+  <div class="doc-section" id="s14">
+    <div class="section-header">
+      <span class="section-num">14</span>
+      <span class="section-title">PPA — Brief Description of Drawings</span>
+      <span class="section-type">PPA pp. 20–29 (Figs. 1–12)</span>
+    </div>
+    <div class="section-body">
+      <div class="patent-section-head">Brief Description of the Drawings</div>
+
+      <p>The first three drawings, Figures 1–3, give the background for the conventional view of only the diverged Poynting EM energy flow, the actual normal situation with the additional giant but nondiverged Heaviside curled energy flow component, and the curved spacetime situation where a small bit of the Heaviside curled energy flow component is diverged due to the spacetime curvature. Figures 4–6 show the thermodynamics involved in COP &gt; 1.0 processes. Figure 7 illustrates the basic NRAM mechanism. Figure 8 shows the experimentally proven optimal situation. Figure 9 shows a single stage application to a boiler. Figures 10–11 show multiple staging configurations. Figure 12 shows the self-powering mode.</p>
+
+      <div class="diagram-wrap" style="margin-top:20px;">
+        <svg viewBox="0 0 680 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:680px;display:block;margin:auto;">
+          <rect width="680" height="160" fill="#fafaf7"/>
+          <!-- Fig 1: Conventional Poynting only -->
+          <g>
+            <text x="110" y="14" text-anchor="middle" font-size="9" fill="#8b3020" font-weight="700">Fig. 1 — Conventional (Lorentz)</text>
+            <rect x="20" y="55" width="180" height="30" fill="#c8c8c8" stroke="#666" stroke-width="0.8"/>
+            <text x="110" y="73" text-anchor="middle" font-size="8" fill="#555" font-style="italic">Drude electron gas</text>
+            <g fill="none" stroke="#2255aa" stroke-width="1" marker-end="url(#arr)">
+              <line x1="60" y1="38" x2="60" y2="53"/>
+              <line x1="110" y1="38" x2="110" y2="53"/>
+              <line x1="160" y1="38" x2="160" y2="53"/>
+              <line x1="60" y1="102" x2="60" y2="87"/>
+              <line x1="110" y1="102" x2="110" y2="87"/>
+              <line x1="160" y1="102" x2="160" y2="87"/>
+            </g>
+            <text x="110" y="30" text-anchor="middle" font-size="8" fill="#2255aa">Poynting (diverged) ↓</text>
+            <text x="110" y="140" text-anchor="middle" font-size="8" fill="#555">Only Poynting component shown.</text>
+            <text x="110" y="151" text-anchor="middle" font-size="8" fill="#555">Heaviside arbitrarily discarded.</text>
+          </g>
+          <!-- Fig 2: With Heaviside -->
+          <g>
+            <text x="340" y="14" text-anchor="middle" font-size="9" fill="#8b3020" font-weight="700">Fig. 2 — Flat Spacetime (Heaviside present)</text>
+            <rect x="250" y="55" width="180" height="30" fill="#c8c8c8" stroke="#666" stroke-width="0.8"/>
+            <text x="340" y="73" text-anchor="middle" font-size="8" fill="#555" font-style="italic">Drude electron gas</text>
+            <g fill="none" stroke="#8b3020" stroke-width="1.5">
+              <line x1="250" y1="30" x2="430" y2="30"/>
+              <line x1="250" y1="110" x2="430" y2="110"/>
+            </g>
+            <text x="340" y="22" text-anchor="middle" font-size="8" fill="#8b3020" font-weight="600">← Heaviside (nondiverged) →</text>
+            <text x="340" y="125" text-anchor="middle" font-size="8" fill="#8b3020" font-weight="600">← Heaviside (nondiverged) →</text>
+            <text x="340" y="145" text-anchor="middle" font-size="8" fill="#555">Heaviside present but not diverged.</text>
+            <text x="340" y="155" text-anchor="middle" font-size="8" fill="#555">No extra energy into circuit.</text>
+          </g>
+          <!-- Fig 3: Curved spacetime -->
+          <g>
+            <text x="580" y="14" text-anchor="middle" font-size="9" fill="#8b3020" font-weight="700">Fig. 3 — Curved Spacetime</text>
+            <rect x="490" y="55" width="180" height="30" fill="#ddeedd" stroke="#448844" stroke-width="0.8"/>
+            <text x="580" y="73" text-anchor="middle" font-size="8" fill="#2a6a2a" font-style="italic">Self-oscillating charges</text>
+            <g fill="none" stroke="#8b3020" stroke-width="1.5">
+              <line x1="490" y1="30" x2="670" y2="30"/>
+              <line x1="490" y1="110" x2="670" y2="110"/>
+            </g>
+            <g fill="none" stroke="#226622" stroke-width="1" marker-end="url(#arr)" stroke-dasharray="3,2">
+              <line x1="520" y1="32" x2="520" y2="53"/>
+              <line x1="580" y1="32" x2="580" y2="53"/>
+              <line x1="640" y1="32" x2="640" y2="53"/>
+              <line x1="520" y1="108" x2="520" y2="87"/>
+              <line x1="580" y1="108" x2="580" y2="87"/>
+              <line x1="640" y1="108" x2="640" y2="87"/>
+            </g>
+            <text x="580" y="22" text-anchor="middle" font-size="8" fill="#8b3020" font-weight="600">← Heaviside →</text>
+            <text x="580" y="145" text-anchor="middle" font-size="8" fill="#226622">Some Heaviside diverges → extra Poynting.</text>
+            <text x="580" y="155" text-anchor="middle" font-size="8" fill="#226622">Excess energy freely received. COP &gt; 1.</text>
+          </g>
+        </svg>
+        <div class="diagram-caption">Figures 1–3: Conventional Poynting, full Heaviside in flat spacetime, and Heaviside divergence in curved spacetime (NRAM self-oscillation mode).</div>
+      </div>
+
+      <div class="diagram-wrap" style="margin-top:20px;">
+        <svg viewBox="0 0 560 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:560px;display:block;margin:auto;">
+          <rect width="560" height="200" fill="#fafaf7"/>
+          <!-- Fig 4: COP < 1 -->
+          <g>
+            <text x="100" y="16" text-anchor="middle" font-size="9" fill="#8b3020" font-weight="700">Fig. 4 — COP &lt; 1.0</text>
+            <rect x="30" y="60" width="140" height="50" fill="#eee" stroke="#888" stroke-width="1" rx="3"/>
+            <text x="100" y="88" text-anchor="middle" font-size="10" fill="#333">SYSTEM</text>
+            <line x1="30" y1="85" x2="5" y2="85" stroke="#333" stroke-width="1.5" marker-end="url(#arr)"/>
+            <text x="0" y="82" font-size="8" fill="#333">Eop</text>
+            <line x1="170" y1="85" x2="195" y2="85" stroke="#333" stroke-width="1.5" marker-end="url(#arr)"/>
+            <text x="197" y="82" font-size="8" fill="#333">Eout</text>
+            <text x="100" y="140" text-anchor="middle" font-size="8" fill="#555">Efficiency ξ &lt; 100%</text>
+            <text x="100" y="152" text-anchor="middle" font-size="8" fill="#8b3020" font-weight="600">COP &lt; 1.0</text>
+            <text x="100" y="164" text-anchor="middle" font-size="8" fill="#555">Operator furnishes all energy.</text>
+            <text x="100" y="176" text-anchor="middle" font-size="8" fill="#555">Environment furnishes none.</text>
+          </g>
+          <!-- Fig 5: COP > 1 -->
+          <g>
+            <text x="280" y="16" text-anchor="middle" font-size="9" fill="#8b3020" font-weight="700">Fig. 5 — COP &gt; 1.0</text>
+            <rect x="210" y="60" width="140" height="50" fill="#eef4ee" stroke="#448844" stroke-width="1" rx="3"/>
+            <text x="280" y="88" text-anchor="middle" font-size="10" fill="#333">SYSTEM</text>
+            <line x1="210" y1="85" x2="185" y2="85" stroke="#333" stroke-width="1.5" marker-end="url(#arr)"/>
+            <text x="175" y="82" font-size="8" fill="#333">Eop</text>
+            <line x1="350" y1="85" x2="375" y2="85" stroke="#333" stroke-width="1.5" marker-end="url(#arr)"/>
+            <text x="377" y="82" font-size="8" fill="#333">Wout</text>
+            <line x1="280" y1="35" x2="280" y2="58" stroke="#226622" stroke-width="1.5" marker-end="url(#arr)"/>
+            <text x="285" y="25" font-size="8" fill="#226622">Eenv (environment)</text>
+            <text x="280" y="140" text-anchor="middle" font-size="8" fill="#555">Eop + Eenv − L = Wout</text>
+            <text x="280" y="152" text-anchor="middle" font-size="8" fill="#8b3020" font-weight="600">COP &gt; 1.0; ξ &lt; 100%</text>
+            <text x="280" y="164" text-anchor="middle" font-size="8" fill="#555">If Eenv &gt; losses, COP &gt; 1.0.</text>
+            <text x="280" y="176" text-anchor="middle" font-size="8" fill="#555">Example: common home heat pump.</text>
+          </g>
+          <!-- Fig 6: COP = ∞ -->
+          <g>
+            <text x="460" y="16" text-anchor="middle" font-size="9" fill="#8b3020" font-weight="700">Fig. 6 — COP = ∞ (self-powered)</text>
+            <rect x="390" y="60" width="140" height="50" fill="#e8f0ff" stroke="#2244aa" stroke-width="1" rx="3"/>
+            <text x="460" y="88" text-anchor="middle" font-size="10" fill="#333">SYSTEM</text>
+            <line x1="460" y1="35" x2="460" y2="58" stroke="#226622" stroke-width="1.5" marker-end="url(#arr)"/>
+            <text x="425" y="25" font-size="8" fill="#226622">All energy from Eenv</text>
+            <line x1="530" y1="85" x2="555" y2="85" stroke="#333" stroke-width="1.5" marker-end="url(#arr)"/>
+            <text x="557" y="82" font-size="8" fill="#333">Wout</text>
+            <!-- feedback loop -->
+            <path d="M 460 112 Q 460 130 430 130 Q 390 130 390 85" fill="none" stroke="#2244aa" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#arr)"/>
+            <text x="460" y="152" text-anchor="middle" font-size="8" fill="#555">Eenv − L − (Eop) = Wout</text>
+            <text x="460" y="164" text-anchor="middle" font-size="8" fill="#2244aa" font-weight="600">COP = ∞; ξ &lt; 100%</text>
+            <text x="460" y="176" text-anchor="middle" font-size="8" fill="#555">Operator input disconnected.</text>
+            <text x="460" y="188" text-anchor="middle" font-size="8" fill="#555">Analogy: solar cell array, windmill.</text>
+          </g>
+        </svg>
+        <div class="diagram-caption">Figures 4–6: Thermodynamics of COP &lt; 1.0, COP &gt; 1.0, and COP = ∞ (self-powering) systems.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 15: PPA DETAILED DESCRIPTION ──────── -->
+  <div class="doc-section" id="s15">
+    <div class="section-header">
+      <span class="section-num">15</span>
+      <span class="section-title">PPA — Detailed Description of the Preferred Embodiment</span>
+      <span class="section-type">PPA pp. 30–32</span>
+    </div>
+    <div class="section-body">
+      <div class="patent-section-head">Detailed Description of the Preferred Embodiment — Basic Operation (Figure 7)</div>
+
+      <p>The standard definition of an EM force field, and its energy and force, are based on the assumption of the interaction of force-free field in space with a <em>static</em> charged mass. The EM spatial field is naught but a condition of space (Feynman), and only by its interaction with charged matter are the EM force field and its energy produced in that interacting charged matter. And any EM field or potential decomposes into, and is, an ongoing set of longitudinal wave energy flows (Whittaker, 1903 and 1904). How much of the flowing energy comprising the interacting spatial field that is diverged around the intercepting charged mass, therefore depends on the reaction cross section of that charge.</p>
+
+      <p>It has been found (Letokhov, Bohren, Paul &amp; Fischer) that inputting the spatial energy flow in the form of the wave-envelope having a frequency at which the intercepting charge is self-oscillating, produces a much larger reaction cross section and thus more Poynting energy flow is radiated from the self-oscillating charges in the absorbing medium than is input by the operator where his "input" has been specified in static-charge terms only.</p>
+
+      <p>Obviously, conservation of energy requires that more energy than that standard "static charge" input calculation must have been input to the collecting self-resonant charges.</p>
+
+      <p>Heaviside discovered that there was an additional curled-form energy flow of much greater magnitude, present and ongoing through space outside and along a conductor, but usually not diverged into the conductor. So every EM circuit and system has always had much more available EM energy flow than the Poynting component input by the operator. That is because Lorentz arbitrarily discarded the Heaviside nondiverged energy flow component, and it has remained unaccounted till the present day.</p>
+
+      <p>The standard CEM/EE model also assumes a flat spacetime, which is not true when energy density changes in space. The self-oscillation of the intercepting charges do vary in speed to and fro as they move, and so they involve an oscillating curvature of spacetime. General relativity thus applies. Thus the self-oscillating charges involve an oscillating energy density in space, and so their reaction cross section to the incoming spatial EM field is altered rhythmically. Because of this spacetime curvature effect, the vector algebra of flat spacetime is inaccurate, and so the divergence of the curl need not be zero.</p>
+
+      <p>This area of physics is known as "negative resonance absorption of the medium" or NRAM for short. This term was originally chosen apparently to prevent having to clearly state it as "excess emission by the medium" (if static calculations are used).</p>
+
+      <p>The end result is that, in every EM circuit and system that is active and in which EM energy is flowing, there exists not only the presently taught Poynting energy flow component but also a very much larger but presently ignored Heaviside energy flow component. Since NRAM is a method of increasing the reaction cross section of a given charge, so that excess Poynting emission occurs, it follows that NRAM circuits and systems can be utilized to deliberately intercept, diverge, and utilize additional Poynting (diverged) energy from their long-neglected Heaviside energy flow components.</p>
+
+      <p>Researchers in the NRAM field (Bohren, Letokhov, Paul and Fischer) have clearly shown that an optimum <strong>COP = 18 can be achieved</strong>. In practical single-stage systems, the single stage gain may be limited to about 4 to 8, since one will usually use available heat as input energy and the heat input is not sharply optimized in a narrow IR band as are most NRAM experiments in optical physics. The gain can be increased closer to the maximum 18 by multi-staging, in series or in a conglomerated group stage interaction as shown in this invention.</p>
+
+      <p>With appreciable gains (well above 3.0), the system can be close-looped so that some of the excess energy being extracted from the Heaviside component flow in the environment can be used to replace the operator's heat input. With this application, once the system is up and running and in stable operation, and the operator's normal input being replaced by the input from the Heaviside energy flow component, the operator's input can be zeroed. In short, at that point the basic power plant can cease further consumption of hydrocarbon fuel or nuclear fuel rods, while continuing to power the external transmission grid and the distant loads in normal fashion.</p>
+    </div>
+  </div>
+
+  <!-- ── SECTION 16: RAMIFICATIONS ────────────────── -->
+  <div class="doc-section" id="s16">
+    <div class="section-header">
+      <span class="section-num">16</span>
+      <span class="section-title">PPA — Summary, Ramifications, and Scope</span>
+      <span class="section-type">PPA pp. 32–35</span>
+    </div>
+    <div class="section-body">
+      <div class="patent-section-head">Summary, Ramifications, and Scope</div>
+
+      <p>There has been provided, in accordance with the invention, an energy-amplifying staged electrical power system capable of dramatically reducing or eliminating the burning of hydrocarbon fuels, consumption of nuclear fuel rods, etc. at normal electrical power plants already in existence by modifications primarily to the boiler and its input and control. The energy amplification by the NRAM process is already proven in modern physics since 1967 (e.g., Letokhov, Bohren), but the source of the excess energy input has not previously been understood.</p>
+
+      <p>Specifically, the energy amplification occurs by use of extra Poynting diverged EM energy flow freely received from the always present but previously ignored Heaviside giant curled energy flow component, in a curved spacetime. Practical COP increases of the boiler process — and lowering of the fuel consumption to provide the same amount of heat energy — of from COP = 4.0 to COP = 18 can be achieved or expected. With staging, in many cases self-powering (i.e., COP = ∞) is achievable.</p>
+
+      <p>The process is adaptable to the great majority of commercial power plants throughout the world, and to many other processes including electrical automobiles and trucks, a new kind of jet engine that burns no hydrocarbons, etc. The process when applied will also dramatically reduce the energy-related pollution of the biosphere by energy-related chemical wastes and byproducts.</p>
+
+      <p>The reader will see that, by ushering in the age of asymmetrical power systems freely receiving most or all of their input energy from the giant Heaviside energy flow component ubiquitously present in (and previously ignored) all EM circuits and systems, the energy problems of the world can be solved cleanly, quickly, and in straightforward manner.</p>
+
+      <div class="callout" style="margin-top:20px;">
+        The invention has the following typical advantages: high output power to weight ratio; highly portable for mobile applications; scalable size and output; rugged and reliable in hostile environments; very wide operating temperature ranges; extremely long life cycle and high reliability; uses no fuel or fuel transport; produces no harmful emission, harmful or radioactive byproducts, hazardous wastes, or biospheric pollutants; can produce AC or DC power directly and provide shaft power simultaneously; can be adapted to automobiles, tractors, trucks, aircraft, boats, ships, submarines, trains, and other vehicles, without exhaust emissions, pollutants or harmful waste products.
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 17: BOHREN 1983 ───────────────────── -->
+  <div class="doc-section" id="s17">
+    <div class="section-header">
+      <span class="section-num">17</span>
+      <span class="section-title">Bohren (1983) — How Can a Particle Absorb More Than the Light Incident on It?</span>
+      <span class="section-type">Academic Paper · Am. J. Phys. 51(4) · April 1983 · pp. 323–327</span>
+    </div>
+    <div class="section-body">
+      <div class="paper-journal">Am. J. Phys. · Vol. 51, No. 4 · April 1983 · © 1983 American Association of Physics Teachers</div>
+      <h2>How can a particle absorb more than the light incident on it?</h2>
+      <div class="paper-byline">Craig F. Bohren</div>
+      <div class="paper-affil">Department of Meteorology, Pennsylvania State University, University Park, Pennsylvania 16802<br>
+      (Received 11 February 1982; accepted for publication 26 April 1982)</div>
+
+      <div class="paper-abstract">
+        A particle can indeed absorb more than the light incident on it. Metallic particles at ultraviolet frequencies are one class of such particles and insulating particles at infrared frequencies are another. In the former, strong absorption is associated with excitation of surface plasmons; in the latter it is associated with excitation of surface phonons. In both instances the target area a particle presents to incident light can be much greater than its geometrical cross-sectional area. This is strikingly evident from the field lines of the Poynting vector in the vicinity of a small sphere illuminated by a plane wave.
+      </div>
+
+      <h3>I. Introduction</h3>
+      <p>Several years ago a friend of mine was on the last leg of a long journey to a conference nearly halfway across the world from his home. Exhausted, disoriented, lost in thought, his reverie was suddenly and unexpectedly interrupted by a fellow conferee in the adjacent seat, who turned to him and asked anxiously: "How can a particle absorb more than the light incident on it?"</p>
+
+      <p>To those who first encountered in neutron physics the concept of the area that a target presents to a projectile (i.e., its cross section), it comes as no surprise that targets can sometimes extend beyond their strict geometrical boundaries — even greatly so. Indeed, the very unit for neutron cross sections, the barn, encourages one to think big. But photons are supposed to behave more soberly than neutrons; every physics student knows that photons travel through free space mostly in straight lines, although they do sometimes exhibit a bit of waywardness in the vicinity of edges. Notions about what photons can and cannot do are formed in traditional optics courses, which emphasize visible light interacting with large bodies, usually transparent. With time these notions become deep-seated prejudices and are often difficult to dislodge. Yet it is incontrovertible that there are many circumstances, by no means exotic, under which small particles (smaller than the wavelength) can absorb more than the light incident on them.</p>
+
+      <h3>II. Plasmons and Phonons in Small Crystals</h3>
+      <h4>A. Bulk Plasmas</h4>
+      <p>Let us take as a simple model of a metal a gas of free electrons moving against a fixed background of immobile positive ions. The number density N of positive ions is therefore constant in space and time; in equilibrium the density of electrons is also N. But if the electrons are somehow disturbed slightly from equilibrium the nonuniform charge distribution will set up an electric field which will tend to restore charge neutrality. The electrons, having acquired momentum from the field, will overshoot the equilibrium configuration: there will be an oscillation. This collective oscillation of the electron gas is called a plasma oscillation; its frequency, the plasma frequency ω<sub>p</sub>, is given by:</p>
+      <p style="text-align:center; font-style:italic; margin:12px 0;">ω<sub>p</sub> = √(Ne²/mε₀)</p>
+      <p>where e and m are the electronic charge and mass, and ε₀ is the permittivity of free space.</p>
+
+      <p>In quantum-mechanical language, excitation of a plasma oscillation is referred to as creation (or excitation) of a <em>plasmon</em>, the quantum of plasma oscillation, with energy ℏω, and lifetime τ = 2/γ. For a plasmon to be a well-defined entity it must be sufficiently long lived (ω<sub>p</sub>τ ≫ 1).</p>
+
+      <h4>B. Surface Plasmons</h4>
+      <p>Suppose that a spherical particle of radius a is illuminated by a plane monochromatic wave with irradiance I<sub>i</sub>. The rates at which energy is absorbed by the particle and scattered in all directions are products of the irradiance and the cross sections for absorption and scattering:</p>
+      <p style="text-align:center; font-style:italic; margin:12px 0;">W<sub>abs</sub> = I<sub>i</sub>C<sub>abs</sub> &nbsp; &nbsp; W<sub>sca</sub> = I<sub>i</sub>C<sub>sca</sub></p>
+      <p>The resulting dimensionless quantities are referred to as efficiencies (or efficiency factors) for absorption and scattering:</p>
+      <p style="text-align:center; font-style:italic; margin:12px 0;">Q<sub>abs</sub> = C<sub>abs</sub>/πa² &nbsp; &nbsp; Q<sub>sca</sub> = C<sub>sca</sub>/πa²</p>
+      <p>These efficiencies are not bounded by unity. For materials described to a good approximation by the Lorentz dielectric function — alkali halides at infrared frequencies, for example — the Fröhlich frequency lies between ω<sub>t</sub> and ω<sub>l</sub>. On the basis of the results of the previous paragraphs there are two classes of small particles which, at some frequencies, are expected to appear larger to an incoming beam than their geometrical cross sections: metallic particles at ultraviolet frequencies and insulating particles at infrared frequencies.</p>
+
+      <h3>III. Field Lines of the Poynting Vector</h3>
+      <h4>A. Derivation of the Basic Equation</h4>
+      <p>The magnitude and direction of energy flow in an electromagnetic field is specified by the Poynting vector. In the region outside a sphere illuminated by a plane harmonic wave the electric (magnetic) field is the sum of the incident field E<sub>i</sub> (H<sub>i</sub>) and the scattered field E<sub>s</sub> (H<sub>s</sub>). The total Poynting vector S (time-averaged) in this region may therefore be written as:</p>
+      <p style="text-align:center; font-style:italic; margin:12px 0;">S = S<sub>i</sub> + S<sub>s</sub> + S<sub>ext</sub></p>
+      <p>where S<sub>ext</sub> is the term which arises because of interaction between the incident and scattered fields; the subscript ext indicates that the integral of S<sub>ext</sub> over a surface surrounding the particle is, for unit incident irradiance, the extinction cross section.</p>
+
+      <h4>B. Field Lines</h4>
+      <p>To good approximation, particularly in the far ultraviolet, the dielectric function of aluminum is given by the Drude formula. At a photon energy of about 8.8 eV — the surface plasmon energy — the real part of the dielectric function of aluminum is −2; the corresponding imaginary part is about 0.2. It follows from the analysis that the absorption efficiency of a small aluminum sphere (in air) with size parameter 0.3 is about <strong>18</strong>: such a sphere presents to incident photons a target area 18 times greater than its geometrical cross-sectional area. This conclusion follows from a simple back-of-the-envelope calculation.</p>
+
+      <p>The field lines of the Poynting vector in the surrounding region show strong convergence of field lines near the sphere; light that, from the point of view of ray optics, would have passed the sphere without impediment, is deflected toward it.</p>
+
+      <p>An absorption cross section 18 times greater than the geometrical cross section implies that the absorption radius — to coin a term — is about 4.2 times greater than the geometrical radius. Note in the field line diagram that those field lines extending to about 3.9 times the particle radius converge onto the particle.</p>
+
+      <p>At other frequencies, on either side of 8.8 eV, a small aluminum sphere presents a much smaller target to incident photons. At 5 eV, for example, the absorption efficiency of a sphere with x = 0.3 is about 0.1: as far as absorption is concerned, the sphere is much smaller than its geometrical cross-sectional area.</p>
+
+      <p>Silicon carbide is an insulating solid the infrared dielectric function of which is well approximated by the Lorentz formula. The Fröhlich frequency (1/λ<sub>F</sub>) for SiC is about 932 cm⁻¹ and its dielectric function at this frequency is quite close to that of aluminum at 8.8 eV. So the field line diagram for aluminum at 8.8 eV also shows the field lines of the Poynting vector around a small SiC sphere illuminated by light at the Fröhlich frequency.</p>
+
+      <h3>IV. Concluding Remarks</h3>
+      <p>No textbook on electromagnetic theory would be complete without a figure showing the field lines around a sphere in an electrostatic field. The reason, of course, is that this is a very effective way of presenting an idea — the sphere distorts the otherwise uniform field — in such a way that it can be grasped at a glance. But a small sphere illuminated by a plane wave also disturbs the flow of electromagnetic energy in its neighborhood. To the best of my knowledge, a graphic illustration of this has never been given. Yet the field lines of the Poynting vector (exclusive of the scattered Poynting vector) around the sphere help to elucidate how a particle can absorb more than the light incident on it.</p>
+    </div>
+  </div>
+
+  <!-- ── SECTION 18: PAUL & FISCHER ───────────────── -->
+  <div class="doc-section" id="s18">
+    <div class="section-header">
+      <span class="section-num">18</span>
+      <span class="section-title">Paul &amp; Fischer (1983) — Comment on Bohren</span>
+      <span class="section-type">Comment · Am. J. Phys. 51(4) · April 1983 · p. 327</span>
+    </div>
+    <div class="section-body">
+      <div class="paper-journal">Am. J. Phys. · Vol. 51, No. 4 · April 1983</div>
+      <h2>Comment on "How can a particle absorb more than the light incident on it?"</h2>
+      <div class="paper-byline">H. Paul and R. Fischer</div>
+      <div class="paper-affil">Zentralinstitut für Optik und Spektroskopie, Akademie der Wissenschaften der DDR, DDR-1199 Berlin, Rudower Chaussee 6, German Democratic Republic<br>
+      (Received 28 October 1982; accepted for publication 16 November 1982)</div>
+
+      <p>Independently of the work by C. F. Bohren we investigated the same problem, however, on the atomic scale. Specifically, we considered the following physical picture: In the presence of an intense (plane-wave-type) coherent resonant monochromatic electromagnetic field, an atom, being initially nonexcited, acquires an electric dipole moment — in the sense of the quantum-mechanical expectation value. This dipole moment, oscillating at the frequency of the incident field, according to classical electrodynamics emits a wave which interferes with the incoming wave.</p>
+
+      <p>We found that the energy flux lines in the superposition field are bent, in a rather large neighborhood of the atom, in such a way as to direct energy into the atom. In fact, the corresponding curves in the x, z plane are very similar to those presented by Bohren.</p>
+
+      <p>In contrast to his paper, we had to deal with a transient phenomenon — the absorption process being finished when the atom has taken up the energy of a single photon. Physically, the essential difference between our results and that of Bohren is that we found the effective absorption cross section of an atom to decrease with growing intensity of the incident field as the inverse of the field amplitude, while the corresponding quantity for a macroscopic particle (with dimensions still small compared with the wavelength) proved to be independent of the field in Ref. 1.</p>
+
+      <p>From our study, it becomes evident that the wave picture quite naturally accounts for the well-known large effective absorption cross sections, compared to the geometrical ones, of atomic systems, while the particle picture certainly fails to do so.</p>
+
+      <p style="font-size:13px; color:var(--ink-faint); margin-top:16px;">¹ C. F. Bohren, <em>Am. J. Phys.</em> 51, 323 (1983).<br>² H. Paul and R. Fischer, <em>Usp. Fiz. Nauk.</em> [to be published].</p>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div style="padding:40px 28px; text-align:center; font-family:'Source Sans 3',sans-serif; font-size:11px; color:#666;">
+    Digitized from scanned PDF: ML073520098.pdf · NRC Public Hearing submission, August 2006 ·
+    Original documents by Thomas E. Bearden, Kenneth D. Moore, Chuck Wade, Craig F. Bohren, H. Paul &amp; R. Fischer ·
+    HTML transcription for archival and research purposes.
+  </div>
+
+</main>
+</body>
+</html>
