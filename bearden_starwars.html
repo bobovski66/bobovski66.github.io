@@ -1,0 +1,1767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STAR WARS NOW! — Bearden, 1984 · CIA-RDP96-00788R001900680014-4</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Code+Pro:wght@400;600&family=Source+Sans+3:wght@300;400;600;700&display=swap');
+
+  :root {
+    --ink: #111510;
+    --ink-mid: #2e3a2e;
+    --ink-faint: #6b7a6b;
+    --paper: #f0f4ee;
+    --paper-warm: #e8ede6;
+    --paper-cool: #f5f8f4;
+    --rule: #b8c8b4;
+    --rule-strong: #7a9a76;
+    --accent: #2a4a28;
+    --accent-light: #4a7a46;
+    --accent-bright: #5a9a54;
+    --cls: #8b0000;
+    --cls-bg: #1a0000;
+    --warn: #8b6000;
+    --highlight: rgba(180, 220, 60, 0.28);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: #181e16;
+    color: var(--ink);
+    font-family: 'Libre Baskerville', Georgia, serif;
+    font-size: 15px;
+    line-height: 1.75;
+  }
+
+  /* ── CLASSIFICATION BANNER ───────────────────────── */
+  .cls-banner {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: var(--cls-bg);
+    color: #ff4444;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-align: center;
+    padding: 4px 0;
+    z-index: 200;
+    border-bottom: 1px solid #660000;
+  }
+
+  /* ── SPINE ───────────────────────────────────────── */
+  .spine {
+    position: fixed;
+    top: 22px; left: 0;
+    width: 52px;
+    height: calc(100vh - 22px);
+    background: var(--accent);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 0;
+    z-index: 100;
+  }
+  .spine-title {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    font-family: 'Source Code Pro', monospace;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    color: rgba(255,255,255,0.6);
+    text-transform: uppercase;
+    margin-top: 10px;
+  }
+  .spine-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    margin: 6px 0;
+  }
+
+  /* ── TOC ─────────────────────────────────────────── */
+  .toc-panel {
+    position: fixed;
+    top: 22px; left: 52px;
+    width: 210px;
+    height: calc(100vh - 22px);
+    background: #151b13;
+    overflow-y: auto;
+    padding: 24px 14px;
+    z-index: 99;
+    border-right: 1px solid #2a3a28;
+  }
+  .toc-panel h2 {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.25);
+    margin-bottom: 14px;
+  }
+  .toc-panel a {
+    display: block;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 11.5px;
+    color: rgba(255,255,255,0.45);
+    text-decoration: none;
+    padding: 4px 8px;
+    border-radius: 3px;
+    line-height: 1.4;
+    transition: all 0.15s;
+    margin-bottom: 2px;
+  }
+  .toc-panel a:hover { color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.06); }
+  .toc-section {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 9px;
+    font-weight: 600;
+    color: rgba(180,220,150,0.3);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin: 12px 0 4px 8px;
+  }
+
+  /* ── MAIN ────────────────────────────────────────── */
+  .main { margin-left: 262px; padding-top: 22px; padding-bottom: 80px; }
+
+  /* ── MASTHEAD ────────────────────────────────────── */
+  .masthead {
+    background: #0d130b;
+    color: #e8f0e4;
+    padding: 52px 60px 44px;
+    border-bottom: 3px solid var(--accent);
+    position: relative;
+    overflow: hidden;
+  }
+  .masthead::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 28px,
+      rgba(255,255,255,0.015) 28px,
+      rgba(255,255,255,0.015) 29px
+    );
+    pointer-events: none;
+  }
+  .masthead .cls-stamp {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: rgba(200,80,80,0.8);
+    margin-bottom: 8px;
+    display: block;
+  }
+  .masthead .release-stamp {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 9px;
+    color: rgba(150,200,140,0.6);
+    letter-spacing: 0.12em;
+    margin-bottom: 28px;
+    display: block;
+  }
+  .masthead h1 {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+    margin-bottom: 8px;
+    color: #e8f0e4;
+  }
+  .masthead .subtitle {
+    font-size: 16px;
+    font-style: italic;
+    color: rgba(232,240,228,0.6);
+    margin-bottom: 30px;
+    line-height: 1.5;
+  }
+  .meta-row {
+    display: flex;
+    gap: 36px;
+    flex-wrap: wrap;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 18px;
+  }
+  .meta-item label {
+    display: block;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.28);
+    margin-bottom: 3px;
+  }
+  .meta-item span {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 12px;
+    color: rgba(255,255,255,0.6);
+  }
+
+  /* ── DOC SECTIONS ────────────────────────────────── */
+  .doc-section {
+    background: var(--paper);
+    margin: 24px 24px 0;
+    border-radius: 3px;
+    overflow: hidden;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.4);
+  }
+  .section-header {
+    background: var(--paper-warm);
+    border-bottom: 2px solid var(--rule);
+    padding: 13px 32px;
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+  }
+  .section-num {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--accent-bright);
+    min-width: 28px;
+  }
+  .section-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    color: var(--ink-mid);
+    text-transform: uppercase;
+  }
+  .section-type {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 10px;
+    color: var(--ink-faint);
+    font-style: italic;
+    margin-left: auto;
+  }
+  .section-body { padding: 32px 48px; }
+
+  /* ── TYPOGRAPHY ──────────────────────────────────── */
+  p { margin-bottom: 1.15em; }
+  h2 { font-size: 18px; font-weight: 700; margin: 1.6em 0 0.5em; color: var(--ink); border-bottom: 1px solid var(--rule); padding-bottom: 5px; }
+  h3 { font-size: 15px; font-weight: 700; margin: 1.3em 0 0.45em; color: var(--ink-mid); }
+  h4 { font-size: 13px; font-weight: 700; margin: 1.1em 0 0.35em; color: var(--ink-mid); text-transform: uppercase; letter-spacing: 0.04em; }
+  strong { font-weight: 700; }
+  em { font-style: italic; }
+
+  /* ── CLASSIFICATION IN TEXT ──────────────────────── */
+  .cls-header {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--cls);
+    letter-spacing: 0.15em;
+    text-align: center;
+    padding: 4px;
+    border-top: 1px solid rgba(139,0,0,0.2);
+    border-bottom: 1px solid rgba(139,0,0,0.2);
+    margin-bottom: 16px;
+    background: rgba(139,0,0,0.04);
+  }
+
+  /* ── ABSTRACT ────────────────────────────────────── */
+  .abstract-box {
+    border: 1px solid var(--rule-strong);
+    padding: 20px 28px;
+    background: var(--paper-cool);
+    font-size: 14px;
+    line-height: 1.8;
+    margin: 16px 0;
+  }
+  .abstract-label {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+    display: block;
+    text-align: center;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+  }
+
+  /* ── TOC TABLE ───────────────────────────────────── */
+  .contents-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .contents-table th {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    border-bottom: 1px solid var(--rule-strong);
+    padding: 6px 8px;
+    text-align: left;
+  }
+  .contents-table td { padding: 5px 8px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  .contents-table .item-num { font-weight: 600; color: var(--accent); white-space: nowrap; font-size: 12px; }
+  .contents-table .pg { text-align: right; color: var(--ink-faint); font-size: 12px; font-family: 'Source Code Pro', monospace; white-space: nowrap; }
+
+  /* ── CALLOUT / HIGHLIGHT ─────────────────────────── */
+  .callout {
+    border-left: 4px solid var(--accent-bright);
+    background: var(--highlight);
+    padding: 14px 20px;
+    margin: 18px 0;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .callout-warn {
+    border-left: 4px solid #8b4000;
+    background: rgba(220,120,0,0.1);
+    padding: 14px 20px;
+    margin: 18px 0;
+    font-size: 14px;
+  }
+  .callout-top-secret {
+    border: 2px solid var(--cls);
+    background: rgba(139,0,0,0.05);
+    padding: 16px 20px;
+    margin: 18px 0;
+    font-size: 15px;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: 0.02em;
+    line-height: 1.6;
+  }
+
+  /* ── DIAGRAM ─────────────────────────────────────── */
+  .diagram-wrap {
+    background: #fff;
+    border: 1px solid var(--rule);
+    padding: 20px;
+    margin: 20px 0;
+    overflow-x: auto;
+  }
+  .diagram-caption {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 11px;
+    color: var(--ink-faint);
+    text-align: center;
+    margin-top: 10px;
+    font-style: italic;
+  }
+  .fig-label {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    display: block;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+
+  /* ── TABLE CARD ──────────────────────────────────── */
+  .table-card {
+    border: 1px solid var(--rule-strong);
+    margin: 20px 0;
+    overflow: hidden;
+  }
+  .table-card-header {
+    background: var(--ink);
+    color: #e8f0e4;
+    font-family: 'Source Code Pro', monospace;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    padding: 10px 16px;
+    text-transform: uppercase;
+  }
+  .table-card-body {
+    padding: 16px 20px;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .bullet-list { list-style: none; padding: 0; }
+  .bullet-list li {
+    padding: 5px 0 5px 24px;
+    border-bottom: 1px solid var(--rule);
+    position: relative;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  .bullet-list li::before {
+    content: "◆";
+    position: absolute;
+    left: 4px;
+    color: var(--accent-bright);
+    font-size: 9px;
+    top: 9px;
+  }
+  .sub-bullet { padding-left: 20px; color: var(--ink-mid); }
+  .sub-bullet::before { content: "—"; color: var(--ink-faint); }
+
+  /* ── INCIDENT CARD ───────────────────────────────── */
+  .incident-card {
+    border: 1px solid var(--rule);
+    margin: 16px 0;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .incident-header {
+    background: var(--paper-warm);
+    border-bottom: 1px solid var(--rule);
+    padding: 8px 16px;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .incident-num {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--accent-bright);
+    letter-spacing: 0.1em;
+  }
+  .incident-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink-mid);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .incident-body {
+    padding: 12px 16px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  /* ── REFERENCE LIST ──────────────────────────────── */
+  .ref-list { list-style: none; padding: 0; }
+  .ref-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--rule);
+    font-size: 13.5px;
+    line-height: 1.6;
+  }
+  .ref-key {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent-bright);
+    display: inline-block;
+    min-width: 22px;
+    margin-right: 6px;
+  }
+
+  /* ── EQUATION / MATH ─────────────────────────────── */
+  .math-block {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 14px;
+    background: var(--paper-warm);
+    border: 1px solid var(--rule);
+    padding: 12px 20px;
+    margin: 14px 0;
+    text-align: center;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── FIGURE GRID ─────────────────────────────────── */
+  .fig-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 20px 0;
+  }
+
+  /* ── DIVIDER ─────────────────────────────────────── */
+  .rule-thin { border: none; border-top: 1px solid var(--rule); margin: 20px 0; }
+  .rule-thick { border: none; border-top: 2px solid var(--rule-strong); margin: 28px 0; }
+  .section-break {
+    text-align: center;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 10px;
+    color: var(--ink-faint);
+    letter-spacing: 0.2em;
+    margin: 24px 0;
+  }
+
+  @media (max-width: 860px) {
+    .toc-panel { display: none; }
+    .main { margin-left: 52px; }
+    .section-body { padding: 20px 24px; }
+    .masthead { padding: 32px 24px 24px; }
+    .fig-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cls-banner">APPROVED FOR RELEASE 2003/09/09 &nbsp;·&nbsp; CIA-RDP96-00788R001900680014-4 &nbsp;·&nbsp; FORMERLY SECRET</div>
+
+<div class="spine">
+  <div class="spine-dot"></div>
+  <div class="spine-title">BEARDEN · 1984 · CIA SCALAR WEAPONS</div>
+  <div class="spine-dot"></div>
+</div>
+
+<nav class="toc-panel">
+  <h2>Contents</h2>
+  <div class="toc-section">Front Matter</div>
+  <a href="#s00">Title &amp; Classification</a>
+  <a href="#s01">Acknowledgement</a>
+  <a href="#s02">Tables of Contents &amp; Figures</a>
+  <a href="#s03">Abstract</a>
+  <div class="toc-section">Main Sections</div>
+  <a href="#s04">Bohm-Aharonov Effect</a>
+  <a href="#s05">Scalar Electromagnetics</a>
+  <a href="#s06">Wireless Energy Transmission</a>
+  <a href="#s07">Scalar Wave Beam Characteristics</a>
+  <a href="#s08">Scalar Wave Detector</a>
+  <a href="#s09">Scalar Interferometry &amp; Weaponization</a>
+  <a href="#s10">Vacuum Theory</a>
+  <a href="#s11">Extraction of Distant Energy</a>
+  <a href="#s12">Cold Explosions</a>
+  <a href="#s13">Perfect Missile Shield</a>
+  <a href="#s14">Massive Soviet Weaponization</a>
+  <a href="#s15">Soviet Weather Engineering</a>
+  <a href="#s16">Conclusion</a>
+  <a href="#s17">References</a>
+  <div class="toc-section">Appendix I</div>
+  <a href="#a01">Saryshagan Tesla Weapon</a>
+  <a href="#a02">"Nuclear" Flashes / Africa</a>
+  <a href="#a03">Yugoslavian Earthquake</a>
+  <a href="#a04">Quake in Tangshan, China</a>
+  <a href="#a05">Giant ABM Shield / Afghanistan</a>
+  <a href="#a06">Tesla Shield</a>
+  <a href="#a07">Continuous Tesla Fireball</a>
+  <a href="#a08">Mysterious Light / N. Pacific</a>
+  <a href="#a09">Continuous Tesla EMP Globe</a>
+  <a href="#a10">Tesla ABM Defenses</a>
+  <a href="#a11">Hemisphere &amp; Globes 1977</a>
+  <a href="#a12">East Coast Aerial Blasts</a>
+  <a href="#a13">Booms in Delaware</a>
+  <a href="#a14">1969 Virgin Islands Incident</a>
+  <a href="#a15">Expanding Dome-Like Phenomenon</a>
+  <a href="#a16">Two Arcs in the Sky</a>
+  <a href="#a17">"Laser" Blinding of Satellites</a>
+  <a href="#a18">Extreme Sky Brightening</a>
+  <a href="#a19">Radar Invisibility</a>
+  <a href="#a20">Creating Inertial Field (Antigravity)</a>
+  <a href="#a21">Lightning Wall</a>
+  <a href="#a22">Anomalous Burns / Underwater Sounds</a>
+  <a href="#a23">"Cloud Arc"</a>
+  <a href="#a24">Needed: Immediate Crash Program</a>
+</nav>
+
+<main class="main">
+
+  <!-- MASTHEAD -->
+  <header class="masthead" id="s00">
+    <span class="cls-stamp">FORMERLY SECRET · NOW DECLASSIFIED</span>
+    <span class="release-stamp">Approved For Release 2003/09/09 : CIA-RDP96-00788R001900680014-4</span>
+    <h1>STAR WARS NOW!</h1>
+    <div class="subtitle">The Bohm-Aharonov Effect, Scalar Interferometry,<br>and Soviet Weaponization</div>
+    <div class="meta-row">
+      <div class="meta-item"><label>Author</label><span>T. E. Bearden</span></div>
+      <div class="meta-item"><label>Date</label><span>April 24, 1984</span></div>
+      <div class="meta-item"><label>CIA Record</label><span>RDP96-00788R001900680014-4</span></div>
+      <div class="meta-item"><label>Pages</label><span>~43 (scanned original)</span></div>
+      <div class="meta-item"><label>Released</label><span>2003/09/09</span></div>
+    </div>
+  </header>
+
+  <!-- ACKNOWLEDGEMENT -->
+  <div class="doc-section" id="s01">
+    <div class="section-header">
+      <span class="section-num">ACK</span>
+      <span class="section-title">Acknowledgement</span>
+      <span class="section-type">p. −i−</span>
+    </div>
+    <div class="section-body">
+      <p>I wish to thank Drs. Harold Faretto and Jack Dea for invaluable assistance, and basic information on building a precision scalar wave detector. In addition, I am most grateful to Mr. Hal Crawford for his marvelous special drawings and his kind permission to include them. And I owe a very special debt to Mr. John Bedini for his fundamental laboratory and bench work and his willingness to share his results and insights with me.</p>
+      <p>Also, I wish to express my deepest appreciation to Mr. Josh Reynolds, Essentia Research, and the Association of Distinguished American Scientists for financial support on this project.</p>
+      <p>Without the invaluable assistance of these persons, this effort would not have been possible.</p>
+      <p style="margin-top:20px; font-style:italic;">Tom Bearden<br>April 23, 1984</p>
+    </div>
+  </div>
+
+  <!-- TABLE OF CONTENTS -->
+  <div class="doc-section" id="s02">
+    <div class="section-header">
+      <span class="section-num">TOC</span>
+      <span class="section-title">Table of Contents, Figures &amp; Tables</span>
+      <span class="section-type">pp. ii–iii</span>
+    </div>
+    <div class="section-body">
+      <h3>Table of Contents</h3>
+      <table class="contents-table" style="margin-bottom:28px;">
+        <thead><tr><th>Item</th><th>Title</th><th>Page</th></tr></thead>
+        <tbody>
+          <tr><td class="item-num">1.</td><td>Acknowledgement</td><td class="pg">i</td></tr>
+          <tr><td class="item-num">2.</td><td>Table of Contents</td><td class="pg">ii</td></tr>
+          <tr><td class="item-num">3.</td><td>List of Figures</td><td class="pg">ii</td></tr>
+          <tr><td class="item-num">4.</td><td>List of Tables</td><td class="pg">iii</td></tr>
+          <tr><td class="item-num">5.</td><td>Abstract</td><td class="pg">iii</td></tr>
+          <tr><td class="item-num">6.</td><td>The Bohm-Aharonov Effect</td><td class="pg">1</td></tr>
+          <tr><td class="item-num">7.</td><td>Scalar Electromagnetics</td><td class="pg">2</td></tr>
+          <tr><td class="item-num">8.</td><td>Wireless Transmission of Energy at a Distance</td><td class="pg">4</td></tr>
+          <tr><td class="item-num">9.</td><td>Some Characteristics of a Scalar Wave Beam</td><td class="pg">5</td></tr>
+          <tr><td class="item-num">10.</td><td>A Sensitive Scalar Wave Detector</td><td class="pg">7</td></tr>
+          <tr><td class="item-num">11.</td><td>Scalar Interferometry and Weaponization</td><td class="pg">9</td></tr>
+          <tr><td class="item-num">12.</td><td>Vacuum Theory</td><td class="pg">12</td></tr>
+          <tr><td class="item-num">13.</td><td>Extraction of Distant Energy: A New Concept</td><td class="pg">12</td></tr>
+          <tr><td class="item-num">14.</td><td>Massive Testing of "Cold Explosions"</td><td class="pg">15</td></tr>
+          <tr><td class="item-num">15.</td><td>The Perfect Missile Shield</td><td class="pg">16</td></tr>
+          <tr><td class="item-num">16.</td><td>Massive Soviet Weaponization</td><td class="pg">16</td></tr>
+          <tr><td class="item-num">17.</td><td>Soviet Weather Engineering</td><td class="pg">16</td></tr>
+          <tr><td class="item-num">18.</td><td>Conclusion</td><td class="pg">18</td></tr>
+          <tr><td class="item-num">19.</td><td>References</td><td class="pg">24</td></tr>
+          <tr><td class="item-num">20.</td><td>Appendix I: Typical Incidents and Related Information</td><td class="pg">26</td></tr>
+        </tbody>
+      </table>
+
+      <h3>List of Figures</h3>
+      <table class="contents-table" style="margin-bottom:28px;">
+        <thead><tr><th>Figure</th><th>Title</th><th>Page</th></tr></thead>
+        <tbody>
+          <tr><td class="item-num">1.</td><td>Scalar Ō-wave production</td><td class="pg">3</td></tr>
+          <tr><td class="item-num">2.</td><td>Creating energy at a distance</td><td class="pg">6</td></tr>
+          <tr><td class="item-num">3.</td><td>Artist's concept of a large scalar interferometer transmitter</td><td class="pg">6</td></tr>
+          <tr><td class="item-num">4.</td><td>Linear, uncurved laboratory frame</td><td class="pg">8</td></tr>
+          <tr><td class="item-num">5.</td><td>Rotating the longitudinal wave produces a transverse component</td><td class="pg">8</td></tr>
+          <tr><td class="item-num">6.</td><td>Bending the laboratory spacetime frame produces a transverse component</td><td class="pg">8</td></tr>
+          <tr><td class="item-num">7.</td><td>A Sensitive Scalar Wave Detector</td><td class="pg">8</td></tr>
+          <tr><td class="item-num">8.</td><td>Tactical air-to-ground usage</td><td class="pg">11</td></tr>
+          <tr><td class="item-num">9.</td><td>Ground-to-air usage</td><td class="pg">11</td></tr>
+          <tr><td class="item-num">10.</td><td>Mushroom cloud from sea off Japan near Russian test area</td><td class="pg">13</td></tr>
+          <tr><td class="item-num">11.</td><td>Network of virtual transmitters</td><td class="pg">19</td></tr>
+          <tr><td class="item-num">12.</td><td>Virtual transmitters in the interference grid</td><td class="pg">19</td></tr>
+          <tr><td class="item-num">13.</td><td>Giant radial related to a virtual transmitter</td><td class="pg">20</td></tr>
+          <tr><td class="item-num">14.</td><td>Formation of a single giant radial</td><td class="pg">20</td></tr>
+          <tr><td class="item-num">15.</td><td>Formation of a double giant radial</td><td class="pg">21</td></tr>
+          <tr><td class="item-num">16.</td><td>Detection of transverse and longitudinal waves</td><td class="pg">21</td></tr>
+          <tr><td class="item-num">17.</td><td>Twin giant radial pattern</td><td class="pg">22</td></tr>
+        </tbody>
+      </table>
+
+      <h3>List of Tables</h3>
+      <table class="contents-table">
+        <thead><tr><th>Table</th><th>Title</th><th>Page</th></tr></thead>
+        <tbody>
+          <tr><td class="item-num">1.</td><td>Conservation of Anenergy (AE): an expanded energy conservation law</td><td class="pg">3</td></tr>
+          <tr><td class="item-num">2.</td><td>Mushroom cloud rising from sea</td><td class="pg">13</td></tr>
+          <tr><td class="item-num">3.</td><td>Mushroom cloud from sea off Japan</td><td class="pg">14</td></tr>
+          <tr><td class="item-num">4.</td><td>Plumes noted in satellite photos in Soviet Arctic (77 since 1974)</td><td class="pg">14</td></tr>
+          <tr><td class="item-num">5.</td><td>Khrushchev's 1960 statement</td><td class="pg">17</td></tr>
+          <tr><td class="item-num">6.</td><td>Brezhnev's 1975 proposal</td><td class="pg">17</td></tr>
+          <tr><td class="item-num">7.</td><td>Twin giant radials</td><td class="pg">22</td></tr>
+          <tr><td class="item-num">8.</td><td>Radiation of the U.S. Embassy in Moscow</td><td class="pg">23</td></tr>
+          <tr><td class="item-num">9.</td><td>Lysenko's 1982 statement</td><td class="pg">23</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ABSTRACT -->
+  <div class="doc-section" id="s03">
+    <div class="section-header">
+      <span class="section-num">ABS</span>
+      <span class="section-title">Abstract</span>
+      <span class="section-type">p. iii</span>
+    </div>
+    <div class="section-body">
+      <div class="abstract-box">
+        <span class="abstract-label">— Abstract —</span>
+        <p>The Bohm-Aharonov Effect shows that, even in the absence of electrical and magnetic fields, the potentials cause real effects to occur in the field-free regions. Using this principle, beams of pure potential without vector force fields (without E and H fields) may be deliberately produced and intersected at a distance to cause effects in the interference zone, in contradiction to classical mechanics. These effects are in fact required by quantum mechanics.</p>
+        <p>Essentially, energy may be produced directly at the distant interference site or extracted from it, without energy transmission through space.</p>
+        <p>Implications for weapons built on these concepts are given, and several types of such scalar electromagnetics weapons are discussed. The use of the "cold explosion" is detailed and evidence of its extensive testing is given. The basic mechanism for Soviet weather control over North America is briefly presented and a more extensive reference given.</p>
+        <p>Evidence of massive Soviet weaponization of these effects for nearly three decades and of Soviet scalar electromagnetics weapons testing on a global scale exists in the open literature. Selected examples and related information are given in the Appendix.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOHM-AHARONOV -->
+  <div class="doc-section" id="s04">
+    <div class="section-header">
+      <span class="section-num">§1</span>
+      <span class="section-title">The Bohm-Aharonov Effect</span>
+      <span class="section-type">pp. 1–2</span>
+    </div>
+    <div class="section-body">
+      <p>Originally electrical and magnetics experiments and ideas developed primarily in terms of statics, and great difficulty was experienced in combining the two and passing to a more dynamic theoretical representation. With the advent of Maxwell's equations, electricity and magnetism were combined into an elegant electromagnetic theory, and these equations then served as the basis for the development of modern theory. Gradually potentials were relegated to a position of inferior importance, and they even came to be regarded as purely mathematical conveniences by most scientists.</p>
+      <p>However, with the advent of Aharonov and Bohm's seminal paper [a], it became crystal clear that potentials are in fact real entities, and they can directly affect and control charged particle systems even in a region where all the fields and hence the forces on the particles have vanished. While this, of course, is completely counter to the conclusions of classical mechanics [a, p. 485], it follows inescapably from quantum mechanics. With Chambers's direct experimental proof of the predicted Bohm-Aharonov effects in 1960 [b], this new viewpoint was firmly established for quantum mechanics and quantum electromagnetics in general. Indeed, the Bohm-Aharonov effect even affects gauge theories, requiring the concept of nonintegrable phase factors and global formulation of gauge fields. [c] Thus increasingly it is the potentials that are primary physical entities, and the fields are of secondary, derived importance in modern quantum electrodynamics.</p>
+      <p>Yet the full weapon implications of the Bohm-Aharonov discovery have not yet penetrated the minds and consciousnesses of Western physicists, electrical engineers, and weapons analysts. Indeed, an extended treatment of such implications has not even been addressed in the literature. This may be somewhat understandable, since it required over 30 years for physicists to realize the primary actuality of the potentials in the first place [d, pp. 15-12]. Nobelist Feynman states it succinctly: "It is interesting that something like this can be around for thirty years but, because of certain prejudices of what is and is not significant, continues to be ignored." [d, p. 15-12.]</p>
+      <p>Slowly, however, the overwhelming importance of the scalar electromagnetics indicated by Bohm and Aharonov has been noted by this analyst, and work to investigate and apply this rich new region of quantum electrodynamics is now most certainly warranted. Indeed, it is imperative that an effort of the highest priority be mounted immediately, for our very survival is gravely threatened by scalar electromagnetics weapons already in the hands of the Soviet Union. And at this moment we have absolutely no defense whatsoever against them.</p>
+    </div>
+  </div>
+
+  <!-- SCALAR ELECTROMAGNETICS -->
+  <div class="doc-section" id="s05">
+    <div class="section-header">
+      <span class="section-num">§2</span>
+      <span class="section-title">Scalar Electromagnetics</span>
+      <span class="section-type">pp. 2–4</span>
+    </div>
+    <div class="section-body">
+      <p>We first define scalar electromagnetics as the quantum mechanical effects and influences that can be accomplished by electrical and magnetic scalar potentials, even in the absence of electric and magnetic fields, or — in other words — that can occur even in otherwise zero-E (electric) and zero-B (magnetic) force-field regions. Note that this definition includes as subsets both the ordinary classical EM field approach and the more fundamental approach of quantum electrodynamics. In the latter approach, one replaces the fields E and B in modern theory with the Φ (electrostatic scalar potential) and A (magnetic vector potential), with the view that these potentials create the E and B fields in the first place. The Bohm-Aharonov effect shows that the E and B fields can remain zero, and yet the potentials can still cause physical effects.</p>
+      <p>Thus scalar electromagnetics encompasses two cases: (1) the normal case, in which the potentials are viewed as first creating the fields E and B, and these force fields in turn produce physical effects on charged particle systems; and (2) the case in which fields E and B are zero, yet potentials still exist and produce physical effects on charged particle systems.</p>
+      <p>Indeed, we assume total primacy of scalar potentials, after the work of Whittaker [e], holding that all the effects of present electrodynamics can be produced by utilization and interference of two or more scalar potentials.</p>
+      <p>Note particularly that one may deliberately create the zero-field, pure potential condition by opposing magnetic and or electrical fields so that they sum to zero (Figure 1). That is, the "zero fields" can be resultant vector zeros, where the combining vector components still exist. In this case one creates a deliberate, artificial scalar potential which contains all the energies of the separate infolded [Bohm's term] vector fields used to make the resultant vector zero. All this infolded energy has been transformed to stress of spacetime, or pure potential (Table 1). However, it does not have a randomized substructure as is usual in quantum electrodynamics, but has a determined, known substructure consisting of the constructed infolded E and B field vectors.</p>
+      <p>Conceptually, a magnetic pole is such a spatiotemporal stress potential — but usually with a randomized substructure — as is an electrical charge.</p>
+      <p>Now it is fundamental that only the envelope is "observable," and the infolded substructure has become "virtual." But by having a deliberately designed and controlled substructure, one has turned quantum mechanics inside out. One can now control and engineer the probabilities themselves, and even determine which eigenvector state of a propagating Schrödinger wave will be produced in the collapse of the wave function. Indeed, in theory one can control when the wave function collapses, and under what circumstances. Einstein was correct after all; once we discover His more subtle control mechanism, God does not actually play dice with the universe.</p>
+      <p>I strongly point out that this is a fundamental change to present quantum mechanics itself. In the axioms of quantum mechanics, the basic virtual state background activity of the universe is assumed to be totally statistical. If it can be made deterministic, then one should be able to "engineer" the presently probabilistic quantum interactions as desired. In short, one would have directly implemented David Bohm's "hidden variables" in a controlled, non-statistical manner.</p>
+      <p>Awesome implications follow from such capability; literally one can directly engineer the present quantum mechanical structure of physical reality itself, since one can engineer, affect, and control the fundamental virtual processes of nature. Simply by making and utilizing artificial potentials with deliberate substructures, one can engineer the virtual particle interactions that produce all the physical forces of nature, bind the nucleus together, and control and CREATE the world of macroscopic changes we think we inhabit.</p>
+
+      <div class="diagram-wrap">
+        <span class="fig-label">Figure 1 — Scalar Ō-Wave Production</span>
+        <svg viewBox="0 0 580 320" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:580px;display:block;margin:auto;">
+          <rect width="580" height="320" fill="#fafaf8"/>
+          <!-- E field waves (sinusoidal, crossing) -->
+          <g>
+            <!-- +E wave -->
+            <path d="M 20 80 Q 60 40 100 80 Q 140 120 180 80 Q 220 40 260 80 Q 300 120 340 80 Q 380 40 420 80 Q 460 120 500 80 Q 530 60 560 80"
+                  fill="none" stroke="#2244aa" stroke-width="1.5"/>
+            <!-- -E wave (inverted, same phase = zero field result) -->
+            <path d="M 20 80 Q 60 120 100 80 Q 140 40 180 80 Q 220 120 260 80 Q 300 40 340 80 Q 380 120 420 80 Q 460 40 500 80 Q 530 100 560 80"
+                  fill="none" stroke="#2244aa" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <!-- Result: Ē₀ = 0 -->
+            <line x1="20" y1="80" x2="560" y2="80" stroke="#333" stroke-width="2" marker-end="url(#arr2)"/>
+            <text x="18" y="75" font-size="11" fill="#2244aa">+Ē</text>
+            <text x="18" y="100" font-size="11" fill="#2244aa">−Ē</text>
+            <text x="2" y="84" font-size="12" fill="#333">Ē₀=0̄</text>
+            <text x="400" y="45" font-size="11" fill="#888" font-style="italic">VIRTUAL GROUND</text>
+            <text x="370" y="115" font-size="10" fill="#888">SPINNING CHARGED PARTICLE</text>
+            <text x="370" y="127" font-size="10" fill="#888">WILL NOT PRECESS</text>
+            <!-- Y axis labels -->
+            <text x="22" y="48" font-size="10" fill="#555">+5</text>
+            <text x="22" y="125" font-size="10" fill="#555">−5</text>
+          </g>
+          <!-- Phi stress wave -->
+          <g>
+            <path d="M 20 220 Q 60 175 100 220 Q 140 265 180 220 Q 220 175 260 220 Q 300 265 340 220 Q 380 175 420 220 Q 460 265 500 220 Q 530 200 560 220"
+                  fill="rgba(180,120,0,0.15)" stroke="#aa6600" stroke-width="2"/>
+            <line x1="20" y1="220" x2="560" y2="220" stroke="#333" stroke-width="2" marker-end="url(#arr2)"/>
+            <text x="2" y="224" font-size="12" fill="#333">φ̄₀=0̄</text>
+            <text x="22" y="185" font-size="10" fill="#aa6600">+φ</text>
+            <text x="22" y="260" font-size="10" fill="#aa6600">−φ</text>
+            <text x="22" y="165" font-size="10" fill="#555">+10</text>
+            <text x="22" y="290" font-size="10" fill="#555">−10</text>
+            <text x="400" y="160" font-size="11" fill="#aa6600" font-weight="600">COMPRESSIVE</text>
+            <text x="400" y="173" font-size="11" fill="#aa6600" font-weight="600">STRESS</text>
+            <text x="330" y="262" font-size="11" fill="#aa6600" font-weight="600">TENSILE</text>
+            <text x="330" y="274" font-size="11" fill="#aa6600" font-weight="600">STRESS</text>
+            <text x="430" y="270" font-size="10" fill="#888" font-style="italic">STRESS LEVEL</text>
+            <text x="430" y="282" font-size="10" fill="#888" font-style="italic">ON SPACETIME</text>
+          </g>
+          <defs>
+            <marker id="arr2" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto">
+              <polygon points="0 0, 6 2.5, 0 5" fill="#333"/>
+            </marker>
+          </defs>
+        </svg>
+        <div class="diagram-caption">Figure 1. Scalar Ō-wave production: opposing E fields sum to zero, but the infolded potential φ persists as stress on spacetime — a pure scalar potential with deterministic substructure.</div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-card-header">Table 1 — Conservation of Anenergy (AE): An Expanded Energy Conservation Law</div>
+        <div class="table-card-body">
+          <ol style="font-size:14px; padding-left:20px; line-height:2.1;">
+            <li><strong>Conservation of Charge:</strong> "CHARGE" = MASS (M<sub>c</sub>) + CHARGE (AE<sub>c</sub>)<br>
+                |M<sub>c</sub>| + |AE<sub>c</sub>| = K<sub>1</sub></li>
+            <li><strong>Conservation of Energy:</strong> DYNAMIC ENERGY (E) + ENERGY EQUIVALENCE OF MASS (M<sub>E</sub>)<br>
+                |E| + |M<sub>E</sub>| = K<sub>2</sub></li>
+            <li><strong>Adding (1) and (2):</strong><br>
+                |M<sub>c</sub>| + |AE<sub>c</sub>| + |E| + |M<sub>E</sub>| = K<sub>1</sub> + K<sub>2</sub> = K<sub>3</sub></li>
+            <li><strong>Letting |M| = |M<sub>c</sub>| + |M<sub>E</sub>|:</strong><br>
+                |M| + |E| + |AE<sub>c</sub>| = K<sub>3</sub></li>
+            <li><strong>Letting |M| = AE<sub>1</sub>, |E| = |AE<sub>2</sub>|, |AE<sub>c</sub>| = AE<sub>3</sub>:</strong><br>
+                AE<sub>1</sub> + AE<sub>2</sub> + AE<sub>3</sub> = K<sub>3</sub></li>
+          </ol>
+        </div>
+      </div>
+
+      <p>Note also that, if one rhythmically varies all the individual summation vectors in the substructure by the same factor, one produces pure potential stress waves — scalar waves — without ever creating external electric and magnetic fields. These are pure waves of spacetime, and they are oscillating curvatures of spacetime itself. They are pure waves of compression and rarefaction of the massless charge of spacetime, and are properly represented as longitudinal waves rather than transverse waves. Thus they are nonHertzian in nature. Among other things, they may be used to generate mass and inertial field directly, but that is beyond the scope of this paper.</p>
+    </div>
+  </div>
+
+  <!-- WIRELESS TRANSMISSION -->
+  <div class="doc-section" id="s06">
+    <div class="section-header">
+      <span class="section-num">§3</span>
+      <span class="section-title">Wireless Transmission of Energy at a Distance</span>
+      <span class="section-type">pp. 4–5</span>
+    </div>
+    <div class="section-body">
+      <p>To illustrate one remarkable though typical implication of this new breakthrough area, we point out that, by changing the potentials while keeping the force-fields zero, one can directly produce energy at a distance as if it were transported through space without losses, even though no energy transmission through space in the normal fashion occurs as such. Indeed, it may even be possible to utilize pure potential waves to "transport" the energy at any velocity — not limited by the speed of light — since in some cases a potential (for example, electrostatic scalar potential) can be regarded as having infinite velocity, simply appearing "everywhere at once." [f]</p>
+      <p>Electrostatic scalar potential, for example, may be regarded as a sort of "locked-in stress energy" of vacuum, as can any other vacuum potential. Changing the potential in a region or at a point changes the amount of "locked-in" or "infolded" vacuum energy available or stored in that region or at that point. Yet simply changing the potential at that point or in that region need not involve any local expenditure of work there; the work may be expended elsewhere, and the results realized directly at a distant region by a change in that region's potential, according to the Bohm-Aharonov effect. In the remote region, charged particles are imbedded in vacuum potential by their virtual particle charge flux, and in the induced potential gradients the imbedded particles move, producing electrical and magnetic forces and fields and performing work.</p>
+      <p>This is somewhat analogous to "putting energy in here" and "extracting it out there" without any travel or losses in between — Nikola Tesla's old "wireless transmission of energy at a distance without losses" idea. Note that, quantum mechanically, we may take the view that this is a very special class of macroscopic "energy tunneling" phenomena, as illustrated in Aharonov and Bohm's original paper [a]. Essentially energy is put into the system at the locations where the scalar potentials are produced, and is recovered at the distant interference zone where particle effects are produced (Figure 2).</p>
+
+      <div class="diagram-wrap">
+        <span class="fig-label">Figure 2 — Creating Energy at a Distance</span>
+        <svg viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:520px;display:block;margin:auto;">
+          <rect width="520" height="220" fill="#f8f8f5"/>
+          <defs>
+            <marker id="arr3" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto">
+              <polygon points="0 0, 7 2.5, 0 5" fill="#2a4a28"/>
+            </marker>
+          </defs>
+          <!-- Transmitter 1 -->
+          <rect x="20" y="70" width="80" height="60" fill="#e8f0e4" stroke="#2a4a28" stroke-width="1.5" rx="3"/>
+          <text x="60" y="95" text-anchor="middle" font-size="11" fill="#2a4a28" font-weight="600">SCALAR</text>
+          <text x="60" y="108" text-anchor="middle" font-size="11" fill="#2a4a28" font-weight="600">XMTR #1</text>
+          <!-- Transmitter 2 -->
+          <rect x="20" y="160" width="80" height="50" fill="#e8f0e4" stroke="#2a4a28" stroke-width="1.5" rx="3"/>
+          <text x="60" y="182" text-anchor="middle" font-size="11" fill="#2a4a28" font-weight="600">SCALAR</text>
+          <text x="60" y="195" text-anchor="middle" font-size="11" fill="#2a4a28" font-weight="600">XMTR #2</text>
+          <!-- Bracket label -->
+          <text x="10" y="155" font-size="9" fill="#4a7a46" font-weight="600">SCALAR</text>
+          <text x="5" y="145" font-size="9" fill="#4a7a46">INTERFEROMETER</text>
+          <!-- Beams converging -->
+          <line x1="100" y1="95" x2="340" y2="110" stroke="#2a4a28" stroke-width="1.5" marker-end="url(#arr3)" stroke-dasharray="6,3"/>
+          <line x1="100" y1="180" x2="340" y2="120" stroke="#2a4a28" stroke-width="1.5" marker-end="url(#arr3)" stroke-dasharray="6,3"/>
+          <!-- Interference zone -->
+          <ellipse cx="380" cy="115" rx="60" ry="45" fill="rgba(220,180,40,0.2)" stroke="#aa8800" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <text x="380" y="106" text-anchor="middle" font-size="10" fill="#aa8800" font-weight="600">VECTOR</text>
+          <text x="380" y="118" text-anchor="middle" font-size="10" fill="#aa8800" font-weight="600">ENERGY ZONE</text>
+          <text x="380" y="130" text-anchor="middle" font-size="9" fill="#aa8800">(ENERGY BOTTLE)</text>
+          <text x="420" y="95" font-size="9" fill="#4a7a46" font-style="italic">SCALAR</text>
+          <text x="420" y="108" font-size="9" fill="#4a7a46" font-style="italic">XMTR #2</text>
+        </svg>
+        <div class="diagram-caption">Figure 2. Two scalar transmitters (interferometer) create an "energy bottle" — a vector energy zone — at a distant interference site, without transmitting energy through space.</div>
+      </div>
+
+      <p>To pursue this single example and further show its implications, we point out that in theory one may deliberately make a beam containing zero electric and magnetic fields, simply by properly phase-locking together two or more beams of oscillating ordinary E-H electrical energy, all at the same frequency. In the perfect hypothetical case, for example, two single-frequency beams phase-locked together 180 degrees apart would create such a zero-field or scalar-wave beam (Figure 1). In the real world, one would be phase-locking two beams containing narrow bandwidths, and how much zero-field beam is obtained at the center of the bandwidth would depend on the "Q" (sharpness) of each beam. To purify the beam, it could first be transmitted through a grounded Faraday shield, which would remove most of the ordinary E-H field components not properly zeroed. By successive Faraday "stripping" of the beam, a scalar beam as pure as desired can be obtained.</p>
+    </div>
+  </div>
+
+  <!-- SCALAR WAVE CHARACTERISTICS -->
+  <div class="doc-section" id="s07">
+    <div class="section-header">
+      <span class="section-num">§4</span>
+      <span class="section-title">Some Characteristics of a Scalar Wave Beam</span>
+      <span class="section-type">pp. 5–7</span>
+    </div>
+    <div class="section-body">
+      <p>Such a beam is totally undetectable by a normal E-H detector, since it does not produce normal force-field-induced accelerations of particles (such as the free electron gas in an antenna or the conduction electrons in a Faraday shield). Thus this wave is usually nondetectable except by unique detectors specifically designed to detect Φ and A potential in the condition of zero E and H.</p>
+      <p>This scalar beam also is capable of strong penetration of ocean water, since free ions do not absorb nearly so much of it as for an ordinary E-H field beam. Thus one may speak of megahertz and even gigahertz beams and signals transmitted through the ocean (and through the earth). In fact, an associate of the author appears to have developed a prototype underwater transmission system, including a sensitive scalar wave detector. Even an underwater radar appears quite feasible.</p>
+    </div>
+  </div>
+
+  <!-- SCALAR WAVE DETECTOR -->
+  <div class="doc-section" id="s08">
+    <div class="section-header">
+      <span class="section-num">§5</span>
+      <span class="section-title">A Sensitive Scalar Wave Detector</span>
+      <span class="section-type">pp. 7–9</span>
+    </div>
+    <div class="section-body">
+      <p>Very briefly we present a method of making a very sensitive scalar wave detector so that direct measurement and quantization can be established.</p>
+      <p>First, we regard one oscillation (one wavelength) of the scalar potential wave as a longitudinal photon. Note that this photon contains a substructure, which may be deliberately determined (when artificially made) or randomized (when naturally made in the idealized case).</p>
+      <p>For convenience we represent normal linearized vacuum (spacetime) as a horizontal or longitudinal vector (Figure 4), implying the direction of motion of the wave in the laboratory frame. By horizontal position in our diagram, we imply a linear, uncurved spacetime and a non-rotated frame. We represent the longitudinal scalar wave as a horizontal vector, and the usual Hertzian wave as a vertical or "transverse" vector. We visualize a normal detector as detecting only a vertical or "transverse" vector, as we have illustrated in Figure 4.</p>
+      <p>A better way is to bend or curve spacetime itself in a small region, so that a longitudinal wave that passes through that region now possesses a vertical component with respect to that region (Figure 6). Thus a normal detector there will detect that vertical component. We conduct the detection current out of the "bent spacetime" region to an outside (normal) detector, and we then have a scalar wave detector.</p>
+      <p>To illustrate, we show conceptually how this has been successfully done. Figure 7 shows the concept. First, we utilize a magnetic pole to provide the infolded energy (potential) to bend or curve spacetime. To reach good sensitivity, we need a pole strength connected with a magnetic field strength of 40,000 Gauss or higher. We utilize a small superconducting magnet, which can reach field strengths of from 40,000 to 80,000 Gauss.</p>
+      <p>Then to prevent detection of superfluous "normal" radiation, we shield the entire magnet in a grounded Faraday cage, as shown in the figure. Hertzian waves will be grounded in this shield, while scalar waves will readily penetrate it undiminished. In other words, the Faraday cage serves as a "stripper," to strip away the ordinary waves, leaving only the scalar waves to penetrate inside. An ordinary wire lies at the top of the magnetic pole, in proximity to it. The wire runs out of the Faraday cage through an insulated port to a resonant tuning circuit, which is sharply tunable over the range of frequencies we are interested in. A preamp amplifies the output of the tuner, and in turn feeds the input of an oscilloscope or other detector.</p>
+
+      <div class="diagram-wrap">
+        <span class="fig-label">Figures 4–7 — Scalar Wave Detection System</span>
+        <svg viewBox="0 0 620 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:620px;display:block;margin:auto;">
+          <rect width="620" height="300" fill="#fafaf8"/>
+          <defs>
+            <marker id="arr4" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto">
+              <polygon points="0 0, 6 2.5, 0 5" fill="#333"/>
+            </marker>
+          </defs>
+          <!-- Fig 4: Linear frame -->
+          <g>
+            <text x="80" y="15" text-anchor="middle" font-size="9" fill="#2a4a28" font-weight="600">FIG. 4 — LINEAR FRAME</text>
+            <text x="10" y="50" font-size="8" fill="#888" font-style="italic">Hertzian Wave</text>
+            <line x1="10" y1="40" x2="10" y2="20" stroke="#888" stroke-width="1.5" marker-end="url(#arr4)"/>
+            <text x="32" y="40" font-size="8" fill="#333">Scalar Wave →</text>
+            <line x1="30" y1="38" x2="150" y2="38" stroke="#333" stroke-width="2" marker-end="url(#arr4)"/>
+            <text x="80" y="58" text-anchor="middle" font-size="7" fill="#888">Direction of Wave Motion in Lab Frame</text>
+          </g>
+          <!-- Fig 5: Rotating -->
+          <g transform="translate(170,0)">
+            <text x="80" y="15" text-anchor="middle" font-size="9" fill="#2a4a28" font-weight="600">FIG. 5 — ROTATED</text>
+            <line x1="30" y1="50" x2="130" y2="25" stroke="#555" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arr4)"/>
+            <line x1="130" y1="25" x2="150" y2="12" stroke="#333" stroke-width="1.5" marker-end="url(#arr4)"/>
+            <text x="130" y="10" font-size="7" fill="#333">Transverse Projection</text>
+            <line x1="30" y1="50" x2="165" y2="50" stroke="#333" stroke-width="2" marker-end="url(#arr4)"/>
+            <text x="100" y="63" text-anchor="middle" font-size="7" fill="#888">Lab Frame</text>
+            <text x="10" y="28" font-size="7" fill="#555" font-style="italic">Bent</text>
+            <text x="10" y="38" font-size="7" fill="#555" font-style="italic">Long.</text>
+            <text x="10" y="48" font-size="7" fill="#555" font-style="italic">Wave</text>
+          </g>
+          <!-- Fig 7: Detector circuit -->
+          <g transform="translate(0,80)">
+            <text x="310" y="10" text-anchor="middle" font-size="9" fill="#2a4a28" font-weight="600">FIG. 7 — SENSITIVE SCALAR WAVE DETECTOR</text>
+            <!-- Faraday cage -->
+            <rect x="20" y="25" width="110" height="110" fill="none" stroke="#666" stroke-width="2" stroke-dasharray="5,3"/>
+            <text x="75" y="19" text-anchor="middle" font-size="8" fill="#666">Faraday Shield</text>
+            <!-- Magnet -->
+            <rect x="40" y="55" width="30" height="55" fill="#bbddbb" stroke="#2a4a28" stroke-width="1.5" rx="2"/>
+            <text x="55" y="78" text-anchor="middle" font-size="9" fill="#2a4a28" font-weight="600">N</text>
+            <text x="55" y="95" text-anchor="middle" font-size="9" fill="#2a4a28" font-weight="600">S</text>
+            <text x="25" y="52" font-size="7" fill="#2a4a28">Super-</text>
+            <text x="25" y="62" font-size="7" fill="#2a4a28">Conducting</text>
+            <text x="25" y="72" font-size="7" fill="#2a4a28">Magnet</text>
+            <!-- Wire -->
+            <line x1="70" y1="55" x2="70" y2="30" stroke="#333" stroke-width="1.5"/>
+            <line x1="70" y1="30" x2="130" y2="30" stroke="#333" stroke-width="1.5"/>
+            <!-- Ground -->
+            <line x1="55" y1="110" x2="55" y2="135" stroke="#333" stroke-width="1.5"/>
+            <line x1="40" y1="135" x2="70" y2="135" stroke="#333" stroke-width="2"/>
+            <line x1="44" y1="140" x2="66" y2="140" stroke="#333" stroke-width="1.5"/>
+            <line x1="48" y1="145" x2="62" y2="145" stroke="#333" stroke-width="1"/>
+            <text x="55" y="158" text-anchor="middle" font-size="7" fill="#666">Insulated Plug</text>
+            <!-- Resonant circuit -->
+            <rect x="200" y="55" width="80" height="55" fill="#f0f8f0" stroke="#2a4a28" stroke-width="1.5" rx="2"/>
+            <text x="240" y="78" text-anchor="middle" font-size="8" fill="#2a4a28">Resonant</text>
+            <text x="240" y="90" text-anchor="middle" font-size="8" fill="#2a4a28">Tuning</text>
+            <text x="240" y="102" text-anchor="middle" font-size="8" fill="#2a4a28">Circuit</text>
+            <line x1="130" y1="30" x2="200" y2="75" stroke="#333" stroke-width="1.5" marker-end="url(#arr4)"/>
+            <!-- Pre-amp -->
+            <rect x="340" y="55" width="60" height="40" fill="#f0f8f0" stroke="#2a4a28" stroke-width="1.5" rx="2"/>
+            <text x="370" y="78" text-anchor="middle" font-size="8" fill="#2a4a28">Pre-amp</text>
+            <line x1="280" y1="82" x2="340" y2="75" stroke="#333" stroke-width="1.5" marker-end="url(#arr4)"/>
+            <!-- Shielded cable -->
+            <line x1="400" y1="75" x2="460" y2="75" stroke="#333" stroke-width="2" marker-end="url(#arr4)"/>
+            <text x="430" y="68" text-anchor="middle" font-size="7" fill="#888">Shielded Cable</text>
+            <!-- Oscilloscope -->
+            <rect x="460" y="50" width="70" height="55" fill="#1a2a1a" stroke="#444" stroke-width="1.5" rx="3"/>
+            <ellipse cx="495" cy="77" rx="22" ry="16" fill="#001100" stroke="#224422" stroke-width="1"/>
+            <path d="M 476 77 Q 487 67 495 77 Q 503 87 514 77" fill="none" stroke="#00ff44" stroke-width="1.5"/>
+            <text x="495" y="115" text-anchor="middle" font-size="7" fill="#666">Oscilloscope</text>
+          </g>
+        </svg>
+        <div class="diagram-caption">Figures 4–7. Wave detection geometry and scalar wave detector circuit: superconducting magnet inside Faraday cage, wire to resonant tuning circuit, pre-amp, and oscilloscope.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCALAR INTERFEROMETRY -->
+  <div class="doc-section" id="s09">
+    <div class="section-header">
+      <span class="section-num">§6</span>
+      <span class="section-title">Scalar Interferometry and Weaponization</span>
+      <span class="section-type">pp. 9–12</span>
+    </div>
+    <div class="section-body">
+      <p>According to the Bohm-Aharonov effect, if two zero-field scalar wave beams are crossed in a distant region, real physical effects exist in that distant interference zone. In short, one may create "transmitting scalar interferometers" (Figure 2) to produce energetic effects at a distance, in a specified region. For a theoretically perfect scalar interferometer, all the energy fed into the remote transmitters is exhibited in the effects experienced in the interference zone, without "traveling through" the space in between.</p>
+      <p>This can be comprehended by realizing that energy at the transmitter sites is transformed into stress-energy of vacuum (i.e., pure potential), and it is the potential variation that is accomplished, not transmission of energy through space per se.</p>
+      <p>We stress that locked-in or infolded vacuum energy in a potential and vector energy in transition are two quite different aspects of the same thing, just as energy and mass are two different aspects of one thing. In the interference zone of two intersecting scalar beams, the out-of-phase regions no longer have sum-zeroed substructure components, so E and B fields appear there, created by the now out-of-phase substructure superpositions. If other E and B fields are already there, these new fields superpose with them, either constructively or destructively. <strong>If they add, the existing fields are augmented and increased. If they oppose, the existing fields are diminished or negated.</strong> Thus the transmitting scalar interferometer can create or extinguish electromagnetic fields at a distance. In other words, it can produce energy in the distant target interference zone — or extract energy from it.</p>
+      <p>Continuous input of energy at the transmitter sites produces continuous emergence of energy at the remote interference site. A continuous-wave jammer using this mode, for example, will place all its transmitted power in a small volume around the targeted radar at a distance (Figure 8). The drastic increase in lethality of the jammer is obvious; there is no square-law loss, but only a volumetric dilution around the target itself. Indeed, this type of jamming can be applied to disable and destroy electromagnetic circuits of all types, in widely varying equipments such as tanks, aircraft, communications centers, vehicles, command posts, etc. It is also quite lethal against human beings.</p>
+
+      <div class="fig-grid">
+        <div class="diagram-wrap">
+          <span class="fig-label">Figure 8 — Tactical Air-to-Ground Usage</span>
+          <svg viewBox="0 0 280 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
+            <rect width="280" height="180" fill="#f8f8f5"/>
+            <defs>
+              <marker id="arr5" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto">
+                <polygon points="0 0, 6 2.5, 0 5" fill="#2a4a28"/>
+              </marker>
+            </defs>
+            <!-- Ground line -->
+            <line x1="0" y1="150" x2="280" y2="150" stroke="#888" stroke-width="1.5"/>
+            <!-- Modified track radar -->
+            <rect x="30" y="120" width="50" height="30" fill="#ccc" stroke="#666" stroke-width="1"/>
+            <ellipse cx="55" cy="120" rx="20" ry="8" fill="none" stroke="#666" stroke-width="1.5"/>
+            <text x="55" y="167" text-anchor="middle" font-size="8" fill="#333">MODIFIED</text>
+            <text x="55" y="177" text-anchor="middle" font-size="8" fill="#333">TRACK RADAR</text>
+            <!-- Scalar wave beam -->
+            <g fill="none" stroke="#2a4a28" stroke-width="1.5" marker-end="url(#arr5)">
+              <line x1="75" y1="115" x2="195" y2="55"/>
+              <line x1="75" y1="110" x2="195" y2="65"/>
+              <line x1="75" y1="105" x2="200" y2="60"/>
+            </g>
+            <text x="130" y="72" font-size="8" fill="#2a4a28" font-weight="600">SCALAR WAVE BEAM</text>
+            <!-- Target aircraft + explosion -->
+            <polygon points="205,55 220,50 215,60 225,58 210,65" fill="#555"/>
+            <g stroke="#aa4400" stroke-width="1.5" fill="none">
+              <line x1="220" y1="48" x2="230" y2="38"/>
+              <line x1="228" y1="52" x2="242" y2="48"/>
+              <line x1="222" y1="60" x2="232" y2="70"/>
+              <line x1="215" y1="56" x2="205" y2="66"/>
+            </g>
+            <text x="225" y="40" font-size="8" fill="#333">TARGET</text>
+            <text x="220" y="50" font-size="8" fill="#333">AIRCRAFT</text>
+          </svg>
+          <div class="diagram-caption">Scalar wave beam directed at target aircraft from modified track radar.</div>
+        </div>
+
+        <div class="diagram-wrap">
+          <span class="fig-label">Figure 9 — Ground-to-Air Usage</span>
+          <svg viewBox="0 0 280 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
+            <rect width="280" height="180" fill="#f8f8f5"/>
+            <!-- Ground -->
+            <line x1="0" y1="150" x2="280" y2="150" stroke="#888" stroke-width="1.5"/>
+            <!-- Airborne jammer (XLTR) -->
+            <polygon points="50,50 70,45 65,55 75,53 60,62" fill="#666"/>
+            <text x="85" y="40" font-size="8" fill="#333">XLTR</text>
+            <polygon points="200,60 220,55 215,65 225,63 210,72" fill="#666"/>
+            <text x="225" y="50" font-size="8" fill="#333">XLTR</text>
+            <text x="215" y="60" font-size="8" fill="#333">AIRBORNE</text>
+            <text x="215" y="70" font-size="8" fill="#333">JAMMER</text>
+            <!-- Beams converging on ground target -->
+            <g fill="none" stroke="#2a4a28" stroke-width="1.5">
+              <line x1="60" y1="58" x2="140" y2="135"/>
+              <line x1="210" y1="62" x2="145" y2="135"/>
+            </g>
+            <!-- Explosion at ground -->
+            <g stroke="#aa4400" stroke-width="1.5" fill="none">
+              <line x1="140" y1="130" x2="130" y2="118"/><line x1="140" y1="130" x2="152" y2="118"/>
+              <line x1="140" y1="130" x2="128" y2="138"/><line x1="140" y1="130" x2="155" y2="138"/>
+            </g>
+            <rect x="120" y="140" width="40" height="12" fill="#aaa" stroke="#666" stroke-width="1"/>
+            <text x="140" y="165" text-anchor="middle" font-size="8" fill="#333">RADAR TARGET</text>
+          </svg>
+          <div class="diagram-caption">Airborne scalar jammers (XLTRs) converge beams on a ground radar target.</div>
+        </div>
+      </div>
+
+      <p>If a highly energetic scalar pulse is synchronously transmitted by each of two remote transmitters, then in the distant interference zone where the two pulses intersect, an impulsive emergence of ordinary electromagnetic energy occurs. This can produce an electromagnetic explosion at the distant intersection site, with concomitant electromagnetic pulse being radiated, etc. Even in the hard vacuum of space, such an electrical explosion and EMP are produced, since the electromagnetic energy produced in the interference zone is sufficient to lift Dirac electrons and other Dirac matter from the Dirac sea, producing a plasma very similar to a nuclear explosion, except for the absence of gamma radiation and nuclear residues.</p>
+
+      <p>If continuous energy is fed into the transmitters of the scalar interferometer, then continuous energy emerges in the distant interference zone. For very narrow beams and substantial input energy, the distant energy density can be made quite high. Physical destruction of distant targets can be accomplished in this fashion; and the effects can be produced directly inside bunkers, buildings, tanks and armored vehicles, aircraft, nuclear-tipped missiles, ships, etc.</p>
+
+      <p>Relativistic effects such as a change in the rate of flow of time, in the inertia of an object, and in the mass of an object can also be obtained, at least in theory. [j] In theory the speed of light in vacuo can also be changed, and there is already experimental evidence of this effect. [k]</p>
+    </div>
+  </div>
+
+  <!-- VACUUM THEORY -->
+  <div class="doc-section" id="s10">
+    <div class="section-header">
+      <span class="section-num">§7</span>
+      <span class="section-title">Vacuum Theory</span>
+      <span class="section-type">p. 12</span>
+    </div>
+    <div class="section-body">
+      <p>Since in the modern view the vacuum is composed of massless charge, it can be regarded as a single giant electrostatic scalar potential and magnetostatic scalar potential combined, with zero E and H fields. If one were developing weaponry based on the new scalar electromagnetics, then one might expect to find an energetics theory dealing with such a vacuum and based on scalar concepts. One might even utilize a type of field theory based on a fundamental particle conceptualized as a "little piece of vacuum medium." Indeed, evidence for just such a theory exists in the Soviet literature [l], and direct evidence of the Soviet view of the importance of such a concept was certainly provided by the Petukov-Toth affair. [m]</p>
+    </div>
+  </div>
+
+  <!-- EXTRACTION OF DISTANT ENERGY -->
+  <div class="doc-section" id="s11">
+    <div class="section-header">
+      <span class="section-num">§8</span>
+      <span class="section-title">Extraction of Distant Energy: A New Concept</span>
+      <span class="section-type">pp. 12–15</span>
+    </div>
+    <div class="section-body">
+      <p>A second highly strategic implication of scalar electromagnetics is that a scalar interferometer connection between transmitter sites and a distant interference zone can be viewed somewhat as a sort of "electrical ground wire" or "common potential" connection between the projectors and the interference site. That is, it represents a "zero-field" connection between the distant site and the projector sites, randomized field zeroing that occurs in the natural temperature oscillations at the distant site can be utilized to extract energy from the site to the projectors. That is, one may extract electromagnetic energy from a distance target or region, as well as produce energy at a distance. Again, the energy extracted is not transported through space as normal electromagnetic energy, but as pure scalar potential.</p>
+      <p>The mechanism for this may easily be seen if one recognizes that, when fields zero by opposition, the vectors comprising the opposition at that point also comprise a special value of scalar potential. Since each single field vector in the opposition has energy, then the energies of the opposing vectors are "locked-in" as spatiotemporal stress of the scalar potential at that opposition point. Thus "ordinary energy" has been converted to "stress of spacetime" (scalar potential). That POTENTIAL, which is simply massless charge, can then directly affect a distant system [a] and can even do it instantaneously. [f]</p>
+      <p>Thus the scalar potential can be used, by interferometry, to directly produce energy in a distant target or extract energy directly from that target.</p>
+      <p>Indeed, because of this hitherto unknown effect, the present conservation of energy law is but a special case of a more fundamental stress conservation law. This more fundamental stress conservation law has already been derived by this researcher. [i, pp. 10-11, 43] See Table 1 for a synopsis.</p>
+    </div>
+  </div>
+
+  <!-- COLD EXPLOSIONS -->
+  <div class="doc-section" id="s12">
+    <div class="section-header">
+      <span class="section-num">§9</span>
+      <span class="section-title">Massive Testing of "Cold Explosions"</span>
+      <span class="section-type">pp. 15–16</span>
+    </div>
+    <div class="section-body">
+      <p>Direct evidence for a decade of massive Soviet testing of such "energy extraction" strategic systems has recently become apparent. [n, p. 8] Since 1974, very large, anomalous mushroom-shaped ice cloud formations have been repeatedly produced over the Soviet Arctic and detected by U.S. weather satellites. These formations arise suddenly and are very much colder than the surrounding air. They appear to be the result of firing a large scalar interferometer in an "energy extraction" mode; in other words, a "cold explosion" occurs at the distant interference site.</p>
+      <p>Recently a most dramatic example of such a cold explosion occurred near a pre-announced Soviet weapons test zone off Japan. [n] (See Figure 10 and Tables 2, 3, 4). The mushroom cloud reached 60,000 feet altitude in about 2 minutes, and had a diameter of 150 miles. Several Boeing 747s were in the area, and were later checked for radioactivity with negative results.</p>
+      <p>In fact, the U.S. has detected at least 78 such Soviet tests [n, p. 8] since 1974, with far less than continuous satellite coverage and little more than cursory imagery examination. Two or three times as many such Soviet "cold explosion" tests may actually have occurred. The direct implication for worldwide weather engineering by the Soviet Union is obvious.</p>
+
+      <div class="table-card">
+        <div class="table-card-header">Table 2 — Mushroom Cloud Rising from Sea</div>
+        <div class="table-card-body">
+          <ul class="bullet-list">
+            <li>0514 HRS, 9 APRIL 1984</li>
+            <li>GRAY-WHITE CLOUD APPEARED</li>
+            <li>ROSE 60,000 FT IN 2 MIN.</li>
+            <li>180 MI. S.E. OF HOKKAIDO · 200 MI. FROM TOKYO · SOUTH OF KURIL ISLANDS</li>
+            <li>SOVIET MISSILE TESTING SCHEDULED ABOUT 350 MI. AWAY, AT 2100 HRS 9 APR 1984</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-card-header">Table 3 — Mushroom Cloud from Sea off Japan</div>
+        <div class="table-card-body">
+          <ul class="bullet-list">
+            <li>FIVE BOEING 747'S FLEW THROUGH OR NEAR THE CLOUD
+              <ul class="bullet-list" style="margin-top:4px;padding-left:16px;">
+                <li class="sub-bullet">NO CONTAMINATION</li>
+                <li class="sub-bullet">NON-NUCLEAR</li>
+              </ul>
+            </li>
+            <li>OCEAN 21,000 FT DEEP
+              <ul class="bullet-list" style="margin-top:4px;padding-left:16px;">
+                <li class="sub-bullet">TOO DEEP FOR SUBMARINE VOLCANO TO CAUSE CLOUD</li>
+                <li class="sub-bullet">INDICATES MAN-MADE PHENOMENON</li>
+              </ul>
+            </li>
+            <li>77 OTHER SUCH PLUMES SINCE 1974
+              <ul class="bullet-list" style="margin-top:4px;padding-left:16px;">
+                <li class="sub-bullet">IN SOVIET ARCTIC</li>
+                <li class="sub-bullet">IN NON-VOLCANIC AREA</li>
+                <li class="sub-bullet">NON-NUCLEAR</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-card-header">Table 4 — Plumes Noted in Satellite Photos in Soviet Arctic (77 since 1974)</div>
+        <div class="table-card-body">
+          <ul class="bullet-list">
+            <li>2 AIRCRAFT FLEW THROUGH FOR ANALYSIS
+              <ul class="bullet-list" style="margin-top:4px;padding-left:16px;">
+                <li class="sub-bullet">SOLID MATERIAL — MOSTLY ICE — A LITTLE CLAY</li>
+                <li class="sub-bullet">MUCH COLDER THAN SURROUNDING AIR</li>
+                <li class="sub-bullet">NO VOLCANIC MATERIAL — NO RADIOACTIVE MATERIAL</li>
+              </ul>
+            </li>
+            <li>MAY BE 2 TO 3 TIMES AS MANY INCIDENTS (only winter satellite imagery examined, only periodic coverage)</li>
+            <li>HYPOTHESIZE METHANE VENTING or HYPOTHESIZE SOVIET CLOUD SEEDING</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout">
+        Note also that a "cold explosion" of over 150 miles diameter represents an interference zone of about the size of the heart of the main troop deployments in the NATO Central Region. A single shot of such a weapon could almost instantly freeze every NATO soldier in that area into a block of ice. Note also that the heat energy is extracted throughout the spacetime of the area; insulation or external heat sources are no defense. The heat literally is "sucked out" of the interior of bodies in the interference zone. Several such "cold explosion" shots could finish off the entire NATO central region — again, in seconds or minutes.
+      </div>
+    </div>
+  </div>
+
+  <!-- PERFECT MISSILE SHIELD -->
+  <div class="doc-section" id="s13">
+    <div class="section-header">
+      <span class="section-num">§10</span>
+      <span class="section-title">The Perfect Missile Shield</span>
+      <span class="section-type">p. 16</span>
+    </div>
+    <div class="section-body">
+      <p>By utilizing three-dimensional truncated Fourier expansion techniques with multiple transmitted frequencies, the scalar interferometer beams can be made to interfere in specific geometric patterns, such as giant hemispheric shells of glowing energy, quite useful in a strategic ABM defense of a large area. Such tests of such giant ABM shields have actually been observed by competent witnesses. [o] Typical examples of a variety of tests of weapons using this mode are given in Appendix I.</p>
+    </div>
+  </div>
+
+  <!-- MASSIVE SOVIET WEAPONIZATION -->
+  <div class="doc-section" id="s14">
+    <div class="section-header">
+      <span class="section-num">§11</span>
+      <span class="section-title">Massive Soviet Weaponization</span>
+      <span class="section-type">p. 16</span>
+    </div>
+    <div class="section-body">
+      <p>The Soviets have been engaged in weaponizing scalar electromagnetics for nearly three decades, as evidenced by Khrushchev's eerie 1960 announcement [p] of a fantastic weapon, more terrible and perfect than rockets and missiles (See Table 5). In addition, such weapons may be what Brezhnev was referring to when the Soviet team at the SALT talks in 1975 introduced the strange proposal that we should also consider outlawing the development of new electromagnetic weapons of a most terrible nature — more frightful than the mind of man had ever imagined. (See Table 6).</p>
+
+      <div class="callout-top-secret" style="margin-top:20px;">
+        <em>Table 5 — Khrushchev's 1960 Statement (Speaking to the Presidium)</em><br><br>
+        "WE HAVE A NEW WEAPON,<br>
+        JUST WITHIN THE PORTFOLIO OF<br>
+        OUR SCIENTISTS . . .<br>
+        SO POWERFUL THAT,<br>
+        IF UNRESTRAINEDLY USED,<br>
+        <em>IT COULD WIPE OUT ALL<br>
+        LIFE ON EARTH!</em>"
+      </div>
+
+      <div class="callout-warn" style="margin-top:16px; text-align:center; font-size:14px; font-weight:600; line-height:1.8;">
+        Table 6 — Brezhnev's 1975 Proposal at the SALT Talks (June 13, 1975):<br>
+        The Soviets urged the U.S. to agree on a ban of research and development<br>
+        of new kinds of weapons<br>
+        <em>MORE TERRIBLE THAN ANYTHING THE WORLD HAS KNOWN!</em>
+      </div>
+
+      <p style="margin-top:20px;">Scalar electromagnetic weapons are directly applicable to nearly all phases of warfare, both tactical and strategic, and both offensive and defensive. They can be used to accomplish nearly 100% ABM defense of very large areas and they can destroy ICBMs, TBMs, cruise missiles, aircraft, ordnance, tanks, weapons carriers, personnel carriers, submarines, SLBMs, surface ships, communications equipment, fuel supplies, ammunition supplies, nuclear warheads, and personnel with ease and efficiency. They can be made large or small — indeed, one can be made as small as a large pistol, and carried in the hand. The "Buck Rogers" ray pistol is now a reality.</p>
+      <p>With such weapons vast areas can be completely destroyed or neutralized within minutes, without permanent contamination. These weapons can also be used to accomplish weather and climate control on a worldwide scale, as well as to cause earthquakes, and they have already been employed in both modes by the Soviet Union.</p>
+    </div>
+  </div>
+
+  <!-- SOVIET WEATHER ENGINEERING -->
+  <div class="doc-section" id="s15">
+    <div class="section-header">
+      <span class="section-num">§12</span>
+      <span class="section-title">Soviet Weather Engineering</span>
+      <span class="section-type">pp. 16–18</span>
+    </div>
+    <div class="section-body">
+      <p>Essentially, in the "produce energy" mode a powerful scalar interferometer can produce a large high pressure area or "hot spot" at a given distant target area. In the "extract energy" mode, a large low pressure area or "cold spot" can be produced at a given distant target area. Each of these spots can be moved by "sweeping" the interferometer beams so as to change the location of the distant interference zone. (That is, one synchronously rotates the interferometer beams so as to gradually change the location of the distant interference zone, which is creating the spot.) By using multiple transmitters and fairly broad beams, an interference grid can be created over an entire continent or substantial portions of it. (Figure 11). In each grid block in the interference zone, energy can be produced or extracted. (Figure 12). Direct evidence for such usage by the Soviets over North America has been presented. [q]</p>
+      <p>Certain "signatures" of the Soviet weather control interferometry grid system have been observed all over the U.S. (Figures 13, 14, 15, 17, Table 7), and one major signature has been photographed over Huntsville, Alabama by this author. It is stressed that our normal instruments do not usually detect the directly active scalar beams, unless we detect longitudinal waves as shown in Figure 16. A more definitive paper on this overt weather engineering over North America is in preparation.</p>
+    </div>
+  </div>
+
+  <!-- CONCLUSION -->
+  <div class="doc-section" id="s16">
+    <div class="section-header">
+      <span class="section-num">§13</span>
+      <span class="section-title">Conclusion</span>
+      <span class="section-type">pp. 18–24</span>
+    </div>
+    <div class="section-body">
+      <p>As can be seen, the new (to the West) scalar electromagnetics is a reality, as evidenced by the Bohm-Aharonov work and its direct experimental proof. The implications for weaponization on a massive strategic and tactical scale are obvious, and unfortunately the Soviet Union has already developed several generations of such weapons. At least one other country has also developed scalar electromagnetics weaponry.</p>
+      <p>The Soviet scalar electromagnetics weapons development program appears to have been well underway at the time of the beginning of the "microwave radiation" of the U.S. Embassy in Moscow, about 1959 or 1960. (Table 8). A good description of the history of this microwave radiation has been given by Brodeur from a normal electromagnetics viewpoint. [r] Note that "twin beams" were utilized in the radiation, at least from time to time, and a variety of systemological difficulties were induced in personnel in the Embassy. As late as 1982, major Soviet representatives continued to announce warnings of the impending use of new Soviet weapons more powerful than nuclear arsenals. (Table 9).</p>
+
+      <div class="table-card">
+        <div class="table-card-header">Table 8 — Radiation of the U.S. Embassy in Moscow</div>
+        <div class="table-card-body">
+          <ul class="bullet-list">
+            <li>SINCE 1959 OR 1960</li>
+            <li>HIGH LEVEL TARGET (U.S. AMBASSADOR)</li>
+            <li>GUARANTEES PERSONAL ATTENTION OF: PRESIDENT · NSA, CIA, DIA · TOP CONSULTING SCIENTISTS · STATE DEPARTMENT · LEADING SCIENTIFIC INSTITUTIONS · NATIONAL SECURITY COUNCIL · ETC.</li>
+            <li>REACTION REVEALS U.S. KNOWLEDGE OF TESLA ELECTROMAGNETICS</li>
+            <li>FOUR U.S. PRESIDENTS REQUESTED SOVIETS TO CEASE
+              <ul class="bullet-list" style="padding-left:16px; margin-top:4px;">
+                <li class="sub-bullet">CUT FROM 18 μWATTS/CM² TO 2</li>
+                <li class="sub-bullet">THEN AGAIN INCREASED</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-card-header">Table 9 — Lysenko's 1982 Statement (World Futures Conference, Washington D.C., 20 July 1982)</div>
+        <div class="table-card-body">
+          <ul class="bullet-list">
+            <li>LYSENKO (First Name Unknown) · USSR REP (Soviet Embassy, Washington, D.C.)</li>
+            <li>STATED WILL SHORTLY SEE DEVELOPMENT OF NEW WEAPONS
+              <ul class="bullet-list" style="padding-left:16px; margin-top:4px;">
+                <li class="sub-bullet">MORE POWERFUL THAN NUCLEAR WEAPONS</li>
+                <li class="sub-bullet">WILL BE NONVERIFIABLE</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <p>To repeat, evidence of massive Soviet testing of scalar electromagnetics weapons on a global scale abounds in the open literature. The Soviets have been deploying and repeatedly testing these weapons for nearly three decades, without being recognized by the Western intelligence and scientific communities for what they were.</p>
+
+      <div class="callout-warn">
+        <strong>The West is almost totally defenseless against these frightful Soviet scalar electromagnetics weapons, and an immediate "Manhattan Project" to develop defenses on a crash basis is urgently needed if we are to survive at all.</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- REFERENCES -->
+  <div class="doc-section" id="s17">
+    <div class="section-header">
+      <span class="section-num">REF</span>
+      <span class="section-title">References</span>
+      <span class="section-type">pp. 24–25</span>
+    </div>
+    <div class="section-body">
+      <ul class="ref-list">
+        <li><span class="ref-key">[a]</span> Y. Aharonov and D. Bohm, "Significance of Electromagnetic Potentials in the Quantum Theory," <em>Phys. Rev.</em>, Second Series, Vol. 115, No. 3, August 1, 1959, pp. 485-491.</li>
+        <li><span class="ref-key">[b]</span> R. G. Chambers, <em>Phys. Rev. Lett.</em>, Vol. 5, ~1960, p. 3.</li>
+        <li><span class="ref-key">[c]</span> Tai Tsun Wu and Chen Ning Yang, "Concept of nonintegrable phase factors and global formulation of gauge fields," <em>Phys. Rev. D</em>, Vol. 12, No. 12, 15 December 1975, pp. 3845-3857.</li>
+        <li><span class="ref-key">[d]</span> Richard P. Feynman, Robert B. Leighton, and Matthew Sands, <em>The Feynman Lectures on Physics</em>, Volume II, Section 15-5, pp. 15-8 to 15-14.</li>
+        <li><span class="ref-key">[e]</span> E. T. Whittaker, "On an Expression of the Electromagnetic Field Due to Electrons by Means of Two Scalar Potential Functions," <em>Proc. Lond. Math. Soc.</em>, Vol. 1, 1903, pp. 367-372.</li>
+        <li><span class="ref-key">[f]</span> John David Jackson, <em>Classical Electrodynamics</em>, Second Edition, Wiley, New York, 1975, p. 223.</li>
+        <li><span class="ref-key">[g]</span> "Scientists Fail to Solve Vela Mystery," <em>Science</em>, Vol. 207, 1 February 1980, pp. 504-506. "Satellite Evidence Shows Possibility of Nuclear Test, DOD Says," <em>Aerospace Daily</em>, October 29, 1979, p. 286. "A Flash of Light," <em>Newsweek</em>, November 5, 1979, pp. 64-65. "Was It a Nuclear Device?", <em>Newsweek</em>, July 21, 1980, p. 19. "Diverging Views," <em>Washington Roundup, Aviation Week &amp; Space Technology</em>, July 21, 1980, p. 15. Philip J. Klass, "Clandestine Nuclear Test Doubted," <em>Aviation Week &amp; Space Technology</em>, August 11, 1980, pp. 67, 69, 71-72. "Debate Continues on the Bomb That Wasn't," <em>Science</em>, Vol. 209, 1 August 1980, pp. 572-573. "Navy Lab Concludes the Vela Saw a Bomb," <em>Science</em>, Vol. 209, 29 August 1980, pp. 996-997.</li>
+        <li><span class="ref-key">[h]</span> T. E. Bearden, "Toward a New Electromagnetics: Part III: Clarifying the Vector Concept," Tesla Book Co., 1580 Magnolia, Millbrae, CA 94030, 1983.</li>
+        <li><span class="ref-key">[i]</span> T. E. Bearden, "Toward a New Electromagnetics: Part IV: Vectors and Mechanisms Clarified," Tesla Book Co., Millbrae, CA, 1983.</li>
+        <li><span class="ref-key">[j]</span> Ingram Bloch &amp; Horace Crater, "Lorentz-invariant potentials and the non-relativistic limit," <em>Am. J. Phys.</em>, Vol. 49, No. 1, January 1981, pp. 67-75.</li>
+        <li><span class="ref-key">[k]</span> B. N. Belyaev, "On Random Fluctuations of the Velocity of Light in Vacuum," <em>Azvestiya Vysshikh Uchebnykh Zavedenii, Fizika</em>, No. 11, Nov. 1980, pp. 37-42.</li>
+        <li><span class="ref-key">[l]</span> A. K. Lapkovskii, "Relativistic Kinematic Equations and the Theory of Continuous Media," <em>Soviet Physics Journal</em>, Vol. 21, No. 6, June 1978.</li>
+        <li><span class="ref-key">[m]</span> Martin Ebon, "Moscow, June 11, 1977," in his <em>Psychic Warfare: Threat or Illusion</em>, McGraw-Hill Book Co., New York, NY, 1983, pp. 1-11.</li>
+        <li><span class="ref-key">[n]</span> Greg Rippee, "Mushroom cloud sighted off Japan," <em>Los Angeles Daily News</em>, 11 April 1984, pp. 1, 8.</li>
+        <li><span class="ref-key">[o]</span> Gwynne Roberts, "Witness to a Super Weapon?", <em>The Sunday Times</em>, London, England, 17 August 1980.</li>
+        <li><span class="ref-key">[p]</span> Max Frankel, "Khrushchev Says Soviet Will Cut Forces a Third; Sees 'Fantastic' Weapon," <em>New York Times</em>, 15 January 1960, p. 1.</li>
+        <li><span class="ref-key">[q]</span> T. E. Bearden, "Soviet Weather Engineering," presentation on Open Mind Show, Radio Station KABC, Los Angeles, California March 24, 1984. (Audiotape available from Radio Station KABC, 3321 South LaCienega Blvd., Los Angeles, CA 90016.) Also T. E. Bearden, "Soviet Weather Engineering Over North America," in preparation. (To be presented at the U.S. Psychotronics Association Annual Symposium, Oglethorpe College, Atlanta, GA in June 1984.)</li>
+        <li><span class="ref-key">[r]</span> Paul Brodeur, <em>The Zapping of America</em>, W. W. Norton &amp; Co., New York, 1977.</li>
+        <li><span class="ref-key">[s]</span> T. E. Bearden, "Solutions to Tesla's Secrets and the Soviet Tesla Weapons," Tesla Book Co., 1580 Magnolia, Millbrae, CA 94030, 1981.</li>
+        <li><span class="ref-key">[t]</span> T. E. Bearden, videotape, "Tesla's Secret and the Soviet Tesla Weapons," presented in absentia at the First International Unorthodox Energy Symposium, Toronto, Canada, 1981. Available from Tesla Book Co., Millbrae, CA.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- APPENDIX I TOC -->
+  <div class="doc-section">
+    <div class="section-header">
+      <span class="section-num">APP</span>
+      <span class="section-title">Appendix I — Typical Incidents and Related Information</span>
+      <span class="section-type">pp. 26–39</span>
+    </div>
+    <div class="section-body">
+      <table class="contents-table" style="margin-bottom:8px;">
+        <thead><tr><th>Item</th><th>Title</th><th>Page</th></tr></thead>
+        <tbody>
+          <tr><td class="item-num">1.</td><td>Tesla Weapon at Saryshagan (Scalar Potential Interferometer)</td><td class="pg">27</td></tr>
+          <tr><td class="item-num">2.</td><td>"Nuclear" Flashes off the Coast of Africa</td><td class="pg">27</td></tr>
+          <tr><td class="item-num">3.</td><td>Yugoslavian Earthquake</td><td class="pg">28</td></tr>
+          <tr><td class="item-num">4.</td><td>Quake in Tangshan, China</td><td class="pg">28</td></tr>
+          <tr><td class="item-num">5.</td><td>Giant ABM Shield Seen from Afghanistan</td><td class="pg">29</td></tr>
+          <tr><td class="item-num">6.</td><td>Tesla Shield</td><td class="pg">29</td></tr>
+          <tr><td class="item-num">7.</td><td>Continuous Tesla Fireball</td><td class="pg">30</td></tr>
+          <tr><td class="item-num">8.</td><td>Mysterious Light over North Pacific</td><td class="pg">30</td></tr>
+          <tr><td class="item-num">9.</td><td>Continuous Tesla EMP Globe</td><td class="pg">31</td></tr>
+          <tr><td class="item-num">10.</td><td>Tesla ABM Defenses</td><td class="pg">31</td></tr>
+          <tr><td class="item-num">11.</td><td>Hemisphere and Globes</td><td class="pg">32</td></tr>
+          <tr><td class="item-num">12.</td><td>East Coast Aerial Blasts (High Burst Registrations?)</td><td class="pg">33</td></tr>
+          <tr><td class="item-num">13.</td><td>Booms in Delaware</td><td class="pg">33</td></tr>
+          <tr><td class="item-num">14.</td><td>1969 Virgin Islands Incident</td><td class="pg">34</td></tr>
+          <tr><td class="item-num">15.</td><td>Expanding Dome-Like Phenomenon</td><td class="pg">35</td></tr>
+          <tr><td class="item-num">16.</td><td>Two Arcs in the Sky</td><td class="pg">35</td></tr>
+          <tr><td class="item-num">17.</td><td>"Laser" Blinding of U.S. Satellites</td><td class="pg">36</td></tr>
+          <tr><td class="item-num">18.</td><td>Extreme Intensity Sky Brightening</td><td class="pg">36</td></tr>
+          <tr><td class="item-num">19.</td><td>Radar Invisibility</td><td class="pg">37</td></tr>
+          <tr><td class="item-num">20.</td><td>Creating an Inertial Field (Antigravity)</td><td class="pg">37</td></tr>
+          <tr><td class="item-num">21.</td><td>Lightning Wall</td><td class="pg">38</td></tr>
+          <tr><td class="item-num">22.</td><td>Anomalous Burns and Underwater Sounds</td><td class="pg">38</td></tr>
+          <tr><td class="item-num">23.</td><td>"Cloud Arc"</td><td class="pg">39</td></tr>
+          <tr><td class="item-num">24.</td><td>Needed: Immediate Crash Program</td><td class="pg">39</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- APPENDIX INCIDENTS -->
+  <div class="doc-section" id="a01">
+    <div class="section-header">
+      <span class="section-num">A·1</span>
+      <span class="section-title">Tesla Weapon at Saryshagan (Scalar Potential Interferometer)</span>
+    </div>
+    <div class="section-body">
+      <p>Conceptual diagram of the Saryshagan-type facility as understood by Bearden: a large scalar antenna array with Fourier transform sections (12 wavelengths each), reference/phasing/control and computer facility, explosive generator bank (power for pulse modes), and Moray power units (power for continuous modes). Scalar antennas at both ends. This constitutes a Tesla Howitzer — a scalar interferometer — capable of projecting energy effects to distant targets.</p>
+      <div class="diagram-wrap">
+        <span class="fig-label">Item 1 — Tesla Weapon at Saryshagan</span>
+        <svg viewBox="0 0 560 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:560px;display:block;margin:auto;">
+          <rect width="560" height="200" fill="#f8f8f5"/>
+          <!-- Fourier sections -->
+          <g stroke="#2a4a28" stroke-width="1" fill="none">
+            <line x1="80" y1="40" x2="220" y2="80"/><line x1="100" y1="40" x2="230" y2="75"/>
+            <line x1="120" y1="40" x2="240" y2="70"/><line x1="140" y1="40" x2="240" y2="65"/>
+            <line x1="160" y1="40" x2="245" y2="60"/>
+            <line x1="380" y1="40" x2="330" y2="80"/><line x1="360" y1="40" x2="320" y2="75"/>
+            <line x1="340" y1="40" x2="310" y2="70"/><line x1="320" y1="40" x2="308" y2="65"/>
+          </g>
+          <text x="210" y="28" text-anchor="middle" font-size="8" fill="#555">FOURIER TRANSFORM SECTIONS (12 WAVELENGTHS EACH)</text>
+          <!-- Scalar antennas -->
+          <ellipse cx="55" cy="80" rx="30" ry="30" fill="#e8f0e4" stroke="#2a4a28" stroke-width="1.5"/>
+          <text x="55" y="75" text-anchor="middle" font-size="8" fill="#2a4a28">SCALAR</text>
+          <text x="55" y="87" text-anchor="middle" font-size="8" fill="#2a4a28">ANT</text>
+          <ellipse cx="460" cy="80" rx="30" ry="30" fill="#e8f0e4" stroke="#2a4a28" stroke-width="1.5"/>
+          <text x="460" y="75" text-anchor="middle" font-size="8" fill="#2a4a28">SCALAR</text>
+          <text x="460" y="87" text-anchor="middle" font-size="8" fill="#2a4a28">ANT</text>
+          <!-- Control center -->
+          <rect x="220" y="60" width="120" height="40" fill="#dde8dd" stroke="#2a4a28" stroke-width="1.5" rx="2"/>
+          <text x="280" y="76" text-anchor="middle" font-size="8" fill="#2a4a28">REFERENCE</text>
+          <text x="280" y="88" text-anchor="middle" font-size="8" fill="#2a4a28">CONTROL &amp; PHASING</text>
+          <text x="340" y="68" font-size="7" fill="#888">COMPUTER FACILITY</text>
+          <!-- Generator bank -->
+          <g>
+            <text x="280" y="130" text-anchor="middle" font-size="7" fill="#555">EXPLOSIVE GENERATORS BANK</text>
+            <rect x="100" y="132" width="20" height="18" fill="#ccc" stroke="#888" stroke-width="1"/>
+            <rect x="125" y="132" width="20" height="18" fill="#ccc" stroke="#888" stroke-width="1"/>
+            <rect x="150" y="132" width="20" height="18" fill="#ccc" stroke="#888" stroke-width="1"/>
+            <rect x="175" y="132" width="20" height="18" fill="#ccc" stroke="#888" stroke-width="1"/>
+            <rect x="200" y="132" width="20" height="18" fill="#ccc" stroke="#888" stroke-width="1"/>
+            <rect x="225" y="132" width="20" height="18" fill="#ccc" stroke="#888" stroke-width="1"/>
+            <rect x="250" y="132" width="20" height="18" fill="#ccc" stroke="#888" stroke-width="1"/>
+            <rect x="275" y="132" width="20" height="18" fill="#ccc" stroke="#888" stroke-width="1"/>
+            <rect x="300" y="132" width="20" height="18" fill="#ccc" stroke="#888" stroke-width="1"/>
+            <rect x="325" y="132" width="20" height="18" fill="#ccc" stroke="#888" stroke-width="1"/>
+            <text x="70" y="143" font-size="7" fill="#555">POWER FOR</text>
+            <text x="65" y="153" font-size="7" fill="#555">PULSE MODES</text>
+          </g>
+          <!-- Moray power -->
+          <g>
+            <rect x="100" y="160" width="18" height="14" fill="#dde8dd" stroke="#2a4a28" stroke-width="1"/>
+            <rect x="122" y="160" width="18" height="14" fill="#dde8dd" stroke="#2a4a28" stroke-width="1"/>
+            <rect x="144" y="160" width="18" height="14" fill="#dde8dd" stroke="#2a4a28" stroke-width="1"/>
+            <rect x="166" y="160" width="18" height="14" fill="#dde8dd" stroke="#2a4a28" stroke-width="1"/>
+            <rect x="188" y="160" width="18" height="14" fill="#dde8dd" stroke="#2a4a28" stroke-width="1"/>
+            <rect x="210" y="160" width="18" height="14" fill="#dde8dd" stroke="#2a4a28" stroke-width="1"/>
+            <text x="280" y="172" text-anchor="middle" font-size="7" fill="#555">MORAY POWER UNITS</text>
+            <text x="65" y="170" font-size="7" fill="#555">POWER FOR</text>
+            <text x="55" y="180" font-size="7" fill="#555">CONTINUOUS MODES</text>
+            <text x="400" y="172" font-size="7" fill="#555">EXTRA GENERATOR POWERS</text>
+            <text x="400" y="182" font-size="7" fill="#555">COMPUTER FACILITY</text>
+          </g>
+        </svg>
+        <div class="diagram-caption">Conceptual diagram of Tesla Howitzer (Scalar Potential Interferometer) at Saryshagan missile test range. Deep within Soviet Union, toward Saryshagan Missile Test Range.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-section" id="a02">
+    <div class="section-header">
+      <span class="section-num">A·2</span>
+      <span class="section-title">"Nuclear" Flashes off the Coast of Africa</span>
+    </div>
+    <div class="section-body">
+      <p>Booms off U.S. east coast. Flashes over Atlantic, off southwest coast of Africa, detected by Vela satellites. Many other test incidents. Bearden interprets these as tests using a Tesla Howitzer (Scalar Interferometer) — a two-transmitter system generating interference at a distant point. One slow wave and one fast wave from the same transmitter, intersecting at the distant target. Detected as "nuclear flashes" because the electromagnetic energy produced in the interference zone mimics some aspects of a nuclear burst.</p>
+    </div>
+  </div>
+
+  <div class="doc-section" id="a03">
+    <div class="section-header">
+      <span class="section-num">A·3</span>
+      <span class="section-title">Yugoslavian Earthquake (Test of a Tesla Howitzer?)</span>
+    </div>
+    <div class="section-body">
+      <ul class="bullet-list">
+        <li>YUGOSLAVIAN EARTHQUAKE 15 APRIL 1979</li>
+        <li>7.2 ON RICHTER SCALE</li>
+        <li>EPICENTER 33 KM DEEP</li>
+        <li>MORE THAN 100 AFTERSHOCKS</li>
+        <li>AT KAMENARI: ADRIATIC SEA MUSHROOMED UP — LIKE ATOMIC BOMB EXPLOSION</li>
+        <li>ADDITIONAL DETAILS NEEDED</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="doc-section" id="a04">
+    <div class="section-header">
+      <span class="section-num">A·4</span>
+      <span class="section-title">Quake in Tangshan, China</span>
+    </div>
+    <div class="section-body">
+      <p style="font-family:'Source Code Pro',monospace; font-size:12px; font-weight:600; color:var(--accent);">28 JULY 1976</p>
+      <ul class="bullet-list">
+        <li>7.8 ON RICHTER SCALE</li>
+        <li>HUNDREDS OF THOUSANDS KILLED</li>
+        <li>ACCOMPANIED BY LIGHT, ELECTRICAL EFFECTS
+          <ul class="bullet-list" style="padding-left:16px; margin-top:4px;">
+            <li class="sub-bullet">3 TO 5 DAYS BEFORE</li>
+            <li class="sub-bullet">COMMUNICATIONS INTERFERENCE WITHIN 250 KM</li>
+            <li class="sub-bullet">SKY LIGHTING OBSERVED</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="doc-section" id="a05">
+    <div class="section-header">
+      <span class="section-num">A·5</span>
+      <span class="section-title">Giant ABM Shield Seen from Afghanistan</span>
+    </div>
+    <div class="section-body">
+      <p>Fall 1983. Deep within Soviet Union, toward Saryshagan Missile Test Range. Nick Downie describes the strange lurid glow that flared silently over the Hindu Kush. (<em>The Sunday Times</em>, London, 17 August 1980.) Multiple incidents in September 1979. Note close proximity in time to first "flash" detected by Vela satellites.</p>
+    </div>
+  </div>
+
+  <div class="doc-section" id="a06">
+    <div class="section-header">
+      <span class="section-num">A·6</span>
+      <span class="section-title">Tesla Shield (Artist's Concept)</span>
+    </div>
+    <div class="section-body">
+      <p>Artist's concept (Hal Crawford) of a Tesla/scalar ABM shield — a large hemispheric shell of electromagnetic energy created by the interference of multiple scalar interferometer beams using truncated Fourier expansion. Such hemispherical shields could in principle intercept and destroy incoming ICBMs. Multiple independent witnesses claim to have observed such formations over the Soviet Union.</p>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 480 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:480px;display:block;margin:auto;">
+          <rect width="480" height="200" fill="#f0f4ee"/>
+          <!-- Ground -->
+          <line x1="0" y1="170" x2="480" y2="170" stroke="#888" stroke-width="1.5"/>
+          <!-- Mountains suggestion -->
+          <polygon points="20,170 70,100 120,170" fill="#b8c8b4" stroke="#7a9a76" stroke-width="1"/>
+          <polygon points="60,170 120,80 180,170" fill="#b8c8b4" stroke="#7a9a76" stroke-width="1"/>
+          <polygon points="300,170 360,90 420,170" fill="#b8c8b4" stroke="#7a9a76" stroke-width="1"/>
+          <!-- Tesla Shield dome -->
+          <path d="M 80 170 Q 240 20 400 170" fill="rgba(180,255,150,0.15)" stroke="rgba(100,200,80,0.8)" stroke-width="2.5"/>
+          <!-- Secondary dome lines -->
+          <path d="M 100 170 Q 240 45 380 170" fill="none" stroke="rgba(100,200,80,0.4)" stroke-width="1" stroke-dasharray="4,3"/>
+          <path d="M 120 170 Q 240 65 360 170" fill="none" stroke="rgba(100,200,80,0.3)" stroke-width="1" stroke-dasharray="4,3"/>
+          <!-- Incoming missiles being destroyed -->
+          <g stroke="#cc4400" stroke-width="1.5" fill="none">
+            <line x1="350" y1="60" x2="330" y2="90"/>
+            <polygon points="330,90 325,78 338,82" fill="#cc4400" stroke="none"/>
+          </g>
+          <text x="355" y="55" font-size="8" fill="#cc4400">INCOMING ICBM</text>
+          <text x="240" y="185" text-anchor="middle" font-size="9" fill="#2a4a28" font-weight="600">TESLA SHIELD (scalar interferometer energy dome)</text>
+          <text x="240" y="197" text-anchor="middle" font-size="8" fill="#888">Artist's concept · Courtesy Hal Crawford</text>
+        </svg>
+        <div class="diagram-caption">Item 6. Tesla Shield — artist's concept of ABM electromagnetic dome created by scalar interferometer.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-section" id="a07">
+    <div class="section-header">
+      <span class="section-num">A·7</span>
+      <span class="section-title">Continuous Tesla Fireball</span>
+    </div>
+    <div class="section-body">
+      <p><strong>Lithuania, 10 Sep 1976</strong> — British European Airways Flight #031, between Moscow and London. The crew encountered and photographed an anomalous luminous phenomenon. CIA report released under FOIA. Bearden interprets as evidence of continuous Tesla EMP globe testing — a stationary ball of electromagnetic energy maintained by scalar interferometer beams in "produce energy" mode.</p>
+    </div>
+  </div>
+
+  <div class="doc-section" id="a08">
+    <div class="section-header">
+      <span class="section-num">A·8</span>
+      <span class="section-title">Mysterious Light over North Pacific</span>
+    </div>
+    <div class="section-body">
+      <p><strong>June 18, 1982 · North Pacific · 700 km east of Kushiro</strong> — Reported in Asahi Evening News, Tokyo, June 22, 1982. Observed by JAL Flights 403 and 421. Luminous circular formation 18–27 km in diameter observed at sea level. Bearden interprets as continuous Tesla EMP globe and giant ABM shield testing.</p>
+    </div>
+  </div>
+
+  <div class="doc-section" id="a09">
+    <div class="section-header">
+      <span class="section-num">A·9</span>
+      <span class="section-title">Continuous Tesla EMP Globe</span>
+    </div>
+    <div class="section-body">
+      <p><strong>Tehran, Iran · 17 June 1966</strong> — Seen from near Mehrabad Airport. Observed 4–5 minutes. Seen by 2 aircraft. CIA report released under FOIA. Bearden classifies as Tesla EMP globe — a ball of EM energy held in place by intersecting scalar beams.</p>
+    </div>
+  </div>
+
+  <div class="doc-section" id="a10">
+    <div class="section-header">
+      <span class="section-num">A·10</span>
+      <span class="section-title">Tesla ABM Defenses</span>
+    </div>
+    <div class="section-body">
+      <p>Diagram of the complete Tesla ABM defense system as envisioned by Bearden: detection and tracking feeds targeting data to Tesla Howitzers (USSR), which project scalar beams to create a Continuous Tesla EMP Globe at the target location. This globe vaporizes the incoming vehicle (Continuous Tesla Fireball mode) or produces an EMP pulse to disable its electronics (Tesla Fireball Pulse mode). The Tesla Shield provides the outer ABM envelope.</p>
+    </div>
+  </div>
+
+  <div class="doc-section" id="a11">
+    <div class="section-header">
+      <span class="section-num">A·11</span>
+      <span class="section-title">Hemisphere and Globes 1977</span>
+    </div>
+    <div class="section-body">
+      <p><strong>24 March 1977 · North Atlantic · 0855–0902 GMT · M.V. Kinpurnie Castle · 23°05'N, 17°25'W</strong></p>
+      <ul class="bullet-list">
+        <li>"SEARCHLIGHT" APPEARED 20° ABOVE HORIZON</li>
+        <li>SHINED DOWN FOR 10 SECONDS</li>
+        <li>EXTINGUISHED; REPLACED BY LUMINOUS PATCH 1° IN DIAMETER</li>
+        <li>SEMICIRCLE OF MODERATE LUMINOSITY FORMED ABOUT PATCH (3 MIN)</li>
+        <li>ANOTHER LUMINESCENT PATCH OBSERVED ABOVE SEMICIRCLE</li>
+        <li>AFTER TOTAL OF 7 MINUTES, DISAPPEARED</li>
+      </ul>
+      <p style="font-size:12px; color:var(--ink-faint); margin-top:8px;">Source: <em>Marine Observer</em>, 48:21-22, 1978.</p>
+    </div>
+  </div>
+
+  <div class="doc-section" id="a12">
+    <div class="section-header">
+      <span class="section-num">A·12</span>
+      <span class="section-title">East Coast Aerial Blasts (High Burst Registrations?)</span>
+    </div>
+    <div class="section-body">
+      <p><strong>December 1977 — January 1978</strong></p>
+      <ul class="bullet-list">
+        <li>2 DEC: 10:00 AM off South Carolina; 3:45 PM off NE Coast (NJ and CONN)</li>
+        <li>15 DEC: 8:30–10:30 AM — Five blasts off South Carolina</li>
+        <li>20 DEC: Evening — 3 loud explosions, ball of fire (CONN)</li>
+        <li>21 DEC: 2:00 AM loud explosion and intense globular light in sky (NJ); 7:00 PM explosions over seacoast (NJ)</li>
+        <li>22 DEC: 1 New Jersey; 8:15 Charleston, SC</li>
+        <li>13 JAN: 2:00 PM loud booms, Charleston, SC</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="doc-section" id="a13">
+    <div class="section-header">
+      <span class="section-num">A·13</span>
+      <span class="section-title">Booms in Delaware</span>
+    </div>
+    <div class="section-body">
+      <p><strong>16 November 1982</strong></p>
+      <ul class="bullet-list">
+        <li>FIVE MYSTERIOUS MORNING BOOMS: 8:06, 8:07, 8:11, 8:12 and 8:45</li>
+        <li>WITHIN 39-MINUTE PERIOD</li>
+        <li>ROCKED SUSSEX COUNTY</li>
+        <li>RECORDED ON GEORGETOWN SEISMOGRAPHS</li>
+        <li>NO SUPERSONIC FLIGHTS</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="doc-section" id="a14">
+    <div class="section-header">
+      <span class="section-num">A·14</span>
+      <span class="section-title">1969 Virgin Islands Incident</span>
+    </div>
+    <div class="section-body">
+      <p><strong>8:15 PM, Thursday, August 1969, Virgin Islands · Seen by many residents</strong></p>
+      <p>Possible Tesla shield sighting. Luminous arc with smooth, curved edge, faintly luminescent.</p>
+      <p><strong>22 August 1969 · West Indies (Luminous Arc):</strong></p>
+      <ul class="bullet-list">
+        <li>LUMINOUS AREA SIGHTED · BEARING 310 DEGREES</li>
+        <li>GREW IN SIZE, ROSE IN ALTITUDE</li>
+        <li>TURNED INTO ARCH OR CRESCENT</li>
+      </ul>
+      <p style="font-size:12px; color:var(--ink-faint); margin-top:8px;"><em>Marine Observer</em> 40:107, 1970.</p>
+    </div>
+  </div>
+
+  <div class="doc-section" id="a15">
+    <div class="section-header">
+      <span class="section-num">A·15</span>
+      <span class="section-title">Expanding Dome-Like Phenomenon</span>
+    </div>
+    <div class="section-body">
+      <p><strong>20 March 1969 · Caribbean and Western North Atlantic</strong> — Tesla shield sighting.</p>
+      <ul class="bullet-list">
+        <li>SEMICIRCLE · MILKY WHITE LIGHT · QUITE BRIGHT AT FIRST</li>
+        <li>DIMMED AS ENLARGED · LASTED 10 MINUTES</li>
+      </ul>
+      <p style="font-size:12px; color:var(--ink-faint);"><em>Marine Observer</em> 40:17, 1970.</p>
+    </div>
+  </div>
+
+  <div class="doc-section" id="a16">
+    <div class="section-header">
+      <span class="section-num">A·16</span>
+      <span class="section-title">Two Arcs in the Sky</span>
+    </div>
+    <div class="section-body">
+      <p><strong>1800 GMT, June 1, 1961 · Indian Ocean</strong> — Double concentric Tesla Shields.</p>
+      <ul class="bullet-list">
+        <li>VERY BRIGHT ARC APPEARED</li>
+        <li>10 MINUTES LATER, 2nd (DIMMER) ARC APPEARED</li>
+        <li>SEPARATED BY ~150°</li>
+      </ul>
+      <p style="font-size:12px; color:var(--ink-faint);"><em>Marine Observer</em> 32:64, 1962.</p>
+    </div>
+  </div>
+
+  <div class="doc-section" id="a17">
+    <div class="section-header">
+      <span class="section-num">A·17</span>
+      <span class="section-title">"Laser" Blinding of U.S. Satellites</span>
+    </div>
+    <div class="section-body">
+      <ul class="bullet-list">
+        <li>AT LEAST FOUR INCIDENTS IN LATTER 1975</li>
+        <li>TWO USAF SATELLITES IN ELLIPTICAL ORBIT
+          <ul class="bullet-list" style="padding-left:16px;margin-top:4px;">
+            <li class="sub-bullet">INFRARED SENSORS WENT DOWN</li>
+            <li class="sub-bullet">ONE BLINDED UP TO FOUR HOURS</li>
+            <li class="sub-bullet">POSITIONING AND INTERFERENCE SUGGEST OPERATIONAL DEPLOYMENT</li>
+          </ul>
+        </li>
+        <li>SOVIET TECHNOLOGICAL BREAKTHROUGH ON THE ORDER OF LITHIUM FUSION OR SPUTNIK</li>
+        <li>U.S. RECON SATELLITES AND PHOTO INTERPRETERS FAILED TO LOCATE ANY LASER OR POWER SUPPLY</li>
+      </ul>
+      <div class="callout">Note: No laser was found because none was used. This was a scalar interferometer beam, undetectable by normal means.</div>
+    </div>
+  </div>
+
+  <div class="doc-section" id="a18">
+    <div class="section-header">
+      <span class="section-num">A·18</span>
+      <span class="section-title">Extreme Intensity Sky Brightening</span>
+    </div>
+    <div class="section-body">
+      <p><strong>15 May 1972 · Western Alaska</strong></p>
+      <ul class="bullet-list">
+        <li>WEATHER: OVERCAST</li>
+        <li>ENTIRE SKY SUDDENLY BRIGHTENED TO FULL DAYLIGHT INTENSITY</li>
+        <li>LIKE A SUDDEN FLASHBULB</li>
+        <li>LASTED ABOUT 2–7 SECONDS · TWO CLOSELY-SPACED FLASHES NOTED</li>
+        <li>CHANGED COLOR: BLUE TO GREEN TO WHITE, FADING TO ORANGE OR REDDISH</li>
+      </ul>
+      <p style="font-size:12px; color:var(--ink-faint);"><em>Sky and Telescope</em> 44:19, 1972.</p>
+    </div>
+  </div>
+
+  <div class="doc-section" id="a19">
+    <div class="section-header">
+      <span class="section-num">A·19</span>
+      <span class="section-title">Radar Invisibility</span>
+    </div>
+    <div class="section-body">
+      <p>Diagram showing radar energy being captured (no reflection) by an "energy bottle" — the interference pattern between Fourier expansion patterns from scalar transmitters. ACQ radar and track radar both have their beams absorbed into the scalar interference zone. This concept — making a target invisible to radar by absorbing its radar emission — constitutes a form of scalar stealth technology.</p>
+    </div>
+  </div>
+
+  <div class="doc-section" id="a20">
+    <div class="section-header">
+      <span class="section-num">A·20</span>
+      <span class="section-title">Creating an Inertial Field (Antigravity)</span>
+    </div>
+    <div class="section-body">
+      <p>Scalar resonance phenomenon: unidirectional forces induced on all nucleons. Three scalar transmitters (XLTR #1, #2, #3) directed at a test object on a demonstration platform create an inertial force — effectively an artificial gravitational or anti-gravitational field. This is achieved by engineering the virtual particle interactions in the object's mass via the scalar potential substructure.</p>
+    </div>
+  </div>
+
+  <div class="doc-section" id="a21">
+    <div class="section-header">
+      <span class="section-num">A·21</span>
+      <span class="section-title">Lightning Wall</span>
+    </div>
+    <div class="section-body">
+      <p><strong>1959–1960 · Patrol Plane Commander, U.S. Navy P5 Aircraft · Atlantic Ocean, 200 miles east of Norfolk</strong> — Report from private files of T. E. Bearden.</p>
+      <ul class="bullet-list">
+        <li>COURSE OF 270 DEGREES</li>
+        <li>APPROACHED "SOLID WALL OF LIGHTNING"</li>
+        <li>FROM VERY HIGH ALTITUDE TO NEAR THE WATER</li>
+        <li>NORTH-SOUTH AS FAR AS COULD SEE</li>
+        <li>RADAR SCOPE CLEAR</li>
+        <li>RIGGED AIRCRAFT FOR HEAVY WEATHER</li>
+        <li>PLUNGED DIRECTLY THROUGH WALL</li>
+        <li>WALL WAS VERY THIN · CLOUDLESS SKY</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="doc-section" id="a22">
+    <div class="section-header">
+      <span class="section-num">A·22</span>
+      <span class="section-title">Anomalous Burns and Underwater Sounds</span>
+    </div>
+    <div class="section-body">
+      <p><strong>Underwater, off Cornwall</strong></p>
+      <ul class="bullet-list">
+        <li>SEALS AND FISH DISCOVERED DYING WITH MYSTERIOUS BURN MARKS</li>
+        <li>DIVERS AND REPORTERS INVESTIGATED; HEARD SOUNDS UNDER WATER
+          <ul class="bullet-list" style="padding-left:16px;margin-top:4px;">
+            <li class="sub-bullet">VOICES IN FRENCH, ENGLISH, RUSSIAN</li>
+            <li class="sub-bullet">CLASSICAL MUSIC (BRAHMS, RACHMANIOFF)</li>
+            <li class="sub-bullet">UNNERVING BUZZING</li>
+            <li class="sub-bullet">THICK BLACK SLUDGE — YELLOWISH MATTER</li>
+          </ul>
+        </li>
+        <li>ENGLISH CHEMICAL WARFARE STATION ON COAST AT THIS POINT</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="doc-section" id="a23">
+    <div class="section-header">
+      <span class="section-num">A·23</span>
+      <span class="section-title">"Cloud Arc"</span>
+    </div>
+    <div class="section-body">
+      <p><strong>Strait of Gibraltar · 12 July 1980 · 1825 GMT</strong> — "A most peculiar cloud arch." <em>Marine Observer</em> 51: 107–108, 1981.</p>
+      <p>Tesla dome effect. May have been an ice test in endothermic mode. An arc of "clouds" in an otherwise cloudless sky, with sharp pressure and temperature gradients at the edges. Approximately 4 miles total span.</p>
+    </div>
+  </div>
+
+  <div class="doc-section" id="a24">
+    <div class="section-header">
+      <span class="section-num">A·24</span>
+      <span class="section-title">Needed: Immediate Crash Program</span>
+    </div>
+    <div class="section-body">
+      <div class="callout-warn" style="text-align:center; font-size:15px; font-weight:700; line-height:2.2;">
+        INFORMATION GATHERING<br>
+        COLLATION<br>
+        PHENOMENOLOGY<br>
+        THEORY<br>
+        EXPERIMENTS<br>
+        ENGINEERING DESIGN<br>
+        COUNTERMEASURES
+      </div>
+      <p style="margin-top:20px;">The author concludes with an urgent call for an immediate crash program — analogous in scale and priority to the Manhattan Project — to understand, replicate, and develop defenses against Soviet scalar electromagnetics weapons. The seven elements above represent the minimum required scope of such a program.</p>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div style="padding:36px 24px; text-align:center; font-family:'Source Code Pro',monospace; font-size:10px; color:#4a5a4a; letter-spacing:0.1em;">
+    CIA-RDP96-00788R001900680014-4 &nbsp;·&nbsp; T. E. BEARDEN · APRIL 24, 1984 &nbsp;·&nbsp; APPROVED FOR RELEASE 2003/09/09<br>
+    <span style="font-size:9px; color:#3a4a3a; margin-top:6px; display:block;">HTML transcription for archival and research purposes.</span>
+  </div>
+
+</main>
+</body>
+</html>
