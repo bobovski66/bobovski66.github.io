@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Many N‑Pendulums Mod Matrix</title>
+  <style>
+    :root {
+      --bg: #050505;
+      --panel: rgba(20,20,20,0.84);
+      --text: #f2f2f2;
+      --muted: #bdbdbd;
+      --border: rgba(255,255,255,0.11);
+      --accent: rgba(255,255,255,0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    }
+    canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+    }
+    .panel {
+      position: fixed;
+      top: 14px;
+      left: 14px;
+      width: min(410px, calc(100vw - 28px));
+      max-height: calc(100vh - 28px);
+      overflow: auto;
+      padding: 14px 14px 12px;
+      border-radius: 18px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+      z-index: 10;
+    }
+    .panel h1 {
+      margin: 0 0 4px;
+      font-size: 18px;
+      line-height: 1.2;
+      font-weight: 700;
+    }
+    .panel p {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+    .section-title {
+      margin: 14px 0 8px;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #d8d8d8;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 96px;
+      gap: 8px 10px;
+      align-items: center;
+    }
+    .grid label {
+      font-size: 13px;
+      color: var(--text);
+    }
+    .grid output {
+      font-size: 12px;
+      color: var(--muted);
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    input[type="range"] {
+      grid-column: 1 / span 2;
+      width: 100%;
+      appearance: none;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.15);
+      outline: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 0;
+      background: white;
+      cursor: pointer;
+    }
+    select {
+      grid-column: 1 / span 2;
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      border: 1px solid var(--border);
+      outline: none;
+    }
+    .row {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    button {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    button:hover { background: rgba(255,255,255,0.14); }
+    .hint {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .footer {
+      position: fixed;
+      right: 14px;
+      bottom: 14px;
+      background: rgba(15,15,15,0.7);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 14px;
+      padding: 8px 10px;
+      color: #cfcfcf;
+      font-size: 12px;
+      backdrop-filter: blur(10px);
+    }
+    .mod-grid {
+      display: grid;
+      grid-template-columns: 1fr 96px;
+      gap: 8px 10px;
+      align-items: center;
+      margin-top: 8px;
+      padding: 10px;
+      border-radius: 14px;
+      background: var(--accent);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .mod-grid .name {
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .mod-grid .amount {
+      text-align: right;
+      color: var(--muted);
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+    }
+    .mini {
+      font-size: 11px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <canvas id="c"></canvas>
+
+  <div class="panel">
+    <h1>Many N‑Pendulums + LFO Mod Matrix</h1>
+    <p>
+      One oscillator bank now modulates multiple targets at once. Patch the LFO into gravity, fade, jitter, and segment length and you get this living, breathing chaos bloom.
+    </p>
+
+    <div class="section-title">Pendulum field</div>
+    <div class="grid">
+      <label for="systems">Systems</label>
+      <output id="systemsOut">120</output>
+      <input id="systems" type="range" min="12" max="240" step="1" value="120" />
+
+      <label for="links">Links per system</label>
+      <output id="linksOut">4</output>
+      <input id="links" type="range" min="3" max="8" step="1" value="4" />
+
+      <label for="length">Base segment length</label>
+      <output id="lengthOut">48</output>
+      <input id="length" type="range" min="20" max="90" step="1" value="48" />
+
+      <label for="gravity">Base gravity</label>
+      <output id="gravityOut">0.260</output>
+      <input id="gravity" type="range" min="0.02" max="0.60" step="0.01" value="0.26" />
+
+      <label for="jitter">Base jitter</label>
+      <output id="jitterOut">0.017</output>
+      <input id="jitter" type="range" min="0.001" max="0.08" step="0.001" value="0.017" />
+
+      <label for="fade">Base trail fade</label>
+      <output id="fadeOut">0.050</output>
+      <input id="fade" type="range" min="0.003" max="0.12" step="0.001" value="0.050" />
+
+      <label for="thickness">Stroke width</label>
+      <output id="thicknessOut">0.9</output>
+      <input id="thickness" type="range" min="0.2" max="2.5" step="0.1" value="0.9" />
+    </div>
+
+    <div class="section-title">Oscillator bank</div>
+    <div class="grid">
+      <label for="lfoRate">LFO rate (Hz)</label>
+      <output id="lfoRateOut">0.30</output>
+      <input id="lfoRate" type="range" min="0.01" max="3.00" step="0.01" value="0.30" />
+
+      <label for="lfoWave">LFO waveform</label>
+      <output id="lfoWaveOut">sine</output>
+      <select id="lfoWave">
+        <option value="sine">sine</option>
+        <option value="triangle">triangle</option>
+        <option value="square">square</option>
+        <option value="saw">saw</option>
+        <option value="samplehold">sample &amp; hold</option>
+      </select>
+
+      <label for="lfoBias">LFO bias</label>
+      <output id="lfoBiasOut">0.00</output>
+      <input id="lfoBias" type="range" min="-1.00" max="1.00" step="0.01" value="0.00" />
+
+      <label for="lfoSmooth">S&amp;H smoothing</label>
+      <output id="lfoSmoothOut">0.15</output>
+      <input id="lfoSmooth" type="range" min="0.00" max="0.95" step="0.01" value="0.15" />
+    </div>
+
+    <div class="section-title">Mod routing</div>
+
+    <div class="mod-grid">
+      <div class="name">Gravity amount</div>
+      <div class="amount" id="modGravityOut">0.00</div>
+      <input id="modGravity" type="range" min="0.00" max="0.40" step="0.01" value="0.00" />
+      <div class="mini">Current gravity</div>
+      <div class="amount" id="currentGravity">0.260</div>
+    </div>
+
+    <div class="mod-grid">
+      <div class="name">Fade amount</div>
+      <div class="amount" id="modFadeOut">0.000</div>
+      <input id="modFade" type="range" min="0.000" max="0.060" step="0.001" value="0.000" />
+      <div class="mini">Current fade</div>
+      <div class="amount" id="currentFade">0.050</div>
+    </div>
+
+    <div class="mod-grid">
+      <div class="name">Jitter amount</div>
+      <div class="amount" id="modJitterOut">0.000</div>
+      <input id="modJitter" type="range" min="0.000" max="0.050" step="0.001" value="0.000" />
+      <div class="mini">Respawns field on swing extremes</div>
+      <div class="amount" id="currentJitter">0.017</div>
+    </div>
+
+    <div class="mod-grid">
+      <div class="name">Length amount</div>
+      <div class="amount" id="modLengthOut">0.0</div>
+      <input id="modLength" type="range" min="0.0" max="24.0" step="0.5" value="0.0" />
+      <div class="mini">Current segment length</div>
+      <div class="amount" id="currentLength">48.0</div>
+    </div>
+
+    <div class="row">
+      <button id="resetBtn">Reset</button>
+      <button id="toggleBtn">Pause</button>
+      <button id="clearBtn">Clear trails</button>
+      <button id="randomBtn">Surprise me</button>
+      <button id="breathBtn">Breathing preset</button>
+      <button id="chaosBtn">Chaos preset</button>
+    </div>
+
+    <div class="hint">
+      A fun move: patch the LFO into <strong>gravity + length</strong> together. For pulsing texture, add a little <strong>fade</strong>. For more violent mutation, add <strong>jitter</strong>.
+    </div>
+  </div>
+
+  <div class="footer">Gravity + length = cathedral. Sample &amp; hold + jitter = goblin weather.</div>
+
+  <script>
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d');
+
+    const controls = {
+      systems: document.getElementById('systems'),
+      links: document.getElementById('links'),
+      length: document.getElementById('length'),
+      gravity: document.getElementById('gravity'),
+      jitter: document.getElementById('jitter'),
+      fade: document.getElementById('fade'),
+      thickness: document.getElementById('thickness'),
+      lfoRate: document.getElementById('lfoRate'),
+      lfoWave: document.getElementById('lfoWave'),
+      lfoBias: document.getElementById('lfoBias'),
+      lfoSmooth: document.getElementById('lfoSmooth'),
+      modGravity: document.getElementById('modGravity'),
+      modFade: document.getElementById('modFade'),
+      modJitter: document.getElementById('modJitter'),
+      modLength: document.getElementById('modLength'),
+    };
+
+    const outputs = {
+      systems: document.getElementById('systemsOut'),
+      links: document.getElementById('linksOut'),
+      length: document.getElementById('lengthOut'),
+      gravity: document.getElementById('gravityOut'),
+      jitter: document.getElementById('jitterOut'),
+      fade: document.getElementById('fadeOut'),
+      thickness: document.getElementById('thicknessOut'),
+      lfoRate: document.getElementById('lfoRateOut'),
+      lfoWave: document.getElementById('lfoWaveOut'),
+      lfoBias: document.getElementById('lfoBiasOut'),
+      lfoSmooth: document.getElementById('lfoSmoothOut'),
+      modGravity: document.getElementById('modGravityOut'),
+      modFade: document.getElementById('modFadeOut'),
+      modJitter: document.getElementById('modJitterOut'),
+      modLength: document.getElementById('modLengthOut'),
+      currentGravity: document.getElementById('currentGravity'),
+      currentFade: document.getElementById('currentFade'),
+      currentJitter: document.getElementById('currentJitter'),
+      currentLength: document.getElementById('currentLength'),
+    };
+
+    function fmt(key, value) {
+      const v = Number(value);
+      if (['gravity', 'currentGravity'].includes(key)) return v.toFixed(3);
+      if (['jitter', 'fade', 'lfoRate', 'lfoBias', 'lfoSmooth', 'modFade', 'modJitter', 'currentFade', 'currentJitter'].includes(key)) return v.toFixed(3);
+      if (['modGravity'].includes(key)) return v.toFixed(2);
+      if (['length', 'modLength', 'currentLength'].includes(key)) return v.toFixed(1);
+      if (['thickness'].includes(key)) return v.toFixed(1);
+      return String(value);
+    }
+
+    for (const key in controls) {
+      const el = controls[key];
+      el.addEventListener('input', () => {
+        if (outputs[key]) outputs[key].textContent = fmt(key, el.value);
+      });
+      if (outputs[key]) outputs[key].textContent = fmt(key, el.value);
+    }
+
+    const TAU = Math.PI * 2;
+    let W = 0, H = 0, DPR = 1;
+    let center = { x: 0, y: 0 };
+    let systems = [];
+    let running = true;
+    let raf = null;
+    let lfoPhase = 0;
+    let holdValue = 0;
+    let prevHoldStep = -1;
+    let smoothedValue = 0;
+    let lastModSign = 0;
+
+    function resize() {
+      DPR = Math.min(window.devicePixelRatio || 1, 2);
+      W = window.innerWidth;
+      H = window.innerHeight;
+      canvas.width = Math.floor(W * DPR);
+      canvas.height = Math.floor(H * DPR);
+      canvas.style.width = W + 'px';
+      canvas.style.height = H + 'px';
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      center.x = W * 0.53;
+      center.y = H * 0.33;
+      clearCanvas(true);
+      if (systems.length) resetSystems();
+    }
+
+    function clearCanvas(hard = false) {
+      ctx.save();
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = hard ? '#000' : 'rgba(0,0,0,0.2)';
+      ctx.fillRect(0, 0, W, H);
+      ctx.restore();
+    }
+
+    function rand(min, max) {
+      return min + Math.random() * (max - min);
+    }
+
+    function clamp(x, a, b) {
+      return Math.max(a, Math.min(b, x));
+    }
+
+    function makeSystem(index, count, links, segLen, jitter) {
+      const hue = (index / count) * 360 + rand(-6, 6);
+      const baseAngle = -Math.PI * 0.88 + rand(-0.06, 0.06);
+      const points = [];
+      let x = center.x;
+      let y = center.y;
+      points.push({ x, y, px: x, py: y, pinned: true });
+
+      for (let i = 1; i <= links; i++) {
+        const a = baseAngle + rand(-jitter, jitter) * i * 3.5;
+        x += Math.cos(a) * segLen;
+        y += Math.sin(a) * segLen;
+        points.push({
+          x,
+          y,
+          px: x - rand(-0.8, 0.8),
+          py: y - rand(-0.8, 0.8),
+          pinned: false,
+        });
+      }
+
+      return {
+        hue,
+        segLen,
+        points,
+        trail: [],
+        lineWidth: parseFloat(controls.thickness.value),
+      };
+    }
+
+    function resetSystems(customJitter = null, customLength = null) {
+      const count = parseInt(controls.systems.value, 10);
+      const links = parseInt(controls.links.value, 10);
+      const segLen = customLength ?? parseFloat(controls.length.value);
+      const jitter = customJitter ?? parseFloat(controls.jitter.value);
+      systems = [];
+      for (let i = 0; i < count; i++) {
+        systems.push(makeSystem(i, count, links, segLen, jitter));
+      }
+      clearCanvas(true);
+      lfoPhase = 0;
+      prevHoldStep = -1;
+      smoothedValue = 0;
+      lastModSign = 0;
+    }
+
+    function respawnField(jitter, segLen) {
+      const count = systems.length;
+      const links = parseInt(controls.links.value, 10);
+      systems = [];
+      for (let i = 0; i < count; i++) {
+        systems.push(makeSystem(i, count, links, segLen, jitter));
+      }
+    }
+
+    function verletStep(sys, gravity, dt, dynamicSegLen) {
+      sys.segLen = dynamicSegLen;
+      const pts = sys.points;
+      for (let i = 1; i < pts.length; i++) {
+        const p = pts[i];
+        const vx = (p.x - p.px) * 0.999;
+        const vy = (p.y - p.py) * 0.999;
+        p.px = p.x;
+        p.py = p.y;
+        p.x += vx;
+        p.y += vy + gravity * dt * dt;
+      }
+
+      pts[0].x = center.x;
+      pts[0].y = center.y;
+
+      for (let k = 0; k < 8; k++) {
+        pts[0].x = center.x;
+        pts[0].y = center.y;
+        for (let i = 0; i < pts.length - 1; i++) {
+          const a = pts[i];
+          const b = pts[i + 1];
+          let dx = b.x - a.x;
+          let dy = b.y - a.y;
+          const d = Math.hypot(dx, dy) || 1e-6;
+          const diff = (d - sys.segLen) / d;
+
+          if (a.pinned) {
+            b.x -= dx * diff;
+            b.y -= dy * diff;
+          } else {
+            a.x += dx * diff * 0.5;
+            a.y += dy * diff * 0.5;
+            b.x -= dx * diff * 0.5;
+            b.y -= dy * diff * 0.5;
+          }
+        }
+      }
+
+      const end = pts[pts.length - 1];
+      sys.trail.push({ x: end.x, y: end.y });
+      if (sys.trail.length > 28) sys.trail.shift();
+    }
+
+    function rawLfoValue(phase, wave) {
+      const p = ((phase % 1) + 1) % 1;
+      switch (wave) {
+        case 'triangle':
+          return 1 - 4 * Math.abs(p - 0.5);
+        case 'square':
+          return p < 0.5 ? 1 : -1;
+        case 'saw':
+          return 2 * p - 1;
+        case 'samplehold': {
+          const step = Math.floor(phase * 8);
+          if (step !== prevHoldStep) {
+            prevHoldStep = step;
+            holdValue = rand(-1, 1);
+          }
+          return holdValue;
+        }
+        case 'sine':
+        default:
+          return Math.sin(TAU * p);
+      }
+    }
+
+    function lfoValue(phase, wave, smooth) {
+      const raw = rawLfoValue(phase, wave);
+      smoothedValue = smoothedValue * smooth + raw * (1 - smooth);
+      return smoothedValue;
+    }
+
+    function drawSystem(sys) {
+      const end = sys.points[sys.points.length - 1];
+      const trail = sys.trail;
+      if (trail.length < 2) return;
+
+      ctx.save();
+      ctx.globalCompositeOperation = 'screen';
+      ctx.lineWidth = sys.lineWidth;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      for (let i = 1; i < trail.length; i++) {
+        const a = trail[i - 1];
+        const b = trail[i];
+        const t = i / (trail.length - 1);
+        ctx.strokeStyle = `hsla(${sys.hue}, 95%, ${48 + 18 * t}%, ${0.03 + 0.28 * t})`;
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = `hsla(${sys.hue}, 100%, 72%, 0.12)`;
+      ctx.beginPath();
+      ctx.arc(end.x, end.y, Math.max(0.8, sys.lineWidth * 0.9), 0, TAU);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    let lastTime = performance.now();
+    function animate(now) {
+      if (!running) return;
+      const dtMs = Math.min(24, now - lastTime || 16.7);
+      lastTime = now;
+      const dt = dtMs * 0.06;
+
+      const baseGravity = parseFloat(controls.gravity.value);
+      const baseFade = parseFloat(controls.fade.value);
+      const baseJitter = parseFloat(controls.jitter.value);
+      const baseLength = parseFloat(controls.length.value);
+
+      const lfoRate = parseFloat(controls.lfoRate.value);
+      const lfoWave = controls.lfoWave.value;
+      const lfoBias = parseFloat(controls.lfoBias.value);
+      const lfoSmooth = parseFloat(controls.lfoSmooth.value);
+
+      const amtGravity = parseFloat(controls.modGravity.value);
+      const amtFade = parseFloat(controls.modFade.value);
+      const amtJitter = parseFloat(controls.modJitter.value);
+      const amtLength = parseFloat(controls.modLength.value);
+
+      lfoPhase += (dtMs / 1000) * lfoRate;
+      let mod = lfoValue(lfoPhase, lfoWave, lfoSmooth);
+      mod = clamp(mod + lfoBias, -1, 1);
+
+      const gravity = Math.max(0, baseGravity + amtGravity * mod);
+      const fade = clamp(baseFade + amtFade * mod, 0.001, 0.20);
+      const jitter = clamp(baseJitter + amtJitter * mod, 0.0005, 0.20);
+      const dynamicLength = Math.max(4, baseLength + amtLength * mod);
+
+      outputs.currentGravity.textContent = gravity.toFixed(3);
+      outputs.currentFade.textContent = fade.toFixed(3);
+      outputs.currentJitter.textContent = jitter.toFixed(3);
+      outputs.currentLength.textContent = dynamicLength.toFixed(1);
+      outputs.lfoWave.textContent = lfoWave;
+
+      const signNow = mod >= 0 ? 1 : -1;
+      if (amtJitter > 0.0001 && signNow !== lastModSign) {
+        respawnField(jitter, dynamicLength);
+      }
+      lastModSign = signNow;
+
+      ctx.save();
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.fillStyle = `rgba(0,0,0,${fade})`;
+      ctx.fillRect(0, 0, W, H);
+      ctx.restore();
+
+      for (const sys of systems) {
+        sys.lineWidth = parseFloat(controls.thickness.value);
+        verletStep(sys, gravity, dt, dynamicLength);
+        drawSystem(sys);
+      }
+
+      raf = requestAnimationFrame(animate);
+    }
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      resetSystems();
+    });
+
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      clearCanvas(true);
+      for (const s of systems) s.trail.length = 0;
+    });
+
+    document.getElementById('toggleBtn').addEventListener('click', (e) => {
+      running = !running;
+      e.target.textContent = running ? 'Pause' : 'Resume';
+      if (running) {
+        lastTime = performance.now();
+        raf = requestAnimationFrame(animate);
+      } else if (raf) {
+        cancelAnimationFrame(raf);
+      }
+    });
+
+    function updateAllOutputs() {
+      for (const key in controls) {
+        if (outputs[key]) outputs[key].textContent = fmt(key, controls[key].value);
+      }
+    }
+
+    function setPreset(kind) {
+      if (kind === 'breath') {
+        controls.systems.value = 140;
+        controls.links.value = 5;
+        controls.length.value = 50;
+        controls.gravity.value = 0.24;
+        controls.jitter.value = 0.015;
+        controls.fade.value = 0.030;
+        controls.thickness.value = 0.9;
+        controls.lfoRate.value = 0.17;
+        controls.lfoWave.value = 'sine';
+        controls.lfoBias.value = 0.00;
+        controls.lfoSmooth.value = 0.20;
+        controls.modGravity.value = 0.10;
+        controls.modFade.value = 0.010;
+        controls.modJitter.value = 0.000;
+        controls.modLength.value = 8.0;
+      } else if (kind === 'chaos') {
+        controls.systems.value = 160;
+        controls.links.value = 5;
+        controls.length.value = 44;
+        controls.gravity.value = 0.28;
+        controls.jitter.value = 0.020;
+        controls.fade.value = 0.060;
+        controls.thickness.value = 1.1;
+        controls.lfoRate.value = 0.55;
+        controls.lfoWave.value = 'samplehold';
+        controls.lfoBias.value = 0.00;
+        controls.lfoSmooth.value = 0.35;
+        controls.modGravity.value = 0.14;
+        controls.modFade.value = 0.020;
+        controls.modJitter.value = 0.010;
+        controls.modLength.value = 10.0;
+      }
+      updateAllOutputs();
+      resetSystems();
+    }
+
+    document.getElementById('breathBtn').addEventListener('click', () => setPreset('breath'));
+    document.getElementById('chaosBtn').addEventListener('click', () => setPreset('chaos'));
+
+    document.getElementById('randomBtn').addEventListener('click', () => {
+      controls.systems.value = Math.floor(rand(80, 190));
+      controls.links.value = Math.floor(rand(3, 7));
+      controls.length.value = Math.floor(rand(28, 70));
+      controls.gravity.value = rand(0.12, 0.40).toFixed(2);
+      controls.jitter.value = rand(0.006, 0.04).toFixed(3);
+      controls.fade.value = rand(0.015, 0.08).toFixed(3);
+      controls.thickness.value = rand(0.4, 1.5).toFixed(1);
+      controls.lfoRate.value = rand(0.05, 1.50).toFixed(2);
+      controls.lfoWave.value = ['sine','triangle','square','saw','samplehold'][Math.floor(rand(0,5))];
+      controls.lfoBias.value = rand(-0.3, 0.3).toFixed(2);
+      controls.lfoSmooth.value = rand(0.00, 0.60).toFixed(2);
+      controls.modGravity.value = rand(0.00, 0.18).toFixed(2);
+      controls.modFade.value = rand(0.000, 0.030).toFixed(3);
+      controls.modJitter.value = rand(0.000, 0.018).toFixed(3);
+      controls.modLength.value = rand(0.0, 14.0).toFixed(1);
+      updateAllOutputs();
+      resetSystems();
+    });
+
+    window.addEventListener('resize', resize);
+    resize();
+    updateAllOutputs();
+    resetSystems();
+    raf = requestAnimationFrame(animate);
+  </script>
+</body>
+</html>
