@@ -8,259 +8,337 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js/dist/reveal.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js/dist/theme/white.css">
     <style>
-        /* Optional: Reduce overall font size for better readability */
         .reveal .slides section {
             font-size: .8em;
         }
-        /* Center align the Read More link */
         .read-more {
             text-align: center;
             margin-top: 20px;
+        }
+        .reveal .slides section ul {
+            list-style: none;
+            padding: 0;
+        }
+        .reveal .slides section.quiz-slide ul li {
+            margin: 8px 0;
+        }
+        .reveal .slides section.quiz-slide button {
+            width: 100%;
+            padding: 10px 16px;
+            font-size: 0.95em;
+            cursor: pointer;
+            border: 1px solid #bbb;
+            border-radius: 4px;
+            background: #f5f5f5;
+            text-align: left;
+        }
+        .reveal .slides section.quiz-slide button:hover {
+            background: #e8e8e8;
+        }
+        #code-display {
+            font-size: 1.1em;
+            margin-top: 10px;
+            min-height: 1.5em;
         }
     </style>
 </head>
 <body>
     <div class="reveal">
         <div class="slides">
-            <!-- Slide 1 to Slide 20 are the content slides -->
 
-<!-- Slide 1: Introduction to AI and LLMs in Education -->
+<!-- ═══════════════════════════════════════════
+     CONTENT SLIDES
+═══════════════════════════════════════════ -->
+
+<!-- Slide 1: Introduction -->
 <section>
     <h2>Introduction to AI and LLMs in Education</h2>
-    <p>Artificial intelligence (AI) and Large Language Models (LLMs) like ChatGPT have significantly impacted education, offering powerful resources for learning, feedback, and problem-solving.</p>
+    <p>AI tools like ChatGPT, Claude, and Gemini have made powerful language-based assistance widely available. In mathematics courses, these tools offer real opportunities for learning — and real risks if used carelessly.</p>
     <p class="read-more"><a href="Proper_Academic_Use_of_LLMs_and_AI.html#introduction" target="_blank">Read More</a></p>
 </section>
 
 <!-- Slide 2: Why Discuss AI and LLMs in Academia? -->
 <section>
     <h2>Why Discuss AI and LLMs in Academia?</h2>
-    <p>AI and LLMs can provide personalized learning experiences, diverse perspectives, and serve as virtual tutors. However, they also pose risks like academic dishonesty and bias.</p>
+    <p>AI tools can provide on-demand explanations, generate practice problems, and help students work through confusion outside of class. But they also pose real risks: academic dishonesty, confidently wrong answers, and the temptation to skip the thinking that makes learning stick.</p>
     <p class="read-more"><a href="Proper_Academic_Use_of_LLMs_and_AI.html#why-discuss-ai-and-llms-in-an-academic-context" target="_blank">Read More</a></p>
 </section>
 
-<!-- Slide 3: Potential Benefits of AI and LLMs in Education -->
+<!-- Slide 3: Benefits of AI in Education -->
 <section>
     <h2>Benefits of AI in Education</h2>
-    <p>AI tools can revolutionize education by offering personalized learning, enhancing engagement, and providing new ways to understand complex concepts.</p>
+    <p>When used as a thinking partner rather than an answer machine, AI tools can help students identify gaps in understanding, explore concepts from multiple angles, and get support at any hour — not just during office hours.</p>
     <p class="read-more"><a href="Proper_Academic_Use_of_LLMs_and_AI.html#benefits-of-using-ai-in-education" target="_blank">Read More</a></p>
 </section>
 
-<!-- Slide 4: Risks and Ethical Concerns of AI in Academia -->
+<!-- Slide 4: Risks and Ethical Concerns -->
 <section>
     <h2>Risks and Ethical Concerns</h2>
-    <ul>
+    <ul style="list-style: disc; padding-left: 1.5em;">
         <li>Encourages academic dishonesty</li>
-        <li>Perpetuates biases</li>
-        <li>Undermines critical thinking skills</li>
+        <li>Produces confident but incorrect answers</li>
+        <li>Perpetuates biases in training data</li>
+        <li>Undermines critical thinking if over-relied upon</li>
     </ul>
-    <p class="read-more"><a href="Proper_Academic_Use_of_LLMs_and_AI.html#risks-and-ethical-concerns-of-ai-in-academia" target="_blank">Read More</a></p>
+    <p class="read-more"><a href="Proper_Academic_Use_of_LLMs_and_AI.html#why-discuss-ai-and-llms-in-an-academic-context" target="_blank">Read More</a></p>
 </section>
 
-<!-- Slide 5: Understanding Artificial Intelligence (AI) -->
+<!-- Slide 5: Understanding Artificial Intelligence -->
 <section>
     <h2>Understanding Artificial Intelligence (AI)</h2>
-    <p>AI simulates human intelligence processes, including learning, reasoning, and self-correction. Subfields like machine learning and NLP are essential in education.</p>
+    <p>AI refers to computer systems that simulate human intelligence processes: learning, reasoning, and self-correction. Subfields include machine learning (algorithms that improve through experience) and natural language processing (understanding and generating human language).</p>
     <p class="read-more"><a href="Proper_Academic_Use_of_LLMs_and_AI.html#understanding-artificial-intelligence-ai" target="_blank">Read More</a></p>
 </section>
 
-<!-- Slide 6: What Are Large Language Models (LLMs)? -->
+<!-- Slide 6: What Are Large Language Models? -->
 <section>
     <h2>What Are Large Language Models (LLMs)?</h2>
-    <p>LLMs like ChatGPT understand and generate human language, trained on vast amounts of text to produce coherent, contextually relevant responses.</p>
+    <p>LLMs are AI systems trained on vast amounts of text to understand and generate human language. ChatGPT, Claude, and Gemini are all LLMs. They generate responses by predicting what text fits the context — not by reasoning the way a person does.</p>
     <p class="read-more"><a href="Proper_Academic_Use_of_LLMs_and_AI.html#what-are-large-language-models-llms" target="_blank">Read More</a></p>
 </section>
 
 <!-- Slide 7: How Do LLMs Work? -->
 <section>
     <h2>How Do LLMs Work?</h2>
-    <p>LLMs predict the next word in a sequence based on previous words, using transformer architecture to generate coherent responses.</p>
+    <p>LLMs predict the next word in a sequence based on patterns learned from their training data. This makes them fluent and often helpful — but it also means they can produce plausible-sounding responses that are factually or numerically wrong. Fluency is not the same as correctness.</p>
     <p class="read-more"><a href="Proper_Academic_Use_of_LLMs_and_AI.html#how-do-llms-work" target="_blank">Read More</a></p>
 </section>
 
 <!-- Slide 8: Capabilities of LLMs in Education -->
 <section>
     <h2>Capabilities of LLMs in Education</h2>
-    <ul>
-        <li>Personalized tutoring</li>
-        <li>Interactive learning</li>
-        <li>Resource generation</li>
+    <ul style="list-style: disc; padding-left: 1.5em;">
+        <li>Explaining concepts in multiple ways</li>
+        <li>Generating examples and practice problems</li>
+        <li>Answering follow-up questions conversationally</li>
+        <li>Helping students articulate what they don't understand</li>
     </ul>
     <p class="read-more"><a href="Proper_Academic_Use_of_LLMs_and_AI.html#capabilities-and-applications-of-llms-in-education" target="_blank">Read More</a></p>
 </section>
 
-<!-- Slide 9: Limitations of LLMs and AI -->
+<!-- Slide 9: Limitations of LLMs -->
 <section>
     <h2>Limitations of LLMs and AI</h2>
-    <ul>
-        <li>Lack of true understanding</li>
-        <li>Potential for misinformation</li>
-        <li>Bias and ethical concerns</li>
+    <ul style="list-style: disc; padding-left: 1.5em;">
+        <li>No true understanding — responses are pattern-based</li>
+        <li>Prone to errors in arithmetic and numerical reasoning</li>
+        <li>May state incorrect information confidently</li>
+        <li>Training data may contain biases</li>
     </ul>
     <p class="read-more"><a href="Proper_Academic_Use_of_LLMs_and_AI.html#limitations-of-llms-and-ai" target="_blank">Read More</a></p>
 </section>
 
-<!-- Slide 10: The Role of Human Judgment in Using AI Tools -->
+<!-- Slide 10: The Role of Human Judgment -->
 <section>
     <h2>The Role of Human Judgment</h2>
-    <p>AI should supplement traditional learning, not replace it. Human judgment is crucial in verifying AI-provided information and applying it appropriately.</p>
+    <p>AI should supplement learning, not replace it. Every AI response should be treated the way you would treat any source: read it, evaluate it, and filter it through your own understanding before using it. Your judgment is the essential ingredient.</p>
     <p class="read-more"><a href="Proper_Academic_Use_of_LLMs_and_AI.html#the-role-of-human-judgment-in-using-ai-tools" target="_blank">Read More</a></p>
 </section>
 
-<!-- Slide 11: Examples of Acceptable Use: Brainstorming and Idea Generation -->
+<!-- Slide 11: Acceptable Use: Brainstorming -->
 <section>
     <h2>Acceptable Use: Brainstorming</h2>
-    <p>Use AI to brainstorm ideas for projects, such as exploring applications of chaos theory in weather prediction.</p>
+    <p>Use AI to explore possible directions for a project. For example: asking an AI to suggest real-world data topics for a statistics project, then independently deciding which direction to pursue and doing the actual work yourself.</p>
     <p class="read-more"><a href="Proper_Academic_Use_of_LLMs_and_AI.html#brainstorming-and-idea-generation" target="_blank">Read More</a></p>
 </section>
 
-<!-- Slide 12: Examples of Acceptable Use: Clarifying Concepts -->
+<!-- Slide 12: Acceptable Use: Clarifying Concepts -->
 <section>
     <h2>Acceptable Use: Clarifying Concepts</h2>
-    <p>Use AI to better understand concepts covered in class, like eigenvalues and eigenvectors in linear algebra.</p>
+    <p>Use AI to get a different explanation of something covered in class. For example: asking an AI to explain when the mean is more informative than the median, and following up with questions until the distinction makes sense.</p>
     <p class="read-more"><a href="Proper_Academic_Use_of_LLMs_and_AI.html#clarifying-concepts-already-covered-in-class" target="_blank">Read More</a></p>
 </section>
 
-<!-- Slide 13: Examples of Acceptable Use: Practice Problems -->
+<!-- Slide 13: Acceptable Use: Practice Problems -->
 <section>
     <h2>Acceptable Use: Practice Problems</h2>
-    <p>Use AI to get additional practice problems and explanations, such as integration by parts exercises.</p>
+    <p>Use AI as a practice partner — attempt a problem yourself first, then ask the AI to check your reasoning or generate a similar problem to try again. For example: working through percentage problems and asking for feedback on your approach when you get stuck.</p>
     <p class="read-more"><a href="Proper_Academic_Use_of_LLMs_and_AI.html#practice-problems-and-additional-explanations" target="_blank">Read More</a></p>
 </section>
 
-<!-- Slide 14: Examples of Acceptable Use: Simulating Discussions -->
+<!-- Slide 14: Acceptable Use: Evaluating Claims -->
 <section>
-    <h2>Acceptable Use: Simulating Discussions</h2>
-    <p>Engage in discussions with AI on advanced topics like Gödel’s Incompleteness Theorems to deepen understanding.</p>
+    <h2>Acceptable Use: Evaluating Quantitative Claims</h2>
+    <p>Use AI to think more critically about data and statistics in the real world. For example: asking an AI to explain why a headline statistic might not mean what it appears to mean, or what would be needed to support a causal claim from correlation data.</p>
     <p class="read-more"><a href="Proper_Academic_Use_of_LLMs_and_AI.html#simulating-discussions-on-mathematical-theories" target="_blank">Read More</a></p>
 </section>
 
-<!-- Slide 15: Examples of Unacceptable Use: Submitting AI-Generated Content -->
+<!-- Slide 15: Unacceptable Use: Submitting AI Content -->
 <section>
     <h2>Unacceptable Use: Submitting AI Content</h2>
-    <p>Submitting AI-generated content as original work without understanding or modification is plagiarism and unacceptable.</p>
+    <p>Asking an AI to write or solve an assignment and submitting that output as your own work is academic dishonesty — regardless of whether you understand the result or not. The work submitted must reflect your own thinking.</p>
     <p class="read-more"><a href="Proper_Academic_Use_of_LLMs_and_AI.html#submitting-ai-generated-content-as-original-work" target="_blank">Read More</a></p>
 </section>
 
-<!-- Slide 16: Examples of Unacceptable Use: Relying Solely on AI -->
+<!-- Slide 16: Unacceptable Use: Relying Solely on AI -->
 <section>
-    <h2>Unacceptable Use: Relying Solely on AI</h2>
-    <p>Blindly trusting AI-generated solutions without verification or understanding is not allowed.</p>
+    <h2>Unacceptable Use: Accepting AI Answers Without Verification</h2>
+    <p>Copying an AI's numerical answer without checking it is particularly risky in math courses. AI tools make arithmetic errors while showing confident, step-by-step work. The only protection is to verify the result yourself.</p>
     <p class="read-more"><a href="Proper_Academic_Use_of_LLMs_and_AI.html#relying-solely-on-ai-without-cross-verification" target="_blank">Read More</a></p>
 </section>
 
-<!-- Slide 17: Examples of Unacceptable Use: Using AI to Bypass Learning -->
+<!-- Slide 17: Unacceptable Use: Bypassing Learning -->
 <section>
     <h2>Unacceptable Use: Bypassing Learning</h2>
-    <p>Using AI to complete homework without attempting to solve the problems independently undermines learning.</p>
+    <p>Using AI to retrieve answers to homework problems without attempting them first prevents the skill-building the assignment is designed to support. On a quiz or exam, without AI available, you will have gained nothing.</p>
     <p class="read-more"><a href="Proper_Academic_Use_of_LLMs_and_AI.html#using-ai-to-bypass-learning-or-understanding-key-concepts" target="_blank">Read More</a></p>
 </section>
 
-<!-- Slide 18: Proper Use of LLMs and AI in Academic Settings -->
+<!-- Slide 18: AI and Mathematical Reasoning (NEW) -->
+<section>
+    <h2>AI and Mathematical Reasoning: A Warning</h2>
+    <p>LLMs are <strong>not calculators</strong>. They generate text that looks like correct mathematical work — but they make arithmetic errors, miss conditions on formulas, and produce wrong answers with apparent confidence. In statistics courses especially, always verify numerical results by hand or with a calculator.</p>
+    <p class="read-more"><a href="Proper_Academic_Use_of_LLMs_and_AI.html#ai-and-mathematical-reasoning" target="_blank">Read More</a></p>
+</section>
+
+<!-- Slide 19: Proper Use of AI in Academia -->
 <section>
     <h2>Proper Use of AI in Academia</h2>
-    <p>Use AI tools ethically to supplement learning without compromising academic integrity or bypassing educational objectives.</p>
+    <p>Use AI to enhance understanding, not replace it. Set a clear learning goal before opening an AI tool. Balance AI use with your textbook, class notes, and your own problem-solving attempts. AI is one resource among many — not the first stop for every question.</p>
     <p class="read-more"><a href="Proper_Academic_Use_of_LLMs_and_AI.html#proper-use-of-llms-and-ai-in-academic-settings" target="_blank">Read More</a></p>
 </section>
 
-<!-- Slide 19: Guidelines for Ethical Use of AI Tools -->
+<!-- Slide 20: Guidelines for Ethical Use -->
 <section>
     <h2>Guidelines for Ethical Use</h2>
-    <ul>
-        <li>Enhance understanding, not replace it</li>
-        <li>Cross-check AI-generated content</li>
-        <li>Acknowledge AI assistance</li>
+    <ul style="list-style: disc; padding-left: 1.5em;">
+        <li>Use AI to enhance understanding, not replace it</li>
+        <li>Always verify numerical results independently</li>
+        <li>Cross-check AI explanations with course materials</li>
+        <li>Disclose AI use and submit your prompt with your work</li>
     </ul>
     <p class="read-more"><a href="Proper_Academic_Use_of_LLMs_and_AI.html#using-ai-as-a-supplementary-tool" target="_blank">Read More</a></p>
 </section>
 
-<!-- Slide 20: How to Cite AI Tools in Academic Work -->
+<!-- Slide 21: How to Cite and Disclose AI Use -->
 <section>
-    <h2>How to Cite AI Tools</h2>
-    <p>Properly acknowledge AI tools in academic work by describing how they were used and citing them according to the appropriate style (e.g., APA, MLA).</p>
+    <h2>Disclosing and Citing AI Use</h2>
+    <p>When you use an AI tool, your submission must include: (1) a statement that AI was used and which tool, (2) the <strong>exact prompt</strong> you entered, and (3) a formal citation. The AI's response is then treated like any source: read, evaluated, and filtered through your own understanding.</p>
     <p class="read-more"><a href="Proper_Academic_Use_of_LLMs_and_AI.html#how-to-cite-ai-tools-in-academic-work" target="_blank">Read More</a></p>
 </section>
 
-<!-- QUIZ SLIDES -->
+<!-- ═══════════════════════════════════════════
+     QUIZ SLIDES
+═══════════════════════════════════════════ -->
 
-            <!-- Slide 21: Quiz 1 -->
-            <section data-state="quiz1">
-                <h2>Quiz: Proper Use of AI Tools</h2>
-                <p>What is the most important consideration when using AI tools in academic work?</p>
-                <ul id="quiz-options-1">
-                    <li><button onclick="checkAnswer(1, false)">To use AI to complete all assignments</button></li>
-                    <li><button onclick="checkAnswer(1, false)">To find shortcuts in learning</button></li>
-                    <li><button onclick="checkAnswer(1, true)">To ensure academic integrity and responsible use</button></li>
-                </ul>
-                <p id="feedback-1" style="color: red;"></p>
-            </section>
+<!-- Quiz 1: Mathematical Reliability -->
+<section data-state="quiz1" class="quiz-slide">
+    <h2>Quiz 1 of 4</h2>
+    <p>An AI assistant gives you a step-by-step solution to a statistics problem, showing its work clearly and arriving at a confident answer. What should you do?</p>
+    <ul id="quiz-options-1">
+        <li><button onclick="checkAnswer(1, false)">Accept the answer — the AI showed its work, so it must be correct</button></li>
+        <li><button onclick="checkAnswer(1, false)">Accept the answer only if it looks reasonable at a glance</button></li>
+        <li><button onclick="checkAnswer(1, true)">Verify the result yourself — AI can make arithmetic errors while showing confident work</button></li>
+    </ul>
+    <p id="feedback-1"></p>
+</section>
 
-            <!-- Slide 22: Quiz 2 -->
-            <section data-state="quiz2">
-                <h2>Quiz: Ethical Use of Advanced AI Tools</h2>
-                <p>Which of the following is a key strategy for ethically integrating AI in education?</p>
-                <ul id="quiz-options-2">
-                    <li><button onclick="checkAnswer(2, false)">Ignoring biases in AI algorithms</button></li>
-                    <li><button onclick="checkAnswer(2, true)">Regularly auditing AI algorithms for fairness</button></li>
-                    <li><button onclick="checkAnswer(2, false)">Using student data without consent</button></li>
-                </ul>
-                <p id="feedback-2" style="color: red;"></p>
-            </section>
+<!-- Quiz 2: Acceptable Use -->
+<section data-state="quiz2" class="quiz-slide">
+    <h2>Quiz 2 of 4</h2>
+    <p>Which of the following is an acceptable use of AI in this course?</p>
+    <ul id="quiz-options-2">
+        <li><button onclick="checkAnswer(2, false)">Asking AI to solve your homework problems, then reading the solutions</button></li>
+        <li><button onclick="checkAnswer(2, true)">Attempting a practice problem yourself first, then asking AI to explain why your approach went wrong</button></li>
+        <li><button onclick="checkAnswer(2, false)">Asking AI to write the explanation section of an assignment and submitting it</button></li>
+    </ul>
+    <p id="feedback-2"></p>
+</section>
 
-            <!-- Slide 23: Quiz 3 -->
-            <section data-state="quiz3">
-                <h2>Quiz: Acceptable vs. Unacceptable Uses of AI</h2>
-                <p>Which of the following is an acceptable use of AI in academic settings?</p>
-                <ul id="quiz-options-3">
-                    <li><button onclick="checkAnswer(3, false)">Submitting AI-generated essays as your own work</button></li>
-                    <li><button onclick="checkAnswer(3, true)">Using AI to clarify concepts learned in class</button></li>
-                    <li><button onclick="checkAnswer(3, false)">Using AI to cheat on exams</button></li>
-                </ul>
-                <p id="feedback-3" style="color: red;"></p>
-            </section>
+<!-- Quiz 3: Disclosure and Prompt Submission -->
+<section data-state="quiz3" class="quiz-slide">
+    <h2>Quiz 3 of 4</h2>
+    <p>You used Claude to help you understand a concept while working on an assignment. What does proper disclosure require you to submit?</p>
+    <ul id="quiz-options-3">
+        <li><button onclick="checkAnswer(3, false)">A note saying "I used Claude for help" is sufficient</button></li>
+        <li><button onclick="checkAnswer(3, false)">Nothing — using AI to understand concepts is always acceptable and doesn't need disclosure</button></li>
+        <li><button onclick="checkAnswer(3, true)">A statement that you used Claude, the exact prompt you entered, and a citation for the tool</button></li>
+    </ul>
+    <p id="feedback-3"></p>
+</section>
 
-            <!-- Slide 24: Quiz 4 -->
-            <section data-state="quiz4">
-                <h2>Quiz: Citing AI Tools Correctly</h2>
-                <p>What should you include when citing AI tools in academic work?</p>
-                <ul id="quiz-options-4">
-                    <li><button onclick="checkAnswer(4, true)">A clear statement that AI was used and a proper citation</button></li>
-                    <li><button onclick="checkAnswer(4, false)">Only a link to the AI tool</button></li>
-                    <li><button onclick="checkAnswer(4, false)">No citation is needed if AI was used privately</button></li>
-                </ul>
-                <p id="feedback-4" style="color: red;"></p>
-            </section>
-<!-- CONCLUSION SLIDE -->
+<!-- Quiz 4: Identifying a Problem -->
+<section data-state="quiz4" class="quiz-slide">
+    <h2>Quiz 4 of 4</h2>
+    <p>A student asks an AI "What is the mean of 8, 14, 21, 9, 18?" The AI responds: "The sum is 72, so the mean is 14.4." The student copies this into their assignment. What is the problem?</p>
+    <ul id="quiz-options-4">
+        <li><button onclick="checkAnswer(4, false)">There is no problem — the AI showed its work, so the answer is trustworthy</button></li>
+        <li><button onclick="checkAnswer(4, true)">The AI made an arithmetic error (the correct sum is 70, not 72), and the student didn't verify the result</button></li>
+        <li><button onclick="checkAnswer(4, false)">The problem is that the student asked a numerical question — AI should only be used for concepts</button></li>
+    </ul>
+    <p id="feedback-4"></p>
+</section>
 
-            <!-- Slide 25: Conclusion: Best Practices for Using AI in Education -->
-            <section>
-                <h2>Conclusion: Best Practices</h2>
-                <p>AI tools can enhance education when used responsibly. Stay informed, encourage ethical use, and continuously evaluate the impact of AI on learning.</p>
-                <p class="read-more"><a href="Proper_Academic_Use_of_LLMs_and_AI.html#conclusion" target="_blank">Read More</a></p>
+<!-- ═══════════════════════════════════════════
+     CONCLUSION SLIDE
+═══════════════════════════════════════════ -->
 
-                <!-- Button to Generate Unique Code -->
-                <div style="text-align: center; margin-top: 20px;">
-                    <button onclick="generateCode()">Generate Your Assignment Code</button>
-                    <p id="code-display" style="color: green; font-weight: bold; margin-top: 10px;"></p>
-                </div>
-            </section>
+<section>
+    <h2>Conclusion: Best Practices</h2>
+    <p>AI tools work best as thinking partners: tools for exploring, questioning, and understanding — not for retrieving answers. Use them honestly, verify their output, disclose their contribution, and submit your prompt. The thinking is yours.</p>
+    <p class="read-more"><a href="Proper_Academic_Use_of_LLMs_and_AI.html#conclusion" target="_blank">Read More</a></p>
+
+    <div style="text-align: center; margin-top: 24px;">
+        <button onclick="generateCode()">Generate Your Completion Code</button>
+        <p id="code-display"></p>
+    </div>
+</section>
+
         </div>
     </div>
 
-    <!-- Reveal.js script -->
+    <!-- ═══════════════════════════════════════════
+         INSTRUCTOR CODE VALIDATOR
+         Sits outside the slideshow — not visible to students during presentation.
+         Open the file directly in a browser to use it.
+    ═══════════════════════════════════════════ -->
+    <div id="validator-panel" style="
+        max-width: 520px;
+        margin: 40px auto;
+        padding: 28px 32px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-family: Georgia, serif;
+        background: #fafafa;
+        color: #222;
+    ">
+        <h3 style="margin-top: 0; font-size: 1.1em; letter-spacing: 0.02em;">Instructor: Verify Student Code</h3>
+        <p style="font-size: 0.88em; color: #555; margin-bottom: 16px;">
+            Paste a student's completion code below. Codes are valid for 7 days from generation.
+        </p>
+        <input
+            id="validator-input"
+            type="text"
+            placeholder="AI-EDU-1234567890123-ab3cd5ef7g"
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 9px 12px;
+                font-size: 0.95em;
+                border: 1px solid #bbb;
+                border-radius: 4px;
+                font-family: monospace;
+                margin-bottom: 12px;
+            "
+        />
+        <button onclick="validateCode()" style="
+            padding: 9px 20px;
+            font-size: 0.95em;
+            cursor: pointer;
+            border: 1px solid #888;
+            border-radius: 4px;
+            background: #f0f0f0;
+        ">Check Code</button>
+        <p id="validator-result" style="
+            margin-top: 14px;
+            font-size: 0.92em;
+            min-height: 1.4em;
+        "></p>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/reveal.js/dist/reveal.min.js"></script>
     <script>
-        // Function to generate a unique code
-        function generateCode() {
-            // Example code generation logic (e.g., random alphanumeric string)
-            const timestamp = new Date().getTime();
-            const randomString = Math.random().toString(36).substring(2, 12);
-            const uniqueCode = `AI-EDU-${timestamp}-${randomString}`;
-
-            // Display the generated code to the student
-            document.getElementById('code-display').textContent = `Your code: ${uniqueCode}`;
-        }
-
-        // Existing Quiz and Navigation Script
+        // Track which quizzes have been answered correctly
         let quizAnsweredCorrectly = {
             quiz1: false,
             quiz2: false,
@@ -268,17 +346,42 @@
             quiz4: false
         };
 
+        // Explanations shown after each correct answer
+        const correctExplanations = {
+            1: "Right. AI tools can produce confident, step-by-step solutions that contain arithmetic errors. Showing work is not the same as getting it right. Always verify.",
+            2: "Right. Attempting the problem yourself first, then using AI to understand your mistake, is exactly the kind of productive AI use this course supports.",
+            3: "Right. Disclosure requires three things: which tool you used, the exact prompt you entered, and a formal citation. The AI response is then treated like any other source.",
+            4: "Right. The correct sum is 8+14+21+9+18 = 70, giving a mean of 14 — not 14.4. This is a real example of how AI errors look. The step-by-step presentation makes them easy to miss."
+        };
+
         function checkAnswer(quizNumber, isCorrect) {
             const feedback = document.getElementById(`feedback-${quizNumber}`);
             if (isCorrect) {
                 feedback.style.color = 'green';
-                feedback.textContent = 'Correct! You may proceed.';
+                feedback.textContent = correctExplanations[quizNumber];
                 quizAnsweredCorrectly[`quiz${quizNumber}`] = true;
                 Reveal.configure({ controls: true, keyboard: true });
             } else {
-                feedback.style.color = 'red';
-                feedback.textContent = 'Incorrect. Please try again.';
+                feedback.style.color = '#c0392b';
+                feedback.textContent = 'Not quite — read the options again carefully.';
             }
+        }
+
+        function generateCode() {
+            const codeDisplay = document.getElementById('code-display');
+            const allPassed = Object.values(quizAnsweredCorrectly).every(Boolean);
+
+            if (!allPassed) {
+                codeDisplay.style.color = '#c0392b';
+                codeDisplay.textContent = 'You must answer all four quiz questions correctly before generating your code. Go back and complete any remaining quizzes.';
+                return;
+            }
+
+            const timestamp = new Date().getTime();
+            const randomString = Math.random().toString(36).substring(2, 12);
+            const uniqueCode = `AI-EDU-${timestamp}-${randomString}`;
+            codeDisplay.style.color = 'green';
+            codeDisplay.textContent = `Your completion code: ${uniqueCode}`;
         }
 
         Reveal.addEventListener('slidechanged', function(event) {
@@ -292,6 +395,45 @@
 
         Reveal.initialize({
             hash: true,
+        });
+
+        // ── Instructor code validator ──────────────────────────────────
+        function validateCode() {
+            const code = document.getElementById('validator-input').value.trim();
+            const result = document.getElementById('validator-result');
+            const pattern = /^AI-EDU-(\d+)-([a-z0-9]{10})$/;
+            const match = code.match(pattern);
+
+            if (!match) {
+                result.style.color = '#c0392b';
+                result.textContent = 'Invalid format. Expected: AI-EDU-{timestamp}-{10 characters}';
+                return;
+            }
+
+            const timestamp = parseInt(match[1], 10);
+            const codeDate = new Date(timestamp);
+
+            if (isNaN(codeDate.getTime())) {
+                result.style.color = '#c0392b';
+                result.textContent = 'Invalid timestamp in code.';
+                return;
+            }
+
+            const ageInDays = (Date.now() - timestamp) / (1000 * 60 * 60 * 24);
+
+            if (ageInDays > 7) {
+                result.style.color = '#c0392b';
+                result.textContent = `Code expired. Generated ${Math.floor(ageInDays)} days ago (${codeDate.toLocaleDateString()}).`;
+                return;
+            }
+
+            result.style.color = 'green';
+            result.textContent = `Valid. Generated on ${codeDate.toLocaleDateString()} at ${codeDate.toLocaleTimeString()} (${Math.floor(ageInDays)} day(s) ago).`;
+        }
+
+        // Allow Enter key in the validator input
+        document.getElementById('validator-input').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') validateCode();
         });
     </script>
 </body>
