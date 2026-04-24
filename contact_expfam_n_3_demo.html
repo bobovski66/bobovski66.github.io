@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Contact Geometry of Exponential Families — n = 3 Demo</title>
+<style>
+  :root {
+    --bg: #070810;
+    --panel: #141522;
+    --math: #0d0e17;
+    --ink: #eee4d4;
+    --muted: #9a94a8;
+    --faint: #5b5868;
+    --gold: #e0b060;
+    --teal: #42b7b4;
+    --blue: #79a9ff;
+    --violet: #b083ff;
+    --red: #d06a6a;
+    --green: #89c86a;
+    --line: #2a2b3a;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: Georgia, "Times New Roman", serif;
+  }
+
+  #app {
+    height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr;
+  }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 20px;
+    padding: 13px 18px 10px;
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(180deg, #111220, #070810);
+  }
+
+  header h1 {
+    margin: 0;
+    font-weight: 500;
+    font-size: 21px;
+    letter-spacing: 0.01em;
+  }
+
+  header h1 em { color: var(--gold); font-style: italic; }
+
+  header .sub {
+    font-size: 12px;
+    color: var(--muted);
+    font-style: italic;
+    text-align: right;
+  }
+
+  #main {
+    display: grid;
+    grid-template-columns: minmax(620px, 1fr) 420px;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  #viewGrid {
+    display: grid;
+    grid-template-rows: 1fr 255px;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 35% 20%, rgba(75,83,130,.22), transparent 35%),
+      radial-gradient(circle at 80% 75%, rgba(66,183,180,.13), transparent 45%),
+      linear-gradient(180deg, #0b0c16, #05060c);
+  }
+
+  #sceneWrap {
+    position: relative;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  #sceneCanvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+  }
+
+  #sceneCanvas:active { cursor: grabbing; }
+
+  #hud {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .legend {
+    position: absolute;
+    left: 15px;
+    top: 15px;
+    pointer-events: auto;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    background: rgba(8,9,18,.72);
+    border-radius: 12px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.55;
+    backdrop-filter: blur(6px);
+    max-width: 430px;
+  }
+
+  .legend .row { display: flex; align-items: center; gap: 8px; }
+  .swatch { width: 18px; height: 3px; border-radius: 999px; flex: none; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+
+  .caption {
+    position: absolute;
+    left: 18px;
+    right: 18px;
+    bottom: 13px;
+    max-width: 930px;
+    color: var(--muted);
+    font-size: 12.5px;
+    line-height: 1.45;
+    font-style: italic;
+    pointer-events: none;
+    background: linear-gradient(90deg, rgba(8,9,18,.76), rgba(8,9,18,.32), transparent);
+    padding: 10px 12px;
+    border-radius: 12px;
+  }
+
+  #lowerPanels {
+    border-top: 1px solid var(--line);
+    background: rgba(9,10,19,.98);
+    display: grid;
+    grid-template-columns: 1.1fr 1fr 1fr;
+    gap: 1px;
+    min-height: 0;
+  }
+
+  .miniPanel {
+    background: var(--panel);
+    padding: 12px;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .miniPanel canvas {
+    width: 100%;
+    height: calc(100% - 24px);
+    min-height: 185px;
+    display: block;
+    border: 1px solid var(--line);
+    background: var(--math);
+    border-radius: 12px;
+  }
+
+  #sidebar {
+    overflow-y: auto;
+    border-left: 1px solid var(--line);
+    background: var(--panel);
+  }
+
+  #sidebar::-webkit-scrollbar { width: 7px; }
+  #sidebar::-webkit-scrollbar-track { background: var(--panel); }
+  #sidebar::-webkit-scrollbar-thumb { background: #303244; border-radius: 999px; }
+
+  .panel {
+    padding: 14px 17px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .panel-title {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .17em;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  select, button {
+    width: 100%;
+    background: var(--math);
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    padding: 8px 10px;
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+  }
+
+  select:focus, button:focus, input:focus { border-color: var(--gold); }
+
+  button {
+    cursor: pointer;
+    margin-top: 8px;
+    background: linear-gradient(180deg, #20223a, #11121f);
+  }
+
+  button:hover { border-color: #4b4f70; }
+
+  .eq {
+    margin-top: 10px;
+    padding: 9px 10px;
+    background: var(--math);
+    border-left: 3px solid var(--gold);
+    border-radius: 8px;
+    line-height: 1.55;
+    font-size: 14px;
+    font-style: italic;
+    overflow-wrap: anywhere;
+  }
+
+  .grid3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+
+  .slider-row { padding: 6px 0 7px; }
+  .slider-label {
+    display: flex;
+    justify-content: space-between;
+    color: var(--muted);
+    font-size: 12px;
+    margin-bottom: 4px;
+    font-style: italic;
+    gap: 8px;
+  }
+
+  .slider-label .val {
+    color: var(--gold);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-style: normal;
+  }
+
+  input[type="range"] { width: 100%; accent-color: var(--gold); }
+
+  .state-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 14px;
+    padding: 4px 0;
+  }
+
+  .state-row .var { color: var(--muted); font-style: italic; }
+  .state-row .val {
+    color: var(--gold);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12.5px;
+    font-feature-settings: "tnum";
+  }
+
+  .toggle-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    color: var(--ink);
+    font-size: 13px;
+    line-height: 1.35;
+    padding: 5px 0;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .toggle-row input { margin-top: 2px; accent-color: var(--gold); }
+  .toggle-row span small { color: var(--muted); display: block; margin-top: 1px; }
+
+  .hint {
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 11.5px;
+    line-height: 1.48;
+    font-style: italic;
+  }
+
+  .pillbar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 7px;
+  }
+
+  .pill {
+    padding: 7px 6px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--math);
+    text-align: center;
+    color: var(--muted);
+    font-size: 11px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .pill.active {
+    color: var(--ink);
+    border-color: var(--gold);
+    background: rgba(224,176,96,.12);
+  }
+
+  @media (max-width: 1100px) {
+    body { overflow: auto; }
+    #app { height: auto; min-height: 100vh; }
+    #main { grid-template-columns: 1fr; height: auto; }
+    #viewGrid { height: 780px; }
+    #sidebar { border-left: none; border-top: 1px solid var(--line); }
+  }
+
+  @media (max-width: 760px) {
+    #lowerPanels { grid-template-columns: 1fr; }
+    #viewGrid { height: 1180px; grid-template-rows: 520px 1fr; }
+    .grid3 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>The Contact Geometry of Exponential Families <em>— n = 3 case</em></h1>
+    <div class="sub">A 7-dimensional contact construction seen by slicing, projecting, and observing the Fisher ellipsoid</div>
+  </header>
+
+  <div id="main">
+    <section id="viewGrid">
+      <div id="sceneWrap">
+        <canvas id="sceneCanvas"></canvas>
+        <div id="hud">
+          <div class="legend">
+            <div class="row"><span class="swatch" style="background: var(--gold)"></span><span>Slice front: z = ψ(θ₁, θ₂, θ₃ = c)</span></div>
+            <div class="row"><span class="swatch" style="background: var(--teal)"></span><span>Moment arrows: η = ∇ψ(θ)</span></div>
+            <div class="row"><span class="swatch" style="background: var(--blue)"></span><span>Fisher ellipsoid: Hess ψ = Cov(Fᵢ,Fⱼ)</span></div>
+            <div class="row"><span class="swatch" style="background: var(--red)"></span><span>Reeb direction: z ↦ z + s</span></div>
+            <div class="row"><span class="dot" style="background: var(--violet)"></span><span>Selected state on the slice of Lψ</span></div>
+          </div>
+          <div class="caption" id="caption">
+            For n = 3, the full contact manifold C₃ has coordinates (θ₁,θ₂,θ₃,η₁,η₂,η₃,z), so it is seven-dimensional. The Legendrian Lψ is a three-dimensional object. This page shows a moving two-dimensional slice θ₃ = c, while the missing dimensions are encoded by the moment map, probability bars, and Fisher ellipsoid.
+          </div>
+        </div>
+      </div>
+
+      <div id="lowerPanels">
+        <div class="miniPanel">
+          <div class="panel-title">Moment image M = ∇ψ(Θ)</div>
+          <canvas id="momentCanvas" width="420" height="210"></canvas>
+        </div>
+        <div class="miniPanel">
+          <div class="panel-title">Distribution on finite support X</div>
+          <canvas id="probCanvas" width="360" height="210"></canvas>
+        </div>
+        <div class="miniPanel">
+          <div class="panel-title">Fisher spectrum</div>
+          <canvas id="spectrumCanvas" width="360" height="210"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <aside id="sidebar">
+      <div class="panel">
+        <div class="panel-title">Three-parameter exponential family</div>
+        <select id="familySelect">
+          <option value="softmax4">Categorical / softmax on four outcomes</option>
+          <option value="productBernoulli3">Product Bernoulli on {0,1}³</option>
+          <option value="ising2Full">Two-spin full Ising family</option>
+          <option value="gaussianMoments3">Discrete Gaussian: mean / variance / skew</option>
+          <option value="absMoment3">Mean / absolute-value / quadratic</option>
+        </select>
+        <div class="eq" id="psiEq"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Slice and selected parameter</div>
+        <div class="grid3">
+          <div class="slider-row">
+            <div class="slider-label"><span>θ₁</span><span class="val" id="theta1Val">0.00</span></div>
+            <input type="range" id="theta1" min="-4" max="4" step="0.01" value="0" />
+          </div>
+          <div class="slider-row">
+            <div class="slider-label"><span>θ₂</span><span class="val" id="theta2Val">0.00</span></div>
+            <input type="range" id="theta2" min="-4" max="4" step="0.01" value="0" />
+          </div>
+          <div class="slider-row">
+            <div class="slider-label"><span>θ₃</span><span class="val" id="theta3Val">0.00</span></div>
+            <input type="range" id="theta3" min="-4" max="4" step="0.01" value="0" />
+          </div>
+        </div>
+        <div class="hint">The main surface is the two-dimensional slice z = ψ(θ₁, θ₂, θ₃) at the current value of θ₃.</div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">State on Lψ</div>
+        <div class="state-row"><span class="var">η₁ = ∂₁ψ</span><span class="val" id="eta1Val">0.250</span></div>
+        <div class="state-row"><span class="var">η₂ = ∂₂ψ</span><span class="val" id="eta2Val">0.250</span></div>
+        <div class="state-row"><span class="var">η₃ = ∂₃ψ</span><span class="val" id="eta3Val">0.250</span></div>
+        <div class="state-row"><span class="var">z = ψ(θ)</span><span class="val" id="zVal">1.386</span></div>
+        <div class="state-row"><span class="var">det Hess ψ</span><span class="val" id="detVal">0.004</span></div>
+        <div class="state-row"><span class="var">φ = θ·η − ψ</span><span class="val" id="phiVal">−1.386</span></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Projection mode</div>
+        <div class="pillbar">
+          <div class="pill active" data-mode="slice">Slice</div>
+          <div class="pill" data-mode="moment">Moment</div>
+          <div class="pill" data-mode="metric">Metric</div>
+        </div>
+        <div class="hint" id="modeHint">Slice mode shows the generating front z = ψ(θ₁, θ₂, c). The hidden θ₃ direction is experienced by moving the slice.</div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Fisher–Rao metric</div>
+        <div class="eq" id="fisherEq"></div>
+        <div class="hint">In n = 3, the local Fisher geometry is an ellipsoid. Its principal axes come from the eigenvectors of Hess ψ, and its radii scale with the square roots of the eigenvalues.</div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Visible higher-dimensional structure</div>
+        <label class="toggle-row"><input type="checkbox" id="showSurface" checked><span>Slice surface <small>front projection of θ₃ = c section</small></span></label>
+        <label class="toggle-row"><input type="checkbox" id="showMomentArrows" checked><span>Moment arrows <small>η = ∇ψ encoded on the slice</small></span></label>
+        <label class="toggle-row"><input type="checkbox" id="showEllipsoid" checked><span>Fisher ellipsoid <small>3D covariance geometry at selected θ</small></span></label>
+        <label class="toggle-row"><input type="checkbox" id="showReeb" checked><span>Reeb direction <small>pure normalization shift</small></span></label>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Contact transformations</div>
+        <div class="slider-row">
+          <div class="slider-label"><span>Reeb shift s</span><span class="val" id="reebVal">+0.00</span></div>
+          <input type="range" id="reebShift" min="-2" max="2" step="0.01" value="0" />
+        </div>
+        <div class="slider-row">
+          <div class="slider-label"><span>θ-plane rotation</span><span class="val" id="rotVal">0°</span></div>
+          <input type="range" id="rot" min="-90" max="90" step="1" value="0" />
+        </div>
+        <div class="slider-row">
+          <div class="slider-label"><span>θ₃ coupling into slice</span><span class="val" id="coupleVal">0.00</span></div>
+          <input type="range" id="couple" min="-1.2" max="1.2" step="0.01" value="0" />
+        </div>
+        <button id="resetBtn">Reset view and parameters</button>
+        <div class="hint">These controls visualize coordinate changes and slice coupling. The mathematical model underneath is still the Legendrian graph (θ,∇ψ,ψ) in C₃.</div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ================================================================
+// Utilities
+// ================================================================
+const TAU = Math.PI * 2;
+const clamp = (x,a,b) => Math.max(a, Math.min(b, x));
+const lerp = (a,b,t) => a + (b-a)*t;
+const fmt = (x,n=3) => Number.isFinite(x) ? x.toFixed(n) : '—';
+
+function logSumExp(values) {
+  const m = Math.max(...values);
+  let s = 0;
+  for (const v of values) s += Math.exp(v-m);
+  return m + Math.log(s);
+}
+
+function rangeInt(a,b) {
+  const out=[];
+  for (let k=a;k<=b;k++) out.push(k);
+  return out;
+}
+
+function canvasClear(ctx) {
+  ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
+  ctx.fillStyle = '#0d0e17';
+  ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height);
+}
+
+function drawText(ctx, txt, x, y, color='#eee4d4', size=12, align='left') {
+  ctx.fillStyle=color;
+  ctx.font=`${size}px Georgia, serif`;
+  ctx.textAlign=align;
+  ctx.textBaseline='middle';
+  ctx.fillText(txt,x,y);
+}
+
+function colorFromT(t) {
+  t = clamp(t,0,1);
+  let r,g,b;
+  if (t < 0.5) {
+    const u=t/0.5;
+    r=lerp(224,66,u); g=lerp(176,183,u); b=lerp(96,180,u);
+  } else {
+    const u=(t-0.5)/0.5;
+    r=lerp(66,176,u); g=lerp(183,131,u); b=lerp(180,255,u);
+  }
+  return (Math.round(r)<<16) + (Math.round(g)<<8) + Math.round(b);
+}
+
+function mat3JacobiEigen(A) {
+  // Symmetric 3x3 Jacobi eigen decomposition.
+  let a = [A[0].slice(), A[1].slice(), A[2].slice()];
+  let V = [[1,0,0],[0,1,0],[0,0,1]];
+  for (let iter=0; iter<40; iter++) {
+    let p=0,q=1,max=Math.abs(a[0][1]);
+    const pairs=[[0,2],[1,2]];
+    for (const [i,j] of pairs) {
+      const val=Math.abs(a[i][j]);
+      if (val>max) { max=val; p=i; q=j; }
+    }
+    if (max < 1e-10) break;
+    const app=a[p][p], aqq=a[q][q], apq=a[p][q];
+    const tau=(aqq-app)/(2*apq);
+    const t=Math.sign(tau || 1)/(Math.abs(tau)+Math.sqrt(1+tau*tau));
+    const c=1/Math.sqrt(1+t*t), s=t*c;
+    for (let k=0;k<3;k++) {
+      if (k!==p && k!==q) {
+        const akp=a[k][p], akq=a[k][q];
+        a[k][p]=a[p][k]=c*akp-s*akq;
+        a[k][q]=a[q][k]=s*akp+c*akq;
+      }
+    }
+    a[p][p]=c*c*app - 2*s*c*apq + s*s*aqq;
+    a[q][q]=s*s*app + 2*s*c*apq + c*c*aqq;
+    a[p][q]=a[q][p]=0;
+    for (let k=0;k<3;k++) {
+      const vkp=V[k][p], vkq=V[k][q];
+      V[k][p]=c*vkp-s*vkq;
+      V[k][q]=s*vkp+c*vkq;
+    }
+  }
+  const vals=[a[0][0],a[1][1],a[2][2]].map(x => Math.max(0,x));
+  const items=vals.map((val,i)=>({val, vec:[V[0][i],V[1][i],V[2][i]]})).sort((x,y)=>y.val-x.val);
+  return items;
+}
+
+function makeDiscreteFamily3(config) {
+  const X=config.X, F=config.F, h=config.h || (()=>1);
+  function features(x) { return [F[0](x),F[1](x),F[2](x)]; }
+  function logTerms(t) {
+    return X.map(x => {
+      const f=features(x);
+      return t[0]*f[0] + t[1]*f[1] + t[2]*f[2] + Math.log(h(x));
+    });
+  }
+  return {
+    name: config.name,
+    thetaRange: config.thetaRange,
+    eq: config.eq,
+    labels: config.labels || X.map(x => Array.isArray(x) ? x.join('') : String(x)),
+    X, features,
+    psi(t1,t2,t3) { return logSumExp(logTerms([t1,t2,t3])); },
+    probs(t1,t2,t3) {
+      const lt=logTerms([t1,t2,t3]);
+      const lse=logSumExp(lt);
+      return lt.map(v => Math.exp(v-lse));
+    },
+    grad(t1,t2,t3) {
+      const p=this.probs(t1,t2,t3);
+      const e=[0,0,0];
+      for (let i=0;i<X.length;i++) {
+        const f=features(X[i]);
+        for (let k=0;k<3;k++) e[k]+=f[k]*p[i];
+      }
+      return e;
+    },
+    hess(t1,t2,t3) {
+      const p=this.probs(t1,t2,t3);
+      const g=this.grad(t1,t2,t3);
+      const E=[[0,0,0],[0,0,0],[0,0,0]];
+      for (let i=0;i<X.length;i++) {
+        const f=features(X[i]);
+        for (let r=0;r<3;r++) for (let c=0;c<3;c++) E[r][c]+=f[r]*f[c]*p[i];
+      }
+      for (let r=0;r<3;r++) for (let c=0;c<3;c++) E[r][c]-=g[r]*g[c];
+      return E;
+    }
+  };
+}
+
+function det3(M) {
+  return M[0][0]*(M[1][1]*M[2][2]-M[1][2]*M[2][1])
+       - M[0][1]*(M[1][0]*M[2][2]-M[1][2]*M[2][0])
+       + M[0][2]*(M[1][0]*M[2][1]-M[1][1]*M[2][0]);
+}
+
+// ================================================================
+// Families
+// ================================================================
+const families = {
+  softmax4: {
+    name: 'Categorical / softmax on four outcomes',
+    thetaRange: [-4,4],
+    eq: 'ψ(θ)=log(1+e^{θ₁}+e^{θ₂}+e^{θ₃}), with ηᵢ=pᵢ and p₀=1−η₁−η₂−η₃',
+    labels: ['0','1','2','3'],
+    psi(t1,t2,t3) { return logSumExp([0,t1,t2,t3]); },
+    probs(t1,t2,t3) {
+      const lse=this.psi(t1,t2,t3);
+      return [Math.exp(-lse),Math.exp(t1-lse),Math.exp(t2-lse),Math.exp(t3-lse)];
+    },
+    grad(t1,t2,t3) { const p=this.probs(t1,t2,t3); return [p[1],p[2],p[3]]; },
+    hess(t1,t2,t3) {
+      const p=this.probs(t1,t2,t3); const q=[p[1],p[2],p[3]];
+      const H=[[0,0,0],[0,0,0],[0,0,0]];
+      for (let i=0;i<3;i++) for (let j=0;j<3;j++) H[i][j]=(i===j?q[i]:0)-q[i]*q[j];
+      return H;
+    }
+  },
+
+  productBernoulli3: makeDiscreteFamily3({
+    name: 'Product Bernoulli on {0,1}³',
+    thetaRange: [-4,4],
+    eq: 'ψ(θ)=Σᵢ log(1+e^{θᵢ}), independent Bernoulli coordinates',
+    X: [[0,0,0],[1,0,0],[0,1,0],[0,0,1],[1,1,0],[1,0,1],[0,1,1],[1,1,1]],
+    F: [x=>x[0], x=>x[1], x=>x[2]],
+    labels: ['000','100','010','001','110','101','011','111']
+  }),
+
+  ising2Full: makeDiscreteFamily3({
+    name: 'Two-spin full Ising family',
+    thetaRange: [-2.5,2.5],
+    eq: 'X={−1,1}²,  F₁=x₁, F₂=x₂, F₃=x₁x₂,  ψ=log Σ exp(θ₁F₁+θ₂F₂+θ₃F₃)',
+    X: [[-1,-1],[-1,1],[1,-1],[1,1]],
+    F: [x=>x[0], x=>x[1], x=>x[0]*x[1]],
+    labels: ['--','-+','+-','++']
+  }),
+
+  gaussianMoments3: makeDiscreteFamily3({
+    name: 'Discrete Gaussian: mean / variance / skew',
+    thetaRange: [-1.25,1.25],
+    eq: 'X={−3,…,3},  F₁=x, F₂=x², F₃=x³,  ψ=log Σ exp(θ₁x+θ₂x²+θ₃x³)',
+    X: rangeInt(-3,3),
+    F: [x=>x, x=>x*x, x=>x*x*x]
+  }),
+
+  absMoment3: makeDiscreteFamily3({
+    name: 'Mean / absolute-value / quadratic',
+    thetaRange: [-2.0,2.0],
+    eq: 'X={−4,…,4},  F₁=x, F₂=|x|, F₃=x²,  ψ=log Σ exp(θ₁x+θ₂|x|+θ₃x²)',
+    X: rangeInt(-4,4),
+    F: [x=>x, x=>Math.abs(x), x=>x*x]
+  })
+};
+
+const state = {
+  familyKey: 'softmax4',
+  theta1: 0,
+  theta2: 0,
+  theta3: 0,
+  reeb: 0,
+  rotDeg: 0,
+  couple: 0,
+  mode: 'slice',
+  showSurface: true,
+  showMomentArrows: true,
+  showEllipsoid: true,
+  showReeb: true
+};
+
+let fam=families[state.familyKey];
+let zMin=0,zMax=1;
+let etaBounds={min:[0,0,0],max:[1,1,1]};
+
+function transformedTheta(u,v,w) {
+  const a=state.rotDeg*Math.PI/180;
+  const c=Math.cos(a), s=Math.sin(a);
+  let x=c*u+s*v;
+  let y=-s*u+c*v;
+  let z=w;
+  x += state.couple*w*0.45;
+  y -= state.couple*w*0.25;
+  return [x,y,z];
+}
+
+function currentData() {
+  const t=transformedTheta(state.theta1,state.theta2,state.theta3);
+  const z=fam.psi(t[0],t[1],t[2]) + state.reeb;
+  const eta=fam.grad(t[0],t[1],t[2]);
+  const H=fam.hess(t[0],t[1],t[2]);
+  const det=det3(H);
+  const phi=t[0]*eta[0]+t[1]*eta[1]+t[2]*eta[2]-fam.psi(t[0],t[1],t[2]);
+  return {t,z,eta,H,det,phi};
+}
+
+function sampleRanges() {
+  const [a,b]=fam.thetaRange;
+  let minZ=Infinity,maxZ=-Infinity;
+  let min=[Infinity,Infinity,Infinity], max=[-Infinity,-Infinity,-Infinity];
+  const N=26;
+  for (let i=0;i<=N;i++) for (let j=0;j<=N;j++) {
+    const u=lerp(a,b,i/N), v=lerp(a,b,j/N), w=state.theta3;
+    const t=transformedTheta(u,v,w);
+    const z=fam.psi(t[0],t[1],t[2])+state.reeb;
+    const eta=fam.grad(t[0],t[1],t[2]);
+    minZ=Math.min(minZ,z); maxZ=Math.max(maxZ,z);
+    for (let k=0;k<3;k++) { min[k]=Math.min(min[k],eta[k]); max[k]=Math.max(max[k],eta[k]); }
+  }
+  // Also sample moment volume coarsely over theta3 so lower panel is stable.
+  const M=12;
+  for (let i=0;i<=M;i++) for (let j=0;j<=M;j++) for (let k=0;k<=M;k++) {
+    const u=lerp(a,b,i/M), v=lerp(a,b,j/M), w=lerp(a,b,k/M);
+    const t=transformedTheta(u,v,w);
+    const eta=fam.grad(t[0],t[1],t[2]);
+    for (let r=0;r<3;r++) { min[r]=Math.min(min[r],eta[r]); max[r]=Math.max(max[r],eta[r]); }
+  }
+  const padZ=(maxZ-minZ)*0.08 || 1;
+  zMin=minZ-padZ; zMax=maxZ+padZ;
+  for (let k=0;k<3;k++) {
+    const pad=(max[k]-min[k])*0.08 || 1;
+    min[k]-=pad; max[k]+=pad;
+  }
+  etaBounds={min,max};
+}
+
+function scenePoint(u,v,z) {
+  const [a,b]=fam.thetaRange;
+  const x=((u-a)/(b-a))*6 - 3;
+  const zz=((v-a)/(b-a))*6 - 3;
+  const y=((z-zMin)/(zMax-zMin))*4 - 2;
+  return new THREE.Vector3(x,y,zz);
+}
+
+function momentPoint3(eta) {
+  const x=((eta[0]-etaBounds.min[0])/(etaBounds.max[0]-etaBounds.min[0]))*6 - 3;
+  const y=((eta[2]-etaBounds.min[2])/(etaBounds.max[2]-etaBounds.min[2]))*4 - 2;
+  const z=((eta[1]-etaBounds.min[1])/(etaBounds.max[1]-etaBounds.min[1]))*6 - 3;
+  return new THREE.Vector3(x,y,z);
+}
+
+// ================================================================
+// Three scene
+// ================================================================
+const canvas=document.getElementById('sceneCanvas');
+const scene=new THREE.Scene();
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+renderer.setPixelRatio(window.devicePixelRatio || 1);
+const camera=new THREE.PerspectiveCamera(42,1,0.1,1000);
+
+const root=new THREE.Group(); scene.add(root);
+const surfaceGroup=new THREE.Group();
+const wireGroup=new THREE.Group();
+const arrowGroup=new THREE.Group();
+const ellipsoidGroup=new THREE.Group();
+const reebGroup=new THREE.Group();
+const pointGroup=new THREE.Group();
+const axesGroup=new THREE.Group();
+root.add(surfaceGroup,wireGroup,arrowGroup,ellipsoidGroup,reebGroup,pointGroup,axesGroup);
+
+const light=new THREE.DirectionalLight(0xffffff,1.25); light.position.set(5,8,7); scene.add(light);
+scene.add(new THREE.AmbientLight(0xffffff,0.37));
+
+const orbit={phi:1.08,theta:0.72,dist:10.5,target:new THREE.Vector3(0,0,0)};
+function applyCamera(){
+  const x=orbit.dist*Math.sin(orbit.phi)*Math.cos(orbit.theta);
+  const y=orbit.dist*Math.cos(orbit.phi);
+  const z=orbit.dist*Math.sin(orbit.phi)*Math.sin(orbit.theta);
+  camera.position.set(x,y,z).add(orbit.target);
+  camera.lookAt(orbit.target);
+}
+applyCamera();
+
+let dragging=false,lastX=0,lastY=0;
+canvas.addEventListener('pointerdown',e=>{dragging=true;lastX=e.clientX;lastY=e.clientY;canvas.setPointerCapture(e.pointerId);});
+canvas.addEventListener('pointermove',e=>{
+  if(!dragging)return;
+  const dx=e.clientX-lastX, dy=e.clientY-lastY; lastX=e.clientX; lastY=e.clientY;
+  if(e.shiftKey){
+    const right=new THREE.Vector3(); camera.getWorldDirection(right).cross(new THREE.Vector3(0,1,0)).normalize();
+    const up=new THREE.Vector3(0,1,0);
+    orbit.target.addScaledVector(right,-dx*.008); orbit.target.addScaledVector(up,dy*.008);
+  }else{
+    orbit.theta-=dx*.006; orbit.phi-=dy*.006; orbit.phi=clamp(orbit.phi,.14,Math.PI-.14);
+  }
+  applyCamera();
+});
+canvas.addEventListener('pointerup',()=>dragging=false);
+canvas.addEventListener('pointercancel',()=>dragging=false);
+canvas.addEventListener('wheel',e=>{e.preventDefault(); orbit.dist*=Math.exp(e.deltaY*.0008); orbit.dist=clamp(orbit.dist,4,45); applyCamera();},{passive:false});
+
+function resize(){
+  const w=canvas.clientWidth,h=canvas.clientHeight;
+  renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(canvas); resize();
+
+function clearGroup(g){
+  while(g.children.length){
+    const c=g.children.pop();
+    if(c.geometry)c.geometry.dispose();
+    if(c.material){ if(Array.isArray(c.material))c.material.forEach(m=>m.dispose()); else c.material.dispose(); }
+  }
+}
+
+function addLine(group,pts,color,opacity=1){
+  const geo=new THREE.BufferGeometry().setFromPoints(pts);
+  const mat=new THREE.LineBasicMaterial({color,transparent:opacity<1,opacity});
+  const line=new THREE.Line(geo,mat); group.add(line); return line;
+}
+
+function addArrow(group,from,to,color,opacity=1){
+  const dir=new THREE.Vector3().subVectors(to,from); const len=dir.length(); if(len<1e-5)return;
+  dir.normalize();
+  const arrow=new THREE.ArrowHelper(dir,from,len,color,Math.min(.16,len*.34),Math.min(.09,len*.18));
+  arrow.cone.material.transparent=arrow.line.material.transparent=opacity<1;
+  arrow.cone.material.opacity=arrow.line.material.opacity=opacity;
+  group.add(arrow);
+}
+
+function buildAxes(){
+  clearGroup(axesGroup);
+  addLine(axesGroup,[new THREE.Vector3(-3.3,-2,-3.3),new THREE.Vector3(3.3,-2,-3.3)],0x505064,.75);
+  addLine(axesGroup,[new THREE.Vector3(-3.3,-2,-3.3),new THREE.Vector3(-3.3,-2,3.3)],0x505064,.75);
+  addLine(axesGroup,[new THREE.Vector3(-3.3,-2,-3.3),new THREE.Vector3(-3.3,2.35,-3.3)],0x505064,.75);
+  const grid=new THREE.GridHelper(6.6,10,0x303246,0x202230); grid.position.y=-2; grid.material.transparent=true; grid.material.opacity=.48; axesGroup.add(grid);
+}
+
+function buildSurface(){
+  clearGroup(surfaceGroup); clearGroup(wireGroup);
+  if(!state.showSurface)return;
+  const [a,b]=fam.thetaRange;
+  const N=54;
+  const verts=[], colors=[], indices=[];
+  for(let i=0;i<=N;i++) for(let j=0;j<=N;j++){
+    const u=lerp(a,b,i/N), v=lerp(a,b,j/N), w=state.theta3;
+    const t=transformedTheta(u,v,w);
+    let p;
+    if(state.mode==='moment'){
+      const eta=fam.grad(t[0],t[1],t[2]); p=momentPoint3(eta);
+    }else{
+      const z=fam.psi(t[0],t[1],t[2])+state.reeb; p=scenePoint(u,v,z);
+    }
+    verts.push(p.x,p.y,p.z);
+    const H=fam.hess(t[0],t[1],t[2]);
+    const det=Math.max(0,det3(H));
+    const color=new THREE.Color(colorFromT(clamp(Math.pow(det,1/3)*2.4,0,1)));
+    colors.push(color.r,color.g,color.b);
+  }
+  for(let i=0;i<N;i++)for(let j=0;j<N;j++){
+    const k=i*(N+1)+j; indices.push(k,k+1,k+N+1,k+1,k+N+2,k+N+1);
+  }
+  const geo=new THREE.BufferGeometry();
+  geo.setAttribute('position',new THREE.Float32BufferAttribute(verts,3));
+  geo.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));
+  geo.setIndex(indices); geo.computeVertexNormals();
+  const mat=new THREE.MeshLambertMaterial({vertexColors:true,transparent:true,opacity:.72,side:THREE.DoubleSide,depthWrite:true});
+  surfaceGroup.add(new THREE.Mesh(geo,mat));
+
+  const step=7;
+  for(let i=0;i<=N;i+=step){
+    const pts=[];
+    for(let j=0;j<=N;j++){
+      const u=lerp(a,b,i/N), v=lerp(a,b,j/N), w=state.theta3; const t=transformedTheta(u,v,w);
+      pts.push(state.mode==='moment' ? momentPoint3(fam.grad(t[0],t[1],t[2])) : scenePoint(u,v,fam.psi(t[0],t[1],t[2])+state.reeb));
+    }
+    addLine(wireGroup,pts,0xe0b060,.28);
+  }
+  for(let j=0;j<=N;j+=step){
+    const pts=[];
+    for(let i=0;i<=N;i++){
+      const u=lerp(a,b,i/N), v=lerp(a,b,j/N), w=state.theta3; const t=transformedTheta(u,v,w);
+      pts.push(state.mode==='moment' ? momentPoint3(fam.grad(t[0],t[1],t[2])) : scenePoint(u,v,fam.psi(t[0],t[1],t[2])+state.reeb));
+    }
+    addLine(wireGroup,pts,0x42b7b4,.22);
+  }
+}
+
+function buildMomentArrows(){
+  clearGroup(arrowGroup);
+  if(!state.showMomentArrows || state.mode==='moment')return;
+  const [a,b]=fam.thetaRange; const n=7;
+  for(let i=1;i<n;i++) for(let j=1;j<n;j++){
+    const u=lerp(a,b,i/n), v=lerp(a,b,j/n), w=state.theta3;
+    const t=transformedTheta(u,v,w);
+    const z=fam.psi(t[0],t[1],t[2])+state.reeb;
+    const base=scenePoint(u,v,z);
+    const eta=fam.grad(t[0],t[1],t[2]);
+    const ex=(eta[0]-etaBounds.min[0])/(etaBounds.max[0]-etaBounds.min[0])-.5;
+    const ey=(eta[2]-etaBounds.min[2])/(etaBounds.max[2]-etaBounds.min[2])-.5;
+    const ez=(eta[1]-etaBounds.min[1])/(etaBounds.max[1]-etaBounds.min[1])-.5;
+    const to=base.clone().add(new THREE.Vector3(ex,ey*.45+.08,ez).multiplyScalar(.55));
+    addArrow(arrowGroup,base,to,0x42b7b4,.56);
+  }
+}
+
+function buildSelectedPoint(){
+  clearGroup(pointGroup);
+  const d=currentData();
+  const p=state.mode==='moment' ? momentPoint3(d.eta) : scenePoint(state.theta1,state.theta2,d.z);
+  const sphere=new THREE.Mesh(new THREE.SphereGeometry(.105,24,16),new THREE.MeshBasicMaterial({color:0xb083ff}));
+  sphere.position.copy(p); pointGroup.add(sphere);
+  addLine(pointGroup,[new THREE.Vector3(p.x,-2,p.z),p],0xb083ff,.45);
+}
+
+function buildEllipsoid(){
+  clearGroup(ellipsoidGroup);
+  if(!state.showEllipsoid)return;
+  const d=currentData();
+  const center=state.mode==='moment' ? momentPoint3(d.eta) : scenePoint(state.theta1,state.theta2,d.z+.06);
+  const eig=mat3JacobiEigen(d.H);
+  const geo=new THREE.SphereGeometry(1,28,18);
+  const mat=new THREE.MeshBasicMaterial({color:0x79a9ff,transparent:true,opacity:.22,wireframe:true});
+  const mesh=new THREE.Mesh(geo,mat);
+  const basis=new THREE.Matrix4();
+  const e0=eig[0].vec, e1=eig[1].vec, e2=eig[2].vec;
+  basis.set(
+    e0[0], e1[0], e2[0], 0,
+    e0[2], e1[2], e2[2], 0,
+    e0[1], e1[1], e2[1], 0,
+    0,0,0,1
+  );
+  const scale=new THREE.Matrix4().makeScale(
+    .9*Math.sqrt(Math.max(eig[0].val,1e-6)),
+    .9*Math.sqrt(Math.max(eig[1].val,1e-6)),
+    .9*Math.sqrt(Math.max(eig[2].val,1e-6))
+  );
+  mesh.matrixAutoUpdate=false;
+  mesh.matrix.copy(new THREE.Matrix4().makeTranslation(center.x,center.y,center.z)).multiply(basis).multiply(scale);
+  ellipsoidGroup.add(mesh);
+  for(const item of eig){
+    const v=new THREE.Vector3(item.vec[0],item.vec[2],item.vec[1]).normalize().multiplyScalar(.95*Math.sqrt(Math.max(item.val,1e-6)));
+    addLine(ellipsoidGroup,[center.clone().sub(v),center.clone().add(v)],0x79a9ff,.7);
+  }
+}
+
+function buildReeb(){
+  clearGroup(reebGroup);
+  if(!state.showReeb || state.mode==='moment')return;
+  const d=currentData(); const p=scenePoint(state.theta1,state.theta2,d.z);
+  addArrow(reebGroup,p.clone().add(new THREE.Vector3(0,-.75,0)),p.clone().add(new THREE.Vector3(0,.95,0)),0xd06a6a,.85);
+}
+
+function rebuildScene(){
+  sampleRanges();
+  buildAxes(); buildSurface(); buildMomentArrows(); buildSelectedPoint(); buildEllipsoid(); buildReeb();
+}
+
+function animate(){ requestAnimationFrame(animate); root.rotation.y+=.00028; renderer.render(scene,camera); }
+animate();
+
+// ================================================================
+// Side plots
+// ================================================================
+const $=id=>document.getElementById(id);
+const momentCtx=$('momentCanvas').getContext('2d');
+const probCtx=$('probCanvas').getContext('2d');
+const spectrumCtx=$('spectrumCanvas').getContext('2d');
+
+function drawProbabilities(){
+  const ctx=probCtx,W=ctx.canvas.width,H=ctx.canvas.height;
+  canvasClear(ctx);
+  const d=currentData(); const p=fam.probs(d.t[0],d.t[1],d.t[2]);
+  const labels=fam.labels; const maxP=Math.max(...p,1e-6);
+  const pad=24,gap=7; const bw=Math.max(7,(W-2*pad-gap*(p.length-1))/p.length);
+  drawText(ctx,'p(x; θ)',16,16,'#9a94a8',12);
+  p.forEach((val,i)=>{
+    const x=pad+i*(bw+gap), bh=(H-58)*(val/maxP), y=H-31-bh;
+    const grad=ctx.createLinearGradient(0,y,0,H-31); grad.addColorStop(0,'#e0b060'); grad.addColorStop(1,'#5c789f');
+    ctx.fillStyle=grad; ctx.fillRect(x,y,bw,bh); ctx.strokeStyle='#2a2b3a'; ctx.strokeRect(x,y,bw,bh);
+    drawText(ctx,labels[i]??String(i),x+bw/2,H-14,'#9a94a8',p.length>8?9:11,'center');
+    if(bw>17) drawText(ctx,fmt(val,2),x+bw/2,y-8,'#eee4d4',10,'center');
+  });
+}
+
+function projectEtaTo2D(eta,W,H,pad){
+  // oblique projection of η-space: η1 horizontal, η2 diagonal, η3 vertical-ish.
+  const n=[0,0,0];
+  for(let k=0;k<3;k++) n[k]=(eta[k]-etaBounds.min[k])/(etaBounds.max[k]-etaBounds.min[k]);
+  const x=pad + (0.82*n[0] + 0.36*n[1])*(W-2*pad)/1.18;
+  const y=H-pad - (0.82*n[2] + 0.32*n[1])*(H-2*pad)/1.14;
+  return [x,y];
+}
+
+function drawMomentImage(){
+  const ctx=momentCtx,W=ctx.canvas.width,H=ctx.canvas.height; canvasClear(ctx);
+  const pad=30;
+  ctx.strokeStyle='#2a2b3a'; ctx.strokeRect(pad,pad,W-2*pad,H-2*pad);
+  drawText(ctx,'η-space projection',15,16,'#9a94a8',12);
+
+  if(state.familyKey==='softmax4'){
+    // Draw projected tetrahedron edges for reference.
+    const verts=[[0,0,0],[1,0,0],[0,1,0],[0,0,1]];
+    const old=etaBounds;
+    const pts=verts.map(e=>projectEtaTo2D(e,W,H,pad));
+    ctx.strokeStyle='rgba(66,183,180,.78)'; ctx.lineWidth=1.2;
+    const edges=[[0,1],[0,2],[0,3],[1,2],[1,3],[2,3]];
+    edges.forEach(([i,j])=>{ctx.beginPath();ctx.moveTo(...pts[i]);ctx.lineTo(...pts[j]);ctx.stroke();});
+    ['p₀','p₁','p₂','p₃'].forEach((lab,i)=>drawText(ctx,lab,pts[i][0]+5,pts[i][1]-6,'#9a94a8',11));
+  }
+
+  const [a,b]=fam.thetaRange; const N=13;
+  for(let i=0;i<=N;i++) for(let j=0;j<=N;j++) for(let k=0;k<=N;k++){
+    const t=transformedTheta(lerp(a,b,i/N),lerp(a,b,j/N),lerp(a,b,k/N));
+    const eta=fam.grad(t[0],t[1],t[2]); const [x,y]=projectEtaTo2D(eta,W,H,pad);
+    ctx.fillStyle='rgba(224,176,96,.19)'; ctx.fillRect(x-1,y-1,2,2);
+  }
+  const d=currentData(); const [x,y]=projectEtaTo2D(d.eta,W,H,pad);
+  ctx.beginPath(); ctx.arc(x,y,6,0,TAU); ctx.fillStyle='#b083ff'; ctx.fill(); ctx.strokeStyle='#eee4d4'; ctx.stroke();
+  drawText(ctx,`η=(${fmt(d.eta[0],2)}, ${fmt(d.eta[1],2)}, ${fmt(d.eta[2],2)})`,x+9,y-10,'#eee4d4',11);
+}
+
+function drawSpectrum(){
+  const ctx=spectrumCtx,W=ctx.canvas.width,H=ctx.canvas.height; canvasClear(ctx);
+  const d=currentData(); const eig=mat3JacobiEigen(d.H);
+  const max=Math.max(...eig.map(e=>e.val),1e-6);
+  drawText(ctx,'eigenvalues of Hess ψ',16,16,'#9a94a8',12);
+  const pad=32,gap=24,bw=(W-2*pad-2*gap)/3;
+  eig.forEach((e,i)=>{
+    const bh=(H-62)*(e.val/max); const x=pad+i*(bw+gap), y=H-30-bh;
+    const grad=ctx.createLinearGradient(0,y,0,H-30); grad.addColorStop(0,'#79a9ff'); grad.addColorStop(1,'#3d466d');
+    ctx.fillStyle=grad; ctx.fillRect(x,y,bw,bh); ctx.strokeStyle='#2a2b3a'; ctx.strokeRect(x,y,bw,bh);
+    drawText(ctx,`λ${i+1}`,x+bw/2,H-14,'#9a94a8',11,'center');
+    drawText(ctx,fmt(e.val,3),x+bw/2,y-8,'#eee4d4',10,'center');
+  });
+}
+
+function updateText(){
+  fam=families[state.familyKey];
+  $('psiEq').textContent=fam.eq;
+  $('theta1Val').textContent=fmt(state.theta1,2); $('theta2Val').textContent=fmt(state.theta2,2); $('theta3Val').textContent=fmt(state.theta3,2);
+  $('reebVal').textContent=(state.reeb>=0?'+':'')+fmt(state.reeb,2);
+  $('rotVal').textContent=`${state.rotDeg}°`; $('coupleVal').textContent=fmt(state.couple,2);
+  const d=currentData();
+  $('eta1Val').textContent=fmt(d.eta[0],3); $('eta2Val').textContent=fmt(d.eta[1],3); $('eta3Val').textContent=fmt(d.eta[2],3);
+  $('zVal').textContent=fmt(d.z,3); $('detVal').textContent=fmt(d.det,6); $('phiVal').textContent=fmt(d.phi,3);
+  $('fisherEq').innerHTML = `g = Hess ψ = [[${fmt(d.H[0][0],3)}, ${fmt(d.H[0][1],3)}, ${fmt(d.H[0][2],3)}], [${fmt(d.H[1][0],3)}, ${fmt(d.H[1][1],3)}, ${fmt(d.H[1][2],3)}], [${fmt(d.H[2][0],3)}, ${fmt(d.H[2][1],3)}, ${fmt(d.H[2][2],3)}]]`;
+  const hints={
+    slice:'Slice mode shows the generating front z = ψ(θ₁, θ₂, c). The hidden θ₃ direction is experienced by moving the slice.',
+    moment:'Moment mode shows the image of the current slice under η = ∇ψ. The lower panel shows a coarser projection of the full moment body.',
+    metric:'Metric mode colors the slice by the Fisher volume density det Hess ψ and shows the local covariance ellipsoid.'
+  };
+  $('modeHint').textContent=hints[state.mode];
+}
+
+function updateAll(rebuild=true){
+  fam=families[state.familyKey];
+  const [a,b]=fam.thetaRange;
+  ['theta1','theta2','theta3'].forEach((id,idx)=>{ $(id).min=a; $(id).max=b; });
+  state.theta1=clamp(state.theta1,a,b); state.theta2=clamp(state.theta2,a,b); state.theta3=clamp(state.theta3,a,b);
+  $('theta1').value=state.theta1; $('theta2').value=state.theta2; $('theta3').value=state.theta3;
+  if(rebuild) rebuildScene();
+  updateText(); drawMomentImage(); drawProbabilities(); drawSpectrum();
+}
+
+$('familySelect').addEventListener('change',e=>{ state.familyKey=e.target.value; fam=families[state.familyKey]; state.theta1=0; state.theta2=0; state.theta3=0; updateAll(true); });
+$('theta1').addEventListener('input',e=>{ state.theta1=parseFloat(e.target.value); updateAll(true); });
+$('theta2').addEventListener('input',e=>{ state.theta2=parseFloat(e.target.value); updateAll(true); });
+$('theta3').addEventListener('input',e=>{ state.theta3=parseFloat(e.target.value); updateAll(true); });
+$('reebShift').addEventListener('input',e=>{ state.reeb=parseFloat(e.target.value); updateAll(true); });
+$('rot').addEventListener('input',e=>{ state.rotDeg=parseInt(e.target.value,10); updateAll(true); });
+$('couple').addEventListener('input',e=>{ state.couple=parseFloat(e.target.value); updateAll(true); });
+$('showSurface').addEventListener('change',e=>{ state.showSurface=e.target.checked; updateAll(true); });
+$('showMomentArrows').addEventListener('change',e=>{ state.showMomentArrows=e.target.checked; updateAll(true); });
+$('showEllipsoid').addEventListener('change',e=>{ state.showEllipsoid=e.target.checked; updateAll(true); });
+$('showReeb').addEventListener('change',e=>{ state.showReeb=e.target.checked; updateAll(true); });
+
+document.querySelectorAll('.pill').forEach(pill=>{
+  pill.addEventListener('click',()=>{
+    state.mode=pill.dataset.mode;
+    document.querySelectorAll('.pill').forEach(p=>p.classList.toggle('active',p===pill));
+    updateAll(true);
+  });
+});
+
+$('resetBtn').addEventListener('click',()=>{
+  Object.assign(state,{theta1:0,theta2:0,theta3:0,reeb:0,rotDeg:0,couple:0,mode:'slice',showSurface:true,showMomentArrows:true,showEllipsoid:true,showReeb:true});
+  $('theta1').value=0; $('theta2').value=0; $('theta3').value=0; $('reebShift').value=0; $('rot').value=0; $('couple').value=0;
+  $('showSurface').checked=true; $('showMomentArrows').checked=true; $('showEllipsoid').checked=true; $('showReeb').checked=true;
+  document.querySelectorAll('.pill').forEach(p=>p.classList.toggle('active',p.dataset.mode==='slice'));
+  orbit.phi=1.08; orbit.theta=.72; orbit.dist=10.5; orbit.target.set(0,0,0); applyCamera();
+  updateAll(true);
+});
+
+updateAll(true);
+</script>
+</body>
+</html>
