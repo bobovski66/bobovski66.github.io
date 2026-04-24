@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>The Contact Geometry of Exponential Families — An Interactive Demo</title>
+<style>
+  :root {
+    --bg: #0a0a12;
+    --bg-panel: #12121c;
+    --bg-panel-2: #181828;
+    --fg: #e8e0d0;
+    --fg-dim: #8a8a9a;
+    --fg-faint: #4a4a5a;
+    --accent: #e0b060;      /* Legendrian curve, gold */
+    --accent-2: #40a8a8;    /* contact planes, teal */
+    --accent-3: #b06060;    /* Reeb, crimson */
+    --accent-4: #6080c0;    /* Fisher, cool blue */
+    --accent-5: #9060b0;    /* symplectization, violet */
+    --border: #22222c;
+    --math-bg: #0e0e16;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0; padding: 0; height: 100%; width: 100%;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'EB Garamond', 'Cormorant Garamond', 'Palatino', 'Book Antiqua', Georgia, serif;
+    overflow: hidden;
+  }
+
+  .mono { font-family: 'JetBrains Mono', 'IBM Plex Mono', 'SF Mono', Consolas, monospace; }
+  .math { font-family: 'STIX Two Math', 'Cambria Math', 'Palatino', serif; font-style: italic; }
+
+  #app {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    height: 100vh; width: 100vw;
+  }
+
+  #header {
+    padding: 14px 22px 10px 22px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: baseline; gap: 24px;
+    background: linear-gradient(to bottom, #0e0e18, #0a0a12);
+  }
+  #header .title {
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    color: var(--fg);
+  }
+  #header .title em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  #header .subtitle {
+    font-size: 13px;
+    color: var(--fg-dim);
+    font-style: italic;
+  }
+
+  #main {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  #scene-container {
+    position: relative;
+    background:
+      radial-gradient(ellipse at center, #14141e 0%, #08080f 70%);
+    overflow: hidden;
+  }
+  #three-canvas {
+    display: block; width: 100%; height: 100%;
+    cursor: grab;
+  }
+  #three-canvas:active { cursor: grabbing; }
+
+  #overlay {
+    position: absolute; inset: 0;
+    pointer-events: none;
+  }
+  #overlay .legend {
+    position: absolute; top: 16px; left: 18px;
+    font-size: 12px; color: var(--fg-dim);
+    background: rgba(10,10,18,0.6);
+    border: 1px solid var(--border);
+    padding: 10px 14px; border-radius: 2px;
+    pointer-events: auto;
+  }
+  #overlay .legend .row {
+    display: flex; align-items: center; gap: 8px; margin: 3px 0;
+  }
+  #overlay .legend .swatch {
+    width: 18px; height: 2px; border-radius: 1px;
+  }
+  #overlay .legend .swatch.plane {
+    height: 10px; opacity: 0.5;
+  }
+
+  #overlay .footer-caption {
+    position: absolute; bottom: 14px; left: 20px; right: 20px;
+    font-size: 12.5px; color: var(--fg-dim);
+    font-style: italic; line-height: 1.5;
+    max-width: 720px;
+    pointer-events: none;
+  }
+
+  #sidebar {
+    background: var(--bg-panel);
+    border-left: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 0;
+  }
+  #sidebar::-webkit-scrollbar { width: 6px; }
+  #sidebar::-webkit-scrollbar-track { background: var(--bg-panel); }
+  #sidebar::-webkit-scrollbar-thumb { background: var(--border); }
+
+  .panel {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .panel-title {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+    margin-bottom: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+  }
+
+  select {
+    width: 100%;
+    background: var(--math-bg);
+    border: 1px solid var(--border);
+    color: var(--fg);
+    padding: 8px 10px;
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+  }
+  select:focus { border-color: var(--accent); }
+
+  .state-row {
+    display: flex; align-items: baseline; justify-content: space-between;
+    padding: 4px 0;
+    font-size: 14px;
+  }
+  .state-row .var {
+    color: var(--fg-dim);
+    font-style: italic;
+    font-family: 'STIX Two Math', 'Cambria Math', serif;
+  }
+  .state-row .val {
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-feature-settings: 'tnum';
+  }
+
+  canvas.plot {
+    display: block;
+    width: 100%;
+    background: var(--math-bg);
+    border: 1px solid var(--border);
+  }
+
+  .toggle-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 5px 0;
+    font-size: 13px;
+    color: var(--fg);
+    cursor: pointer;
+    user-select: none;
+  }
+  .toggle-row input { accent-color: var(--accent); }
+  .toggle-row .key {
+    flex: 1;
+    font-family: 'STIX Two Math', 'Cambria Math', serif;
+    font-style: italic;
+  }
+  .toggle-row .key .lbl {
+    font-style: normal; color: var(--fg-dim); font-size: 11px;
+    margin-left: 6px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .slider-row {
+    padding: 6px 0;
+  }
+  .slider-row .slider-label {
+    display: flex; justify-content: space-between;
+    font-size: 12px; color: var(--fg-dim);
+    margin-bottom: 4px;
+    font-family: 'STIX Two Math', 'Cambria Math', serif;
+    font-style: italic;
+  }
+  .slider-row .slider-label .val {
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-feature-settings: 'tnum';
+    font-style: normal;
+    font-size: 11px;
+  }
+  input[type="range"] {
+    -webkit-appearance: none; appearance: none;
+    width: 100%; height: 2px;
+    background: var(--border);
+    outline: none;
+    margin: 6px 0;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: none;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: none;
+  }
+
+  .eq {
+    padding: 6px 10px;
+    background: var(--math-bg);
+    border-left: 2px solid var(--accent);
+    font-family: 'STIX Two Math', 'Cambria Math', 'Palatino', serif;
+    font-size: 14px;
+    font-style: italic;
+    color: var(--fg);
+    margin: 6px 0;
+    line-height: 1.6;
+  }
+  .eq .paren, .eq .op { font-style: normal; }
+  .eq .fn { font-style: normal; color: var(--fg-dim); }
+
+  .hint {
+    font-size: 11px; color: var(--fg-faint);
+    font-style: italic;
+    margin-top: 8px;
+    line-height: 1.5;
+  }
+
+  .theta-scrubber {
+    padding: 8px 0;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="header">
+    <div class="title">The Contact Geometry of Exponential Families <em>— n = 1 case</em></div>
+    <div class="subtitle">Lψ ⊂ (C₁, α) as a Legendrian graph of the log-partition function</div>
+  </div>
+
+  <div id="main">
+    <div id="scene-container">
+      <canvas id="three-canvas"></canvas>
+      <div id="overlay">
+        <div class="legend">
+          <div class="row"><span class="swatch" style="background: #e0b060"></span><span>Legendrian Lψ  :  η = ψ′(θ), z = ψ(θ)</span></div>
+          <div class="row"><span class="swatch plane" style="background: #40a8a8"></span><span>Contact plane ker α, α = dz − η dθ</span></div>
+          <div class="row"><span class="swatch" style="background: #b06060"></span><span>Reeb field R = ∂/∂z</span></div>
+          <div class="row"><span class="swatch" style="background: #6080c0"></span><span>Fisher ellipse  :  g = ψ″(θ) dθ⊗dθ</span></div>
+          <div class="row"><span class="swatch" style="background: #9060b0"></span><span>Symplectization Σ = ℝₜ × C₁</span></div>
+        </div>
+        <div class="footer-caption" id="caption">
+          The statistical model sits as a Legendrian curve Lψ inside the three-dimensional contact manifold C₁ = Θ × M × ℝ. The Fisher–Rao metric is induced by pulling back the symmetric tensor ½(dθ ⊗ dη + dη ⊗ dθ) along the embedding; the potential coordinate z = ψ and the transverse Reeb direction live outside of the intrinsic information geometry.
+        </div>
+      </div>
+    </div>
+
+    <div id="sidebar">
+
+      <div class="panel">
+        <div class="panel-title">Exponential family</div>
+        <select id="family-select">
+          <option value="bernoulli">Bernoulli  (X = {0,1})</option>
+          <option value="binom4">Binomial N = 4  (h = C(4,x))</option>
+          <option value="binom8">Binomial N = 8  (h = C(8,x))</option>
+          <option value="geometric">Truncated geometric  (h = 1)</option>
+          <option value="poisson">Truncated Poisson-like  (h = 1/x!)</option>
+          <option value="gaussian">Discrete Gaussian-like  (h = e^(−x²/8))</option>
+        </select>
+        <div class="eq" id="eq-psi"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Point on Lψ</div>
+        <div class="theta-scrubber">
+          <div class="slider-row">
+            <div class="slider-label"><span>θ  —  natural parameter</span><span class="val" id="theta-val">0.00</span></div>
+            <input type="range" id="theta-slider" min="-4" max="4" step="0.01" value="0">
+          </div>
+        </div>
+        <div class="state-row"><span class="var">η = ψ′(θ)</span><span class="val" id="eta-val">0.500</span></div>
+        <div class="state-row"><span class="var">z = ψ(θ)</span><span class="val" id="z-val">0.693</span></div>
+        <div class="state-row"><span class="var">ψ″(θ)  (Fisher)</span><span class="val" id="fisher-val">0.250</span></div>
+        <div class="state-row"><span class="var">φ(η) = θη − ψ</span><span class="val" id="phi-val">−0.693</span></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Probability p(x; θ)  =  h(x)·e^(θF(x) − ψ)</div>
+        <canvas id="prob-canvas" class="plot" width="344" height="120"></canvas>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Dual potentials  ψ(θ) | φ(η)</div>
+        <canvas id="potential-canvas" class="plot" width="344" height="150"></canvas>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Visible structure</div>
+        <label class="toggle-row"><input type="checkbox" id="show-planes" checked><span class="key">Contact planes ker α<span class="lbl">ambient contact distribution</span></span></label>
+        <label class="toggle-row"><input type="checkbox" id="show-reeb"><span class="key">Reeb field R<span class="lbl">transverse to Lψ, gauge direction</span></span></label>
+        <label class="toggle-row"><input type="checkbox" id="show-fisher" checked><span class="key">Fisher metric ellipse<span class="lbl">induced on the Legendrian</span></span></label>
+        <label class="toggle-row"><input type="checkbox" id="show-symp"><span class="key">Symplectization Σ<span class="lbl">unnormalized cone over C₁</span></span></label>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Transformations</div>
+        <div class="slider-row">
+          <div class="slider-label"><span>Reeb flow shift  s  :  (θ, η, z) ↦ (θ, η, z + s)</span><span class="val" id="reeb-val">+0.00</span></div>
+          <input type="range" id="reeb-slider" min="-1.5" max="1.5" step="0.01" value="0">
+        </div>
+        <div class="slider-row">
+          <div class="slider-label"><span>Reparametrization  F ↦ cF  (GL₁ action)</span><span class="val" id="gl-val">×1.00</span></div>
+          <input type="range" id="gl-slider" min="-2" max="2" step="0.01" value="1">
+        </div>
+        <div class="hint">Reeb flow shifts the normalization potential z by a constant; it is a strict contactomorphism and acts trivially on statistical content. The GL₁ action θ ↦ θ/c, η ↦ cη, z ↦ z is a strict contactomorphism sending Lψ to the Legendrian of the reparametrized family F̃ = cF.</div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Reading the picture</div>
+        <div class="hint" style="color: var(--fg-dim);">
+          Drag on the 3D canvas to rotate.  Scroll to zoom.  The golden curve is Lψ; observe how the curve is tangent at every point to the teal contact plane, which tilts as η varies.  The Reeb field (when shown) points in pure + z, orthogonal to any statistical observable.  The Fisher ellipse shows how fast distributions become distinguishable as θ moves — it is thin where ψ″ is small (Bernoulli near the boundary) and fat where ψ″ is large.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ==========================================================================
+// FAMILY DEFINITIONS
+// ==========================================================================
+// Each family carries:  X (finite support, small for viz), F(x), h(x),
+//   psi(theta), psiPrime(theta), psiDoublePrime(theta),
+//   thetaRange [min,max], plus display niceties.
+// All families here are n=1.
+
+const families = {
+  bernoulli: {
+    name: 'Bernoulli',
+    X: [0, 1],
+    F: x => x,
+    h: x => 1,
+    thetaRange: [-4, 4],
+    psiEq: 'ψ(θ)  =  log(1 + e^θ)',
+    psi:   t => Math.log(1 + Math.exp(t)),
+    dpsi:  t => 1/(1 + Math.exp(-t)),
+    d2psi: t => { const s = 1/(1 + Math.exp(-t)); return s*(1-s); },
+  },
+  binom4: {
+    name: 'Binomial N=4',
+    X: [0,1,2,3,4],
+    F: x => x,
+    h: x => binomCoeff(4, x),
+    thetaRange: [-4, 4],
+    psiEq: 'ψ(θ)  =  4 · log(1 + e^θ)',
+    psi:   t => 4*Math.log(1 + Math.exp(t)),
+    dpsi:  t => 4/(1 + Math.exp(-t)),
+    d2psi: t => { const s = 1/(1+Math.exp(-t)); return 4*s*(1-s); },
+  },
+  binom8: {
+    name: 'Binomial N=8',
+    X: [0,1,2,3,4,5,6,7,8],
+    F: x => x,
+    h: x => binomCoeff(8, x),
+    thetaRange: [-4, 4],
+    psiEq: 'ψ(θ)  =  8 · log(1 + e^θ)',
+    psi:   t => 8*Math.log(1 + Math.exp(t)),
+    dpsi:  t => 8/(1 + Math.exp(-t)),
+    d2psi: t => { const s = 1/(1+Math.exp(-t)); return 8*s*(1-s); },
+  },
+  geometric: {
+    name: 'Truncated geometric',
+    X: [0,1,2,3,4,5,6,7],
+    F: x => x,
+    h: x => 1,
+    thetaRange: [-1.8, 0.2],
+    psiEq: 'ψ(θ)  =  log  Σₓ e^(θx)   x = 0,…,7',
+    psi:   t => numericPsi(t, [0,1,2,3,4,5,6,7], x => x, x => 1),
+    dpsi:  t => numericDpsi(t, [0,1,2,3,4,5,6,7], x => x, x => 1),
+    d2psi: t => numericD2psi(t, [0,1,2,3,4,5,6,7], x => x, x => 1),
+  },
+  poisson: {
+    name: 'Truncated Poisson-like',
+    X: [0,1,2,3,4,5,6,7,8,9,10],
+    F: x => x,
+    h: x => 1/factorial(x),
+    thetaRange: [-2, 2],
+    psiEq: 'ψ(θ)  =  log  Σₓ e^(θx)/x!   x = 0,…,10',
+    psi:   t => numericPsi(t, rangeArr(11), x => x, x => 1/factorial(x)),
+    dpsi:  t => numericDpsi(t, rangeArr(11), x => x, x => 1/factorial(x)),
+    d2psi: t => numericD2psi(t, rangeArr(11), x => x, x => 1/factorial(x)),
+  },
+  gaussian: {
+    name: 'Discrete Gaussian-like',
+    X: [-4,-3,-2,-1,0,1,2,3,4],
+    F: x => x,
+    h: x => Math.exp(-x*x/8),
+    thetaRange: [-1.6, 1.6],
+    psiEq: 'ψ(θ)  =  log  Σₓ e^(θx − x²/8)',
+    psi:   t => numericPsi(t, [-4,-3,-2,-1,0,1,2,3,4], x => x, x => Math.exp(-x*x/8)),
+    dpsi:  t => numericDpsi(t, [-4,-3,-2,-1,0,1,2,3,4], x => x, x => Math.exp(-x*x/8)),
+    d2psi: t => numericD2psi(t, [-4,-3,-2,-1,0,1,2,3,4], x => x, x => Math.exp(-x*x/8)),
+  },
+};
+
+function factorial(n) { let r = 1; for (let i = 2; i <= n; i++) r *= i; return r; }
+function binomCoeff(n, k) { return factorial(n)/(factorial(k)*factorial(n-k)); }
+function rangeArr(n) { const a = []; for (let i = 0; i < n; i++) a.push(i); return a; }
+
+// log-sum-exp for numerical stability
+function logSumExp(ys) {
+  const m = Math.max(...ys);
+  let s = 0;
+  for (let i = 0; i < ys.length; i++) s += Math.exp(ys[i] - m);
+  return m + Math.log(s);
+}
+function numericPsi(t, X, F, h) {
+  const ys = X.map(x => t*F(x) + Math.log(h(x)));
+  return logSumExp(ys);
+}
+function numericDpsi(t, X, F, h) {
+  const logTerms = X.map(x => t*F(x) + Math.log(h(x)));
+  const lse = logSumExp(logTerms);
+  let e = 0;
+  for (let i = 0; i < X.length; i++) e += F(X[i]) * Math.exp(logTerms[i] - lse);
+  return e;
+}
+function numericD2psi(t, X, F, h) {
+  const logTerms = X.map(x => t*F(x) + Math.log(h(x)));
+  const lse = logSumExp(logTerms);
+  let e = 0, e2 = 0;
+  for (let i = 0; i < X.length; i++) {
+    const p = Math.exp(logTerms[i] - lse);
+    e  += F(X[i])          * p;
+    e2 += F(X[i])*F(X[i])  * p;
+  }
+  return e2 - e*e;  // variance = Covθ(F,F)
+}
+function probs(t, fam) {
+  const logTerms = fam.X.map(x => t*fam.F(x) + Math.log(fam.h(x)));
+  const lse = logSumExp(logTerms);
+  return logTerms.map(l => Math.exp(l - lse));
+}
+
+// ==========================================================================
+// STATE
+// ==========================================================================
+
+const state = {
+  familyKey: 'bernoulli',
+  theta: 0,
+  reebShift: 0,
+  glC: 1,
+  showPlanes: true,
+  showReeb: false,
+  showFisher: true,
+  showSymp: false,
+};
+
+// derived per family
+let fam = families[state.familyKey];
+
+// Plotting ranges, recomputed on family change:
+let etaMax, etaMin, psiMax, psiMin;
+
+function recomputeRanges() {
+  const N = 200;
+  const [a,b] = fam.thetaRange;
+  let eMin = Infinity, eMax = -Infinity, pMin = Infinity, pMax = -Infinity;
+  for (let i = 0; i <= N; i++) {
+    const t = a + (b-a)*i/N;
+    const e = fam.dpsi(t), p = fam.psi(t);
+    if (e < eMin) eMin = e;
+    if (e > eMax) eMax = e;
+    if (p < pMin) pMin = p;
+    if (p > pMax) pMax = p;
+  }
+  etaMin = eMin - 0.02*(eMax-eMin);
+  etaMax = eMax + 0.02*(eMax-eMin);
+  psiMin = pMin - 0.02*(pMax-pMin);
+  psiMax = pMax + 0.1 *(pMax-pMin);
+}
+
+// Map from "world" (θ,η,z) to scene units. Each axis mapped to [-2,2].
+function W(theta, eta, z) {
+  const [a,b] = fam.thetaRange;
+  const X = ((theta - a)/(b - a))*4 - 2;          // theta axis
+  const Y = ((z     - psiMin)/(psiMax - psiMin))*4 - 2;  // z axis (vertical)
+  const Z = ((eta   - etaMin)/(etaMax - etaMin))*4 - 2;  // eta axis (depth)
+  return new THREE.Vector3(X, Y, Z);
+}
+
+// Contact-plane basis:  at (θ,η,z) in world, the tangent plane ker α
+// is spanned by   v1 = ∂η         and   v2 = ∂θ + η ∂z.
+// In scene units (sx,sy,sz) scales, these become:
+//   v1_scene = (0, 0, sZ)   where sZ = 4/(etaMax-etaMin)
+//   v2_scene = (sX, η sY, 0) where sX = 4/(b-a),  sY = 4/(psiMax-psiMin)
+// We'll draw small parallelograms with these vectors.
+
+function axesScales() {
+  const [a,b] = fam.thetaRange;
+  return {
+    sX: 4/(b-a),
+    sY: 4/(psiMax-psiMin),
+    sZ: 4/(etaMax-etaMin),
+  };
+}
+
+// ==========================================================================
+// THREE.JS SCENE
+// ==========================================================================
+
+const canvas = document.getElementById('three-canvas');
+const scene  = new THREE.Scene();
+scene.background = null;
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(window.devicePixelRatio);
+
+const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
+
+// Manual orbit controls (no OrbitControls on CDN r128)
+const orbit = {
+  phi:   1.15,          // polar angle from +y (up)
+  theta: 0.7,           // azimuth around y
+  dist:  7.2,
+  target: new THREE.Vector3(0,0,0),
+};
+function applyCamera() {
+  const x = orbit.dist * Math.sin(orbit.phi) * Math.cos(orbit.theta);
+  const y = orbit.dist * Math.cos(orbit.phi);
+  const z = orbit.dist * Math.sin(orbit.phi) * Math.sin(orbit.theta);
+  camera.position.set(x, y, z).add(orbit.target);
+  camera.lookAt(orbit.target);
+}
+
+let dragging = false, lastX = 0, lastY = 0, dragMode = 'rotate';
+canvas.addEventListener('pointerdown', e => {
+  dragging = true; lastX = e.clientX; lastY = e.clientY;
+  dragMode = (e.shiftKey || e.button === 1 || e.button === 2) ? 'pan' : 'rotate';
+  canvas.setPointerCapture(e.pointerId);
+});
+canvas.addEventListener('pointermove', e => {
+  if (!dragging) return;
+  const dx = e.clientX - lastX, dy = e.clientY - lastY;
+  lastX = e.clientX; lastY = e.clientY;
+  if (dragMode === 'rotate') {
+    orbit.theta -= dx * 0.006;
+    orbit.phi   -= dy * 0.006;
+    orbit.phi = Math.max(0.15, Math.min(Math.PI - 0.15, orbit.phi));
+  } else {
+    // pan along screen-aligned axes
+    const panSpeed = orbit.dist * 0.0014;
+    const right = new THREE.Vector3(); camera.getWorldDirection(right);
+    const up = new THREE.Vector3(0,1,0);
+    right.cross(up).normalize();
+    const camUp = new THREE.Vector3().crossVectors(right, new THREE.Vector3().subVectors(orbit.target, camera.position).normalize()).normalize();
+    orbit.target.addScaledVector(right, -dx * panSpeed);
+    orbit.target.addScaledVector(camUp, dy * panSpeed);
+  }
+  applyCamera();
+});
+canvas.addEventListener('pointerup', () => { dragging = false; });
+canvas.addEventListener('pointercancel', () => { dragging = false; });
+canvas.addEventListener('contextmenu', e => e.preventDefault());
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  orbit.dist *= Math.exp(e.deltaY * 0.0008);
+  orbit.dist = Math.max(2.5, Math.min(30, orbit.dist));
+  applyCamera();
+}, { passive: false });
+
+function resize() {
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w/h; camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(canvas);
+requestAnimationFrame(() => { resize(); applyCamera(); });
+
+// ----- Scene content: axes, labels, curve, planes, Reeb, Fisher, symp -----
+
+const worldGroup = new THREE.Group();  scene.add(worldGroup);
+
+const axesGroup   = new THREE.Group();  worldGroup.add(axesGroup);
+const planesGroup = new THREE.Group();  worldGroup.add(planesGroup);
+const curveGroup  = new THREE.Group();  worldGroup.add(curveGroup);
+const reebGroup   = new THREE.Group();  worldGroup.add(reebGroup);
+const fisherGroup = new THREE.Group();  worldGroup.add(fisherGroup);
+const sympGroup   = new THREE.Group();  worldGroup.add(sympGroup);
+const cursorGroup = new THREE.Group();  worldGroup.add(cursorGroup);
+
+// Text sprites for axis labels
+function makeLabel(text, color = '#e8e0d0', size = 80) {
+  const c = document.createElement('canvas'); c.width = 512; c.height = 128;
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0,0,c.width,c.height);
+  ctx.fillStyle = color;
+  ctx.font = `italic ${size}px "STIX Two Math","Cambria Math",serif`;
+  ctx.textBaseline = 'middle'; ctx.textAlign = 'center';
+  ctx.fillText(text, c.width/2, c.height/2);
+  const tex = new THREE.CanvasTexture(c);
+  tex.minFilter = THREE.LinearFilter;
+  const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
+  const spr = new THREE.Sprite(mat);
+  spr.scale.set(1.0, 0.25, 1);
+  return spr;
+}
+
+function clearGroup(g) {
+  while (g.children.length) {
+    const c = g.children.pop();
+    if (c.geometry) c.geometry.dispose();
+    if (c.material) {
+      if (c.material.map) c.material.map.dispose();
+      c.material.dispose();
+    }
+  }
+}
+
+// ---- Axes -----------------------------------------------------------
+
+function buildAxes() {
+  clearGroup(axesGroup);
+
+  const B = 2.2;
+  // three axes  x: theta, y: z, z: eta
+  const axDefs = [
+    { dir: new THREE.Vector3(1,0,0), color: 0x505060, label: 'θ',
+      tipWorld: new THREE.Vector3(1,0,0).multiplyScalar(B) },
+    { dir: new THREE.Vector3(0,1,0), color: 0x505060, label: 'z',
+      tipWorld: new THREE.Vector3(0,1,0).multiplyScalar(B) },
+    { dir: new THREE.Vector3(0,0,1), color: 0x505060, label: 'η',
+      tipWorld: new THREE.Vector3(0,0,1).multiplyScalar(B) },
+  ];
+  axDefs.forEach(ax => {
+    const g = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(0,0,0).addScaledVector(ax.dir, -B),
+      new THREE.Vector3(0,0,0).addScaledVector(ax.dir,  B),
+    ]);
+    const m = new THREE.LineBasicMaterial({ color: ax.color, transparent: true, opacity: 0.55 });
+    axesGroup.add(new THREE.Line(g, m));
+
+    const lbl = makeLabel(ax.label, '#a0a0b0', 100);
+    lbl.position.copy(ax.tipWorld).multiplyScalar(1.12);
+    lbl.scale.set(0.6, 0.15, 1);
+    axesGroup.add(lbl);
+  });
+
+  // subtle grid on the θ-η floor (at z = min)
+  const gridSize = 4, divisions = 8;
+  const grid = new THREE.GridHelper(gridSize, divisions, 0x2a2a3a, 0x20202a);
+  grid.material.transparent = true;
+  grid.material.opacity = 0.5;
+  grid.position.y = -2;
+  axesGroup.add(grid);
+}
+
+// ---- Contact planes -------------------------------------------------
+// Tangent plane to ker α at (θ,η,z):   span(∂η, ∂θ + η ∂z).
+// In scene-space:  v1 = (0, 0, sZ),   v2 = (sX, η sY, 0).
+function buildContactPlanes() {
+  clearGroup(planesGroup);
+  if (!state.showPlanes) return;
+
+  const [a,b] = fam.thetaRange;
+  const nT = 5, nE = 5;
+  const s = axesScales();
+
+  const planeSize = 0.33;  // in scene units
+
+  for (let it = 1; it <= nT; it++) {
+    for (let ie = 1; ie <= nE; ie++) {
+      const theta = a + (b-a)*it/(nT+1);
+      const eta   = etaMin + (etaMax-etaMin)*ie/(nE+1);
+      // place the plane at z = ψ(θ) so we're near the curve; vary a little
+      const z     = fam.psi(theta);
+
+      const origin = W(theta, eta, z);
+      const v1 = new THREE.Vector3(0, 0, s.sZ);
+      // choose a unit length for v2 in (θ,z) plane including slope η
+      const v2 = new THREE.Vector3(s.sX, eta * s.sY, 0);
+
+      // normalize to fixed visual size
+      v1.normalize().multiplyScalar(planeSize);
+      v2.normalize().multiplyScalar(planeSize);
+
+      const verts = [
+        origin.clone().addScaledVector(v1,-1).addScaledVector(v2,-1),
+        origin.clone().addScaledVector(v1, 1).addScaledVector(v2,-1),
+        origin.clone().addScaledVector(v1, 1).addScaledVector(v2, 1),
+        origin.clone().addScaledVector(v1,-1).addScaledVector(v2, 1),
+      ];
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.Float32BufferAttribute([
+        verts[0].x,verts[0].y,verts[0].z,
+        verts[1].x,verts[1].y,verts[1].z,
+        verts[2].x,verts[2].y,verts[2].z,
+        verts[0].x,verts[0].y,verts[0].z,
+        verts[2].x,verts[2].y,verts[2].z,
+        verts[3].x,verts[3].y,verts[3].z,
+      ], 3));
+      const m = new THREE.MeshBasicMaterial({
+        color: 0x40a8a8, side: THREE.DoubleSide,
+        transparent: true, opacity: 0.22, depthWrite: false,
+      });
+      const mesh = new THREE.Mesh(g, m);
+      planesGroup.add(mesh);
+
+      // Edge outline
+      const edgeGeo = new THREE.BufferGeometry().setFromPoints([
+        verts[0], verts[1], verts[2], verts[3], verts[0]
+      ]);
+      const edgeMat = new THREE.LineBasicMaterial({
+        color: 0x40a8a8, transparent: true, opacity: 0.55,
+      });
+      planesGroup.add(new THREE.Line(edgeGeo, edgeMat));
+    }
+  }
+}
+
+// ---- Legendrian curve ------------------------------------------------
+function buildLegendrian() {
+  clearGroup(curveGroup);
+  const [a,b] = fam.thetaRange;
+  const N = 200;
+  const pts = [];
+  for (let i = 0; i <= N; i++) {
+    const t = a + (b-a)*i/N;
+    const eta = fam.dpsi(t);
+    const z   = fam.psi(t) + state.reebShift;
+    pts.push(W(t, eta, z));
+  }
+  // Main curve
+  const g = new THREE.BufferGeometry().setFromPoints(pts);
+  const m = new THREE.LineBasicMaterial({ color: 0xe0b060, linewidth: 2 });
+  curveGroup.add(new THREE.Line(g, m));
+
+  // Glow pass (slightly offset / thicker look via multiple lines)
+  const mGlow = new THREE.LineBasicMaterial({ color: 0xe0b060, transparent: true, opacity: 0.3 });
+  const gGlow = new THREE.BufferGeometry().setFromPoints(pts);
+  curveGroup.add(new THREE.Line(gGlow, mGlow));
+
+  // Projection to η–θ floor at z = psiMin (dashed feel: just faint line)
+  const floor = pts.map(v => new THREE.Vector3(v.x, -2, v.z));
+  const gF = new THREE.BufferGeometry().setFromPoints(floor);
+  const mF = new THREE.LineBasicMaterial({ color: 0x705830, transparent: true, opacity: 0.55 });
+  curveGroup.add(new THREE.Line(gF, mF));
+}
+
+// ---- Reeb field -----------------------------------------------------
+function buildReeb() {
+  clearGroup(reebGroup);
+  if (!state.showReeb) return;
+  const s = axesScales();
+  const [a,b] = fam.thetaRange;
+  const n = 4, m = 3;
+  for (let i = 1; i <= n; i++) {
+    for (let j = 1; j <= m; j++) {
+      const theta = a + (b-a)*i/(n+1);
+      const eta   = etaMin + (etaMax-etaMin)*j/(m+1);
+      const zBase = (psiMin + psiMax)/2 - 0.25;
+      const p0 = W(theta, eta, zBase);
+      const p1 = p0.clone(); p1.y += 0.6;
+      const g = new THREE.BufferGeometry().setFromPoints([p0,p1]);
+      const mat = new THREE.LineBasicMaterial({ color: 0xb06060, transparent: true, opacity: 0.85 });
+      reebGroup.add(new THREE.Line(g, mat));
+      // arrow tip
+      const coneGeo = new THREE.ConeGeometry(0.045, 0.12, 8);
+      const coneMat = new THREE.MeshBasicMaterial({ color: 0xb06060 });
+      const cone = new THREE.Mesh(coneGeo, coneMat);
+      cone.position.copy(p1);
+      cone.position.y += 0.06;
+      reebGroup.add(cone);
+    }
+  }
+}
+
+// ---- Fisher ellipse --------------------------------------------------
+// At the cursor point, draw an ellipse in the contact plane whose length in
+// the θ-direction is proportional to 1/sqrt(ψ″(θ)) (Mahalanobis unit ball).
+function buildFisher() {
+  clearGroup(fisherGroup);
+  if (!state.showFisher) return;
+  const theta = state.theta;
+  const eta = fam.dpsi(theta);
+  const z   = fam.psi(theta) + state.reebShift;
+  const p = W(theta, eta, z);
+
+  const s = axesScales();
+
+  const g2 = fam.d2psi(theta);  // Fisher scalar
+  const sigma = 1.0 / Math.sqrt(Math.max(g2, 1e-6));
+
+  // Tangent to Lψ in world coords: (1, η, ψ″) in (θ, z, η) scene axes
+  // Wait: tangent vector in world is   (dθ, dη, dz) = (1, ψ″, ψ′) = (1, ψ″, η).
+  // In scene:  (sX, ψ″·sZ, η·sY).
+  const tangent = new THREE.Vector3(s.sX, eta * s.sY, g2 * s.sZ).normalize();
+
+  // A "transverse" direction inside the contact plane: take v1 = ∂η direction,
+  // adjust to be orthogonal-ish to tangent in scene metric.
+  const inPlane = new THREE.Vector3(0, 0, s.sZ).normalize();
+  // Make orthogonal
+  inPlane.sub(tangent.clone().multiplyScalar(tangent.dot(inPlane)));
+  inPlane.normalize();
+
+  const N = 64;
+  const major = 0.45 * sigma;
+  const minor = 0.12;
+  const pts = [];
+  for (let i = 0; i <= N; i++) {
+    const a = (i/N)*Math.PI*2;
+    const v = new THREE.Vector3()
+      .addScaledVector(tangent, Math.cos(a)*major)
+      .addScaledVector(inPlane, Math.sin(a)*minor);
+    pts.push(new THREE.Vector3().copy(p).add(v));
+  }
+  const g = new THREE.BufferGeometry().setFromPoints(pts);
+  const m = new THREE.LineBasicMaterial({ color: 0x6080c0, transparent: true, opacity: 0.95 });
+  fisherGroup.add(new THREE.Line(g, m));
+}
+
+// ---- Symplectization stack ------------------------------------------
+function buildSymp() {
+  clearGroup(sympGroup);
+  if (!state.showSymp) return;
+
+  const [a,b] = fam.thetaRange;
+  const N = 100;
+  const tLevels = [-0.6, -0.3, 0.3, 0.6];
+  for (const tLvl of tLevels) {
+    const scale = Math.exp(tLvl * 0.3);  // visual scaling only
+    const pts = [];
+    for (let i = 0; i <= N; i++) {
+      const th = a + (b-a)*i/N;
+      const eta = fam.dpsi(th);
+      const z = fam.psi(th) + state.reebShift;
+      const v = W(th, eta, z);
+      // lift by tLvl along y (as if this is the "t" axis of Σ)
+      const lifted = v.clone();
+      lifted.y += tLvl * 2.2;  // separate levels visually
+      lifted.multiplyScalar(scale);
+      pts.push(lifted);
+    }
+    const g = new THREE.BufferGeometry().setFromPoints(pts);
+    const m = new THREE.LineBasicMaterial({
+      color: 0x9060b0, transparent: true,
+      opacity: 0.55 - Math.abs(tLvl)*0.3,
+    });
+    sympGroup.add(new THREE.Line(g, m));
+  }
+
+  // connecting vertical lines to show the cylinder
+  const k = 8;
+  for (let i = 1; i < k; i++) {
+    const th = a + (b-a)*i/k;
+    const eta = fam.dpsi(th);
+    const z = fam.psi(th) + state.reebShift;
+    const lo = W(th, eta, z); lo.y -= 1.4;
+    const hi = W(th, eta, z); hi.y += 1.4;
+    const g = new THREE.BufferGeometry().setFromPoints([lo, hi]);
+    const m = new THREE.LineBasicMaterial({ color: 0x9060b0, transparent: true, opacity: 0.18 });
+    sympGroup.add(new THREE.Line(g, m));
+  }
+}
+
+// ---- Cursor dot ------------------------------------------------------
+function buildCursor() {
+  clearGroup(cursorGroup);
+
+  // apply GL₁ reparametrization to the cursor and curve if c != 1?
+  // we implement the GL action differently: it just rescales axes / warps the curve.
+  // For clarity here, the slider just shifts θ by factor (1/c): displayed θ is
+  // unchanged but we also draw a "dashed" reparametrized curve.
+  const theta = state.theta;
+  const eta = fam.dpsi(theta);
+  const z   = fam.psi(theta) + state.reebShift;
+  const p = W(theta, eta, z);
+
+  const sphGeo = new THREE.SphereGeometry(0.07, 24, 16);
+  const sphMat = new THREE.MeshBasicMaterial({ color: 0xffcc66 });
+  const sph = new THREE.Mesh(sphGeo, sphMat);
+  sph.position.copy(p);
+  cursorGroup.add(sph);
+
+  // small outer ring
+  const ringPts = [];
+  const N = 48; const r = 0.13;
+  // ring in camera-facing plane — approximate: ring in world XZ
+  for (let i = 0; i <= N; i++) {
+    const a = (i/N)*Math.PI*2;
+    ringPts.push(new THREE.Vector3(p.x + r*Math.cos(a), p.y, p.z + r*Math.sin(a)));
+  }
+  const rg = new THREE.BufferGeometry().setFromPoints(ringPts);
+  const rm = new THREE.LineBasicMaterial({ color: 0xffcc66, transparent: true, opacity: 0.6 });
+  cursorGroup.add(new THREE.Line(rg, rm));
+
+  // drop-lines to axes
+  const dlMat = new THREE.LineDashedMaterial({ color: 0xaaa070, dashSize: 0.08, gapSize: 0.06, transparent: true, opacity: 0.5 });
+  function dropLine(a, b) {
+    const g = new THREE.BufferGeometry().setFromPoints([a,b]);
+    const line = new THREE.Line(g, dlMat.clone());
+    line.computeLineDistances();
+    cursorGroup.add(line);
+  }
+  // vertical drop (to θ-η floor)
+  dropLine(p, new THREE.Vector3(p.x, -2, p.z));
+  dropLine(new THREE.Vector3(p.x, -2, p.z), new THREE.Vector3(p.x, -2, -2)); // to θ axis
+  dropLine(new THREE.Vector3(p.x, -2, p.z), new THREE.Vector3(-2, -2, p.z)); // to η axis
+}
+
+// ---- GL₁ reparametrized ghost curve ---------------------------------
+let glGhostGroup = new THREE.Group(); worldGroup.add(glGhostGroup);
+function buildGLGhost() {
+  clearGroup(glGhostGroup);
+  const c = state.glC;
+  if (Math.abs(c - 1) < 0.01) return;
+  // Reparametrize:  F̃ = cF.  New family has ψ̃(θ̃) = ψ(c θ̃).
+  //   Lψ̃ = {(θ̃, c ψ′(c θ̃), ψ(c θ̃))}.
+  // We'll plot in the same (θ,η,z) axes.  New η range may exceed the original box —
+  // we clip to the box.
+  const [a,b] = fam.thetaRange;
+  const N = 200;
+  const pts = [];
+  for (let i = 0; i <= N; i++) {
+    const tTilde = a + (b-a)*i/N;
+    const thetaOrig = c * tTilde;
+    if (thetaOrig < a || thetaOrig > b) continue;
+    const etaNew = c * fam.dpsi(thetaOrig);
+    const zNew   = fam.psi(thetaOrig) + state.reebShift;
+    if (etaNew < etaMin || etaNew > etaMax) continue;
+    pts.push(W(tTilde, etaNew, zNew));
+  }
+  if (pts.length > 1) {
+    const g = new THREE.BufferGeometry().setFromPoints(pts);
+    const m = new THREE.LineDashedMaterial({
+      color: 0xe0b060, dashSize: 0.1, gapSize: 0.06,
+      transparent: true, opacity: 0.75,
+    });
+    const line = new THREE.Line(g, m);
+    line.computeLineDistances();
+    glGhostGroup.add(line);
+  }
+}
+
+// ==========================================================================
+// 2D PLOTS (probability bars, potentials)
+// ==========================================================================
+
+function drawProbBars() {
+  const c = document.getElementById('prob-canvas');
+  const ctx = c.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const W = c.clientWidth, H = c.clientHeight;
+  if (c.width !== W*dpr || c.height !== H*dpr) {
+    c.width = W*dpr; c.height = H*dpr;
+  }
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,W,H);
+
+  const p = probs(state.theta, fam);
+  const n = p.length;
+  const pMax = Math.max(...p, 0.05);
+
+  const leftPad = 20, rightPad = 10, topPad = 10, botPad = 20;
+  const plotW = W - leftPad - rightPad;
+  const plotH = H - topPad - botPad;
+  const gap = 2;
+  const barW = Math.max(3, (plotW - gap*(n-1))/n);
+
+  ctx.strokeStyle = '#2a2a3a'; ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(leftPad, topPad); ctx.lineTo(leftPad, topPad+plotH); ctx.lineTo(leftPad+plotW, topPad+plotH);
+  ctx.stroke();
+
+  for (let i = 0; i < n; i++) {
+    const h = (p[i]/pMax)*plotH;
+    const x = leftPad + i*(barW+gap);
+    const y = topPad + plotH - h;
+    const grad = ctx.createLinearGradient(0, y, 0, topPad+plotH);
+    grad.addColorStop(0, '#e0b060');
+    grad.addColorStop(1, '#604828');
+    ctx.fillStyle = grad;
+    ctx.fillRect(x, y, barW, h);
+    // x-label
+    ctx.fillStyle = '#8a8a9a';
+    ctx.font = '10px "JetBrains Mono", monospace';
+    ctx.textAlign = 'center';
+    if (n <= 9 || i % 2 === 0) {
+      ctx.fillText(String(fam.X[i]), x + barW/2, topPad + plotH + 12);
+    }
+  }
+}
+
+function drawPotentials() {
+  const c = document.getElementById('potential-canvas');
+  const ctx = c.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const W = c.clientWidth, H = c.clientHeight;
+  if (c.width !== W*dpr || c.height !== H*dpr) {
+    c.width = W*dpr; c.height = H*dpr;
+  }
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,W,H);
+
+  // Two stacked mini-plots: ψ(θ) [top half] and φ(η) [bottom half]
+  const pad = 18;
+  const innerW = W - 2*pad;
+  const innerH = (H - 2*pad - 8)/2;
+
+  const [a,b] = fam.thetaRange;
+  const N = 100;
+  const psiPts = []; const phiPts = [];
+  let pMin = Infinity, pMax = -Infinity;
+  let qMin = Infinity, qMax = -Infinity;
+  for (let i = 0; i <= N; i++) {
+    const t = a + (b-a)*i/N;
+    const ps = fam.psi(t);
+    const dp = fam.dpsi(t);
+    const ph = t*dp - ps;
+    psiPts.push({t, ps});
+    phiPts.push({eta: dp, ph});
+    if (ps < pMin) pMin = ps; if (ps > pMax) pMax = ps;
+    if (ph < qMin) qMin = ph; if (ph > qMax) qMax = ph;
+  }
+
+  // Top: ψ vs θ
+  ctx.strokeStyle = '#2a2a3a';
+  ctx.beginPath();
+  ctx.moveTo(pad, pad); ctx.lineTo(pad, pad+innerH); ctx.lineTo(pad+innerW, pad+innerH);
+  ctx.stroke();
+  // label
+  ctx.fillStyle = '#7a7a8a'; ctx.font = 'italic 11px "STIX Two Math", "Cambria Math", serif';
+  ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+  ctx.fillText('ψ(θ)', pad + 4, pad + 2);
+  // curve
+  ctx.strokeStyle = '#e0b060'; ctx.lineWidth = 1.6;
+  ctx.beginPath();
+  psiPts.forEach((pt, i) => {
+    const x = pad + ((pt.t - a)/(b-a))*innerW;
+    const y = pad + innerH - ((pt.ps - pMin)/(pMax - pMin))*innerH;
+    if (i === 0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+  // cursor dot
+  {
+    const ps = fam.psi(state.theta);
+    const x = pad + ((state.theta - a)/(b-a))*innerW;
+    const y = pad + innerH - ((ps - pMin)/(pMax - pMin))*innerH;
+    ctx.fillStyle = '#ffcc66';
+    ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2); ctx.fill();
+  }
+
+  // Bottom: φ vs η
+  const yOff = pad + innerH + 8;
+  ctx.strokeStyle = '#2a2a3a';
+  ctx.beginPath();
+  ctx.moveTo(pad, yOff); ctx.lineTo(pad, yOff+innerH); ctx.lineTo(pad+innerW, yOff+innerH);
+  ctx.stroke();
+  ctx.fillStyle = '#7a7a8a';
+  ctx.fillText('φ(η) = θη − ψ', pad + 4, yOff + 2);
+  ctx.strokeStyle = '#a08070'; ctx.lineWidth = 1.6;
+  ctx.beginPath();
+  phiPts.forEach((pt, i) => {
+    const x = pad + ((pt.eta - etaMin)/(etaMax - etaMin))*innerW;
+    const y = yOff + innerH - ((pt.ph - qMin)/(qMax - qMin))*innerH;
+    if (i === 0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+  {
+    const eta = fam.dpsi(state.theta);
+    const ph  = state.theta*eta - fam.psi(state.theta);
+    const x = pad + ((eta - etaMin)/(etaMax - etaMin))*innerW;
+    const y = yOff + innerH - ((ph - qMin)/(qMax - qMin))*innerH;
+    ctx.fillStyle = '#ffcc66';
+    ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2); ctx.fill();
+  }
+}
+
+// ==========================================================================
+// UI binding
+// ==========================================================================
+
+const ui = {
+  familySel: document.getElementById('family-select'),
+  thetaSlider: document.getElementById('theta-slider'),
+  thetaVal:  document.getElementById('theta-val'),
+  etaVal:    document.getElementById('eta-val'),
+  zVal:      document.getElementById('z-val'),
+  fisherVal: document.getElementById('fisher-val'),
+  phiVal:    document.getElementById('phi-val'),
+  eqPsi:     document.getElementById('eq-psi'),
+  showPlanes: document.getElementById('show-planes'),
+  showReeb:   document.getElementById('show-reeb'),
+  showFisher: document.getElementById('show-fisher'),
+  showSymp:   document.getElementById('show-symp'),
+  reebSlider: document.getElementById('reeb-slider'),
+  glSlider:   document.getElementById('gl-slider'),
+  reebVal:    document.getElementById('reeb-val'),
+  glVal:      document.getElementById('gl-val'),
+};
+
+function refreshState() {
+  const eta = fam.dpsi(state.theta);
+  const z   = fam.psi(state.theta);
+  const g2  = fam.d2psi(state.theta);
+  const phi = state.theta*eta - z;
+  ui.thetaVal.textContent  = state.theta.toFixed(2).padStart(5, ' ');
+  ui.etaVal.textContent    = eta.toFixed(3);
+  ui.zVal.textContent      = (z + state.reebShift).toFixed(3);
+  ui.fisherVal.textContent = g2.toFixed(3);
+  ui.phiVal.textContent    = phi.toFixed(3);
+
+  ui.reebVal.textContent = (state.reebShift >= 0 ? '+' : '') + state.reebShift.toFixed(2);
+  ui.glVal.textContent   = '×' + state.glC.toFixed(2);
+}
+
+function fullRebuild() {
+  fam = families[state.familyKey];
+  ui.eqPsi.textContent = fam.psiEq;
+  // clamp theta to new range
+  const [a,b] = fam.thetaRange;
+  state.theta = Math.max(a, Math.min(b, state.theta));
+  ui.thetaSlider.min = a; ui.thetaSlider.max = b; ui.thetaSlider.value = state.theta;
+  recomputeRanges();
+  buildAxes();
+  buildContactPlanes();
+  buildLegendrian();
+  buildReeb();
+  buildFisher();
+  buildSymp();
+  buildCursor();
+  buildGLGhost();
+  refreshState();
+  drawProbBars();
+  drawPotentials();
+}
+
+// Family change
+ui.familySel.addEventListener('change', e => {
+  state.familyKey = e.target.value;
+  fullRebuild();
+});
+
+// theta slider
+ui.thetaSlider.addEventListener('input', e => {
+  state.theta = parseFloat(e.target.value);
+  buildFisher();
+  buildCursor();
+  refreshState();
+  drawProbBars();
+  drawPotentials();
+});
+
+// Toggles
+ui.showPlanes.addEventListener('change', e => { state.showPlanes = e.target.checked; buildContactPlanes(); });
+ui.showReeb  .addEventListener('change', e => { state.showReeb   = e.target.checked; buildReeb(); });
+ui.showFisher.addEventListener('change', e => { state.showFisher = e.target.checked; buildFisher(); });
+ui.showSymp  .addEventListener('change', e => { state.showSymp   = e.target.checked; buildSymp(); });
+
+// Reeb slider
+ui.reebSlider.addEventListener('input', e => {
+  state.reebShift = parseFloat(e.target.value);
+  buildLegendrian();
+  buildCursor();
+  buildFisher();
+  buildSymp();
+  buildGLGhost();
+  refreshState();
+});
+
+// GL₁ slider
+ui.glSlider.addEventListener('input', e => {
+  const v = parseFloat(e.target.value);
+  // skip a tiny window around 0 to avoid singular c
+  state.glC = Math.abs(v) < 0.1 ? (v >= 0 ? 0.1 : -0.1) : v;
+  buildGLGhost();
+  refreshState();
+});
+
+// initial kick
+fullRebuild();
+
+// animation loop
+function animate() {
+  renderer.render(scene, camera);
+  requestAnimationFrame(animate);
+}
+animate();
+</script>
+</body>
+</html>
