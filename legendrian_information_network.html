@@ -1,0 +1,1740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Legendrian Information Network — Triple Agreement and Comparison Topology</title>
+<style>
+  :root {
+    --bg:        #0a0a12;
+    --bg-panel:  #12121c;
+    --bg-panel-2:#181828;
+    --fg:        #e8e0d0;
+    --fg-dim:    #8a8a9a;
+    --fg-faint:  #4a4a5a;
+
+    --leg1: #e0b060;     /* gold       */
+    --leg2: #c87858;     /* terracotta */
+    --leg3: #b06080;     /* rose       */
+    --leg4: #80a8a0;     /* warm teal  */
+    --leg5: #a0a060;     /* olive      */
+
+    --chord:     #60d8e0;
+    --triple:    #f0d878;     /* triple-agreement star */
+    --near-trip: #c8a040;     /* near-agreement star */
+    --idx0:      #80c060;
+    --idx1:      #c08060;
+    --idxd:      #707080;
+
+    --border:        #22222c;
+    --border-strong: #33333d;
+    --math-bg:       #0e0e16;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; height: 100%; width: 100%;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'EB Garamond', 'Cormorant Garamond', 'Palatino', 'Book Antiqua', Georgia, serif;
+    overflow: hidden;
+  }
+  .mono { font-family: 'JetBrains Mono', 'IBM Plex Mono', 'SF Mono', Consolas, monospace; }
+
+  #app {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    height: 100vh; width: 100vw;
+  }
+  #header {
+    padding: 9px 22px;
+    border-bottom: 1px solid var(--border);
+    background:
+      linear-gradient(90deg,
+        rgba(224,176,96,0.05),
+        rgba(176,96,128,0.04) 50%,
+        rgba(128,168,160,0.04) 100%),
+      var(--bg);
+  }
+  #header .title { font-size: 17px; font-style: italic; letter-spacing: 0.005em; }
+  #header .title em { color: var(--leg1); }
+  #header .subtitle { font-size: 11.5px; color: var(--fg-dim); font-style: italic; margin-top: 2px; }
+
+  #main {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    grid-template-rows: 1fr;
+    overflow: hidden;
+  }
+
+  /* Left column : analytic plots */
+  #leftcol {
+    display: grid;
+    grid-template-rows: 1fr 1fr 70px;
+    overflow: hidden;
+    background: var(--bg);
+  }
+
+  .plot-block {
+    position: relative;
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .plot-title {
+    position: absolute; top: 6px; left: 14px;
+    font-size: 9.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--fg-faint);
+    font-family: 'JetBrains Mono', monospace;
+    z-index: 2;
+  }
+  .plot-anno {
+    position: absolute; top: 6px; right: 14px;
+    font-size: 11px; color: var(--fg-dim);
+    font-family: 'STIX Two Math', 'Cambria Math', serif;
+    font-style: italic;
+    z-index: 2;
+  }
+  canvas.plot {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    display: block;
+    image-rendering: -webkit-optimize-contrast;
+  }
+
+  /* Sidebar */
+  #sidebar {
+    background: var(--bg-panel);
+    border-left: 1px solid var(--border);
+    overflow-y: auto;
+  }
+  #sidebar::-webkit-scrollbar { width: 6px; }
+  #sidebar::-webkit-scrollbar-track { background: var(--bg-panel); }
+  #sidebar::-webkit-scrollbar-thumb { background: var(--border); }
+
+  .panel {
+    padding: 9px 14px 11px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .panel-title {
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+    margin-bottom: 7px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .panel-title .small {
+    font-size: 9px; color: var(--fg-faint);
+    letter-spacing: 0.05em;
+  }
+  .panel-meta {
+    font-size: 10.5px; color: var(--fg-faint);
+    font-style: italic;
+    line-height: 1.4;
+    margin: 2px 0 6px 0;
+  }
+  .slot {
+    display: grid;
+    grid-template-columns: 14px 1fr;
+    align-items: center;
+    gap: 7px;
+    margin: 5px 0;
+  }
+  .slot-dot {
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    background: var(--c);
+    border: 1.5px solid var(--c);
+    cursor: pointer;
+  }
+  .slot-row { display: grid; grid-template-rows: auto auto; gap: 3px; }
+  .slot-fam {
+    background: var(--math-bg);
+    border: 1px solid var(--border);
+    color: var(--fg);
+    padding: 3px 6px;
+    font-family: inherit;
+    font-size: 11.5px;
+    width: 100%;
+    cursor: pointer;
+    outline: none;
+  }
+  .slot-fam:hover { border-color: var(--border-strong); }
+  .slot-fam.off { color: var(--fg-faint); border-style: dashed; }
+  .slot-lam {
+    display: grid;
+    grid-template-columns: auto 1fr 36px;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    color: var(--fg-faint);
+  }
+  .slot-lam input[type="range"] {
+    -webkit-appearance: none; appearance: none;
+    height: 2px;
+    background: var(--border-strong);
+    width: 100%;
+  }
+  .slot-lam input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 9px; height: 9px;
+    background: var(--c);
+    border: 1px solid var(--bg);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  .slot-lam input[type="range"]::-moz-range-thumb {
+    width: 9px; height: 9px;
+    background: var(--c);
+    border: 1px solid var(--bg);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  .slot-lam .val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    text-align: right;
+    color: var(--fg);
+  }
+
+  /* General range slider */
+  input[type="range"].big {
+    -webkit-appearance: none; appearance: none;
+    width: 100%; height: 2px;
+    background: var(--border-strong);
+    outline: none;
+  }
+  input[type="range"].big::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 11px; height: 11px;
+    background: var(--chord);
+    border: 1px solid var(--bg);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  input[type="range"].big::-moz-range-thumb {
+    width: 11px; height: 11px;
+    background: var(--chord);
+    border: 1px solid var(--bg);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  .slider-row {
+    display: grid;
+    grid-template-rows: auto auto;
+    gap: 3px;
+    margin: 5px 0 8px 0;
+  }
+  .slider-row .lab {
+    display: flex; justify-content: space-between;
+    font-size: 11px; color: var(--fg-dim);
+  }
+  .slider-row .lab .val {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--fg);
+  }
+
+  /* Mode toggle */
+  .mode-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    margin: 6px 0;
+    border: 1px solid var(--border-strong);
+  }
+  .mode-row .mode-btn {
+    background: var(--math-bg);
+    color: var(--fg-dim);
+    padding: 5px 8px;
+    border: none;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: all 0.12s;
+  }
+  .mode-row .mode-btn:not(:last-child) { border-right: 1px solid var(--border-strong); }
+  .mode-row .mode-btn.active {
+    background: var(--bg-panel-2);
+    color: var(--leg1);
+  }
+  .mode-row .mode-btn:hover:not(.active) { color: var(--fg); background: var(--bg-panel-2); }
+
+  /* Edge barcode display */
+  .edge-readout {
+    margin-top: 6px;
+    background: var(--math-bg);
+    border-left: 2px solid var(--border-strong);
+    padding: 6px 8px;
+    font-size: 11px;
+    line-height: 1.45;
+    min-height: 36px;
+  }
+  .edge-readout .pair {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--fg);
+  }
+  .edge-readout .meta {
+    color: var(--fg-dim);
+    font-style: italic;
+  }
+  .edge-readout canvas {
+    width: 100%; height: 28px;
+    margin-top: 4px;
+    display: block;
+  }
+
+  /* Matrix strip on bottom */
+  #matrix-strip {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .matrix-cell {
+    position: relative;
+    border-right: 1px solid var(--border);
+    padding: 4px 12px 6px 12px;
+  }
+  .matrix-cell:last-child { border-right: none; }
+  .matrix-cell .mat-title {
+    font-size: 8.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--fg-faint);
+    font-family: 'JetBrains Mono', monospace;
+    margin-bottom: 2px;
+  }
+  .matrix-cell canvas {
+    width: 100%; height: 50px;
+    display: block;
+  }
+
+  /* 3D mini scene */
+  #mini3d {
+    width: 100%; height: 220px;
+    background:
+      radial-gradient(ellipse at center, #14141e 0%, #08080f 75%);
+    border: 1px solid var(--border);
+    cursor: grab;
+  }
+  #mini3d:active { cursor: grabbing; }
+
+  .triple-info {
+    background: rgba(96,216,224,0.06);
+    border: 1px solid rgba(96,216,224,0.24);
+    border-left-width: 3px;
+    padding: 6px 8px;
+    margin-top: 6px;
+    font-size: 11px;
+    line-height: 1.4;
+  }
+  .triple-info .head {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--chord);
+    font-size: 9.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+
+  .legend-band {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    font-size: 10px; color: var(--fg-dim);
+    margin-top: 4px;
+  }
+  .legend-band .item { display: flex; align-items: center; gap: 4px; }
+  .legend-band .swatch {
+    width: 10px; height: 10px;
+    background: var(--c);
+    display: inline-block;
+  }
+  .legend-band .star {
+    color: var(--triple);
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="header">
+    <div class="title">Legendrian Information Network <em>: Triple Agreement, Comparison Graph, Network Barcode</em></div>
+    <div class="subtitle">five exponential families on X = {0,1,2,3,4} with F(x) = x ; pairwise crossings of η-curves are Reeb chords ; triple crossings realize the cocycle Dᵢₖ = Dᵢⱼ + Dⱼₖ</div>
+  </div>
+
+  <div id="main">
+
+    <div id="leftcol">
+
+      <!-- Top : eta-plot (the Lagrangian projection of all Legendrians) -->
+      <div class="plot-block">
+        <div class="plot-title">η-plot  :  ηᵢ(θ) = ψᵢ′(θ)</div>
+        <div class="plot-anno">crossings → chords ; triple crossings → triple agreement</div>
+        <canvas id="plot-eta" class="plot"></canvas>
+      </div>
+
+      <!-- Middle : comparison graph -->
+      <div class="plot-block">
+        <div class="plot-title">comparison graph  Γ<sub>ε</sub>(L)</div>
+        <div class="plot-anno" id="cgraph-anno">filtration ε ; click a node or edge for detail</div>
+        <canvas id="plot-cgraph" class="plot"></canvas>
+      </div>
+
+      <!-- Bottom : matrices -->
+      <div id="matrix-strip">
+        <div class="matrix-cell">
+          <div class="mat-title">min-action  aᵢⱼ</div>
+          <canvas id="mat-a"></canvas>
+        </div>
+        <div class="matrix-cell">
+          <div class="mat-title">chord count  Nᵢⱼ</div>
+          <canvas id="mat-N"></canvas>
+        </div>
+        <div class="matrix-cell">
+          <div class="mat-title">index profile  Pᵢⱼ</div>
+          <canvas id="mat-P"></canvas>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right sidebar -->
+    <div id="sidebar">
+
+      <div class="panel">
+        <div class="panel-title">
+          <span>5 vertices  L<sub>ψ₁</sub>, …, L<sub>ψ₅</sub></span>
+          <span class="small">click dot to focus</span>
+        </div>
+        <div class="panel-meta">Each slot picks a reference measure h<sub>i</sub> on X = {0,…,4}.  λᵢ shifts θ ↦ θ − λᵢ inside the chosen family ; this is Φ<sub>(λᵢ, 0)</sub> from Theorem 5.1 of <em>Reeb Chords</em>.</div>
+        <div id="slot-list"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">
+          <span>filtration ε  /  comparison mode</span>
+        </div>
+        <div class="slider-row">
+          <div class="lab"><span>ε  :  edge action threshold</span><span class="val" id="eps-val">+0.50</span></div>
+          <input type="range" class="big" id="eps-slider" min="0" max="2.5" step="0.005" value="0.5">
+        </div>
+        <div class="mode-row">
+          <button class="mode-btn active" data-mode="action" id="mode-action">agreement (action)</button>
+          <button class="mode-btn"        data-mode="kl"     id="mode-kl">distance (KL)</button>
+        </div>
+        <div class="slider-row" id="kl-row" style="display: none;">
+          <div class="lab"><span>θ<sub>ref</sub>  :  KL evaluation point</span><span class="val" id="klref-val">0.00</span></div>
+          <input type="range" class="big" id="klref-slider" min="-3" max="3" step="0.01" value="0">
+        </div>
+        <div class="panel-meta" style="margin-top: 4px;">
+          Agreement mode uses the minimum chord action a<sub>ij</sub> as the edge weight ; an edge appears when a<sub>ij</sub> ≤ ε.  Distance mode uses the KL divergence at θ<sub>ref</sub> as the weight ; an edge appears when KL ≤ ε.  Section 8 of the paper.
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">
+          <span>edge readout</span>
+          <span class="small" id="edge-tag">none selected</span>
+        </div>
+        <div class="edge-readout" id="edge-readout">
+          <div class="pair">click an edge in the graph or η-plot</div>
+        </div>
+      </div>
+
+      <div class="panel" id="triple-panel" style="display: none;">
+        <div class="panel-title">
+          <span>triple-agreement events</span>
+          <span class="small" id="triple-tag"></span>
+        </div>
+        <div id="triple-list"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">3D mini-scene  J¹(Θ, ℝ)</div>
+        <canvas id="mini3d"></canvas>
+        <div class="legend-band">
+          <div class="item"><span class="swatch" style="--c: var(--leg1)"></span>L<sub>ψ₁</sub></div>
+          <div class="item"><span class="swatch" style="--c: var(--leg2)"></span>L<sub>ψ₂</sub></div>
+          <div class="item"><span class="swatch" style="--c: var(--leg3)"></span>L<sub>ψ₃</sub></div>
+          <div class="item"><span class="swatch" style="--c: var(--leg4)"></span>L<sub>ψ₄</sub></div>
+          <div class="item"><span class="swatch" style="--c: var(--leg5)"></span>L<sub>ψ₅</sub></div>
+          <div class="item"><span class="swatch" style="--c: var(--chord)"></span>chord</div>
+          <div class="item"><span class="star">★</span>triple</div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// =============================================================================
+// FAMILY LIBRARY  : same alphabet X = {0,…,4}, sufficient statistic F(x) = x
+// =============================================================================
+
+const X = [0, 1, 2, 3, 4];
+function F(x) { return x; }
+function fact(n){let r=1;for(let i=2;i<=n;i++)r*=i;return r;}
+function bc(n,k){return fact(n)/(fact(k)*fact(n-k));}
+function logSumExp(ys) {
+  const m = Math.max(...ys);
+  let s = 0;
+  for (let i = 0; i < ys.length; i++) s += Math.exp(ys[i] - m);
+  return m + Math.log(s);
+}
+function makeFam(name, h, eqLabel) {
+  const logh = X.map(h).map(v => Math.log(v));
+  return { name, eqLabel, logh,
+    psi:   t => logSumExp(X.map((x,i) => t*F(x) + logh[i])),
+    dpsi:  t => {
+      const ys = X.map((x,i) => t*F(x) + logh[i]);
+      const lse = logSumExp(ys);
+      let e = 0; for (let i = 0; i < X.length; i++) e += F(X[i])*Math.exp(ys[i]-lse);
+      return e;
+    },
+    d2psi: t => {
+      const ys = X.map((x,i) => t*F(x) + logh[i]);
+      const lse = logSumExp(ys);
+      let e = 0, e2 = 0;
+      for (let i = 0; i < X.length; i++) {
+        const p = Math.exp(ys[i]-lse);
+        e += F(X[i])*p; e2 += F(X[i])*F(X[i])*p;
+      }
+      return e2 - e*e;
+    },
+    p: t => {
+      const ys = X.map((x,i) => t*F(x) + logh[i]);
+      const lse = logSumExp(ys);
+      return ys.map(y => Math.exp(y - lse));
+    },
+  };
+}
+
+const families = {
+  uniform:   makeFam('Uniform',                () => 1,                          'h(x) = 1'),
+  binom4:    makeFam('Binomial N=4',           x => bc(4, x),                    'h(x) = (4 choose x)'),
+  rightSk:   makeFam('Right-skewed (h = x+1)', x => x + 1,                       'h(x) = x + 1'),
+  leftSk:    makeFam('Left-skewed (h = 5−x)',  x => 5 - x,                       'h(x) = 5 − x'),
+  bimodal:   makeFam('Bimodal',                x => (x===0 || x===4) ? 2 : 1,    'h = (2,1,1,1,2)'),
+  centered:  makeFam('Center-heavy',           x => [1,2,4,2,1][x],              'h = (1,2,4,2,1)'),
+};
+const FAM_KEYS = Object.keys(families);
+
+// =============================================================================
+// STATE
+// =============================================================================
+
+const SLOT_COLORS_HEX = ['#e0b060', '#c87858', '#b06080', '#80a8a0', '#a0a060'];
+const SLOT_COLORS_NUM = [0xe0b060, 0xc87858, 0xb06080, 0x80a8a0, 0xa0a060];
+const SLOT_NAMES = ['1', '2', '3', '4', '5'];
+
+const state = {
+  slots: [
+    { key: 'uniform',  lam: 0, on: true },
+    { key: 'binom4',   lam: 0, on: true },
+    { key: 'rightSk',  lam: 0, on: true },
+    { key: 'leftSk',   lam: 0, on: true },
+    { key: 'centered', lam: 0, on: true },
+  ],
+  thetaRange: [-3, 3],
+  eps: 0.5,
+  mode: 'action',  // 'action' or 'kl'
+  klRef: 0,
+
+  selectedEdge: null,    // {i, j}
+  hoverEdge:    null,
+  selectedSlot: null,    // index 0-4
+
+  // Computed
+  pairChords: {},        // key 'i-j' -> array of chord objects
+  triples:    [],        // array of triple-agreement events (some near, some exact)
+};
+
+function slotFamily(s) { return families[state.slots[s].key]; }
+function pairKey(i, j) { return i < j ? (i + '-' + j) : (j + '-' + i); }
+
+// Per-slot eval functions (with intra-family translation lambda_i)
+function eta_i(s, t) { const f = slotFamily(s); return f.dpsi(t + state.slots[s].lam); }
+function psi_i(s, t) { const f = slotFamily(s); return f.psi (t + state.slots[s].lam); }
+function fi_i (s, t) { const f = slotFamily(s); return f.d2psi(t + state.slots[s].lam); }
+
+// =============================================================================
+// CHORD FINDER
+// =============================================================================
+
+function findPairChords(i, j) {
+  if (!state.slots[i].on || !state.slots[j].on) return [];
+  const [lo, hi] = state.thetaRange;
+  const N = 240;
+  const f  = t => eta_i(j, t) - eta_i(i, t);          // sign convention : positive when j > i in mean
+  const fp = t => fi_i (j, t) - fi_i (i, t);
+  const psiDiff = t => psi_i(j, t) - psi_i(i, t);
+
+  const chords = [];
+  let prevT = lo, prevF = f(lo);
+  for (let k = 1; k <= N; k++) {
+    const t = lo + (hi - lo) * k / N;
+    const ft = f(t);
+    if (prevF === 0) {
+      pushChord(prevT);
+    }
+    if (prevF * ft < 0) {
+      let xLo = prevT, xHi = t, fLo = prevF;
+      for (let it = 0; it < 50; it++) {
+        const mid = 0.5*(xLo + xHi);
+        const fm = f(mid);
+        if (Math.abs(fm) < 1e-12) { xLo = xHi = mid; break; }
+        if (fLo * fm < 0) { xHi = mid; }
+        else              { xLo = mid; fLo = fm; }
+      }
+      const tStar = 0.5*(xLo + xHi);
+      pushChord(tStar);
+    }
+    prevT = t; prevF = ft;
+  }
+  return chords;
+
+  function pushChord(tStar) {
+    const eta   = eta_i(i, tStar);
+    const sign  = psiDiff(tStar);
+    const dpp   = fp(tStar);
+    let morseIndex, morseType;
+    if (dpp >  1e-6) { morseIndex = 0; morseType = 'min'; }
+    else if (dpp < -1e-6) { morseIndex = 1; morseType = 'max'; }
+    else { morseIndex = -1; morseType = 'deg'; }
+    chords.push({
+      tStar, eta, signed: sign, length: Math.abs(sign),
+      dpp, morseIndex, morseType,
+      i, j,
+    });
+  }
+}
+
+function recomputeAllChords() {
+  state.pairChords = {};
+  for (let i = 0; i < 5; i++) {
+    for (let j = i + 1; j < 5; j++) {
+      state.pairChords[pairKey(i, j)] = findPairChords(i, j);
+    }
+  }
+}
+
+// =============================================================================
+// TRIPLE AGREEMENT DETECTOR
+// =============================================================================
+
+// For each unordered triple (i, j, k) and every chord c_ij of pair (i,j),
+// check whether the chord c_jk closest in tStar lies within tolerance.
+// If so, we have a near or exact triple agreement.  By the cocycle, the chord
+// c_ik should also live near the same tStar with action D_ij + D_jk.
+function detectTriples() {
+  const tol = 0.04;
+  const triples = [];
+  const seen = new Set();
+
+  for (let i = 0; i < 5; i++) {
+    for (let j = i + 1; j < 5; j++) {
+      for (let k = j + 1; k < 5; k++) {
+        const cij = state.pairChords[pairKey(i, j)] || [];
+        const cjk = state.pairChords[pairKey(j, k)] || [];
+        const cik = state.pairChords[pairKey(i, k)] || [];
+
+        for (const a of cij) {
+          for (const b of cjk) {
+            if (Math.abs(a.tStar - b.tStar) < tol) {
+              // Find the matching chord on (i,k) — closest tStar
+              let bestC = null, bestDt = Infinity;
+              for (const c of cik) {
+                const dt = Math.abs(c.tStar - a.tStar);
+                if (dt < bestDt) { bestDt = dt; bestC = c; }
+              }
+              const tStar = (a.tStar + b.tStar) / 2;
+              const k1 = `${i}-${j}-${k}-${tStar.toFixed(2)}`;
+              if (seen.has(k1)) continue;
+              seen.add(k1);
+
+              // Cocycle deviation : how close are the actions to additivity?
+              const aSigned_ij = psi_i(j, a.tStar) - psi_i(i, a.tStar);
+              const aSigned_jk = psi_i(k, b.tStar) - psi_i(j, b.tStar);
+              const expected_ik = aSigned_ij + aSigned_jk;
+              const observed_ik = bestC ? (psi_i(k, bestC.tStar) - psi_i(i, bestC.tStar)) : null;
+
+              triples.push({
+                i, j, k,
+                tStar,
+                tij: a.tStar, tjk: b.tStar, tik: bestC ? bestC.tStar : null,
+                Aij: aSigned_ij,
+                Ajk: aSigned_jk,
+                Aik_expected: expected_ik,
+                Aik_observed: observed_ik,
+                tStarSpread: Math.max(
+                  Math.abs(a.tStar - b.tStar),
+                  bestC ? Math.abs(a.tStar - bestC.tStar) : 0,
+                ),
+                exact: Math.abs(a.tStar - b.tStar) < 0.005,
+                etaCommon: a.eta,
+              });
+            }
+          }
+        }
+      }
+    }
+  }
+  state.triples = triples;
+}
+
+// =============================================================================
+// MIN-ACTION / CHORD-COUNT / INDEX-PROFILE  MATRICES
+// =============================================================================
+
+function pairMinAction(i, j) {
+  const cs = state.pairChords[pairKey(i, j)] || [];
+  if (cs.length === 0) return Infinity;
+  let mn = Infinity;
+  for (const c of cs) if (c.length < mn) mn = c.length;
+  return mn;
+}
+function pairCount(i, j) { return (state.pairChords[pairKey(i, j)] || []).length; }
+function pairIndexProfile(i, j) {
+  const cs = state.pairChords[pairKey(i, j)] || [];
+  const p = [0, 0, 0]; // n=1 so only index 0 (min) and 1 (max), but allow degenerate at end
+  for (const c of cs) {
+    if (c.morseIndex === 0) p[0]++;
+    else if (c.morseIndex === 1) p[1]++;
+    else p[2]++;
+  }
+  return p;
+}
+
+// =============================================================================
+// KL DIVERGENCE  at a chosen reference theta
+// =============================================================================
+
+function pairKL(i, j, tRef) {
+  // KL(p_i_tRef || p_j_tRef) on X = {0..4}
+  const fi = slotFamily(i), fj = slotFamily(j);
+  const ti = tRef + state.slots[i].lam;
+  const tj = tRef + state.slots[j].lam;
+  const pi = fi.p(ti);
+  const pj = fj.p(tj);
+  let kl = 0;
+  for (let x = 0; x < X.length; x++) {
+    if (pi[x] > 1e-15 && pj[x] > 1e-15) {
+      kl += pi[x] * Math.log(pi[x] / pj[x]);
+    }
+  }
+  return kl;
+}
+
+// =============================================================================
+// COMPUTE CONNECTED COMPONENTS  for a given threshold
+// =============================================================================
+
+function edgeWeight(i, j) {
+  if (state.mode === 'action') return pairMinAction(i, j);
+  // 'kl' mode : symmetrize the KL by averaging both directions
+  const a = pairKL(i, j, state.klRef);
+  const b = pairKL(j, i, state.klRef);
+  return 0.5 * (a + b);
+}
+
+function activeEdges() {
+  const edges = [];
+  for (let i = 0; i < 5; i++) {
+    for (let j = i + 1; j < 5; j++) {
+      if (!state.slots[i].on || !state.slots[j].on) continue;
+      const w = edgeWeight(i, j);
+      if (w <= state.eps + 1e-12) edges.push({ i, j, w });
+    }
+  }
+  return edges;
+}
+
+// Collect the pairwise weight matrix (upper triangle), sorted ascending.
+function collectAllEdgeWeights() {
+  const arr = [];
+  for (let i = 0; i < 5; i++) {
+    for (let j = i + 1; j < 5; j++) {
+      if (!state.slots[i].on || !state.slots[j].on) continue;
+      arr.push({ i, j, w: edgeWeight(i, j) });
+    }
+  }
+  arr.sort((a, b) => a.w - b.w);
+  return arr;
+}
+
+// Persistent components : at each edge insertion, components merge (DSU).
+function persistentComponents() {
+  const sorted = collectAllEdgeWeights();
+  const parent = [0,1,2,3,4];
+  function find(x){ while (parent[x] !== x) { parent[x] = parent[parent[x]]; x = parent[x]; } return x; }
+  let nComps = state.slots.filter(s => s.on).length;
+  // Components born at eps = 0 and dying at the threshold of their merge into another component.
+  const bars = [];
+  for (let i = 0; i < 5; i++) {
+    if (state.slots[i].on) bars.push({ root: i, birth: 0, death: Infinity });
+  }
+  for (const e of sorted) {
+    if (!isFinite(e.w)) continue;
+    const ra = find(e.i), rb = find(e.j);
+    if (ra !== rb) {
+      // Merge : the "younger" root dies.  Define young = larger root (arbitrary choice for visualization).
+      const young = Math.max(ra, rb);
+      const bar = bars.find(b => b.root === young && b.death === Infinity);
+      if (bar) bar.death = e.w;
+      parent[ra] = rb;
+      nComps--;
+    }
+  }
+  return bars;
+}
+
+// =============================================================================
+// PLOTS
+// =============================================================================
+
+function setupHiDPI(cv) {
+  const dpr = window.devicePixelRatio || 1;
+  const w = cv.clientWidth, h = cv.clientHeight;
+  cv.width  = Math.round(w * dpr);
+  cv.height = Math.round(h * dpr);
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w, h };
+}
+
+function drawEtaPlot() {
+  const cv = document.getElementById('plot-eta');
+  if (!cv.clientWidth) return;
+  const { ctx, w, h } = setupHiDPI(cv);
+  ctx.clearRect(0, 0, w, h);
+
+  const padL = 38, padR = 18, padT = 30, padB = 22;
+  const pw = w - padL - padR, ph = h - padT - padB;
+  const [tLo, tHi] = state.thetaRange;
+  // y-range : eta ∈ [0, 4] for X={0..4}; allow some headroom
+  const eLo = -0.2, eHi = 4.2;
+
+  // Frame
+  ctx.strokeStyle = '#22222c'; ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(padL, padT); ctx.lineTo(padL, padT + ph);
+  ctx.lineTo(padL + pw, padT + ph);
+  ctx.stroke();
+  // x ticks
+  ctx.fillStyle = '#4a4a5a'; ctx.font = '9.5px JetBrains Mono, monospace';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  for (let k = 0; k <= 6; k++) {
+    const tval = tLo + (tHi - tLo) * k / 6;
+    const px = padL + (k/6)*pw;
+    ctx.fillText(tval.toFixed(1), px, padT + ph + 3);
+    if (k > 0 && k < 6) {
+      ctx.strokeStyle = '#1a1a24';
+      ctx.beginPath(); ctx.moveTo(px, padT); ctx.lineTo(px, padT + ph); ctx.stroke();
+    }
+  }
+  // y ticks (eta)
+  ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+  for (let k = 0; k <= 4; k++) {
+    const eVal = k;
+    const py = padT + (1 - (eVal - eLo) / (eHi - eLo)) * ph;
+    ctx.fillText(eVal.toFixed(0), padL - 4, py);
+    if (k > 0 && k < 4) {
+      ctx.strokeStyle = '#1a1a24';
+      ctx.beginPath(); ctx.moveTo(padL, py); ctx.lineTo(padL + pw, py); ctx.stroke();
+    }
+  }
+  // Axis labels
+  ctx.fillStyle = '#4a4a5a'; ctx.font = 'italic 11px STIX Two Math, Cambria Math, serif';
+  ctx.textAlign = 'left';   ctx.textBaseline = 'top';
+  ctx.fillText('η', padL - 12, padT + 2);
+  ctx.textAlign = 'right'; ctx.textBaseline = 'top';
+  ctx.fillText('θ', padL + pw + 4, padT + ph + 4);
+
+  const xPx = t => padL + (t - tLo) / (tHi - tLo) * pw;
+  const yPx = e => padT + (1 - (e - eLo) / (eHi - eLo)) * ph;
+
+  // Plot each curve
+  const N = 240;
+  for (let s = 0; s < 5; s++) {
+    if (!state.slots[s].on) continue;
+    ctx.strokeStyle = SLOT_COLORS_HEX[s];
+    ctx.lineWidth = state.selectedSlot === s ? 2.5 : 1.7;
+    ctx.beginPath();
+    for (let k = 0; k <= N; k++) {
+      const t = tLo + (tHi - tLo) * k / N;
+      const e = eta_i(s, t);
+      const px = xPx(t), py = yPx(e);
+      if (k === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+    // Slot label near right edge
+    const eR = eta_i(s, tHi);
+    ctx.fillStyle = SLOT_COLORS_HEX[s];
+    ctx.font = 'bold 10px JetBrains Mono, monospace';
+    ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    ctx.fillText('L' + (s+1), padL + pw + 3, yPx(eR));
+  }
+
+  // Pairwise crossings as dots
+  for (let i = 0; i < 5; i++) {
+    for (let j = i + 1; j < 5; j++) {
+      const cs = state.pairChords[pairKey(i, j)] || [];
+      const isSelected = state.selectedEdge && state.selectedEdge.i === i && state.selectedEdge.j === j;
+      const isHover    = state.hoverEdge    && state.hoverEdge.i    === i && state.hoverEdge.j    === j;
+      for (const c of cs) {
+        const px = xPx(c.tStar), py = yPx(c.eta);
+        // small chord dot
+        const r = (isSelected || isHover) ? 4.5 : 3.2;
+        // outer halo
+        if (c.length <= state.eps) {
+          ctx.fillStyle = 'rgba(96,216,224,0.18)';
+          ctx.beginPath(); ctx.arc(px, py, r + 4, 0, Math.PI*2); ctx.fill();
+        }
+        // dot itself : use blend of two slot colors
+        const c1 = SLOT_COLORS_HEX[i], c2 = SLOT_COLORS_HEX[j];
+        ctx.fillStyle = blendHex(c1, c2);
+        ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI*2); ctx.fill();
+        if (isSelected || isHover) {
+          ctx.strokeStyle = '#60d8e0';
+          ctx.lineWidth = 1.4;
+          ctx.beginPath(); ctx.arc(px, py, r + 2.5, 0, Math.PI*2); ctx.stroke();
+        }
+      }
+    }
+  }
+
+  // Triple-agreement stars
+  for (const tri of state.triples) {
+    const px = xPx(tri.tStar), py = yPx(tri.etaCommon);
+    drawStar(ctx, px, py, tri.exact ? 9 : 6, tri.exact ? '#f0d878' : '#c8a040', tri.exact ? 1.0 : 0.7);
+  }
+
+  // ε filtration band : faint horizontal annotation along the top
+  ctx.fillStyle = 'rgba(96,216,224,0.5)';
+  ctx.font = 'italic 10px STIX Two Math, serif';
+  ctx.textAlign = 'right'; ctx.textBaseline = 'top';
+  ctx.fillText('ε = ' + state.eps.toFixed(2) +
+               '   (chords with |D| ≤ ε  shown highlighted)',
+               padL + pw, padT - 18);
+}
+
+function blendHex(a, b) {
+  const ar = parseInt(a.slice(1,3),16), ag = parseInt(a.slice(3,5),16), ab = parseInt(a.slice(5,7),16);
+  const br = parseInt(b.slice(1,3),16), bg = parseInt(b.slice(3,5),16), bb = parseInt(b.slice(5,7),16);
+  const rr = Math.round((ar+br)/2), rg = Math.round((ag+bg)/2), rb = Math.round((ab+bb)/2);
+  return 'rgb(' + rr + ',' + rg + ',' + rb + ')';
+}
+
+function drawStar(ctx, cx, cy, r, color, alpha) {
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.fillStyle = color;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  for (let i = 0; i < 10; i++) {
+    const a = -Math.PI/2 + i * Math.PI/5;
+    const rr = (i % 2 === 0) ? r : r * 0.42;
+    const x = cx + rr * Math.cos(a);
+    const y = cy + rr * Math.sin(a);
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+// -----------------------------------------------------------------------------
+// COMPARISON GRAPH  Γ_ε
+// -----------------------------------------------------------------------------
+
+function drawComparisonGraph() {
+  const cv = document.getElementById('plot-cgraph');
+  if (!cv.clientWidth) return;
+  const { ctx, w, h } = setupHiDPI(cv);
+  ctx.clearRect(0, 0, w, h);
+
+  const cx = w * 0.30, cy = h * 0.55;
+  const radius = Math.min(w * 0.27, h * 0.35);
+
+  // node positions arranged in a circle
+  const positions = [];
+  for (let s = 0; s < 5; s++) {
+    const a = -Math.PI/2 + s * 2 * Math.PI / 5;
+    positions.push({
+      x: cx + radius * Math.cos(a),
+      y: cy + radius * Math.sin(a),
+    });
+  }
+
+  // Edges
+  const edges = activeEdges();
+  // Triangle highlighting : if all three edges of a triple agreement are present
+  const triangles = [];
+  for (const tri of state.triples) {
+    const eIJ = edges.find(e => (e.i === Math.min(tri.i, tri.j) && e.j === Math.max(tri.i, tri.j)));
+    const eJK = edges.find(e => (e.i === Math.min(tri.j, tri.k) && e.j === Math.max(tri.j, tri.k)));
+    const eIK = edges.find(e => (e.i === Math.min(tri.i, tri.k) && e.j === Math.max(tri.i, tri.k)));
+    if (eIJ && eJK && eIK) triangles.push({ tri, present: true });
+    else if (eIJ || eJK || eIK) triangles.push({ tri, present: false });
+  }
+  // Draw triangle fills (faintly) for present triples
+  for (const tg of triangles) {
+    if (!tg.present) continue;
+    const pa = positions[tg.tri.i], pb = positions[tg.tri.j], pc = positions[tg.tri.k];
+    ctx.fillStyle = tg.tri.exact ? 'rgba(240,216,120,0.18)' : 'rgba(200,160,64,0.10)';
+    ctx.beginPath();
+    ctx.moveTo(pa.x, pa.y); ctx.lineTo(pb.x, pb.y); ctx.lineTo(pc.x, pc.y);
+    ctx.closePath(); ctx.fill();
+  }
+  // Draw edges
+  for (const e of edges) {
+    const p1 = positions[e.i], p2 = positions[e.j];
+    const isSel = state.selectedEdge && state.selectedEdge.i === e.i && state.selectedEdge.j === e.j;
+    const isHov = state.hoverEdge    && state.hoverEdge.i    === e.i && state.hoverEdge.j    === e.j;
+    // Edge thickness based on weight (smaller w → thicker)
+    const t = Math.max(0.05, 1 - e.w / Math.max(state.eps, 0.001));
+    const lw = 1.0 + 3 * t;
+    ctx.strokeStyle = isSel ? '#60d8e0' : (isHov ? '#a0e0e8' : '#80a0a8');
+    ctx.globalAlpha = isSel ? 1.0 : 0.75;
+    ctx.lineWidth = lw + (isSel ? 1 : 0);
+    ctx.beginPath();
+    ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y);
+    ctx.stroke();
+    ctx.globalAlpha = 1.0;
+    // Edge label : weight value
+    if (isSel || isHov) {
+      const mx = (p1.x + p2.x)/2, my = (p1.y + p2.y)/2;
+      ctx.fillStyle = '#60d8e0';
+      ctx.font = 'bold 10px JetBrains Mono, monospace';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      const lbl = (state.mode === 'action' ? 'a=' : 'KL=') + e.w.toFixed(3);
+      ctx.fillText(lbl, mx, my - 7);
+    }
+  }
+  // Draw nodes
+  for (let s = 0; s < 5; s++) {
+    const p = positions[s];
+    const isSel = state.selectedSlot === s;
+    ctx.fillStyle = SLOT_COLORS_HEX[s];
+    ctx.globalAlpha = state.slots[s].on ? 1.0 : 0.4;
+    ctx.beginPath(); ctx.arc(p.x, p.y, isSel ? 10 : 7, 0, Math.PI*2); ctx.fill();
+    if (isSel) {
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc(p.x, p.y, 12, 0, Math.PI*2); ctx.stroke();
+    }
+    ctx.globalAlpha = 1.0;
+    // label
+    ctx.fillStyle = '#e8e0d0';
+    ctx.font = 'bold 10px JetBrains Mono, monospace';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    const lblX = p.x + 16 * Math.cos(Math.atan2(p.y - cy, p.x - cx));
+    const lblY = p.y + 16 * Math.sin(Math.atan2(p.y - cy, p.x - cx));
+    ctx.fillText('L' + (s+1), lblX, lblY);
+  }
+
+  // Mode tag
+  ctx.fillStyle = '#4a4a5a';
+  ctx.font = '10px JetBrains Mono, monospace';
+  ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+  ctx.fillText(
+    state.mode === 'action' ? 'agreement clustering  /  weight = a_ij' :
+                              'distance clustering   /  weight = ½ (KL(i ‖ j) + KL(j ‖ i))  at θ_ref',
+    14, h - 18);
+
+  // Persistence-of-components mini-strip on the RIGHT side of the canvas
+  drawPersistenceStrip(ctx, w, h);
+}
+
+function drawPersistenceStrip(ctx, W, H) {
+  const padL = W * 0.62, padR = W - 14, padT = 24, padB = 16;
+  const pw = padR - padL, ph = H - padT - padB;
+  if (pw < 30) return;
+
+  // Title
+  ctx.fillStyle = '#4a4a5a';
+  ctx.font = '9.5px JetBrains Mono, monospace';
+  ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+  ctx.fillText('persistent components H₀ (Γ_ε)', padL, 8);
+
+  ctx.strokeStyle = '#22222c'; ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(padL, padT); ctx.lineTo(padL, padT + ph);
+  ctx.lineTo(padL + pw, padT + ph);
+  ctx.stroke();
+
+  // Determine x-axis range : 0 to 1.2 × max finite death.
+  const bars = persistentComponents();
+  let maxD = 0.5;
+  for (const b of bars) if (isFinite(b.death) && b.death > maxD) maxD = b.death;
+  if (state.eps > maxD) maxD = state.eps * 1.05;
+  maxD *= 1.05;
+
+  const xPx = w => padL + Math.min(1, w / maxD) * pw;
+
+  // Axis ticks
+  ctx.fillStyle = '#4a4a5a'; ctx.font = '9px JetBrains Mono, monospace';
+  ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+  ctx.fillText('0',                     padL,     padT + ph + 2);
+  ctx.textAlign = 'right';
+  ctx.fillText(maxD.toFixed(2),         padL + pw, padT + ph + 2);
+
+  // Bars : one per active vertex initially
+  const slotH = ph / Math.max(1, bars.length);
+  const barH = Math.max(2, slotH - 4);
+  for (let i = 0; i < bars.length; i++) {
+    const b = bars[i];
+    const y = padT + i * slotH + (slotH - barH)/2;
+    const xa = xPx(b.birth);
+    const xb = isFinite(b.death) ? xPx(b.death) : padL + pw;
+    ctx.fillStyle = SLOT_COLORS_HEX[b.root];
+    ctx.globalAlpha = 0.85;
+    ctx.fillRect(xa, y, xb - xa, barH);
+    ctx.globalAlpha = 1;
+  }
+
+  // Current ε marker
+  ctx.strokeStyle = '#60d8e0'; ctx.lineWidth = 1.2;
+  const ex = xPx(state.eps);
+  ctx.beginPath();
+  ctx.moveTo(ex, padT); ctx.lineTo(ex, padT + ph);
+  ctx.stroke();
+  // ε label
+  ctx.fillStyle = '#60d8e0';
+  ctx.font = 'bold 9px JetBrains Mono, monospace';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+  ctx.fillText('ε', ex, padT - 1);
+}
+
+// -----------------------------------------------------------------------------
+// MATRIX HEATMAPS
+// -----------------------------------------------------------------------------
+
+function drawMatrixCell(canvasId, valueFn, labelFn, vmax, colorFn) {
+  const cv = document.getElementById(canvasId);
+  if (!cv.clientWidth) return;
+  const { ctx, w, h } = setupHiDPI(cv);
+  ctx.clearRect(0, 0, w, h);
+  // Compose 5x5 matrix area
+  const padL = 30, padR = 6, padT = 4, padB = 12;
+  const pw = w - padL - padR, ph = h - padT - padB;
+  const cellW = pw / 5, cellH = ph / 5;
+
+  for (let i = 0; i < 5; i++) {
+    for (let j = 0; j < 5; j++) {
+      if (i === j) {
+        ctx.fillStyle = '#0a0a12';
+        ctx.fillRect(padL + j*cellW, padT + i*cellH, cellW, cellH);
+        continue;
+      }
+      const v = valueFn(i, j);
+      ctx.fillStyle = colorFn(v, vmax);
+      ctx.fillRect(padL + j*cellW + 0.5, padT + i*cellH + 0.5, cellW - 1, cellH - 1);
+      const lbl = labelFn(v);
+      if (lbl) {
+        ctx.fillStyle = '#1a1a24';
+        ctx.font = '8.5px JetBrains Mono, monospace';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(lbl, padL + (j + 0.5)*cellW, padT + (i + 0.5)*cellH);
+      }
+    }
+  }
+  // Row labels
+  ctx.fillStyle = '#4a4a5a'; ctx.font = '8.5px JetBrains Mono, monospace';
+  ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+  for (let i = 0; i < 5; i++) {
+    ctx.fillStyle = SLOT_COLORS_HEX[i];
+    ctx.fillText('L' + (i+1), padL - 3, padT + (i + 0.5)*cellH);
+  }
+  // Column labels (bottom)
+  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  for (let j = 0; j < 5; j++) {
+    ctx.fillStyle = SLOT_COLORS_HEX[j];
+    ctx.fillText('L' + (j+1), padL + (j + 0.5)*cellW, padT + ph + 1);
+  }
+}
+
+function colorAction(v, vmax) {
+  if (!isFinite(v)) return '#181828';
+  const t = Math.min(1, v / vmax);
+  // short action = warm, long = cool
+  const r = 192*(1-t) + 64*t, g = 144*(1-t) + 96*t, b = 80*(1-t) + 144*t;
+  return `rgb(${r|0},${g|0},${b|0})`;
+}
+function colorCount(v, vmax) {
+  const t = Math.min(1, v / Math.max(vmax, 1));
+  const r = 64*(1-t) + 224*t, g = 96*(1-t) + 192*t, b = 144*(1-t) + 96*t;
+  return `rgb(${r|0},${g|0},${b|0})`;
+}
+// For index profile, encode (#min, #max, #deg) as RGB channels
+function colorProfile(p) {
+  if (!p) return '#181828';
+  const mx = Math.max(1, p[0] + p[1] + p[2]);
+  const r = Math.round(80 + (p[1] / mx) * 175);
+  const g = Math.round(80 + (p[0] / mx) * 175);
+  const b = Math.round(80 + (p[2] / mx) * 175);
+  return `rgb(${r},${g},${b})`;
+}
+
+function drawMatrices() {
+  // For action mode use min-action; for KL mode use KL distance
+  let aMax = 0;
+  for (let i = 0; i < 5; i++)
+    for (let j = i+1; j < 5; j++) {
+      const v = edgeWeight(i, j);
+      if (isFinite(v) && v > aMax) aMax = v;
+    }
+  if (aMax < 0.5) aMax = 0.5;
+
+  drawMatrixCell('mat-a',
+    (i, j) => edgeWeight(i, j),
+    v => isFinite(v) ? v.toFixed(2) : '∞',
+    aMax, colorAction);
+
+  let nMax = 0;
+  for (let i = 0; i < 5; i++)
+    for (let j = i+1; j < 5; j++) {
+      const v = pairCount(i, j);
+      if (v > nMax) nMax = v;
+    }
+  drawMatrixCell('mat-N',
+    (i, j) => pairCount(i, j),
+    v => v.toString(),
+    nMax, colorCount);
+
+  // Profile : custom drawing function per cell
+  const cv = document.getElementById('mat-P');
+  if (cv.clientWidth) {
+    const { ctx, w, h } = setupHiDPI(cv);
+    ctx.clearRect(0, 0, w, h);
+    const padL = 30, padR = 6, padT = 4, padB = 12;
+    const pw = w - padL - padR, ph = h - padT - padB;
+    const cellW = pw / 5, cellH = ph / 5;
+    for (let i = 0; i < 5; i++) {
+      for (let j = 0; j < 5; j++) {
+        if (i === j) {
+          ctx.fillStyle = '#0a0a12';
+          ctx.fillRect(padL + j*cellW, padT + i*cellH, cellW, cellH);
+          continue;
+        }
+        const p = pairIndexProfile(Math.min(i,j), Math.max(i,j));
+        ctx.fillStyle = colorProfile(p);
+        ctx.fillRect(padL + j*cellW + 0.5, padT + i*cellH + 0.5, cellW - 1, cellH - 1);
+        const lbl = '(' + p[0] + ',' + p[1] + ')';
+        ctx.fillStyle = '#1a1a24';
+        ctx.font = '8px JetBrains Mono, monospace';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(lbl, padL + (j+0.5)*cellW, padT + (i+0.5)*cellH);
+      }
+    }
+    ctx.fillStyle = '#4a4a5a'; ctx.font = '8.5px JetBrains Mono, monospace';
+    ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    for (let i = 0; i < 5; i++) {
+      ctx.fillStyle = SLOT_COLORS_HEX[i];
+      ctx.fillText('L' + (i+1), padL - 3, padT + (i+0.5)*cellH);
+    }
+    ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    for (let j = 0; j < 5; j++) {
+      ctx.fillStyle = SLOT_COLORS_HEX[j];
+      ctx.fillText('L' + (j+1), padL + (j+0.5)*cellW, padT + ph + 1);
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// EDGE READOUT
+// -----------------------------------------------------------------------------
+
+function renderEdgeReadout() {
+  const tag = document.getElementById('edge-tag');
+  const box = document.getElementById('edge-readout');
+  if (!state.selectedEdge) {
+    tag.textContent = 'none selected';
+    box.innerHTML = '<div class="pair">click an edge in the graph or η-plot</div>';
+    return;
+  }
+  const { i, j } = state.selectedEdge;
+  tag.textContent = 'L' + (i+1) + ' ↔ L' + (j+1);
+  const cs = state.pairChords[pairKey(i, j)] || [];
+  let html = `<div class="pair">L<sub>${i+1}</sub> ↔ L<sub>${j+1}</sub>  &nbsp;<span class="meta">N<sub>ij</sub> = ${cs.length}</span></div>`;
+  if (cs.length === 0) {
+    html += '<div class="meta">no Reeb chord on this edge</div>';
+    box.innerHTML = html; return;
+  }
+  for (const c of cs) {
+    const isMin = c.morseIndex === 0;
+    html += `<div class="pair" style="margin-top: 3px;">θ★=${c.tStar.toFixed(3)}  η★=${c.eta.toFixed(3)}  |D|=${c.length.toFixed(3)}  <span class="meta">[${c.morseType}]</span></div>`;
+  }
+  // KL at theta_ref for context
+  const klij = pairKL(i, j, state.klRef);
+  const klji = pairKL(j, i, state.klRef);
+  html += `<div class="meta" style="margin-top: 4px;">KL(i‖j)=${klij.toFixed(3)} ; KL(j‖i)=${klji.toFixed(3)} at θ_ref=${state.klRef.toFixed(2)}</div>`;
+  // Inline barcode
+  html += '<canvas id="edge-bar"></canvas>';
+  box.innerHTML = html;
+  // Draw the barcode
+  setTimeout(() => drawEdgeBarcode(cs), 0);
+}
+
+function drawEdgeBarcode(cs) {
+  const cv = document.getElementById('edge-bar');
+  if (!cv) return;
+  const { ctx, w, h } = setupHiDPI(cv);
+  ctx.clearRect(0, 0, w, h);
+  let mx = 0.2;
+  for (const c of cs) if (c.length > mx) mx = c.length;
+  mx *= 1.15;
+  ctx.strokeStyle = '#22222c';
+  ctx.strokeRect(0, 0, w, h);
+  const slotH = h / Math.max(1, cs.length);
+  const barH = Math.max(2, slotH - 4);
+  for (let i = 0; i < cs.length; i++) {
+    const c = cs[i];
+    const len = (c.length / mx) * w;
+    const y = i * slotH + (slotH - barH)/2;
+    ctx.fillStyle = c.morseIndex === 0 ? '#80c060' : (c.morseIndex === 1 ? '#c08060' : '#707080');
+    ctx.fillRect(0, y, len, barH);
+  }
+  // ε marker
+  ctx.strokeStyle = '#60d8e0'; ctx.lineWidth = 1.2;
+  const ex = (state.eps / mx) * w;
+  if (ex >= 0 && ex <= w) {
+    ctx.beginPath();
+    ctx.moveTo(ex, 0); ctx.lineTo(ex, h);
+    ctx.stroke();
+  }
+}
+
+// -----------------------------------------------------------------------------
+// TRIPLE-AGREEMENT PANEL
+// -----------------------------------------------------------------------------
+
+function renderTriplePanel() {
+  const panel = document.getElementById('triple-panel');
+  const tag   = document.getElementById('triple-tag');
+  const list  = document.getElementById('triple-list');
+  if (state.triples.length === 0) {
+    panel.style.display = 'none'; return;
+  }
+  panel.style.display = 'block';
+  tag.textContent = state.triples.length + ' detected';
+  list.innerHTML = '';
+  for (const tri of state.triples) {
+    const dev = tri.Aik_observed !== null
+      ? Math.abs(tri.Aik_expected - tri.Aik_observed)
+      : null;
+    const div = document.createElement('div');
+    div.className = 'triple-info';
+    let html = `<div class="head">${tri.exact ? 'EXACT' : 'NEAR'} TRIPLE  L${tri.i+1} • L${tri.j+1} • L${tri.k+1}</div>`;
+    html += `<div>θ★ ≈ ${tri.tStar.toFixed(3)}  spread = ${tri.tStarSpread.toFixed(4)}</div>`;
+    html += `<div>D<sub>${tri.i+1}${tri.j+1}</sub>(θ★) = ${tri.Aij.toFixed(3)}</div>`;
+    html += `<div>D<sub>${tri.j+1}${tri.k+1}</sub>(θ★) = ${tri.Ajk.toFixed(3)}</div>`;
+    html += `<div>D<sub>${tri.i+1}${tri.k+1}</sub>(θ★) = ${tri.Aij.toFixed(3)} + (${tri.Ajk.toFixed(3)}) = ${tri.Aik_expected.toFixed(3)}<br>`;
+    if (tri.Aik_observed !== null) {
+      html += `&nbsp;&nbsp;observed = ${tri.Aik_observed.toFixed(3)}  ; deviation ${dev.toFixed(4)}</div>`;
+    } else {
+      html += `&nbsp;&nbsp;no chord observed on (i,k) edge</div>`;
+    }
+    div.innerHTML = html;
+    list.appendChild(div);
+  }
+}
+
+// =============================================================================
+// 3D MINI SCENE
+// =============================================================================
+
+const mini3d = document.getElementById('mini3d');
+const mscene  = new THREE.Scene();
+const mrenderer = new THREE.WebGLRenderer({ canvas: mini3d, antialias: true, alpha: true });
+mrenderer.setPixelRatio(window.devicePixelRatio);
+const mcamera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+const morbit = { phi: 1.15, theta: 0.7, dist: 7.0, target: new THREE.Vector3(0,0,0) };
+function applyMcamera() {
+  const x = morbit.dist * Math.sin(morbit.phi) * Math.cos(morbit.theta);
+  const y = morbit.dist * Math.cos(morbit.phi);
+  const z = morbit.dist * Math.sin(morbit.phi) * Math.sin(morbit.theta);
+  mcamera.position.set(x, y, z).add(morbit.target);
+  mcamera.lookAt(morbit.target);
+}
+let mDragging = false, mLX = 0, mLY = 0;
+mini3d.addEventListener('pointerdown', e => { mDragging = true; mLX = e.clientX; mLY = e.clientY; mini3d.setPointerCapture(e.pointerId); });
+mini3d.addEventListener('pointermove', e => {
+  if (!mDragging) return;
+  const dx = e.clientX - mLX, dy = e.clientY - mLY;
+  mLX = e.clientX; mLY = e.clientY;
+  morbit.theta -= dx * 0.006;
+  morbit.phi   -= dy * 0.006;
+  morbit.phi = Math.max(0.18, Math.min(Math.PI - 0.18, morbit.phi));
+  applyMcamera();
+});
+mini3d.addEventListener('pointerup', () => { mDragging = false; });
+mini3d.addEventListener('pointercancel', () => { mDragging = false; });
+mini3d.addEventListener('wheel', e => {
+  e.preventDefault();
+  morbit.dist *= Math.exp(e.deltaY * 0.001);
+  morbit.dist = Math.max(2.5, Math.min(20, morbit.dist));
+  applyMcamera();
+}, { passive: false });
+function mResize() {
+  const w = mini3d.clientWidth, h = mini3d.clientHeight;
+  mrenderer.setSize(w, h, false);
+  mcamera.aspect = w / h; mcamera.updateProjectionMatrix();
+}
+new ResizeObserver(mResize).observe(mini3d);
+requestAnimationFrame(() => { mResize(); applyMcamera(); });
+
+const mWorld = new THREE.Group(); mscene.add(mWorld);
+const mLegGroup    = new THREE.Group(); mWorld.add(mLegGroup);
+const mChordGroup  = new THREE.Group(); mWorld.add(mChordGroup);
+const mTripleGroup = new THREE.Group(); mWorld.add(mTripleGroup);
+const mAxesGroup   = new THREE.Group(); mWorld.add(mAxesGroup);
+
+let MGB = { theta: [-3,3], eta: [-0.2, 4.2], z: [0, 1] };
+function mRecomputeBox() {
+  let zMin = Infinity, zMax = -Infinity;
+  const N = 50;
+  const [tLo, tHi] = state.thetaRange;
+  for (let s = 0; s < 5; s++) {
+    if (!state.slots[s].on) continue;
+    for (let i = 0; i <= N; i++) {
+      const t = tLo + (tHi - tLo) * i / N;
+      const z = psi_i(s, t);
+      if (z < zMin) zMin = z; if (z > zMax) zMax = z;
+    }
+  }
+  if (!isFinite(zMin)) { zMin = 0; zMax = 1; }
+  const padZ = (zMax - zMin) * 0.10 + 1e-3;
+  MGB = { theta: [tLo, tHi], eta: [-0.2, 4.2], z: [zMin - padZ, zMax + padZ] };
+}
+function mW(theta, eta, z) {
+  const [ta, tb] = MGB.theta, [za, zb] = MGB.z, [ea, eb] = MGB.eta;
+  return new THREE.Vector3(
+    ((theta - ta) / (tb - ta)) * 4 - 2,
+    ((z     - za) / (zb - za)) * 4 - 2,
+    ((eta   - ea) / (eb - ea)) * 4 - 2,
+  );
+}
+function clearMGroup(g) { while (g.children.length) { const c = g.children.pop(); if (c.geometry) c.geometry.dispose(); if (c.material) c.material.dispose(); } }
+
+function mBuildAxes() {
+  clearMGroup(mAxesGroup);
+  const a = -2.05, b = 2.05;
+  function mkLine(p1, p2, c, op) {
+    const g = new THREE.BufferGeometry().setFromPoints([p1, p2]);
+    const m = new THREE.LineBasicMaterial({ color: c, transparent: op < 1, opacity: op });
+    return new THREE.Line(g, m);
+  }
+  mAxesGroup.add(mkLine(new THREE.Vector3(a, -2, -2), new THREE.Vector3(b, -2, -2), 0x33333d, 1));
+  mAxesGroup.add(mkLine(new THREE.Vector3(a, -2,  2), new THREE.Vector3(b, -2,  2), 0x22222c, 0.4));
+  mAxesGroup.add(mkLine(new THREE.Vector3(a, -2, -2), new THREE.Vector3(a, -2,  2), 0x22222c, 0.4));
+  mAxesGroup.add(mkLine(new THREE.Vector3(b, -2, -2), new THREE.Vector3(b, -2,  2), 0x22222c, 0.4));
+}
+function mBuildLegendrians() {
+  clearMGroup(mLegGroup);
+  const [tLo, tHi] = state.thetaRange;
+  const N = 200;
+  for (let s = 0; s < 5; s++) {
+    if (!state.slots[s].on) continue;
+    const pts = [];
+    for (let i = 0; i <= N; i++) {
+      const t = tLo + (tHi - tLo) * i / N;
+      const e = eta_i(s, t), z = psi_i(s, t);
+      pts.push(mW(t, e, z));
+    }
+    const g = new THREE.BufferGeometry().setFromPoints(pts);
+    const m = new THREE.LineBasicMaterial({ color: SLOT_COLORS_NUM[s], linewidth: 2 });
+    mLegGroup.add(new THREE.Line(g, m));
+  }
+}
+function mBuildChords() {
+  clearMGroup(mChordGroup);
+  for (let i = 0; i < 5; i++) {
+    for (let j = i+1; j < 5; j++) {
+      const cs = state.pairChords[pairKey(i, j)] || [];
+      for (const c of cs) {
+        if (c.length > state.eps) continue;
+        const w1 = mW(c.tStar, c.eta, psi_i(i, c.tStar));
+        const w2 = mW(c.tStar, c.eta, psi_i(j, c.tStar));
+        const g = new THREE.BufferGeometry().setFromPoints([w1, w2]);
+        const m = new THREE.LineBasicMaterial({ color: 0x60d8e0, linewidth: 2 });
+        mChordGroup.add(new THREE.Line(g, m));
+        const sg = new THREE.SphereGeometry(0.05, 12, 8);
+        const sm = new THREE.MeshBasicMaterial({ color: 0x60d8e0, transparent: true, opacity: 0.85 });
+        const s1 = new THREE.Mesh(sg, sm);
+        const s2 = new THREE.Mesh(sg, sm.clone());
+        s1.position.copy(w1); s2.position.copy(w2);
+        mChordGroup.add(s1, s2);
+      }
+    }
+  }
+}
+function mBuildTriples() {
+  clearMGroup(mTripleGroup);
+  for (const tri of state.triples) {
+    // Place a star cluster at (tStar, eta, midZ)
+    const z1 = psi_i(tri.i, tri.tStar);
+    const z2 = psi_i(tri.j, tri.tStar);
+    const z3 = psi_i(tri.k, tri.tStar);
+    const zMid = (z1 + z2 + z3) / 3;
+    const w = mW(tri.tStar, tri.etaCommon, zMid);
+    const g = new THREE.SphereGeometry(tri.exact ? 0.10 : 0.07, 16, 12);
+    const m = new THREE.MeshBasicMaterial({ color: tri.exact ? 0xf0d878 : 0xc8a040 });
+    const sphere = new THREE.Mesh(g, m);
+    sphere.position.copy(w);
+    mTripleGroup.add(sphere);
+  }
+}
+
+function mRebuildAll() {
+  mRecomputeBox();
+  mBuildAxes();
+  mBuildLegendrians();
+  mBuildChords();
+  mBuildTriples();
+}
+
+// =============================================================================
+// SIDEBAR : slot widgets, sliders, mode toggle
+// =============================================================================
+
+function buildSlotList() {
+  const host = document.getElementById('slot-list');
+  host.innerHTML = '';
+  for (let s = 0; s < 5; s++) {
+    const slot = state.slots[s];
+    const row = document.createElement('div');
+    row.className = 'slot';
+    row.style.setProperty('--c', SLOT_COLORS_HEX[s]);
+    const dot = document.createElement('span');
+    dot.className = 'slot-dot';
+    dot.title = 'L' + (s+1);
+    dot.addEventListener('click', () => {
+      state.selectedSlot = state.selectedSlot === s ? null : s;
+      refreshAll();
+    });
+    const inner = document.createElement('div'); inner.className = 'slot-row';
+    const sel = document.createElement('select'); sel.className = 'slot-fam';
+    const offOpt = document.createElement('option'); offOpt.value = ''; offOpt.textContent = '— off —';
+    sel.appendChild(offOpt);
+    for (const k of FAM_KEYS) {
+      const o = document.createElement('option'); o.value = k; o.textContent = 'L'+(s+1)+' = '+ families[k].name;
+      sel.appendChild(o);
+    }
+    sel.value = slot.on ? slot.key : '';
+    if (!slot.on) sel.classList.add('off');
+    sel.addEventListener('change', () => {
+      if (sel.value === '') { slot.on = false; }
+      else { slot.on = true; slot.key = sel.value; }
+      refreshAll();
+    });
+    const lamRow = document.createElement('div'); lamRow.className = 'slot-lam';
+    const lamLab = document.createElement('span'); lamLab.textContent = 'λ' + (s+1);
+    const lamIn  = document.createElement('input'); lamIn.type = 'range';
+    lamIn.min = '-1.5'; lamIn.max = '1.5'; lamIn.step = '0.005'; lamIn.value = slot.lam;
+    lamIn.style.setProperty('--c', SLOT_COLORS_HEX[s]);
+    const lamVal = document.createElement('span'); lamVal.className = 'val';
+    lamVal.textContent = (slot.lam >= 0 ? '+' : '') + slot.lam.toFixed(2);
+    lamIn.addEventListener('input', () => {
+      slot.lam = parseFloat(lamIn.value);
+      lamVal.textContent = (slot.lam >= 0 ? '+' : '') + slot.lam.toFixed(2);
+      refreshAll();
+    });
+    lamRow.appendChild(lamLab); lamRow.appendChild(lamIn); lamRow.appendChild(lamVal);
+    inner.appendChild(sel); inner.appendChild(lamRow);
+    row.appendChild(dot); row.appendChild(inner);
+    host.appendChild(row);
+  }
+}
+
+function bindSliders() {
+  const eps = document.getElementById('eps-slider');
+  const epsVal = document.getElementById('eps-val');
+  const fmtEps = v => '+' + v.toFixed(2);
+  epsVal.textContent = fmtEps(state.eps);
+  eps.addEventListener('input', () => {
+    state.eps = parseFloat(eps.value);
+    epsVal.textContent = fmtEps(state.eps);
+    refreshAll();
+  });
+
+  const klRefSlider = document.getElementById('klref-slider');
+  const klRefVal = document.getElementById('klref-val');
+  klRefVal.textContent = state.klRef.toFixed(2);
+  klRefSlider.addEventListener('input', () => {
+    state.klRef = parseFloat(klRefSlider.value);
+    klRefVal.textContent = state.klRef.toFixed(2);
+    refreshAll();
+  });
+
+  const mActive = document.getElementById('mode-action');
+  const mKL = document.getElementById('mode-kl');
+  const klRow = document.getElementById('kl-row');
+  function setMode(m) {
+    state.mode = m;
+    mActive.classList.toggle('active', m === 'action');
+    mKL.classList.toggle('active', m === 'kl');
+    klRow.style.display = (m === 'kl') ? 'grid' : 'none';
+    refreshAll();
+  }
+  mActive.addEventListener('click', () => setMode('action'));
+  mKL.addEventListener('click',     () => setMode('kl'));
+}
+
+// =============================================================================
+// EVENT HANDLING : graph clicks
+// =============================================================================
+
+function bindGraphInteraction() {
+  const cv = document.getElementById('plot-cgraph');
+  cv.addEventListener('click', e => {
+    const rect = cv.getBoundingClientRect();
+    const x = e.clientX - rect.left, y = e.clientY - rect.top;
+    const w = cv.clientWidth, h = cv.clientHeight;
+    const cx = w * 0.30, cy = h * 0.55;
+    const radius = Math.min(w * 0.27, h * 0.35);
+    const positions = [];
+    for (let s = 0; s < 5; s++) {
+      const a = -Math.PI/2 + s * 2 * Math.PI / 5;
+      positions.push({ x: cx + radius * Math.cos(a), y: cy + radius * Math.sin(a) });
+    }
+    // Hit-test nodes first
+    for (let s = 0; s < 5; s++) {
+      const p = positions[s];
+      if ((x - p.x)*(x - p.x) + (y - p.y)*(y - p.y) < 13*13) {
+        state.selectedSlot = state.selectedSlot === s ? null : s;
+        refreshAll(); return;
+      }
+    }
+    // Hit-test edges
+    let bestEdge = null, bestDist = 8;
+    const edges = activeEdges();
+    for (const e of edges) {
+      const p1 = positions[e.i], p2 = positions[e.j];
+      const d = pointToSegmentDist(x, y, p1.x, p1.y, p2.x, p2.y);
+      if (d < bestDist) { bestDist = d; bestEdge = { i: e.i, j: e.j }; }
+    }
+    state.selectedEdge = bestEdge;
+    refreshAll();
+  });
+  cv.addEventListener('mousemove', e => {
+    const rect = cv.getBoundingClientRect();
+    const x = e.clientX - rect.left, y = e.clientY - rect.top;
+    const w = cv.clientWidth, h = cv.clientHeight;
+    const cx = w * 0.30, cy = h * 0.55;
+    const radius = Math.min(w * 0.27, h * 0.35);
+    const positions = [];
+    for (let s = 0; s < 5; s++) {
+      const a = -Math.PI/2 + s * 2 * Math.PI / 5;
+      positions.push({ x: cx + radius * Math.cos(a), y: cy + radius * Math.sin(a) });
+    }
+    let bestEdge = null, bestDist = 7;
+    const edges = activeEdges();
+    for (const e of edges) {
+      const p1 = positions[e.i], p2 = positions[e.j];
+      const d = pointToSegmentDist(x, y, p1.x, p1.y, p2.x, p2.y);
+      if (d < bestDist) { bestDist = d; bestEdge = { i: e.i, j: e.j }; }
+    }
+    if (JSON.stringify(state.hoverEdge) !== JSON.stringify(bestEdge)) {
+      state.hoverEdge = bestEdge;
+      drawComparisonGraph();
+      drawEtaPlot();
+    }
+  });
+  cv.addEventListener('mouseleave', () => {
+    if (state.hoverEdge) { state.hoverEdge = null; drawComparisonGraph(); drawEtaPlot(); }
+  });
+}
+
+function pointToSegmentDist(px, py, ax, ay, bx, by) {
+  const dx = bx - ax, dy = by - ay;
+  const lenSq = dx*dx + dy*dy;
+  let t = lenSq > 0 ? ((px - ax)*dx + (py - ay)*dy) / lenSq : 0;
+  t = Math.max(0, Math.min(1, t));
+  const cx = ax + t*dx, cy = ay + t*dy;
+  return Math.sqrt((px - cx)*(px - cx) + (py - cy)*(py - cy));
+}
+
+function bindEtaInteraction() {
+  const cv = document.getElementById('plot-eta');
+  cv.addEventListener('click', e => {
+    const rect = cv.getBoundingClientRect();
+    const x = e.clientX - rect.left, y = e.clientY - rect.top;
+    const w = cv.clientWidth, h = cv.clientHeight;
+    const padL = 38, padR = 18, padT = 30, padB = 22;
+    const pw = w - padL - padR, ph = h - padT - padB;
+    const [tLo, tHi] = state.thetaRange;
+    const eLo = -0.2, eHi = 4.2;
+    const thetaAt = px => tLo + (px - padL) / pw * (tHi - tLo);
+    const etaAt   = py => eLo + (1 - (py - padT) / ph) * (eHi - eLo);
+    // Hit-test chords
+    let best = null, bestD = 12;
+    for (let i = 0; i < 5; i++) {
+      for (let j = i+1; j < 5; j++) {
+        const cs = state.pairChords[pairKey(i, j)] || [];
+        for (const c of cs) {
+          const px = padL + (c.tStar - tLo) / (tHi - tLo) * pw;
+          const py = padT + (1 - (c.eta - eLo) / (eHi - eLo)) * ph;
+          const d = Math.hypot(x - px, y - py);
+          if (d < bestD) { bestD = d; best = { i, j }; }
+        }
+      }
+    }
+    if (best) {
+      state.selectedEdge = best;
+      refreshAll();
+    } else {
+      state.selectedEdge = null; refreshAll();
+    }
+  });
+}
+
+// =============================================================================
+// REFRESH ORCHESTRATION
+// =============================================================================
+
+function refreshAll() {
+  recomputeAllChords();
+  detectTriples();
+  drawEtaPlot();
+  drawComparisonGraph();
+  drawMatrices();
+  renderEdgeReadout();
+  renderTriplePanel();
+  mRebuildAll();
+}
+
+// Resize observers
+new ResizeObserver(refreshAll).observe(document.getElementById('plot-eta'));
+new ResizeObserver(refreshAll).observe(document.getElementById('plot-cgraph'));
+new ResizeObserver(drawMatrices).observe(document.getElementById('mat-a'));
+
+// =============================================================================
+// INIT
+// =============================================================================
+
+buildSlotList();
+bindSliders();
+bindGraphInteraction();
+bindEtaInteraction();
+refreshAll();
+
+// Animate (just the 3D scene)
+function animate() {
+  mrenderer.render(mscene, mcamera);
+  requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
+
+</script>
+</body>
+</html>
