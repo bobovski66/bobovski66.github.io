@@ -1,0 +1,1582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Electromagnetic Wheat Cymatics Interference Lab</title>
+  <style>
+    :root {
+      --bg: #07100c;
+      --panel: rgba(8, 18, 28, 0.9);
+      --text: #edf7ff;
+      --muted: #a8c4cf;
+      --cyan: #36e7ff;
+      --violet: #b464ff;
+      --gold: #e4c05e;
+      --orange: #ff9a4e;
+      --red: #ff6f91;
+      --line: rgba(99, 224, 255, 0.35);
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 25% 15%, rgba(57, 214, 255, 0.14), transparent 34%),
+        radial-gradient(circle at 75% 5%, rgba(188, 80, 255, 0.12), transparent 34%),
+        linear-gradient(135deg, #040806 0%, #07100c 50%, #09121b 100%);
+      overflow: hidden;
+    }
+
+    .app {
+      width: 100vw;
+      height: 100vh;
+      display: grid;
+      grid-template-columns: 340px 1fr 360px;
+      gap: 16px;
+      padding: 16px;
+    }
+
+    .panel {
+      min-height: 0;
+      overflow: auto;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: linear-gradient(180deg, var(--panel), rgba(5, 10, 16, 0.9));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .panel h2 {
+      margin: 0 0 12px;
+      font-size: 16px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #dff9ff;
+    }
+
+    .panel h3 {
+      margin: 18px 0 10px;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      border-top: 1px solid rgba(99, 224, 255, 0.18);
+      padding-top: 14px;
+    }
+
+    .control { margin: 12px 0 16px; }
+
+    label {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 7px;
+      color: #dcefff;
+      font-size: 13px;
+    }
+
+    label span.value {
+      color: var(--gold);
+      font-variant-numeric: tabular-nums;
+      font-size: 12px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--cyan);
+    }
+
+    select, button {
+      width: 100%;
+      border: 1px solid rgba(99, 224, 255, 0.35);
+      border-radius: 13px;
+      background: rgba(5, 18, 29, 0.92);
+      color: var(--text);
+      padding: 10px 12px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    button {
+      cursor: pointer;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      background: linear-gradient(135deg, rgba(54, 231, 255, 0.18), rgba(180, 100, 255, 0.16));
+      transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      border-color: rgba(99, 224, 255, 0.75);
+      background: linear-gradient(135deg, rgba(54, 231, 255, 0.28), rgba(180, 100, 255, 0.24));
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .switches {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .toggle {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 8px;
+      padding: 9px 10px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.045);
+      border: 1px solid rgba(255,255,255,0.08);
+      font-size: 12px;
+    }
+
+    .toggle input { accent-color: var(--cyan); }
+
+    .sim-wrap {
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      overflow: hidden;
+      background: #06100b;
+      box-shadow: var(--shadow), inset 0 0 80px rgba(0, 225, 255, 0.08);
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .title-card {
+      position: absolute;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(960px, calc(100% - 32px));
+      text-align: center;
+      pointer-events: none;
+      padding: 10px 18px 12px;
+      border: 1px solid rgba(54, 231, 255, 0.28);
+      border-radius: 999px;
+      background: rgba(4, 10, 18, 0.55);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 45px rgba(56, 218, 255, 0.12);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(18px, 2.5vw, 34px);
+      letter-spacing: 0.04em;
+      line-height: 1.05;
+      font-weight: 800;
+      text-shadow: 0 0 18px rgba(54, 231, 255, 0.5);
+    }
+
+    .subtitle {
+      margin-top: 4px;
+      color: var(--cyan);
+      font-size: clamp(11px, 1.25vw, 16px);
+      letter-spacing: 0.03em;
+    }
+
+    .footer-hud {
+      position: absolute;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      width: min(880px, calc(100% - 32px));
+      padding: 11px 16px;
+      border-radius: 16px;
+      text-align: center;
+      color: #d9fbff;
+      font-size: 13px;
+      line-height: 1.35;
+      border: 1px solid rgba(54, 231, 255, 0.25);
+      background: rgba(4, 10, 18, 0.68);
+      backdrop-filter: blur(8px);
+    }
+
+    .readout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .metric {
+      padding: 11px;
+      border-radius: 15px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .metric .num {
+      color: var(--gold);
+      font-size: 17px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .metric .num.hot { color: var(--orange); }
+    .metric .num.crit { color: var(--red); }
+
+    .metric .name {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .note {
+      margin-top: 14px;
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 13px;
+      padding: 12px;
+      border-radius: 15px;
+      border: 1px solid rgba(228, 192, 94, 0.22);
+      background: rgba(228, 192, 94, 0.07);
+    }
+
+    .note.warning {
+      border-color: rgba(255, 111, 145, 0.32);
+      background: rgba(255, 111, 145, 0.07);
+    }
+
+    .source-list {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .source-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      cursor: pointer;
+    }
+
+    .source-item.active {
+      border-color: rgba(54,231,255,0.8);
+      background: rgba(54,231,255,0.12);
+      box-shadow: 0 0 18px rgba(54,231,255,0.12);
+    }
+
+    .source-badge {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--cyan), var(--violet));
+      box-shadow: 0 0 12px rgba(54,231,255,0.45);
+      flex: 0 0 auto;
+    }
+
+    .source-meta {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .source-meta .name {
+      font-size: 13px;
+      color: #eefcff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .source-meta .sub {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .source-on {
+      font-size: 11px;
+      color: var(--gold);
+      opacity: 0.95;
+    }
+
+    @media (max-width: 1180px) {
+      body { overflow: auto; }
+      .app {
+        height: auto;
+        min-height: 100vh;
+        grid-template-columns: 1fr;
+      }
+      .sim-wrap { height: 72vh; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="panel">
+      <h2>Global Controls</h2>
+
+      <div class="control">
+        <label>Global time scale <span class="value" id="globalTimeVal"></span></label>
+        <input id="globalTime" type="range" min="0" max="10" step="0.01" value="1.0" />
+      </div>
+
+      <div class="control">
+        <label>Moisture / conductivity <span class="value" id="moistureVal"></span></label>
+        <input id="moisture" type="range" min="0" max="1" step="0.01" value="0.5" />
+      </div>
+
+      <div class="control">
+        <label>Plant stiffness (k) <span class="value" id="stiffnessVal"></span></label>
+        <input id="stiffness" type="range" min="0.05" max="6" step="0.01" value="1.0" />
+      </div>
+
+      <div class="control">
+        <label>Damping <span class="value" id="dampingVal"></span></label>
+        <input id="damping" type="range" min="0.6" max="0.999" step="0.001" value="0.93" />
+      </div>
+
+      <div class="control">
+        <label>Mech. lodging threshold <span class="value" id="thresholdVal"></span></label>
+        <input id="threshold" type="range" min="0.02" max="4" step="0.01" value="0.72" />
+      </div>
+
+      <h3>High-voltage drive</h3>
+
+      <div class="control">
+        <label>Peak source voltage <span class="value" id="voltageVal"></span></label>
+        <input id="voltage" type="range" min="1" max="1000" step="1" value="100" />
+      </div>
+
+      <div class="control">
+        <label for="freqBand">Carrier frequency band</label>
+        <select id="freqBand">
+          <option value="100e3">100 kHz (RF heating, low)</option>
+          <option value="1e6">1 MHz (HF / Tesla regime)</option>
+          <option value="13.56e6" selected>13.56 MHz (ISM band)</option>
+          <option value="100e6">100 MHz (VHF)</option>
+          <option value="915e6">915 MHz (microwave ISM)</option>
+          <option value="2.45e9">2.45 GHz (microwave oven)</option>
+          <option value="10e9">10 GHz (X-band)</option>
+        </select>
+      </div>
+
+      <div class="control">
+        <label>Scene size (m) <span class="value" id="sceneSizeVal"></span></label>
+        <input id="sceneSize" type="range" min="0.5" max="20" step="0.1" value="3.0" />
+      </div>
+
+      <div class="control">
+        <label>Time speedup ×<span class="value" id="speedupVal"></span></label>
+        <input id="speedup" type="range" min="1" max="2000" step="1" value="50" />
+      </div>
+
+      <div class="control">
+        <label>DEP visual gain × <span class="value" id="couplingVal"></span></label>
+        <input id="coupling" type="range" min="0" max="200" step="0.5" value="10" />
+      </div>
+
+      <h3>Display</h3>
+      <div class="switches">
+        <label class="toggle"><input id="showIntensity" type="checkbox" checked /> |E|² heatmap</label>
+        <label class="toggle"><input id="showThermal" type="checkbox" checked /> Thermal overlay</label>
+        <label class="toggle"><input id="showVectors" type="checkbox" checked /> ∇|E|² vectors</label>
+        <label class="toggle"><input id="showRings" type="checkbox" checked /> Source rings</label>
+        <label class="toggle"><input id="showTrails" type="checkbox" /> Trails</label>
+        <label class="toggle"><input id="useDEP" type="checkbox" checked /> Real DEP force</label>
+      </div>
+
+      <div class="two-col" style="margin-top:14px;">
+        <button id="pauseBtn">Pause</button>
+        <button id="resetPlantsBtn">Reset plants</button>
+      </div>
+      <div class="two-col" style="margin-top:10px;">
+        <button id="addSourceBtn">Add source</button>
+        <button id="removeSourceBtn">Remove source</button>
+      </div>
+
+      <div class="note warning">
+        Conceptual sandbox. The voltage and frequency knobs scale a toy field model into physically meaningful units; nothing here is a hardware design. Real high-voltage RF systems are dangerous and produce ionizing breakdown, ignition, RF burns, and electronics damage.
+      </div>
+    </aside>
+
+    <main class="sim-wrap">
+      <canvas id="sim"></canvas>
+
+      <div class="title-card">
+        <h1>Electromagnetic Wheat Cymatics Interference Lab</h1>
+        <div class="subtitle">multi-source toy field · real DEP coupling · dielectric heating · two-mode lodging</div>
+      </div>
+
+      <div class="footer-hud" id="caption">
+        Drag a highlighted source marker to place it. Stalks couple to the field via the dielectrophoretic gradient force F = ½ Re(α) ∇|E|², and absorb power via P = ½ ω ε₀ ε″ |E|².
+      </div>
+    </main>
+
+    <aside class="panel">
+      <h2>Wave Sources</h2>
+
+      <div id="sourceList" class="source-list"></div>
+
+      <div class="control">
+        <label for="srcEnabled">Selected source enabled</label>
+        <select id="srcEnabled">
+          <option value="true">Enabled</option>
+          <option value="false">Disabled</option>
+        </select>
+      </div>
+
+      <div class="control">
+        <label for="srcType">Wave type</label>
+        <select id="srcType">
+          <option value="ring">Ring</option>
+          <option value="plane">Plane</option>
+          <option value="vortex">Vortex</option>
+          <option value="petal">Petal</option>
+          <option value="standing">Standing</option>
+          <option value="pulse">Pulse</option>
+        </select>
+      </div>
+
+      <div class="control">
+        <label>X position <span class="value" id="srcXVal"></span></label>
+        <input id="srcX" type="range" min="0.02" max="0.98" step="0.001" value="0.50" />
+      </div>
+
+      <div class="control">
+        <label>Y position <span class="value" id="srcYVal"></span></label>
+        <input id="srcY" type="range" min="0.02" max="0.98" step="0.001" value="0.50" />
+      </div>
+
+      <div class="control">
+        <label>Amplitude (relative) <span class="value" id="srcAmpVal"></span></label>
+        <input id="srcAmp" type="range" min="0" max="6" step="0.01" value="1.0" />
+      </div>
+
+      <div class="control">
+        <label>Spatial frequency <span class="value" id="srcFreqVal"></span></label>
+        <input id="srcFreq" type="range" min="0.1" max="25" step="0.01" value="5.0" />
+      </div>
+
+      <div class="control">
+        <label>Phase <span class="value" id="srcPhaseVal"></span></label>
+        <input id="srcPhase" type="range" min="0" max="6.283" step="0.001" value="0.0" />
+      </div>
+
+      <div class="control">
+        <label>Angle / orientation <span class="value" id="srcAngleVal"></span></label>
+        <input id="srcAngle" type="range" min="0" max="6.283" step="0.001" value="0.0" />
+      </div>
+
+      <div class="control">
+        <label>Aperture / envelope width <span class="value" id="srcWidthVal"></span></label>
+        <input id="srcWidth" type="range" min="0.03" max="1.5" step="0.001" value="0.28" />
+      </div>
+
+      <h3>Field readouts</h3>
+      <div class="readout">
+        <div class="metric"><div class="num" id="peakERead">0.0 kV/m</div><div class="name">Peak |E|</div></div>
+        <div class="metric"><div class="num" id="peakIRead">0.0</div><div class="name">Peak |E|² (norm)</div></div>
+        <div class="metric"><div class="num" id="powerRead">0 W/m³</div><div class="name">Peak abs. power</div></div>
+        <div class="metric"><div class="num" id="qRead">0.0</div><div class="name">Pattern Q</div></div>
+      </div>
+
+      <h3>Plant readouts</h3>
+      <div class="readout">
+        <div class="metric"><div class="num" id="meanRead">0.00</div><div class="name">Mean bend (rad)</div></div>
+        <div class="metric"><div class="num" id="tempRead">0 °C</div><div class="name">Peak ΔT</div></div>
+        <div class="metric"><div class="num" id="mechRead">0%</div><div class="name">Mech. lodged</div></div>
+        <div class="metric"><div class="num" id="thermRead">0%</div><div class="name">Thermal lodged</div></div>
+      </div>
+
+      <h3>Coupling model</h3>
+      <div class="note">
+        <strong>α<sub>eff</sub></strong> uses Clausius–Mossotti for a prolate ellipsoid in air with ε<sub>p</sub>(ω, moisture) from a Debye relaxation.<br><br>
+        <strong>F = ½ Re(α<sub>eff</sub>) ∇|E|²</strong> drives the stalk; <strong>P<sub>abs</sub> = ½ ω ε₀ ε″ |E|²</strong> heats the local cell. Stalks lodge mechanically from sustained bend; thermally when ΔT &gt; 100 °C (steam burst at internode).
+      </div>
+    </aside>
+  </div>
+
+  <script>
+  /* ============================================================
+     CONSTANTS AND PHYSICAL PARAMETERS
+     ============================================================ */
+  const TAU = Math.PI * 2;
+  const EPS0 = 8.854e-12;          // vacuum permittivity (F/m)
+  const RHO_C = 4.0e6;             // volumetric heat capacity of moist biomass (J/m^3/K)
+  const ALPHA_TH = 1.4e-7;         // thermal diffusivity (m^2/s)
+  const STEAM_DT = 100.0;          // ΔT trigger for thermal lodging (°C above ambient)
+
+  /* depolarization factor for slim prolate ellipsoid (a >> b = c) along long axis */
+  const DEPOL_PARALLEL = 0.05;
+
+  /* stalk geometry: thin stem 30 cm long, 3 mm radius */
+  const STALK_VOL = Math.PI * (0.0015 * 0.0015) * 0.30;  // ~2.1e-6 m^3
+
+  /* physics grid resolution; tune for perf */
+  const PG_W = 160;
+  const PG_H = 120;
+
+  /* ============================================================
+     DOM REFERENCES
+     ============================================================ */
+  const canvas = document.getElementById('sim');
+  const ctx = canvas.getContext('2d');
+
+  const els = {
+    globalTime: document.getElementById('globalTime'),
+    moisture: document.getElementById('moisture'),
+    stiffness: document.getElementById('stiffness'),
+    damping: document.getElementById('damping'),
+    threshold: document.getElementById('threshold'),
+    voltage: document.getElementById('voltage'),
+    freqBand: document.getElementById('freqBand'),
+    sceneSize: document.getElementById('sceneSize'),
+    speedup: document.getElementById('speedup'),
+    coupling: document.getElementById('coupling'),
+
+    showIntensity: document.getElementById('showIntensity'),
+    showThermal: document.getElementById('showThermal'),
+    showVectors: document.getElementById('showVectors'),
+    showRings: document.getElementById('showRings'),
+    showTrails: document.getElementById('showTrails'),
+    useDEP: document.getElementById('useDEP'),
+
+    pauseBtn: document.getElementById('pauseBtn'),
+    resetPlantsBtn: document.getElementById('resetPlantsBtn'),
+    addSourceBtn: document.getElementById('addSourceBtn'),
+    removeSourceBtn: document.getElementById('removeSourceBtn'),
+
+    sourceList: document.getElementById('sourceList'),
+    srcEnabled: document.getElementById('srcEnabled'),
+    srcType: document.getElementById('srcType'),
+    srcX: document.getElementById('srcX'),
+    srcY: document.getElementById('srcY'),
+    srcAmp: document.getElementById('srcAmp'),
+    srcFreq: document.getElementById('srcFreq'),
+    srcPhase: document.getElementById('srcPhase'),
+    srcAngle: document.getElementById('srcAngle'),
+    srcWidth: document.getElementById('srcWidth'),
+
+    globalTimeVal: document.getElementById('globalTimeVal'),
+    moistureVal: document.getElementById('moistureVal'),
+    stiffnessVal: document.getElementById('stiffnessVal'),
+    dampingVal: document.getElementById('dampingVal'),
+    thresholdVal: document.getElementById('thresholdVal'),
+    voltageVal: document.getElementById('voltageVal'),
+    sceneSizeVal: document.getElementById('sceneSizeVal'),
+    speedupVal: document.getElementById('speedupVal'),
+    couplingVal: document.getElementById('couplingVal'),
+
+    srcXVal: document.getElementById('srcXVal'),
+    srcYVal: document.getElementById('srcYVal'),
+    srcAmpVal: document.getElementById('srcAmpVal'),
+    srcFreqVal: document.getElementById('srcFreqVal'),
+    srcPhaseVal: document.getElementById('srcPhaseVal'),
+    srcAngleVal: document.getElementById('srcAngleVal'),
+    srcWidthVal: document.getElementById('srcWidthVal'),
+
+    peakERead: document.getElementById('peakERead'),
+    peakIRead: document.getElementById('peakIRead'),
+    powerRead: document.getElementById('powerRead'),
+    qRead: document.getElementById('qRead'),
+    meanRead: document.getElementById('meanRead'),
+    tempRead: document.getElementById('tempRead'),
+    mechRead: document.getElementById('mechRead'),
+    thermRead: document.getElementById('thermRead'),
+    caption: document.getElementById('caption')
+  };
+
+  /* ============================================================
+     SIM STATE
+     ============================================================ */
+  let W = 1, H = 1, dpr = 1;
+  let t = 0;
+  let simTime = 0;          // accumulated simulated wall-clock seconds
+  let paused = false;
+  let last = performance.now();
+  let frame = 0;
+  let stalks = [];
+
+  let draggingSource = false;
+  let selectedSourceIndex = 0;
+
+  /* physics grids (Float32Array for speed) */
+  const NG = PG_W * PG_H;
+  const fieldGrid     = new Float32Array(NG);  // raw E (canonical)
+  const intensityGrid = new Float32Array(NG);  // |E|^2 in canonical units
+  const gradXGrid     = new Float32Array(NG);  // d|E|^2/dx (canonical)
+  const gradYGrid     = new Float32Array(NG);  // d|E|^2/dy (canonical)
+  const radialLoss    = new Float32Array(NG);  // moisture-dep'nt loss factor
+  const tempGrid      = new Float32Array(NG);  // ΔT above ambient (°C)
+  const tempBuf       = new Float32Array(NG);  // scratch buffer for diffusion
+  let radialLossDirty = true;
+  let lastMoisture = -1;
+
+  /* offscreen heatmap canvases */
+  let heatCanvas = null, heatCtx = null, heatImageData = null;
+  let thermCanvas = null, thermCtx = null, thermImageData = null;
+
+  /* ============================================================
+     SOURCES
+     ============================================================ */
+  function makeDefaultSource(i) {
+    const presets = [
+      { x: 0.50, y: 0.50, type: 'ring',   amp: 1.3, freq: 4.0, phase: 0.0, angle: 0.0, width: 0.28, enabled: true },
+      { x: 0.30, y: 0.50, type: 'plane',  amp: 1.0, freq: 4.8, phase: 0.6, angle: 0.0, width: 0.55, enabled: true },
+      { x: 0.72, y: 0.36, type: 'vortex', amp: 0.9, freq: 6.2, phase: 1.1, angle: 0.0, width: 0.22, enabled: true }
+    ];
+    if (i < presets.length) return { ...presets[i] };
+    return {
+      x: 0.2 + 0.15 * (i % 4),
+      y: 0.2 + 0.18 * ((i * 2) % 4),
+      type: 'petal', amp: 0.8, freq: 5.0,
+      phase: (i * 0.7) % TAU, angle: i * 0.4,
+      width: 0.22, enabled: true
+    };
+  }
+
+  let sources = [makeDefaultSource(0), makeDefaultSource(1), makeDefaultSource(2)];
+
+  /* ============================================================
+     RESIZE / STALK GENERATION
+     ============================================================ */
+  function resize() {
+    const rect = canvas.getBoundingClientRect();
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = Math.floor(rect.width * dpr);
+    H = Math.floor(rect.height * dpr);
+    canvas.width = W;
+    canvas.height = H;
+    makeStalks();
+    makeOffscreenBuffers();
+  }
+
+  function makeOffscreenBuffers() {
+    heatCanvas = document.createElement('canvas');
+    heatCanvas.width = PG_W;
+    heatCanvas.height = PG_H;
+    heatCtx = heatCanvas.getContext('2d');
+    heatImageData = heatCtx.createImageData(PG_W, PG_H);
+
+    thermCanvas = document.createElement('canvas');
+    thermCanvas.width = PG_W;
+    thermCanvas.height = PG_H;
+    thermCtx = thermCanvas.getContext('2d');
+    thermImageData = thermCtx.createImageData(PG_W, PG_H);
+  }
+
+  function makeStalks() {
+    const old = stalks;
+    stalks = [];
+    const spacing = Math.max(10 * dpr, Math.min(W, H) / 74);
+    const jitter = spacing * 0.34;
+    let idx = 0;
+    for (let y = spacing * 2; y < H - spacing * 2; y += spacing) {
+      for (let x = spacing * 2; x < W - spacing * 2; x += spacing) {
+        const ox = (Math.random() - 0.5) * jitter;
+        const oy = (Math.random() - 0.5) * jitter;
+        const base = Math.atan2(y - H / 2, x - W / 2) + Math.PI / 2 + (Math.random() - 0.5) * 0.35;
+        stalks.push({
+          x: x + ox, y: y + oy,
+          angle: base, rest: base, vel: 0,
+          perm: 0,        // mechanical lodging (0..1)
+          charred: 0,     // thermal lodging (0..1)
+          dT: 0,          // local stalk temperature memory
+          phase: Math.random() * TAU,
+          len: spacing * (0.65 + Math.random() * 0.45),
+          id: idx++
+        });
+      }
+    }
+    if (old.length && Math.abs(old.length - stalks.length) < old.length * 0.2) {
+      for (let i = 0; i < Math.min(old.length, stalks.length); i++) {
+        stalks[i].angle = old[i].angle;
+        stalks[i].rest = old[i].rest;
+        stalks[i].vel = old[i].vel;
+        stalks[i].perm = old[i].perm;
+        stalks[i].charred = old[i].charred;
+        stalks[i].dT = old[i].dT;
+      }
+    }
+  }
+
+  function resetPlants() {
+    for (const s of stalks) {
+      s.angle = s.rest;
+      s.vel = 0;
+      s.perm = 0;
+      s.charred = 0;
+      s.dT = 0;
+    }
+    tempGrid.fill(0);
+  }
+
+  /* ============================================================
+     SOURCE FIELD EVALUATION (canonical, dimensionless)
+     ============================================================ */
+  function sourceField(nx, ny, time, src) {
+    if (!src.enabled || src.amp <= 0) return 0;
+    const dx = nx - src.x;
+    const dy = ny - src.y;
+    const r = Math.sqrt(dx * dx + dy * dy) + 1e-6;
+    const c = Math.cos(src.angle);
+    const s = Math.sin(src.angle);
+    const proj = dx * c + dy * s;
+    const perp = -dx * s + dy * c;
+    const w = src.width > 0.001 ? src.width : 0.001;
+    const w2 = w * w;
+    const envelope = Math.exp(-(r * r) / (2 * w2));
+    const broadEnvelope = Math.exp(-(r * r) / (2 * (w * 1.8) * (w * 1.8)));
+
+    let e = 0;
+    switch (src.type) {
+      case 'ring':
+        e = Math.cos(src.freq * 18 * r - 2.3 * time + src.phase) * envelope;
+        break;
+      case 'plane':
+        e = Math.cos(src.freq * 18 * proj - 2.2 * time + src.phase) * broadEnvelope;
+        break;
+      case 'vortex': {
+        const th = Math.atan2(dy, dx);
+        e = Math.cos(src.freq * 15 * r - 3 * th - 2.4 * time + src.phase) * envelope;
+        break;
+      }
+      case 'petal': {
+        const th2 = Math.atan2(dy, dx);
+        e = Math.cos(src.freq * 16 * r - 2.0 * time + src.phase) * Math.cos(5 * th2) * envelope;
+        break;
+      }
+      case 'standing':
+        e = Math.cos(src.freq * 12 * proj + src.phase - 2.0 * time)
+          * Math.cos(src.freq * 12 * perp - src.phase + 1.7 * time)
+          * broadEnvelope;
+        break;
+      case 'pulse': {
+        const pulseCenter = 0.18 + 0.22 * (1 + Math.sin(0.75 * time + src.phase));
+        const shell = Math.exp(-Math.pow(r - pulseCenter, 2) / (2 * w2 * 0.18));
+        e = Math.cos(src.freq * 20 * (r - pulseCenter) - 2.2 * time + src.phase) * shell;
+        break;
+      }
+    }
+    return src.amp * e;
+  }
+
+  /* ============================================================
+     PHYSICS GRID UPDATE — once per frame
+     ============================================================ */
+
+  function updateRadialLossIfNeeded() {
+    const moisture = +els.moisture.value;
+    if (!radialLossDirty && moisture === lastMoisture) return;
+    lastMoisture = moisture;
+    radialLossDirty = false;
+    /* loss attenuation grows toward the edges; lossy biomass scenario */
+    for (let j = 0; j < PG_H; j++) {
+      const ny = j / (PG_H - 1);
+      for (let i = 0; i < PG_W; i++) {
+        const nx = i / (PG_W - 1);
+        const r = Math.hypot(nx - 0.5, ny - 0.5);
+        radialLoss[j * PG_W + i] = Math.exp(-0.35 * (1 - moisture) * r);
+      }
+    }
+  }
+
+  function buildFieldGrid(time) {
+    /* hot loop. evaluate sum of source fields at every grid point. */
+    const numSources = sources.length;
+    /* prefetch enabled sources */
+    const active = [];
+    for (let k = 0; k < numSources; k++) {
+      const s = sources[k];
+      if (s.enabled && s.amp > 0) active.push(s);
+    }
+    for (let j = 0; j < PG_H; j++) {
+      const ny = j / (PG_H - 1);
+      const rowBase = j * PG_W;
+      for (let i = 0; i < PG_W; i++) {
+        const nx = i / (PG_W - 1);
+        let sum = 0;
+        for (let k = 0; k < active.length; k++) {
+          sum += sourceField(nx, ny, time, active[k]);
+        }
+        const idx = rowBase + i;
+        fieldGrid[idx] = sum;
+        intensityGrid[idx] = sum * sum * radialLoss[idx];
+      }
+    }
+  }
+
+  function buildIntensityGradients() {
+    /* central differences in normalized coords; output is d|E|^2/dnx etc. */
+    const dxScale = 1.0 / (2.0 / (PG_W - 1));
+    const dyScale = 1.0 / (2.0 / (PG_H - 1));
+    for (let j = 0; j < PG_H; j++) {
+      const j0 = j > 0 ? j - 1 : j;
+      const j1 = j < PG_H - 1 ? j + 1 : j;
+      const rowBase = j * PG_W;
+      const row0 = j0 * PG_W;
+      const row1 = j1 * PG_W;
+      for (let i = 0; i < PG_W; i++) {
+        const i0 = i > 0 ? i - 1 : i;
+        const i1 = i < PG_W - 1 ? i + 1 : i;
+        gradXGrid[rowBase + i] = (intensityGrid[rowBase + i1] - intensityGrid[rowBase + i0]) * dxScale;
+        gradYGrid[rowBase + i] = (intensityGrid[row1 + i] - intensityGrid[row0 + i]) * dyScale;
+      }
+    }
+  }
+
+  /* ============================================================
+     PHYSICAL SCALING
+     ------------------------------------------------------------
+     map canonical |E|^2 into real V^2/m^2 using user-set voltage and aperture.
+     ============================================================ */
+
+  function physicalScales() {
+    const Vpeak = +els.voltage.value * 1000.0;          // V (peak)
+    const sceneSize = +els.sceneSize.value;              // m (canvas width represents sceneSize)
+    const omega = TAU * (+els.freqBand.value);           // rad/s
+    const moisture = +els.moisture.value;
+
+    /* pick representative aperture from the strongest enabled source */
+    let aperture = 0.28;
+    let strongestAmp = 0;
+    for (const s of sources) {
+      if (s.enabled && s.amp > strongestAmp) {
+        strongestAmp = s.amp;
+        aperture = s.width;
+      }
+    }
+    const apertureM = Math.max(0.02, aperture) * sceneSize;
+    /* near-field |E| ~ V / aperture; canonical sources peak at amp ~ src.amp at center */
+    const Eref = Vpeak / Math.max(0.01, apertureM);     // V/m (approximate scale)
+    const ErefSq = Eref * Eref;
+    /* canonical envelope peak — for a unit-amplitude source, |E| ~ 1, so |E|^2 ~ 1.
+       multiply intensity grid by ErefSq to get real V^2/m^2.
+       in practice, summed sources can give |E|^2 up to (sum_amp)^2 = a few. */
+
+    /* Debye relaxation for moist biomass. Two-parameter cap. */
+    const eps_inf = 3.0 + 5.0 * moisture;
+    const eps_s   = 4.0 + 60.0 * moisture;
+    const tau     = 1.0e-9;            // ~ water relaxation time
+    const ot = omega * tau;
+    const denom = 1.0 + ot * ot;
+    const eps_re = eps_inf + (eps_s - eps_inf) / denom;
+    const eps_im = (eps_s - eps_inf) * ot / denom;
+
+    /* Clausius-Mossotti for prolate ellipsoid in air, long axis: */
+    const eps_m = 1.0;
+    const numRe = STALK_VOL * EPS0 * (eps_re - eps_m);
+    const numIm = STALK_VOL * EPS0 * eps_im;
+    const denRe = eps_m + DEPOL_PARALLEL * (eps_re - eps_m);
+    const denIm = DEPOL_PARALLEL * eps_im;
+    const denMagSq = denRe * denRe + denIm * denIm;
+    const alphaRe = (numRe * denRe + numIm * denIm) / denMagSq;
+    const alphaIm = (numIm * denRe - numRe * denIm) / denMagSq;
+
+    return {
+      Vpeak, sceneSize, omega, ErefSq, Eref,
+      eps_re, eps_im,
+      alphaRe, alphaIm,
+      apertureM
+    };
+  }
+
+  /* ============================================================
+     TEMPERATURE FIELD
+     ============================================================ */
+
+  function stepTemperature(dt_real, scales) {
+    /* explicit-Euler diffusion + absorbed power source - convective cooling */
+    const sceneSize = scales.sceneSize;
+    const dx = sceneSize / (PG_W - 1);
+    const dy = sceneSize / (PG_H - 1);
+    const dx2 = dx * dx, dy2 = dy * dy;
+    /* stability: dt_eff < min(dx2,dy2) / (4 alpha) */
+    const dtMax = 0.4 * Math.min(dx2, dy2) / ALPHA_TH;
+    const substeps = Math.max(1, Math.ceil(dt_real / dtMax));
+    const dts = dt_real / substeps;
+    const cooling = 0.05;  // 1/s — Newtonian to ambient
+
+    /* convert canonical |E|^2 to real W/m^3 once */
+    const powerScale = 0.5 * scales.omega * EPS0 * scales.eps_im * scales.ErefSq;
+
+    for (let step = 0; step < substeps; step++) {
+      for (let j = 0; j < PG_H; j++) {
+        const j0 = j > 0 ? j - 1 : j;
+        const j1 = j < PG_H - 1 ? j + 1 : j;
+        const rowBase = j * PG_W;
+        const row0 = j0 * PG_W;
+        const row1 = j1 * PG_W;
+        for (let i = 0; i < PG_W; i++) {
+          const i0 = i > 0 ? i - 1 : i;
+          const i1 = i < PG_W - 1 ? i + 1 : i;
+          const c = tempGrid[rowBase + i];
+          const lap = (tempGrid[rowBase + i0] + tempGrid[rowBase + i1] - 2 * c) / dx2
+                    + (tempGrid[row0 + i] + tempGrid[row1 + i] - 2 * c) / dy2;
+          const Iphys = intensityGrid[rowBase + i] * scales.ErefSq;  // V^2/m^2
+          const P = powerScale * intensityGrid[rowBase + i];          // W/m^3
+          const dT = ALPHA_TH * lap + P / RHO_C - cooling * c;
+          tempBuf[rowBase + i] = c + dts * dT;
+        }
+      }
+      /* swap buffers */
+      tempGrid.set(tempBuf);
+    }
+  }
+
+  /* ============================================================
+     BILINEAR SAMPLERS
+     ============================================================ */
+
+  function sampleGrid(grid, nx, ny) {
+    const fx = nx * (PG_W - 1);
+    const fy = ny * (PG_H - 1);
+    let ix = fx | 0, iy = fy | 0;
+    if (ix < 0) ix = 0; else if (ix > PG_W - 2) ix = PG_W - 2;
+    if (iy < 0) iy = 0; else if (iy > PG_H - 2) iy = PG_H - 2;
+    const tx = fx - ix, ty = fy - iy;
+    const a = grid[iy * PG_W + ix];
+    const b = grid[iy * PG_W + ix + 1];
+    const c = grid[(iy + 1) * PG_W + ix];
+    const d = grid[(iy + 1) * PG_W + ix + 1];
+    return (a * (1 - tx) + b * tx) * (1 - ty) + (c * (1 - tx) + d * tx) * ty;
+  }
+
+  /* ============================================================
+     STALK UPDATE — uses cached grids
+     ============================================================ */
+  function updateStalks(dt_real, time, scales) {
+    const moisture = +els.moisture.value;
+    const stiffness = +els.stiffness.value;
+    const damping = +els.damping.value;
+    const threshold = +els.threshold.value;
+    const couplingGain = +els.coupling.value;
+    const useDEP = els.useDEP.checked;
+
+    let sumBend = 0;
+    let mechCount = 0;
+    let thermCount = 0;
+    let peakI = 0;
+
+    const dt60 = dt_real * 60;
+
+    /* ----- DEP physics-honest modulation -----
+       at the reference operating point (V=100kV, scene=3m, aperture=0.84m,
+       moisture=0.5, f=13.56MHz) we have alphaRe ~ 2.33e-16 and ErefSq ~ 1.42e10.
+       Real DEP drive scales linearly with alphaRe (so freq via Debye, moisture via eps_p)
+       and linearly with ErefSq = (V/aperture)^2 (so voltage^2 and 1/aperture^2).
+       We multiply this dimensionless ratio by a base coupling that gives the
+       same visual feel as the original toy model at default settings.       */
+    const ALPHA_RE_REF = 2.33e-16;
+    const EREFSQ_REF = 1.42e10;
+    const dep_modulation = useDEP
+      ? (Math.max(0, scales.alphaRe) / ALPHA_RE_REF) * (scales.ErefSq / EREFSQ_REF)
+      : 1.0;
+
+    const baseCoupling = 0.000055 * (0.2 + 1.8 * moisture) * dpr;
+    const drive_coupling = baseCoupling * dep_modulation * couplingGain;
+
+    for (const s of stalks) {
+      const nx = s.x / W;
+      const ny = s.y / H;
+
+      const Ic = sampleGrid(intensityGrid, nx, ny);
+      if (Ic > peakI) peakI = Ic;
+
+      const gx = sampleGrid(gradXGrid, nx, ny);
+      const gy = sampleGrid(gradYGrid, nx, ny);
+      const forceAngle = Math.atan2(gy, gx);
+      const forceMag = Math.min(120, Math.hypot(gx, gy));
+
+      const target = forceAngle + 0.18 * Math.sin(s.phase + time * 1.3);
+      const diff = Math.atan2(Math.sin(target - s.angle), Math.cos(target - s.angle));
+      const drive = diff * forceMag * drive_coupling * (0.35 + Ic);
+
+      const permanentBias = s.perm * Math.atan2(Math.sin(forceAngle - s.rest), Math.cos(forceAngle - s.rest));
+      const restoring = -Math.atan2(
+        Math.sin(s.angle - s.rest - permanentBias),
+        Math.cos(s.angle - s.rest - permanentBias)
+      ) * 0.018 * stiffness;
+
+      s.vel += (drive + restoring) * dt60;
+      s.vel *= Math.pow(damping, dt60);
+      s.angle += s.vel * dt60;
+
+      /* mechanical lodging accumulator */
+      const bend = Math.abs(Math.atan2(Math.sin(s.angle - s.rest), Math.cos(s.angle - s.rest)));
+      if (Ic > threshold && forceMag > 0.9) {
+        s.perm = Math.min(1, s.perm + 0.015 * (Ic / Math.max(0.001, threshold)) * dt60);
+      } else {
+        s.perm *= Math.pow(0.999, dt60);
+      }
+
+      /* thermal lodging from local cell temperature */
+      const Tcell = sampleGrid(tempGrid, nx, ny);
+      s.dT = Tcell;
+      if (Tcell > STEAM_DT) {
+        s.charred = Math.min(1, s.charred + 0.6 * dt_real);
+      }
+
+      sumBend += bend;
+      if (s.perm > 0.38) mechCount++;
+      if (s.charred > 0.5) thermCount++;
+    }
+
+    return {
+      peakICanonical: peakI,
+      meanBend: sumBend / Math.max(1, stalks.length),
+      mech: mechCount / Math.max(1, stalks.length),
+      therm: thermCount / Math.max(1, stalks.length),
+      q: Math.min(20, peakI / (0.04 + sumBend / Math.max(1, stalks.length)))
+    };
+  }
+
+  /* ============================================================
+     RENDERING
+     ============================================================ */
+
+  function drawBackground() {
+    if (!els.showTrails.checked) {
+      ctx.fillStyle = 'rgba(3, 8, 5, 0.86)';
+      ctx.fillRect(0, 0, W, H);
+    } else {
+      ctx.fillStyle = 'rgba(3, 8, 5, 0.15)';
+      ctx.fillRect(0, 0, W, H);
+    }
+    const grd = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, Math.max(W, H) * 0.7);
+    grd.addColorStop(0, 'rgba(20, 55, 22, 0.45)');
+    grd.addColorStop(0.55, 'rgba(5, 18, 10, 0.55)');
+    grd.addColorStop(1, 'rgba(0, 0, 0, 0.7)');
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  function renderHeatmap() {
+    if (!els.showIntensity.checked) return;
+
+    /* normalize against current peak so dynamic range stays usable */
+    let maxI = 0;
+    for (let k = 0; k < NG; k++) {
+      const v = intensityGrid[k];
+      if (v > maxI) maxI = v;
+    }
+    const norm = maxI > 1e-6 ? 1 / maxI : 0;
+    const data = heatImageData.data;
+
+    for (let k = 0; k < NG; k++) {
+      const I = intensityGrid[k] * norm;
+      const q = I < 0 ? 0 : I > 1 ? 1 : I;
+      const r = (20 + 220 * Math.pow(q, 1.7)) | 0;
+      const g = (50 + 170 * Math.sin(q * Math.PI)) | 0;
+      const b = (80 + 175 * Math.pow(q, 0.45)) | 0;
+      const a = (255 * (0.10 + Math.min(0.45, q * 0.55))) | 0;
+      const o = k * 4;
+      data[o] = r;
+      data[o + 1] = g;
+      data[o + 2] = b;
+      data[o + 3] = a;
+    }
+    heatCtx.putImageData(heatImageData, 0, 0);
+    ctx.save();
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.drawImage(heatCanvas, 0, 0, W, H);
+    ctx.restore();
+  }
+
+  function renderThermal() {
+    if (!els.showThermal.checked) return;
+    /* normalize to STEAM_DT so red ≈ 100°C above ambient */
+    const data = thermImageData.data;
+    for (let k = 0; k < NG; k++) {
+      const T = tempGrid[k];
+      const q = Math.max(0, Math.min(1, T / STEAM_DT));
+      if (q < 0.01) {
+        data[k * 4 + 3] = 0;
+        continue;
+      }
+      /* warm to hot palette: yellow → orange → red → white */
+      const r = (60 + 200 * q) | 0;
+      const g = (10 + 130 * Math.pow(q, 0.6)) | 0;
+      const b = (20 + 60 * Math.pow(q, 2.0)) | 0;
+      const a = (200 * Math.pow(q, 0.7)) | 0;
+      const o = k * 4;
+      data[o] = r;
+      data[o + 1] = g;
+      data[o + 2] = b;
+      data[o + 3] = a;
+    }
+    thermCtx.putImageData(thermImageData, 0, 0);
+    ctx.save();
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    ctx.globalCompositeOperation = 'screen';
+    ctx.drawImage(thermCanvas, 0, 0, W, H);
+    ctx.restore();
+  }
+
+  function drawRings(time) {
+    if (!els.showRings.checked) return;
+    ctx.save();
+    ctx.globalCompositeOperation = 'screen';
+    for (let i = 0; i < sources.length; i++) {
+      const src = sources[i];
+      if (!src.enabled) continue;
+      const x = src.x * W;
+      const y = src.y * H;
+      const sel = i === selectedSourceIndex;
+      const n = sel ? 5 : 3;
+      for (let k = 1; k <= n; k++) {
+        const rr = (18 + k * 28 + 18 * Math.sin(time * 2 + k + src.phase)) * dpr * (0.45 + src.width);
+        ctx.strokeStyle = sel
+          ? `rgba(180,100,255,${0.22 - k * 0.025})`
+          : `rgba(66,226,255,${0.16 - k * 0.02})`;
+        ctx.lineWidth = (sel ? 1.6 : 1.0) * dpr;
+        ctx.beginPath();
+        ctx.arc(x, y, rr, 0, TAU);
+        ctx.stroke();
+      }
+      if (src.type === 'plane' || src.type === 'standing') {
+        const len = Math.max(W, H) * 0.22;
+        const a = src.angle;
+        ctx.strokeStyle = sel ? 'rgba(255,255,255,0.35)' : 'rgba(66,226,255,0.18)';
+        ctx.lineWidth = 1.2 * dpr;
+        ctx.beginPath();
+        ctx.moveTo(x - Math.cos(a) * len, y - Math.sin(a) * len);
+        ctx.lineTo(x + Math.cos(a) * len, y + Math.sin(a) * len);
+        ctx.stroke();
+      }
+    }
+    ctx.restore();
+  }
+
+  function drawVectors() {
+    if (!els.showVectors.checked) return;
+    ctx.save();
+    ctx.globalCompositeOperation = 'screen';
+    const step = Math.max(52 * dpr, Math.min(W, H) / 11);
+
+    /* compute a normalization for the gradient so arrow lengths are visually stable */
+    let maxG = 1e-6;
+    for (let k = 0; k < NG; k++) {
+      const m = Math.hypot(gradXGrid[k], gradYGrid[k]);
+      if (m > maxG) maxG = m;
+    }
+    const gNorm = 1 / maxG;
+
+    for (let y = step; y < H - step; y += step) {
+      for (let x = step; x < W - step; x += step) {
+        const nx = x / W, ny = y / H;
+        const gx = sampleGrid(gradXGrid, nx, ny);
+        const gy = sampleGrid(gradYGrid, nx, ny);
+        const mag = Math.hypot(gx, gy) * gNorm;
+        if (mag < 0.05) continue;
+        const a = Math.atan2(gy, gx);
+        const len = Math.min(step * 0.42, mag * step * 0.5);
+        ctx.strokeStyle = `rgba(66, 226, 255, ${Math.min(0.75, 0.22 + mag * 0.6)})`;
+        ctx.fillStyle = ctx.strokeStyle;
+        ctx.lineWidth = 1.2 * dpr;
+        ctx.beginPath();
+        ctx.moveTo(x - Math.cos(a) * len * 0.5, y - Math.sin(a) * len * 0.5);
+        ctx.lineTo(x + Math.cos(a) * len * 0.5, y + Math.sin(a) * len * 0.5);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x + Math.cos(a) * len * 0.5, y + Math.sin(a) * len * 0.5);
+        ctx.lineTo(x + Math.cos(a + 2.55) * 7 * dpr, y + Math.sin(a + 2.55) * 7 * dpr);
+        ctx.lineTo(x + Math.cos(a - 2.55) * 7 * dpr, y + Math.sin(a - 2.55) * 7 * dpr);
+        ctx.closePath();
+        ctx.fill();
+      }
+    }
+    ctx.restore();
+  }
+
+  function drawStalks(time) {
+    ctx.save();
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    for (const s of stalks) {
+      const I = sampleGrid(intensityGrid, s.x / W, s.y / H);
+      const bend = Math.abs(Math.atan2(Math.sin(s.angle - s.rest), Math.cos(s.angle - s.rest)));
+      const len = s.len * (1 + 0.18 * s.perm);
+      const ax = Math.cos(s.angle);
+      const ay = Math.sin(s.angle);
+      const x0 = s.x - ax * len * 0.28;
+      const y0 = s.y - ay * len * 0.28;
+      const x1 = s.x + ax * len * (0.72 + 0.25 * s.perm);
+      const y1 = s.y + ay * len * (0.72 + 0.25 * s.perm);
+
+      let r, g, b, alpha;
+      if (s.charred > 0.05) {
+        /* burnt: dark with orange embers proportional to charred */
+        const c = s.charred;
+        r = 60 + 110 * c;
+        g = 30 + 30 * (1 - c);
+        b = 18;
+        alpha = 0.7 + 0.2 * c;
+      } else {
+        const green = 90 + 80 * (1 - s.perm);
+        const gold = 120 + 110 * Math.min(1, I / 6);
+        r = 60 + gold * 0.45;
+        g = green + gold * 0.2;
+        b = 42;
+        alpha = 0.62 + Math.min(0.35, I * 0.04);
+      }
+      ctx.strokeStyle = `rgba(${r|0}, ${g|0}, ${b|0}, ${alpha})`;
+      ctx.lineWidth = (1.2 + 1.2 * s.perm + 0.2 * Math.sin(s.phase + time)) * dpr;
+
+      ctx.beginPath();
+      ctx.moveTo(x0, y0);
+      const cx = s.x + Math.cos(s.angle + 0.5) * bend * 5 * dpr;
+      const cy = s.y + Math.sin(s.angle + 0.5) * bend * 5 * dpr;
+      ctx.quadraticCurveTo(cx, cy, x1, y1);
+      ctx.stroke();
+
+      if ((I > 0.45 || s.perm > 0.55) && s.charred < 0.3) {
+        ctx.globalCompositeOperation = 'screen';
+        ctx.strokeStyle = `rgba(88, 240, 255, ${Math.min(0.35, I * 0.04)})`;
+        ctx.lineWidth = 0.8 * dpr;
+        ctx.beginPath();
+        ctx.moveTo(s.x, s.y);
+        ctx.lineTo(x1, y1);
+        ctx.stroke();
+        ctx.globalCompositeOperation = 'source-over';
+      }
+    }
+    ctx.restore();
+  }
+
+  function drawSources() {
+    ctx.save();
+    for (let i = 0; i < sources.length; i++) {
+      const src = sources[i];
+      const x = src.x * W;
+      const y = src.y * H;
+      const selected = i === selectedSourceIndex;
+      const r = selected ? 11 * dpr : 8 * dpr;
+      const grd = ctx.createRadialGradient(x, y, 0, x, y, r * 3.4);
+      grd.addColorStop(0, selected ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.55)');
+      grd.addColorStop(0.25, selected ? 'rgba(180,100,255,0.8)' : 'rgba(54,231,255,0.55)');
+      grd.addColorStop(1, 'rgba(54,231,255,0)');
+      ctx.fillStyle = grd;
+      ctx.beginPath();
+      ctx.arc(x, y, r * 3.4, 0, TAU);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.fillStyle = selected ? 'rgba(180,100,255,0.95)' : 'rgba(54,231,255,0.9)';
+      ctx.arc(x, y, r, 0, TAU);
+      ctx.fill();
+      ctx.lineWidth = 2 * dpr;
+      ctx.strokeStyle = selected ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.45)';
+      ctx.beginPath();
+      ctx.arc(x, y, r + 4 * dpr, 0, TAU);
+      ctx.stroke();
+      if (selected) {
+        const a = src.angle;
+        ctx.strokeStyle = 'rgba(255,255,255,0.75)';
+        ctx.lineWidth = 1.3 * dpr;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + Math.cos(a) * 32 * dpr, y + Math.sin(a) * 32 * dpr);
+        ctx.stroke();
+      }
+    }
+    ctx.restore();
+  }
+
+  function drawVignette() {
+    const grd = ctx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.2, W / 2, H / 2, Math.max(W, H) * 0.72);
+    grd.addColorStop(0, 'rgba(0,0,0,0)');
+    grd.addColorStop(0.65, 'rgba(0,0,0,0.12)');
+    grd.addColorStop(1, 'rgba(0,0,0,0.62)');
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  /* ============================================================
+     UI WIRING
+     ============================================================ */
+
+  function renderSourceList() {
+    els.sourceList.innerHTML = '';
+    sources.forEach((src, i) => {
+      const div = document.createElement('div');
+      div.className = 'source-item' + (i === selectedSourceIndex ? ' active' : '');
+      div.innerHTML = `
+        <div class="source-badge"></div>
+        <div class="source-meta">
+          <div class="name">Source ${i + 1}</div>
+          <div class="sub">${src.type} · amp ${src.amp.toFixed(2)} · f ${src.freq.toFixed(2)}</div>
+        </div>
+        <div class="source-on">${src.enabled ? 'ON' : 'OFF'}</div>
+      `;
+      div.addEventListener('click', () => {
+        selectedSourceIndex = i;
+        syncSelectedSourceToUI();
+        renderSourceList();
+        updateCaption();
+      });
+      els.sourceList.appendChild(div);
+    });
+  }
+
+  function currentSource() { return sources[selectedSourceIndex]; }
+
+  function syncSelectedSourceToUI() {
+    const src = currentSource();
+    if (!src) return;
+    els.srcEnabled.value = String(src.enabled);
+    els.srcType.value = src.type;
+    els.srcX.value = src.x;
+    els.srcY.value = src.y;
+    els.srcAmp.value = src.amp;
+    els.srcFreq.value = src.freq;
+    els.srcPhase.value = src.phase;
+    els.srcAngle.value = src.angle;
+    els.srcWidth.value = src.width;
+    updateValueLabels();
+  }
+
+  function syncUIToSelectedSource() {
+    const src = currentSource();
+    if (!src) return;
+    src.enabled = (els.srcEnabled.value === 'true');
+    src.type = els.srcType.value;
+    src.x = +els.srcX.value;
+    src.y = +els.srcY.value;
+    src.amp = +els.srcAmp.value;
+    src.freq = +els.srcFreq.value;
+    src.phase = +els.srcPhase.value;
+    src.angle = +els.srcAngle.value;
+    src.width = +els.srcWidth.value;
+    renderSourceList();
+    updateValueLabels();
+    updateCaption();
+  }
+
+  function updateValueLabels() {
+    els.globalTimeVal.textContent = (+els.globalTime.value).toFixed(2);
+    els.moistureVal.textContent = Math.round(+els.moisture.value * 100) + '%';
+    els.stiffnessVal.textContent = (+els.stiffness.value).toFixed(2);
+    els.dampingVal.textContent = (+els.damping.value).toFixed(3);
+    els.thresholdVal.textContent = (+els.threshold.value).toFixed(2);
+    els.voltageVal.textContent = (+els.voltage.value).toFixed(0) + ' kV';
+    els.sceneSizeVal.textContent = (+els.sceneSize.value).toFixed(1) + ' m';
+    els.speedupVal.textContent = (+els.speedup.value).toFixed(0);
+    els.couplingVal.textContent = (+els.coupling.value).toFixed(1);
+
+    els.srcXVal.textContent = (+els.srcX.value).toFixed(3);
+    els.srcYVal.textContent = (+els.srcY.value).toFixed(3);
+    els.srcAmpVal.textContent = (+els.srcAmp.value).toFixed(2);
+    els.srcFreqVal.textContent = (+els.srcFreq.value).toFixed(2);
+    els.srcPhaseVal.textContent = (+els.srcPhase.value).toFixed(2);
+    els.srcAngleVal.textContent = (+els.srcAngle.value).toFixed(2);
+    els.srcWidthVal.textContent = (+els.srcWidth.value).toFixed(3);
+  }
+
+  function updateCaption() {
+    const src = currentSource();
+    if (!src) return;
+    els.caption.textContent =
+      `Selected source: ${src.type}. Drag it on the canvas to move it. ` +
+      `Field is summed across all enabled sources, then squared into intensity. ` +
+      `Stalks couple via DEP gradient force; cells absorb power and heat up.`;
+  }
+
+  function addSource() {
+    if (sources.length >= 6) return;
+    sources.push(makeDefaultSource(sources.length));
+    selectedSourceIndex = sources.length - 1;
+    renderSourceList();
+    syncSelectedSourceToUI();
+    updateCaption();
+  }
+
+  function removeSource() {
+    if (sources.length <= 1) return;
+    sources.splice(selectedSourceIndex, 1);
+    selectedSourceIndex = Math.max(0, Math.min(selectedSourceIndex, sources.length - 1));
+    renderSourceList();
+    syncSelectedSourceToUI();
+    updateCaption();
+  }
+
+  function canvasPosToNormalized(evt) {
+    const rect = canvas.getBoundingClientRect();
+    const x = (evt.clientX - rect.left) / rect.width;
+    const y = (evt.clientY - rect.top) / rect.height;
+    return {
+      x: Math.max(0.02, Math.min(0.98, x)),
+      y: Math.max(0.02, Math.min(0.98, y))
+    };
+  }
+
+  function hitTestSource(evt) {
+    const p = canvasPosToNormalized(evt);
+    const px = p.x * W;
+    const py = p.y * H;
+    let best = -1;
+    let bestDist = Infinity;
+    sources.forEach((src, i) => {
+      const sx = src.x * W;
+      const sy = src.y * H;
+      const d = Math.hypot(px - sx, py - sy);
+      if (d < bestDist) {
+        bestDist = d;
+        best = i;
+      }
+    });
+    return bestDist <= 26 * dpr ? best : -1;
+  }
+
+  canvas.addEventListener('pointerdown', (evt) => {
+    const hit = hitTestSource(evt);
+    if (hit >= 0) {
+      selectedSourceIndex = hit;
+      renderSourceList();
+      syncSelectedSourceToUI();
+      draggingSource = true;
+    } else {
+      draggingSource = true;
+      const p = canvasPosToNormalized(evt);
+      const src = currentSource();
+      src.x = p.x;
+      src.y = p.y;
+      syncSelectedSourceToUI();
+    }
+    updateCaption();
+  });
+
+  canvas.addEventListener('pointermove', (evt) => {
+    if (!draggingSource) return;
+    const p = canvasPosToNormalized(evt);
+    const src = currentSource();
+    src.x = p.x;
+    src.y = p.y;
+    syncSelectedSourceToUI();
+  });
+
+  window.addEventListener('pointerup', () => { draggingSource = false; });
+
+  els.pauseBtn.addEventListener('click', () => {
+    paused = !paused;
+    els.pauseBtn.textContent = paused ? 'Resume' : 'Pause';
+  });
+  els.resetPlantsBtn.addEventListener('click', resetPlants);
+  els.addSourceBtn.addEventListener('click', addSource);
+  els.removeSourceBtn.addEventListener('click', removeSource);
+
+  els.moisture.addEventListener('input', () => { radialLossDirty = true; });
+
+  [
+    els.globalTime, els.moisture, els.stiffness, els.damping, els.threshold,
+    els.voltage, els.sceneSize, els.speedup, els.coupling
+  ].forEach(el => el.addEventListener('input', updateValueLabels));
+
+  [
+    els.srcEnabled, els.srcType, els.srcX, els.srcY,
+    els.srcAmp, els.srcFreq, els.srcPhase, els.srcAngle, els.srcWidth
+  ].forEach(el => el.addEventListener('input', syncUIToSelectedSource));
+
+  window.addEventListener('resize', resize);
+
+  /* ============================================================
+     ANIMATION LOOP
+     ============================================================ */
+
+  function animate(now) {
+    const dtWall = Math.min(0.04, (now - last) / 1000 || 0.016);
+    last = now;
+
+    if (!paused) {
+      const speedup = +els.speedup.value;
+      const dtSim = dtWall * speedup;          // simulated seconds elapsed this frame
+      simTime += dtSim;
+      t += dtWall * (+els.globalTime.value);   // wave-pattern phase time
+
+      updateRadialLossIfNeeded();
+      buildFieldGrid(t);
+      buildIntensityGradients();
+
+      const scales = physicalScales();
+      stepTemperature(dtSim, scales);
+      const stats = updateStalks(dtWall, t, scales);
+
+      drawBackground();
+      renderHeatmap();
+      renderThermal();
+      drawRings(t);
+      drawVectors();
+      drawStalks(t);
+      drawSources();
+      drawVignette();
+
+      if (frame % 6 === 0) {
+        const peakI_canon = stats.peakICanonical;
+        const peakI_real = peakI_canon * scales.ErefSq;       // V^2/m^2
+        const peakE_real = Math.sqrt(Math.max(0, peakI_real));// V/m
+        const powerScale = 0.5 * scales.omega * EPS0 * scales.eps_im * scales.ErefSq;
+        const peakP = peakI_canon * powerScale;                // W/m^3
+        let peakT = 0;
+        for (let k = 0; k < NG; k++) if (tempGrid[k] > peakT) peakT = tempGrid[k];
+
+        els.peakERead.textContent = formatField(peakE_real);
+        els.peakIRead.textContent = peakI_canon.toFixed(2);
+        els.powerRead.textContent = formatPower(peakP);
+        els.qRead.textContent = stats.q.toFixed(1);
+        els.meanRead.textContent = stats.meanBend.toFixed(2);
+        els.tempRead.textContent = peakT.toFixed(0) + ' °C';
+        els.tempRead.className = 'num' + (peakT > STEAM_DT ? ' crit' : peakT > 40 ? ' hot' : '');
+        els.mechRead.textContent = Math.round(stats.mech * 100) + '%';
+        els.thermRead.textContent = Math.round(stats.therm * 100) + '%';
+      }
+    }
+
+    frame++;
+    requestAnimationFrame(animate);
+  }
+
+  function formatField(E) {
+    if (E < 1e3) return E.toFixed(1) + ' V/m';
+    if (E < 1e6) return (E / 1e3).toFixed(2) + ' kV/m';
+    return (E / 1e6).toFixed(2) + ' MV/m';
+  }
+  function formatPower(P) {
+    if (P < 1e3) return P.toFixed(1) + ' W/m³';
+    if (P < 1e6) return (P / 1e3).toFixed(2) + ' kW/m³';
+    if (P < 1e9) return (P / 1e6).toFixed(2) + ' MW/m³';
+    return (P / 1e9).toExponential(2) + ' GW/m³';
+  }
+
+  /* ============================================================
+     BOOT
+     ============================================================ */
+  resize();
+  renderSourceList();
+  syncSelectedSourceToUI();
+  updateValueLabels();
+  updateCaption();
+  /* warm-start the radial loss table */
+  updateRadialLossIfNeeded();
+  requestAnimationFrame(animate);
+  </script>
+</body>
+</html>
