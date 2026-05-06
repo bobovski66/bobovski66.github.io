@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Reeb Chords Between Exponential Families</title>
+<style>
+:root{
+  --bg:#070812; --panel:#101322; --panel2:#151a2c; --line:#283047;
+  --text:#eee6d6; --muted:#9aa2ba; --faint:#646d88;
+  --gold:#e9b84f; --cyan:#4fd0d8; --mag:#bd7cff; --red:#e36b6b;
+  --green:#86d982; --blue:#7aa7ff; --ink:#0b0d16;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:Georgia,'Times New Roman',serif;overflow:hidden}
+#app{height:100vh;display:grid;grid-template-rows:auto 1fr}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 18px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#101321,#070812)}
+.title{font-size:20px;letter-spacing:.01em}.title span{color:var(--gold);font-style:italic}.sub{font-size:12px;color:var(--muted);font-style:italic;text-align:right}
+main{display:grid;grid-template-columns:minmax(520px,1fr) 420px;height:100%;min-height:0}
+#stage{position:relative;min-height:0;background:radial-gradient(ellipse at center,#14192c 0%,#070812 72%)}
+#three{display:block;width:100%;height:100%;cursor:grab}#three:active{cursor:grabbing}
+#hud{position:absolute;left:14px;top:14px;background:rgba(8,10,18,.72);border:1px solid var(--line);border-radius:14px;padding:10px 12px;backdrop-filter:blur(7px);font-size:12px;color:var(--muted);max-width:430px;pointer-events:none}
+.row{display:flex;align-items:center;gap:8px;margin:4px 0}.sw{width:20px;height:3px;border-radius:2px;display:inline-block}.sw.dot{height:10px;width:10px;border-radius:50%}
+#caption{position:absolute;left:18px;right:18px;bottom:12px;color:var(--muted);font-size:12px;line-height:1.45;font-style:italic;max-width:760px;pointer-events:none}
+aside{min-height:0;overflow:auto;background:var(--panel);border-left:1px solid var(--line)}
+.panel{padding:13px 16px;border-bottom:1px solid var(--line)}
+.panel-title{font:600 10px/1.2 'Segoe UI',Arial,sans-serif;text-transform:uppercase;letter-spacing:.16em;color:var(--muted);margin-bottom:9px}
+select,button,input[type=range]{width:100%}select,button{background:#0c0f1b;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13px}button{cursor:pointer}button:hover,select:focus{border-color:var(--gold);outline:none}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}.stat{display:flex;justify-content:space-between;gap:12px;padding:4px 0;border-bottom:1px dashed rgba(255,255,255,.06);font-size:13px}.stat .k{color:var(--muted);font-style:italic}.stat .v{font-family:'Consolas','SFMono-Regular',monospace;color:var(--gold);font-size:12px;text-align:right}.hint{color:var(--muted);font-size:12px;line-height:1.45}.eq{background:#0b0e19;border-left:3px solid var(--gold);padding:8px 10px;border-radius:8px;font-style:italic;color:#dcd5c8;font-size:13px;line-height:1.5}
+.plot{width:100%;height:142px;display:block;background:#0b0e19;border:1px solid var(--line);border-radius:12px}.plot.tall{height:166px}.plot.short{height:112px}
+.chk{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);padding:4px 0}.chk input{accent-color:var(--gold)}
+.sliderlab{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-bottom:3px}.sliderlab span:last-child{font-family:Consolas,monospace;color:var(--gold)}
+input[type=range]{appearance:none;height:3px;border-radius:3px;background:#313a56;outline:none;margin:8px 0 2px}input[type=range]::-webkit-slider-thumb{appearance:none;width:14px;height:14px;border-radius:50%;background:var(--gold);border:0;cursor:pointer}input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--gold);border:0;cursor:pointer}
+.chord-list{display:grid;gap:6px}.chord-btn{text-align:left;padding:8px 9px;border-radius:10px;background:#0b0e19;border:1px solid var(--line);color:var(--text);font-family:Consolas,monospace;font-size:12px}.chord-btn.active{border-color:var(--gold);box-shadow:0 0 0 1px rgba(233,184,79,.25) inset}.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 7px;margin-left:4px;color:var(--muted);font-size:11px;font-family:'Segoe UI',Arial,sans-serif}.pill.good{color:var(--green);border-color:rgba(134,217,130,.45)}.pill.bad{color:var(--red);border-color:rgba(227,107,107,.45)}
+@media(max-width:980px){main{grid-template-columns:1fr}aside{position:absolute;right:0;top:55px;bottom:0;width:min(430px,92vw);box-shadow:-20px 0 40px rgba(0,0,0,.35)}}
+</style>
+</head>
+<body>
+<div id="app">
+<header>
+  <div class="title">Reeb Chords Between Exponential Families <span>— moment matching as contact topology</span></div>
+  <div class="sub">Two graph Legendrians in J¹(Θ,ℝ); click a vertical chord to inspect the matched model properties.</div>
+</header>
+<main>
+  <section id="stage">
+    <canvas id="three"></canvas>
+    <div id="hud">
+      <div class="row"><span class="sw" style="background:var(--gold)"></span> Lψ₁: first model</div>
+      <div class="row"><span class="sw" style="background:var(--cyan)"></span> Lψ₂: second model</div>
+      <div class="row"><span class="sw" style="background:var(--red)"></span> Reeb chords: vertical ∂z gaps at ψ₁′=ψ₂′</div>
+      <div class="row"><span class="sw dot" style="background:var(--green)"></span> selected chord / moment-matching point</div>
+      <div class="row"><span class="sw" style="background:var(--mag)"></span> homotopy Lψs=(1−s)Lψ₁+sLψ₂</div>
+    </div>
+    <div id="caption">Drag to rotate, scroll to zoom, shift-drag to pan. Chords appear where the two families agree on the expected sufficient statistic η=Eθ[F], while their z-coordinates differ by the log-partition gap D=ψ₂−ψ₁.</div>
+  </section>
+  <aside>
+    <div class="panel">
+      <div class="panel-title">Model pair</div>
+      <select id="pairSelect"></select>
+      <div class="eq" id="pairEq" style="margin-top:9px"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Selected Reeb chord</div>
+      <div id="chordStats"></div>
+      <div class="hint" id="chordInterpret" style="margin-top:8px"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Chord browser</div>
+      <div class="chord-list" id="chordList"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Distributions at θ*</div>
+      <canvas id="probPlot" class="plot short"></canvas>
+      <div class="hint">Gold and cyan bars are p₁(x;θ*) and p₂(x;θ*). Their means match at a chord, but the distributions can still be visibly different.</div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Difference function D(θ)=ψ₂(θ)−ψ₁(θ)</div>
+      <canvas id="diffPlot" class="plot tall"></canvas>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Potentials ψ₁, ψ₂</div>
+      <canvas id="psiPlot" class="plot"></canvas>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Homotopy</div>
+      <div class="sliderlab"><span>s in ψs=(1−s)ψ₁+sψ₂</span><span id="sVal">0.50</span></div>
+      <input type="range" id="sSlider" min="0" max="1" step="0.01" value="0.5" />
+      <div class="hint">The purple curve is Lψs. At the same critical θ*, the chord length from Lψ₁ to Lψs scales like sD(θ*).</div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Visible structure</div>
+      <label class="chk"><input type="checkbox" id="showL1" checked /> Show Lψ₁</label>
+      <label class="chk"><input type="checkbox" id="showL2" checked /> Show Lψ₂</label>
+      <label class="chk"><input type="checkbox" id="showChords" checked /> Show Reeb chords</label>
+      <label class="chk"><input type="checkbox" id="showHomotopy" checked /> Show homotopy Lψs</label>
+      <label class="chk"><input type="checkbox" id="showPlanes" /> Show contact planes</label>
+      <label class="chk"><input type="checkbox" id="showFisher" checked /> Show Fisher markers</label>
+      <div class="grid2" style="margin-top:9px"><button id="resetCam">Reset camera</button><button id="autoSpin">Auto-spin: off</button></div>
+    </div>
+  </aside>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+'use strict';
+const C={gold:0xe9b84f,cyan:0x4fd0d8,mag:0xbd7cff,red:0xe36b6b,green:0x86d982,blue:0x7aa7ff,grid:0x313a56,muted:0x7b839d};
+function factorial(n){let r=1;for(let i=2;i<=n;i++)r*=i;return r}
+function binom(n,k){return factorial(n)/(factorial(k)*factorial(n-k))}
+function range(a,b){const r=[];for(let i=a;i<=b;i++)r.push(i);return r}
+function logSumExp(v){const m=Math.max(...v);let s=0;for(const x of v)s+=Math.exp(x-m);return m+Math.log(s)}
+function makeFamily(X,h,label){
+  const F=x=>x;
+  function logs(t){return X.map((x,i)=>Math.log(h[i])+t*F(x))}
+  function psi(t){return logSumExp(logs(t))}
+  function moments(t){const L=logs(t),lse=logSumExp(L);let e=0,e2=0;const p=[];for(let i=0;i<X.length;i++){const pi=Math.exp(L[i]-lse);p.push(pi);e+=F(X[i])*pi;e2+=F(X[i])*F(X[i])*pi}return {psi:lse,eta:e,fisher:e2-e*e,p}}
+  return {X,h,F,label,psi,dpsi:t=>moments(t).eta,d2psi:t=>moments(t).fisher,probs:t=>moments(t).p,moments};
+}
+const pairs={
+  binom_linear:{
+    name:'Binomial(4) vs linear reference',
+    thetaRange:[-5,5],
+    desc:'X={0,…,4}, F(x)=x; h₁=C(4,x), h₂=x+1. A compact one-chord baseline example.',
+    f1:makeFamily(range(0,4),range(0,4).map(x=>binom(4,x)),'Binomial reference C(4,x)'),
+    f2:makeFamily(range(0,4),range(0,4).map(x=>x+1),'Linear reference x+1')
+  },
+
+  poisson_decay:{
+    name:'Poisson-like vs exponential-decay reference',
+    thetaRange:[-4,4],
+    desc:'X={0,…,10}, F(x)=x; h₁=1/x!, h₂=e^(−x/2). A one-chord comparison between two left-weighted reference measures.',
+    f1:makeFamily(range(0,10),range(0,10).map(x=>1/factorial(x)),'Poisson-like 1/x!'),
+    f2:makeFamily(range(0,10),range(0,10).map(x=>Math.exp(-x/2)),'Exponential-decay reference')
+  },
+
+  gaussian_tilt:{
+    name:'Discrete Gaussian vs right-heavy reference',
+    thetaRange:[-3.4,3.4],
+    desc:'X={−4,…,4}, F(x)=x; h₁=e^(−x²/8), h₂=e^(−(x−1.4)²/5)+0.12. The right-heavy reference shifts the moment curve.',
+    f1:makeFamily(range(-4,4),range(-4,4).map(x=>Math.exp(-x*x/8)),'Discrete Gaussian'),
+    f2:makeFamily(range(-4,4),range(-4,4).map(x=>Math.exp(-(x-1.4)*(x-1.4)/5)+0.12),'Right-heavy reference')
+  },
+
+  multi_chord:{
+    name:'Wavy reference vs Binomial(8): two chords',
+    thetaRange:[-4.5,4.5],
+    desc:'X={0,…,8}, F(x)=x; h₁=C(8,x), h₂=exp(2 sin(2x)). A deliberately wavy reference measure producing two Reeb chords.',
+    f1:makeFamily(range(0,8),range(0,8).map(x=>binom(8,x)),'Binomial reference C(8,x)'),
+    f2:makeFamily(range(0,8),range(0,8).map(x=>Math.exp(2*Math.sin(2*x))),'Wavy reference exp(2sin(2x))')
+  },
+
+  mirror_bumps:{
+    name:'Left bump vs right bump: symmetric two chords',
+    thetaRange:[-6,6],
+    desc:'X={0,…,10}, F(x)=x; h₁ is concentrated near x=3 and h₂ near x=7. Symmetry produces a pair of moment-matching chord points.',
+    f1:makeFamily(range(0,10),range(0,10).map(x=>0.1+5*Math.exp(-(x-3)*(x-3)/3)),'Left bump near x=3'),
+    f2:makeFamily(range(0,10),range(0,10).map(x=>0.1+5*Math.exp(-(x-7)*(x-7)/3)),'Right bump near x=7')
+  },
+
+  gaussian_bimodal:{
+    name:'Gaussian vs bimodal reference: three chords',
+    thetaRange:[-5,5],
+    desc:'X={−5,…,5}, F(x)=x; h₁=e^(−x²/8), while h₂ has two separated bumps. This produces three alternating Morse-type chords.',
+    f1:makeFamily(range(-5,5),range(-5,5).map(x=>Math.exp(-x*x/8)),'Centered discrete Gaussian'),
+    f2:makeFamily(range(-5,5),range(-5,5).map(x=>0.05+3*Math.exp(-(x+3)*(x+3)/2)+2.8*Math.exp(-(x-3)*(x-3)/2)),'Bimodal reference')
+  },
+
+  flat_spikes_three:{
+    name:'Flat vs spiky reference: three chords',
+    thetaRange:[-6,6],
+    desc:'X={0,…,10}, F(x)=x; h₁=1 and h₂ is a spiky discrete reference. The repeated changes in the tilted mean curve create three Reeb chords.',
+    f1:makeFamily(range(0,10),range(0,10).map(x=>1),'Flat reference'),
+    f2:makeFamily(range(0,10),[0.0001,82.0829,0.1767,1.5599,33.2854,0.2468,3.3872,18.8188,0.0001,107.1464,0.1932],'Three-chord spiky reference')
+  },
+
+  flat_spikes_four:{
+    name:'Flat vs lattice-spike reference: four chords',
+    thetaRange:[-7,7],
+    desc:'X={0,…,11}, F(x)=x; h₁=1 and h₂ alternates between suppressed and amplified sites. This is the richest built-in example, with four Reeb chords.',
+    f1:makeFamily(range(0,11),range(0,11).map(x=>1),'Flat reference'),
+    f2:makeFamily(range(0,11),[7.9594,0.1184,38.1841,17.9282,2.9161,0.0412,0.183,0.0572,11.5458,31.0226,14.0822,5.0222],'Four-chord lattice-spike reference')
+  },
+
+  alternating:{
+    name:'Binomial(8) vs alternating parity reference',
+    thetaRange:[-6,6],
+    desc:'X={0,…,8}, F(x)=x; h₁=C(8,x), h₂=exp(1.8(−1)^x+0.1x). A parity-biased reference with a strong Fisher-difference effect.',
+    f1:makeFamily(range(0,8),range(0,8).map(x=>binom(8,x)),'Binomial reference C(8,x)'),
+    f2:makeFamily(range(0,8),range(0,8).map(x=>Math.exp(1.8*((x%2===0)?1:-1)+0.1*x)),'Alternating parity reference')
+  },
+
+  edge_center:{
+    name:'Center-heavy vs edge-heavy reference',
+    thetaRange:[-6,6],
+    desc:'X={0,…,8}, F(x)=x; h₁ is center-heavy, h₂ emphasizes both edges. This gives a dramatic chord with a large Fisher contrast.',
+    f1:makeFamily(range(0,8),range(0,8).map(x=>0.2+5*Math.exp(-(x-4)*(x-4)/3)),'Center-heavy reference'),
+    f2:makeFamily(range(0,8),range(0,8).map(x=>0.2+4*Math.exp(-x*x/0.9)+4*Math.exp(-(x-8)*(x-8)/0.9)),'Edge-heavy reference')
+  }
+};
+const state={pairKey:'binom_linear',selected:0,s:.5,showL1:true,showL2:true,showChords:true,showHomotopy:true,showPlanes:false,showFisher:true,spin:false};
+let pair=pairs[state.pairKey], chords=[], bounds={etaMin:0,etaMax:1,zMin:0,zMax:1};
+function D(t){return pair.f2.psi(t)-pair.f1.psi(t)}
+function dD(t){return pair.f2.dpsi(t)-pair.f1.dpsi(t)}
+function d2D(t){return pair.f2.d2psi(t)-pair.f1.d2psi(t)}
+function computeBounds(){const [a,b]=pair.thetaRange;let eMin=Infinity,eMax=-Infinity,zMin=Infinity,zMax=-Infinity;for(let i=0;i<=500;i++){const t=a+(b-a)*i/500;for(const f of [pair.f1,pair.f2]){const eta=f.dpsi(t),z=f.psi(t);eMin=Math.min(eMin,eta);eMax=Math.max(eMax,eta);zMin=Math.min(zMin,z);zMax=Math.max(zMax,z)}const zs=(1-state.s)*pair.f1.psi(t)+state.s*pair.f2.psi(t);zMin=Math.min(zMin,zs);zMax=Math.max(zMax,zs)}const ep=Math.max(.2,.08*(eMax-eMin||1)),zp=Math.max(.2,.12*(zMax-zMin||1));bounds={etaMin:eMin-ep,etaMax:eMax+ep,zMin:zMin-zp,zMax:zMax+zp}}
+function W(th,eta,z){const [a,b]=pair.thetaRange;return new THREE.Vector3(((th-a)/(b-a))*4-2,((z-bounds.zMin)/(bounds.zMax-bounds.zMin))*4-2,((eta-bounds.etaMin)/(bounds.etaMax-bounds.etaMin))*4-2)}
+function scales(){const [a,b]=pair.thetaRange;return {sx:4/(b-a),sy:4/(bounds.zMax-bounds.zMin),sz:4/(bounds.etaMax-bounds.etaMin)}}
+function findChords(){const [a,b]=pair.thetaRange,N=1200;const roots=[];let t0=a,v0=dD(t0);for(let i=1;i<=N;i++){const t1=a+(b-a)*i/N,v1=dD(t1);if(Math.abs(v0)<1e-4)roots.push(t0);if(v0*v1<0){let lo=t0,hi=t1,fl=v0;for(let k=0;k<60;k++){const mid=(lo+hi)/2,fm=dD(mid);if(fl*fm<=0){hi=mid}else{lo=mid;fl=fm}}roots.push((lo+hi)/2)}t0=t1;v0=v1}
+  const unique=[];for(const r of roots){if(r>a+1e-4&&r<b-1e-4&&!unique.some(x=>Math.abs(x-r)<1e-3))unique.push(r)}
+  chords=unique.map((theta,i)=>{const eta=pair.f1.dpsi(theta),z1=pair.f1.psi(theta),z2=pair.f2.psi(theta),gap=z2-z1,fd=d2D(theta);return {i,theta,eta,z1,z2,gap,length:Math.abs(gap),dir:gap>=0?'Lψ₁ → Lψ₂':'Lψ₂ → Lψ₁',fisherDiff:fd,index:fd<0?1:0}});
+  if(state.selected>=chords.length)state.selected=Math.max(0,chords.length-1);
+}
+const canvas=document.getElementById('three');const scene=new THREE.Scene();const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));const camera=new THREE.PerspectiveCamera(42,1,.1,100);const orbit={phi:1.12,theta:.76,dist:7.1,target:new THREE.Vector3()};function applyCam(){camera.position.set(orbit.dist*Math.sin(orbit.phi)*Math.cos(orbit.theta),orbit.dist*Math.cos(orbit.phi),orbit.dist*Math.sin(orbit.phi)*Math.sin(orbit.theta)).add(orbit.target);camera.lookAt(orbit.target)}
+function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}new ResizeObserver(resize).observe(canvas);applyCam();
+let dragging=false,lastX=0,lastY=0,mode='rot';canvas.addEventListener('pointerdown',e=>{dragging=true;lastX=e.clientX;lastY=e.clientY;mode=e.shiftKey?'pan':'rot';canvas.setPointerCapture(e.pointerId)});canvas.addEventListener('pointermove',e=>{if(!dragging)return;const dx=e.clientX-lastX,dy=e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;if(mode==='rot'){orbit.theta-=dx*.006;orbit.phi-=dy*.006;orbit.phi=Math.max(.15,Math.min(Math.PI-.15,orbit.phi))}else{const speed=orbit.dist*.0015;const forward=new THREE.Vector3();camera.getWorldDirection(forward);const right=new THREE.Vector3().crossVectors(forward,new THREE.Vector3(0,1,0)).normalize();const up=new THREE.Vector3().crossVectors(right,forward).normalize();orbit.target.addScaledVector(right,-dx*speed).addScaledVector(up,dy*speed)}applyCam()});canvas.addEventListener('pointerup',()=>dragging=false);canvas.addEventListener('wheel',e=>{e.preventDefault();orbit.dist*=Math.exp(e.deltaY*.0008);orbit.dist=Math.max(2.4,Math.min(28,orbit.dist));applyCam()},{passive:false});
+const world=new THREE.Group();scene.add(world);const groups={axes:new THREE.Group(),curves:new THREE.Group(),chords:new THREE.Group(),planes:new THREE.Group(),markers:new THREE.Group()};Object.values(groups).forEach(g=>world.add(g));const raycaster=new THREE.Raycaster();const mouse=new THREE.Vector2();const markerMeshes=[];
+function clear(g){while(g.children.length){const o=g.children.pop();if(o.geometry)o.geometry.dispose();if(o.material){if(o.material.map)o.material.map.dispose();o.material.dispose()}}}
+function line(points,color,op=1,dashed=false){const geo=new THREE.BufferGeometry().setFromPoints(points);const mat=dashed?new THREE.LineDashedMaterial({color,dashSize:.08,gapSize:.055,transparent:true,opacity:op}):new THREE.LineBasicMaterial({color,transparent:op<1,opacity:op});const l=new THREE.Line(geo,mat);if(dashed)l.computeLineDistances();return l}
+function buildAxes(){clear(groups.axes);const B=2.25;groups.axes.add(line([new THREE.Vector3(-B,-2,-2),new THREE.Vector3(B,-2,-2)],C.grid,.7));groups.axes.add(line([new THREE.Vector3(-2,-2,-2),new THREE.Vector3(-2,2.2,-2)],C.grid,.7));groups.axes.add(line([new THREE.Vector3(-2,-2,-B),new THREE.Vector3(-2,-2,B)],C.grid,.7));const grid=new THREE.GridHelper(4,8,0x303852,0x202842);grid.position.y=-2;grid.material.opacity=.45;grid.material.transparent=true;groups.axes.add(grid)}
+function curvePoints(f,N=260){const [a,b]=pair.thetaRange,pts=[];for(let i=0;i<=N;i++){const t=a+(b-a)*i/N;pts.push(W(t,f.dpsi(t),f.psi(t)))}return pts}
+function buildCurves(){clear(groups.curves);if(state.showL1)groups.curves.add(line(curvePoints(pair.f1),C.gold,1));if(state.showL2)groups.curves.add(line(curvePoints(pair.f2),C.cyan,1));if(state.showHomotopy){const [a,b]=pair.thetaRange,pts=[];for(let i=0;i<=260;i++){const t=a+(b-a)*i/260;const eta=(1-state.s)*pair.f1.dpsi(t)+state.s*pair.f2.dpsi(t);const z=(1-state.s)*pair.f1.psi(t)+state.s*pair.f2.psi(t);pts.push(W(t,eta,z))}groups.curves.add(line(pts,C.mag,.8,true))}}
+function buildChords(){clear(groups.chords);clear(groups.markers);markerMeshes.length=0;if(!state.showChords)return;for(const ch of chords){const a=W(ch.theta,ch.eta,ch.z1),b=W(ch.theta,ch.eta,ch.z2);groups.chords.add(line([a,b],C.red,.9));const mid=a.clone().add(b).multiplyScalar(.5);const geo=new THREE.SphereGeometry(ch.i===state.selected ? 0.06 : 0.045,16,12);const mat=new THREE.MeshBasicMaterial({color:ch.i===state.selected?C.green:C.red});const m=new THREE.Mesh(geo,mat);m.position.copy(mid);m.userData.chordIndex=ch.i;groups.markers.add(m);markerMeshes.push(m)}if(state.showFisher&&chords[state.selected]){const ch=chords[state.selected];const p=W(ch.theta,ch.eta,(ch.z1+ch.z2)/2);const s=scales();const tan=new THREE.Vector3(s.sx,ch.eta*s.sy,pair.f1.d2psi(ch.theta)*s.sz).normalize();const rad=.18+.1*Math.min(3,Math.abs(ch.fisherDiff));groups.markers.add(line([p.clone().addScaledVector(tan,-rad),p.clone().addScaledVector(tan,rad)],C.blue,1));}}
+function buildPlanes(){clear(groups.planes);if(!state.showPlanes)return;const [a,b]=pair.thetaRange,s=scales();for(let i=1;i<=5;i++){const th=a+(b-a)*i/6;const eta=(pair.f1.dpsi(th)+pair.f2.dpsi(th))/2;const z=(pair.f1.psi(th)+pair.f2.psi(th))/2;const o=W(th,eta,z);let v1=new THREE.Vector3(0,0,s.sz).normalize().multiplyScalar(.28);let v2=new THREE.Vector3(s.sx,eta*s.sy,0).normalize().multiplyScalar(.28);const ps=[o.clone().addScaledVector(v1,-1).addScaledVector(v2,-1),o.clone().addScaledVector(v1,1).addScaledVector(v2,-1),o.clone().addScaledVector(v1,1).addScaledVector(v2,1),o.clone().addScaledVector(v1,-1).addScaledVector(v2,1)];const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute([ps[0].x,ps[0].y,ps[0].z,ps[1].x,ps[1].y,ps[1].z,ps[2].x,ps[2].y,ps[2].z,ps[0].x,ps[0].y,ps[0].z,ps[2].x,ps[2].y,ps[2].z,ps[3].x,ps[3].y,ps[3].z],3));groups.planes.add(new THREE.Mesh(geo,new THREE.MeshBasicMaterial({color:C.cyan,transparent:true,opacity:.16,side:THREE.DoubleSide,depthWrite:false})));groups.planes.add(line([ps[0],ps[1],ps[2],ps[3],ps[0]],C.cyan,.35))}}
+canvas.addEventListener('click',e=>{const r=canvas.getBoundingClientRect();mouse.x=((e.clientX-r.left)/r.width)*2-1;mouse.y=-((e.clientY-r.top)/r.height)*2+1;raycaster.setFromCamera(mouse,camera);const hits=raycaster.intersectObjects(markerMeshes,false);if(hits.length){state.selected=hits[0].object.userData.chordIndex;refreshAll(false)}});
+function stat(k,v){return `<div class="stat"><span class="k">${k}</span><span class="v">${v}</span></div>`}
+function fmt(x,n=4){return Number.isFinite(x)?x.toFixed(n):'—'}
+function updateUI(){document.getElementById('sVal').textContent=fmt(state.s,2);document.getElementById('pairEq').innerHTML=pair.desc+'<br><span style="color:#9aa2ba">Reeb chords solve ψ₁′(θ)=ψ₂′(θ); chord length is |ψ₂(θ*)−ψ₁(θ*)|.</span>';const ch=chords[state.selected];const stats=document.getElementById('chordStats'),interp=document.getElementById('chordInterpret'),list=document.getElementById('chordList');list.innerHTML='';if(!chords.length){stats.innerHTML='<div class="hint">No nondegenerate Reeb chords found in this θ-window. Try another model pair.</div>';interp.textContent='No moment-matching base point was detected numerically.';return}for(const c of chords){const b=document.createElement('button');b.className='chord-btn'+(c.i===state.selected?' active':'');b.innerHTML=`#${c.i+1} θ=${fmt(c.theta,3)} |D|=${fmt(c.length,3)} <span class="pill ${c.index===0?'good':'bad'}">index ${c.index}</span>`;b.onclick=()=>{state.selected=c.i;refreshAll(false)};list.appendChild(b)}stats.innerHTML=stat('θ*',fmt(ch.theta,5))+stat('η*=ψ₁′=ψ₂′',fmt(ch.eta,5))+stat('ψ₁(θ*)',fmt(ch.z1,5))+stat('ψ₂(θ*)',fmt(ch.z2,5))+stat('D=ψ₂−ψ₁',fmt(ch.gap,5))+stat('|D| chord length',fmt(ch.length,5))+stat('direction',ch.dir)+stat('ψ₂″−ψ₁″',fmt(ch.fisherDiff,5))+stat('Morse index',String(ch.index));interp.innerHTML=`At this θ*, the models agree on Eθ[F], so the two graph Legendrians share the same (θ,η)-projection. The remaining vertical z-gap is the Reeb chord. ${ch.fisherDiff>=0?'The Fisher difference is positive here, so D has local minimum type in this 1D slice.':'The Fisher difference is negative here, so D has local maximum type in this 1D slice.'}`}
+function prepCanvas(c){const dpr=devicePixelRatio||1,W=c.clientWidth,H=c.clientHeight;if(c.width!==Math.floor(W*dpr)||c.height!==Math.floor(H*dpr)){c.width=Math.floor(W*dpr);c.height=Math.floor(H*dpr)}const ctx=c.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);return {ctx,W,H}}
+function drawProb(){const {ctx,W,H}=prepCanvas(document.getElementById('probPlot'));if(!chords.length)return;const ch=chords[state.selected],p1=pair.f1.probs(ch.theta),p2=pair.f2.probs(ch.theta),X=pair.f1.X,n=X.length,pMax=Math.max(...p1,...p2,.01);const L=28,R=10,T=12,B=22,w=W-L-R,h=H-T-B;ctx.strokeStyle='#283047';ctx.beginPath();ctx.moveTo(L,T);ctx.lineTo(L,T+h);ctx.lineTo(L+w,T+h);ctx.stroke();const gap=3,bw=Math.max(2,(w-gap*(n-1))/n);for(let i=0;i<n;i++){const x=L+i*(bw+gap),h1=p1[i]/pMax*h,h2=p2[i]/pMax*h;ctx.fillStyle='#e9b84f';ctx.fillRect(x,T+h-h1,bw*.48,h1);ctx.fillStyle='#4fd0d8';ctx.fillRect(x+bw*.52,T+h-h2,bw*.48,h2);ctx.fillStyle='#9aa2ba';ctx.font='10px Consolas';ctx.textAlign='center';if(n<=12||i%2===0)ctx.fillText(String(X[i]),x+bw/2,T+h+13)}}
+function drawDiff(){const {ctx,W,H}=prepCanvas(document.getElementById('diffPlot'));const [a,b]=pair.thetaRange,N=400,vals=[];let mn=Infinity,mx=-Infinity;for(let i=0;i<=N;i++){const t=a+(b-a)*i/N,y=D(t);vals.push([t,y]);mn=Math.min(mn,y);mx=Math.max(mx,y)}const pad=28,iw=W-2*pad,ih=H-2*pad;if(Math.abs(mx-mn)<1e-8){mx+=1;mn-=1}const xmap=t=>pad+(t-a)/(b-a)*iw,ymap=y=>pad+ih-(y-mn)/(mx-mn)*ih;ctx.strokeStyle='#283047';ctx.strokeRect(pad,pad,iw,ih);if(mn<0&&mx>0){ctx.strokeStyle='#646d88';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(pad,ymap(0));ctx.lineTo(pad+iw,ymap(0));ctx.stroke();ctx.setLineDash([])}ctx.strokeStyle='#e9b84f';ctx.lineWidth=2;ctx.beginPath();vals.forEach(([t,y],i)=>i?ctx.lineTo(xmap(t),ymap(y)):ctx.moveTo(xmap(t),ymap(y)));ctx.stroke();for(const ch of chords){ctx.fillStyle=ch.i===state.selected?'#86d982':'#e36b6b';ctx.beginPath();ctx.arc(xmap(ch.theta),ymap(ch.gap),ch.i===state.selected?5:3.5,0,Math.PI*2);ctx.fill();ctx.fillStyle='#9aa2ba';ctx.font='11px Consolas';ctx.textAlign='left';ctx.fillText('D',pad+5,pad+13)}}
+function drawPsi(){const {ctx,W,H}=prepCanvas(document.getElementById('psiPlot'));const [a,b]=pair.thetaRange,N=400,vals=[];let mn=Infinity,mx=-Infinity;for(let i=0;i<=N;i++){const t=a+(b-a)*i/N,y1=pair.f1.psi(t),y2=pair.f2.psi(t);vals.push([t,y1,y2]);mn=Math.min(mn,y1,y2);mx=Math.max(mx,y1,y2)}const pad=26,iw=W-2*pad,ih=H-2*pad;const xmap=t=>pad+(t-a)/(b-a)*iw,ymap=y=>pad+ih-(y-mn)/(mx-mn)*ih;ctx.strokeStyle='#283047';ctx.strokeRect(pad,pad,iw,ih);function path(idx,color){ctx.strokeStyle=color;ctx.lineWidth=2;ctx.beginPath();vals.forEach((v,i)=>i?ctx.lineTo(xmap(v[0]),ymap(v[idx])):ctx.moveTo(xmap(v[0]),ymap(v[idx])));ctx.stroke()}path(1,'#e9b84f');path(2,'#4fd0d8');ctx.fillStyle='#e9b84f';ctx.fillText('ψ₁',pad+8,pad+14);ctx.fillStyle='#4fd0d8';ctx.fillText('ψ₂',pad+38,pad+14)}
+function rebuild(){computeBounds();findChords();buildAxes();buildPlanes();buildCurves();buildChords();updateUI();drawProb();drawDiff();drawPsi()}
+function refreshAll(recalc=true){if(recalc){computeBounds();findChords()}buildPlanes();buildCurves();buildChords();updateUI();drawProb();drawDiff();drawPsi()}
+const ui={pairSelect:document.getElementById('pairSelect'),sSlider:document.getElementById('sSlider')};for(const [k,p] of Object.entries(pairs)){const o=document.createElement('option');o.value=k;o.textContent=p.name;ui.pairSelect.appendChild(o)}ui.pairSelect.value=state.pairKey;ui.pairSelect.onchange=e=>{state.pairKey=e.target.value;pair=pairs[state.pairKey];state.selected=0;rebuild()};ui.sSlider.oninput=e=>{state.s=parseFloat(e.target.value);refreshAll(true)};['showL1','showL2','showChords','showHomotopy','showPlanes','showFisher'].forEach(id=>{document.getElementById(id).onchange=e=>{state[id]=e.target.checked;refreshAll(false)}});document.getElementById('resetCam').onclick=()=>{orbit.phi=1.12;orbit.theta=.76;orbit.dist=7.1;orbit.target.set(0,0,0);applyCam()};document.getElementById('autoSpin').onclick=e=>{state.spin=!state.spin;e.target.textContent='Auto-spin: '+(state.spin?'on':'off')};
+function animate(){requestAnimationFrame(animate);if(state.spin&&!dragging){orbit.theta+=.003;applyCam()}renderer.render(scene,camera)}
+rebuild();resize();animate();
+</script>
+</body>
+</html>
