@@ -1,0 +1,2235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Fractal Synth Lab — Addressed-Fractal Wavetable Instrument</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#0b0d0f;
+  --bg-1:#111417;
+  --bg-2:#171a1e;
+  --bg-3:#1d2126;
+  --line:#2b3138;
+  --line-soft:#1f242a;
+  --ink:#e8e3d4;
+  --ink-dim:#9aa0a6;
+  --ink-faint:#6b7178;
+  --amber:#e2a85a;
+  --amber-glow:#f3c074;
+  --crt:#9bd6a8;
+  --rose:#d68a93;
+  --violet:#9088c0;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body{background-image:
+  linear-gradient(rgba(255,255,255,.012) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(255,255,255,.012) 1px,transparent 1px);
+  background-size:32px 32px,32px 32px;
+  background-position:-1px -1px,-1px -1px;
+  min-height:100vh}
+
+/* ================ HEADER ================ */
+header{padding:28px 28px 18px;border-bottom:1px solid var(--line);max-width:1400px;margin:0 auto}
+.title-row{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap}
+h1{margin:0;font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:500;font-size:clamp(2.2rem,4vw,3.4rem);letter-spacing:-.01em;line-height:1;color:var(--ink)}
+h1 .accent{color:var(--amber);font-style:normal}
+.tagline{color:var(--ink-dim);font-size:.84rem;letter-spacing:.04em;text-transform:uppercase}
+.subtitle{color:var(--ink-dim);font-size:.86rem;margin-top:14px;max-width:64ch;line-height:1.6}
+.subtitle code{color:var(--amber);background:transparent;font-family:inherit}
+.meta-strip{display:flex;gap:24px;margin-top:14px;flex-wrap:wrap;font-size:.74rem;color:var(--ink-faint);letter-spacing:.06em;text-transform:uppercase}
+.meta-strip span{display:flex;align-items:center;gap:6px}
+.meta-strip span::before{content:'';display:inline-block;width:6px;height:6px;background:var(--amber);border-radius:0;margin-right:4px}
+
+/* ================ MAIN ================ */
+main{max-width:1400px;margin:0 auto;padding:18px 28px 28px;display:grid;grid-template-columns:380px 1fr;gap:22px}
+@media(max-width:1000px){main{grid-template-columns:1fr}}
+
+/* ================ PANELS ================ */
+.panel{background:var(--bg-1);border:1px solid var(--line);position:relative}
+.panel + .panel{margin-top:14px}
+.panel-head{padding:11px 16px 9px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;background:var(--bg-2)}
+.panel-head h2{margin:0;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);font-weight:500}
+.panel-head .panel-tag{font-size:.66rem;color:var(--ink-faint);letter-spacing:.1em}
+.panel-body{padding:14px 16px}
+
+/* ================ CONTROLS ================ */
+.row{margin-bottom:11px}
+.row:last-child{margin-bottom:0}
+.row-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{display:flex;justify-content:space-between;align-items:baseline;gap:8px;color:var(--ink-dim);font-size:.74rem;letter-spacing:.04em;margin-bottom:5px}
+label .name{text-transform:uppercase;letter-spacing:.08em}
+label .value{color:var(--ink);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;-webkit-appearance:none;appearance:none;background:transparent;height:18px;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--line);border-radius:0}
+input[type=range]::-moz-range-track{height:2px;background:var(--line);border-radius:0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:10px;height:14px;background:var(--amber);border-radius:0;margin-top:-6px;cursor:pointer;box-shadow:0 0 0 1px var(--bg)}
+input[type=range]::-moz-range-thumb{width:10px;height:14px;background:var(--amber);border:0;border-radius:0;cursor:pointer}
+select{width:100%;padding:7px 10px;background:var(--bg-2);color:var(--ink);border:1px solid var(--line);border-radius:0;font-family:inherit;font-size:.78rem;outline:none;cursor:pointer;appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--ink-dim) 50%),linear-gradient(135deg,var(--ink-dim) 50%,transparent 50%);background-position:calc(100% - 14px) 50%,calc(100% - 9px) 50%;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:24px}
+select:hover{border-color:var(--amber)}
+
+button{appearance:none;background:var(--bg-2);color:var(--ink);border:1px solid var(--line);padding:8px 11px;font-family:inherit;font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .12s ease;border-radius:0}
+button:hover{border-color:var(--amber);color:var(--amber)}
+button.primary{background:transparent;border-color:var(--amber);color:var(--amber)}
+button.primary:hover{background:var(--amber);color:var(--bg)}
+button.active{background:var(--amber);color:var(--bg);border-color:var(--amber)}
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.btn-row.three{grid-template-columns:1fr 1fr 1fr}
+
+/* ================ VISUALIZATIONS ================ */
+.vis-grid{display:grid;grid-template-rows:auto;gap:14px;position:sticky;top:18px;align-self:start}
+.canvas-wrap{padding:0;position:relative}
+canvas{width:100%;display:block;background:#06080a;image-rendering:pixelated;height:520px}
+canvas.hidden{display:none}
+@media(max-width:1000px){canvas{height:380px}}
+.canvas-overlay{position:absolute;top:8px;left:12px;color:var(--ink-faint);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;pointer-events:none}
+.canvas-overlay.hidden{display:none}
+.canvas-overlay.right{left:auto;right:12px;text-align:right}
+
+/* ================ TABS ================ */
+.viewer-head{padding:0;display:flex;align-items:stretch}
+.viewer-head .panel-tag{padding:0 14px;display:flex;align-items:center}
+.tab-row{display:flex;flex:1;align-items:stretch}
+.tab{appearance:none;background:transparent;color:var(--ink-dim);border:0;border-right:1px solid var(--line);padding:11px 14px 9px;font-family:inherit;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:color .12s ease,background .12s ease;border-radius:0;font-weight:400}
+.tab:hover{color:var(--ink);border-color:var(--line)}
+.tab.active{color:var(--amber);background:var(--bg-1);box-shadow:inset 0 -2px 0 var(--amber)}
+.tab .tab-eq{color:var(--ink-faint);text-transform:none;letter-spacing:.02em;font-size:.78em;margin-left:6px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.95em}
+.tab.active .tab-eq{color:var(--ink-dim)}
+
+/* ================ ADDRESS STRIP ================ */
+.address-strip{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:10px 16px;background:var(--bg-2);border-top:1px solid var(--line)}
+.address-label{color:var(--amber);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase}
+.address-display{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--crt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:.05em}
+.address-display .greek{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--amber);font-size:1.05rem;margin-right:6px}
+
+/* ================ STATUS ================ */
+.status-line{padding:8px 16px;border-top:1px solid var(--line);font-size:.74rem;color:var(--ink-dim);min-height:34px;background:var(--bg-2)}
+.status-line .ok{color:var(--crt)}
+.status-line .err{color:var(--rose)}
+
+/* ================ MODE INFO ================ */
+.mode-info{padding:14px 16px;border-top:1px solid var(--line);background:var(--bg-2)}
+.mode-info .info-row{display:grid;grid-template-columns:auto 1fr;gap:14px;font-size:.78rem;line-height:1.6;align-items:start}
+.mode-info .info-key{color:var(--amber);text-transform:uppercase;font-size:.68rem;letter-spacing:.12em;padding-top:2px}
+.mode-info .info-val{color:var(--ink-dim)}
+.mode-info .info-val .math{color:var(--ink);font-variant-numeric:tabular-nums}
+.mode-info .info-val .glyph{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--amber);font-size:1.1em}
+.mode-info .info-row + .info-row{margin-top:8px}
+
+.warn-box{margin-top:10px;padding:6px 10px;background:var(--bg-3);border-left:2px solid var(--rose);font-size:.72rem;color:var(--rose);letter-spacing:.02em;display:none}
+.warn-box.visible{display:block}
+
+/* ================ FOOTER ================ */
+footer{max-width:1400px;margin:0 auto;padding:18px 28px 28px;border-top:1px solid var(--line-soft);color:var(--ink-faint);font-size:.72rem;letter-spacing:.05em}
+footer .pill-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+footer .pill{display:inline-block;padding:3px 9px;border:1px solid var(--line);color:var(--ink-dim);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase}
+.note{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.92rem;color:var(--ink-dim);max-width:60ch}
+
+/* fine details */
+::selection{background:var(--amber);color:var(--bg)}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--line);border:1px solid var(--bg)}
+::-webkit-scrollbar-thumb:hover{background:var(--amber)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="title-row">
+    <h1>Fractal Synth <span class="accent">Lab</span></h1>
+    <div class="tagline">Φ : 𝒞 → ℝⁿ &nbsp;·&nbsp; addressed-fractal wavetable instrument</div>
+  </div>
+  <div class="subtitle">
+    Each mode is an addressed fractal: a symbolic space <code>𝒞</code> equipped with a realization map <code>Φ</code>. The wavetable is the realization of the period circle into the realized fractal <code>K = Φ(𝒞)</code>. MIDI plays it; pitch bend bends pitch; the mod wheel sweeps the moduli of <code>Φ</code>.
+  </div>
+  <div class="meta-strip">
+    <span>WebAudio</span>
+    <span>Web MIDI</span>
+    <span>Periodic-wave oscillators</span>
+    <span>Per-voice envelope filter</span>
+  </div>
+</header>
+
+<main>
+  <!-- =========== LEFT: CONTROLS =========== -->
+  <section>
+
+    <div class="panel">
+      <div class="panel-head"><h2>Transport</h2><span class="panel-tag">§ 0.0</span></div>
+      <div class="panel-body">
+        <div class="btn-row">
+          <button id="startBtn" class="primary">Start Audio + MIDI</button>
+          <button id="droneBtn">Drone · Off</button>
+        </div>
+        <div class="btn-row" style="margin-top:8px">
+          <button id="noteBtn">Test Note</button>
+          <button id="randomBtn">Random Patch</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h2>Address Space &nbsp;𝒞</h2><span class="panel-tag">§ 1</span></div>
+      <div class="panel-body">
+        <div class="row">
+          <label><span class="name">Fractal Mode</span><span class="value" id="modeAlphabet"></span></label>
+          <select id="mode">
+            <option value="cantor">Cantor &nbsp;· {0,2}^ℕ</option>
+            <option value="koch">Koch &nbsp;· {0,1,2,3}^ℕ</option>
+            <option value="weierstrass">Weierstrass &nbsp;· lacunary series</option>
+            <option value="julia">Julia &nbsp;· z² + c orbit</option>
+            <option value="sierpinski">Sierpiński Gasket &nbsp;· {0,1,2}^ℕ</option>
+            <option value="fern">Barnsley Fern &nbsp;· {1,2,3,4}^ℕ_p</option>
+            <option value="lplant">Plant L-System &nbsp;· F→F[+F]F[-F]F</option>
+            <option value="dragon">Heighway Dragon &nbsp;· {L,R}^ℕ</option>
+            <option value="hilbert">Hilbert Curve &nbsp;· {0,1,2,3}^ℕ</option>
+            <option value="newton">Newton Basins &nbsp;· z³ - 1</option>
+          </select>
+        </div>
+        <div class="row">
+          <label><span class="name">Refinement Depth</span><span class="value" id="depthVal"></span></label>
+          <input id="depth" type="range" min="1" max="9" value="5" step="1" />
+        </div>
+        <div class="row">
+          <label><span class="name" id="modALabel">Moduli A</span><span class="value" id="modAVal"></span></label>
+          <input id="modA" type="range" min="0" max="1" value="0.333" step="0.001" />
+        </div>
+        <div class="row">
+          <label><span class="name" id="modBLabel">Moduli B</span><span class="value" id="modBVal"></span></label>
+          <input id="modB" type="range" min="0" max="1" value="0.5" step="0.001" />
+        </div>
+        <div class="warn-box" id="modeWarn"></div>
+      </div>
+      <div class="mode-info" id="modeInfo">
+        <!-- populated dynamically -->
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h2>Realization &nbsp;Φ</h2><span class="panel-tag">§ 2</span></div>
+      <div class="panel-body">
+        <div class="row-pair">
+          <div class="row" style="margin-bottom:0">
+            <label><span class="name">Smoothing</span><span class="value" id="smoothVal"></span></label>
+            <input id="smooth" type="range" min="0" max="0.95" value="0.30" step="0.01" />
+          </div>
+          <div class="row" style="margin-bottom:0">
+            <label><span class="name">Drive</span><span class="value" id="driveVal"></span></label>
+            <input id="drive" type="range" min="0" max="1" value="0.20" step="0.01" />
+          </div>
+        </div>
+        <div class="btn-row" style="margin-top:14px">
+          <button id="useSelectionBtn">Stretch Selection</button>
+          <button id="usePrimitiveBtn">As Recursive Primitive</button>
+        </div>
+        <div class="btn-row" style="margin-top:8px">
+          <button id="refreshPrimitiveBtn">Refresh Primitive</button>
+          <button id="clearSelectionBtn">Clear Selection</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h2>Voice</h2><span class="panel-tag">§ 3</span></div>
+      <div class="panel-body">
+        <div class="row">
+          <label><span class="name">Voice Filter</span><span class="value" id="filterTypeLabel">Lowpass</span></label>
+          <select id="filterType">
+            <option value="lowpass">Lowpass</option>
+            <option value="highpass">Highpass</option>
+            <option value="bandpass">Bandpass</option>
+            <option value="notch">Notch</option>
+          </select>
+        </div>
+        <div class="row-pair">
+          <div class="row" style="margin-bottom:0">
+            <label><span class="name">Cutoff</span><span class="value" id="voiceCutoffVal"></span></label>
+            <input id="voiceCutoff" type="range" min="80" max="12000" value="2400" step="1" />
+          </div>
+          <div class="row" style="margin-bottom:0">
+            <label><span class="name">Q</span><span class="value" id="voiceResVal"></span></label>
+            <input id="voiceRes" type="range" min="0.1" max="24" value="2" step="0.1" />
+          </div>
+        </div>
+        <div class="row-pair" style="margin-top:11px">
+          <div class="row" style="margin-bottom:0">
+            <label><span class="name">Amp A</span><span class="value" id="ampAVal"></span></label>
+            <input id="ampA" type="range" min="0.001" max="2" value="0.02" step="0.001" />
+          </div>
+          <div class="row" style="margin-bottom:0">
+            <label><span class="name">Amp D</span><span class="value" id="ampDVal"></span></label>
+            <input id="ampD" type="range" min="0.001" max="3" value="0.18" step="0.001" />
+          </div>
+        </div>
+        <div class="row-pair">
+          <div class="row" style="margin-bottom:0">
+            <label><span class="name">Amp S</span><span class="value" id="ampSVal"></span></label>
+            <input id="ampS" type="range" min="0" max="1" value="0.72" step="0.01" />
+          </div>
+          <div class="row" style="margin-bottom:0">
+            <label><span class="name">Amp R</span><span class="value" id="ampRVal"></span></label>
+            <input id="ampR" type="range" min="0.005" max="5" value="0.35" step="0.005" />
+          </div>
+        </div>
+        <div class="row-pair" style="margin-top:11px">
+          <div class="row" style="margin-bottom:0">
+            <label><span class="name">Filter A</span><span class="value" id="filterAVal"></span></label>
+            <input id="filterA" type="range" min="0.001" max="2" value="0.03" step="0.001" />
+          </div>
+          <div class="row" style="margin-bottom:0">
+            <label><span class="name">Filter D</span><span class="value" id="filterDVal"></span></label>
+            <input id="filterD" type="range" min="0.001" max="3" value="0.25" step="0.001" />
+          </div>
+        </div>
+        <div class="row-pair">
+          <div class="row" style="margin-bottom:0">
+            <label><span class="name">Filter S</span><span class="value" id="filterSVal"></span></label>
+            <input id="filterS" type="range" min="0" max="1" value="0.35" step="0.01" />
+          </div>
+          <div class="row" style="margin-bottom:0">
+            <label><span class="name">Filter R</span><span class="value" id="filterRVal"></span></label>
+            <input id="filterR" type="range" min="0.005" max="5" value="0.35" step="0.005" />
+          </div>
+        </div>
+        <div class="row" style="margin-top:11px">
+          <label><span class="name">Filter Env Amount</span><span class="value" id="filterEnvAmtVal"></span></label>
+          <input id="filterEnvAmt" type="range" min="-8000" max="8000" value="2400" step="10" />
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h2>Master</h2><span class="panel-tag">§ 4</span></div>
+      <div class="panel-body">
+        <div class="row-pair">
+          <div class="row" style="margin-bottom:0">
+            <label><span class="name">Drone Freq</span><span class="value" id="freqVal"></span></label>
+            <input id="freq" type="range" min="35" max="880" value="110" step="1" />
+          </div>
+          <div class="row" style="margin-bottom:0">
+            <label><span class="name">Volume</span><span class="value" id="gainVal"></span></label>
+            <input id="gain" type="range" min="0" max="0.6" value="0.25" step="0.01" />
+          </div>
+        </div>
+        <div class="row-pair" style="margin-top:11px">
+          <div class="row" style="margin-bottom:0">
+            <label><span class="name">Master Cutoff</span><span class="value" id="cutoffVal"></span></label>
+            <input id="cutoff" type="range" min="200" max="14000" value="5400" step="1" />
+          </div>
+          <div class="row" style="margin-bottom:0">
+            <label><span class="name">Master Q</span><span class="value" id="resVal"></span></label>
+            <input id="resonance" type="range" min="0.1" max="16" value="1" step="0.1" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h2>MIDI</h2><span class="panel-tag">§ 5</span></div>
+      <div class="panel-body">
+        <div class="row">
+          <label><span class="name">MIDI Input</span><span class="value" id="midiStatus">Not connected</span></label>
+          <select id="midiSelect">
+            <option value="">No MIDI devices detected</option>
+          </select>
+        </div>
+        <div class="row-pair">
+          <div class="row" style="margin-bottom:0">
+            <label><span class="name">Bend Range</span><span class="value" id="bendRangeVal"></span></label>
+            <input id="bendRange" type="range" min="1" max="12" value="2" step="1" />
+          </div>
+          <div class="row" style="margin-bottom:0">
+            <label><span class="name">CC1 → Φ</span><span class="value" id="midiModDepthVal"></span></label>
+            <input id="midiModDepth" type="range" min="0" max="1" value="0.5" step="0.01" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- =========== RIGHT: VISUALIZATIONS (tabbed) =========== -->
+  <section class="vis-grid">
+
+    <div class="panel">
+      <div class="panel-head viewer-head">
+        <div class="tab-row">
+          <button class="tab active" data-view="wave">Wave <span class="tab-eq">w(t) = Φ(c(t))</span></button>
+          <button class="tab" data-view="fractal">Realized Fractal <span class="tab-eq">K = Φ(𝒞)</span></button>
+          <button class="tab" data-view="spectrum">Spectrum <span class="tab-eq">|FFT|</span></button>
+        </div>
+        <span class="panel-tag" id="viewerTag">§ 2.1</span>
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="waveCanvas"></canvas>
+        <canvas id="fractalCanvas" class="hidden"></canvas>
+        <canvas id="specCanvas" class="hidden"></canvas>
+        <div class="canvas-overlay" id="waveOverlay">drag to select →</div>
+      </div>
+      <div class="address-strip">
+        <span class="address-label">cylinder</span>
+        <span class="address-display"><span class="greek">Φ</span><span id="addressDisplay">[ — ]</span></span>
+        <span class="address-label" id="addressMeta"></span>
+      </div>
+      <div class="status-line" id="status">Press Start Audio + MIDI. Chrome or Edge for Web MIDI.</div>
+    </div>
+
+  </section>
+</main>
+
+<footer>
+  <div class="pill-row">
+    <span class="pill">CC 1 → moduli sweep</span>
+    <span class="pill">CC 74 → master cutoff</span>
+    <span class="pill">CC 71 → master Q</span>
+    <span class="pill">CC 120/123 → all notes off</span>
+    <span class="pill">⌨ V → cycle view · Space → drone · N → note · R → random</span>
+  </div>
+  <div class="note">
+    The visible fractal is the simpler half of the picture. The richer half is the symbolic refinement that produced it.
+  </div>
+</footer>
+
+<script>
+'use strict';
+
+/* ============================================================
+ *  Fractal Synth Lab  ·  v2
+ *  An addressed-fractal wavetable instrument
+ *
+ *  Every mode is an object with a uniform contract:
+ *    { name, alphabet, paramA, paramB, depthMax, validity?,
+ *      wave(depth,a,b)    -> Float32Array of length N  (the realization Φ on the period circle)
+ *      visualize(ctx,W,H,depth,a,b) -> draws the realized fractal
+ *      address(t,depth,a,b) -> string  (the cylinder address at parameter t in [0,1])
+ *      info: { ... mode-specific exposition ... }
+ *    }
+ * ============================================================ */
+
+const N = 2048;              // wavetable length
+const TWO_PI = Math.PI * 2;
+const $ = id => document.getElementById(id);
+
+/* -------- small numerical utilities -------- */
+const clamp = (x,a,b) => Math.max(a, Math.min(b, x));
+const lerp  = (a,b,t) => a + (b-a)*t;
+const fract = x => x - Math.floor(x);
+
+function normalize(w){
+  let m=0,mean=0;
+  for(let i=0;i<w.length;i++) mean+=w[i];
+  mean/=w.length;
+  for(let i=0;i<w.length;i++){ w[i]-=mean; const a=Math.abs(w[i]); if(a>m) m=a; }
+  if(m<1e-9) return w;
+  for(let i=0;i<w.length;i++) w[i]/=m;
+  return w;
+}
+function smoothWave(w,a){
+  let out = Float32Array.from(w);
+  const passes = Math.floor(1 + a*12);
+  for(let p=0;p<passes;p++){
+    const next = new Float32Array(out.length);
+    for(let i=0;i<out.length;i++){
+      next[i] = .25*out[(i-1+out.length)%out.length] + .5*out[i] + .25*out[(i+1)%out.length];
+    }
+    out = next;
+  }
+  return out;
+}
+function applyDrive(w,d){
+  const k = 1 + d*12;
+  const denom = Math.tanh(k) || 1;
+  for(let i=0;i<w.length;i++) w[i] = Math.tanh(k*w[i])/denom;
+  return w;
+}
+function sampleAt(src,u){
+  u = fract(u);
+  const pos = u*(src.length-1);
+  const j = Math.floor(pos);
+  const t = pos - j;
+  return lerp(src[j], src[Math.min(j+1, src.length-1)], t);
+}
+
+/* deterministic PRNG (mulberry32) */
+function mulberry32(seed){
+  let s = seed >>> 0;
+  return function(){
+    s = (s + 0x6D2B79F5) | 0;
+    let t = s;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/* ============================================================
+ *  ADDRESSED FRACTALS
+ *  Each entry below describes one (𝒞, Φ) pair and how to
+ *  realize it as a wavetable, render it, and expose its address.
+ * ============================================================ */
+
+/* -------- 1. Generalized Cantor: 𝒞 = {0,2}^ℕ, Φ(ω) = Σ ωₖ ratio^k -------- */
+function cantorWave(depth, a, b){
+  /* a = keep ratio α ∈ (0, 1/2] (1/3 = standard Cantor, 1/2 = full interval)
+     b = "pulse" mix: 0 = pure indicator (binary in/out of K_α),
+                       1 = devil's staircase (Cantor distribution function) */
+  const alpha = lerp(0.05, 0.5, a);
+  const w = new Float32Array(N);
+  for(let i=0;i<N;i++){
+    const t = i/(N-1);
+    /* indicator: walk down the address tree, asking at each level
+       whether t falls in the left α-cylinder or the right α-cylinder.
+       If it falls in the gap, we're outside K_α. */
+    let lo=0, hi=1, inside=true;
+    for(let d=0; d<depth+5; d++){
+      const left  = lo + alpha*(hi-lo);
+      const right = hi - alpha*(hi-lo);
+      const tt = t*(1) ;  // (already in [0,1])
+      if(tt < left)       { hi = left; }
+      else if(tt > right) { lo = right; }
+      else { inside = false; break; }
+      if(hi-lo < 1e-7) break;
+    }
+    /* devil's staircase F_α(t): cumulative measure up to t under the
+       self-similar Cantor measure with weights (1/2, 1/2). */
+    let stair=0, p=1, x=t;
+    for(let d=0; d<depth+8; d++){
+      const left  = alpha;
+      const right = 1 - alpha;
+      if(x < left){ x = x/alpha; p *= 0.5; /* in left child, stair contribution 0 */ }
+      else if(x > right){ stair += 0.5*p; x = (x-right)/alpha; p *= 0.5; }
+      else { stair += 0.5*p; break; } /* gap: stair value is 1/2 of remaining */
+    }
+    /* Indicator → ±1 square; staircase → smooth ramp 0..1 → ±1 */
+    const ind   = inside ? 1 : -1;
+    const stair2 = stair*2 - 1;
+    w[i] = lerp(ind, stair2, b) * (.55 + .45*Math.sin(TWO_PI*t));
+  }
+  return normalize(w);
+}
+function cantorVisualize(ctx,W,H,depth,a,b){
+  const alpha = lerp(0.05, 0.5, a);
+  ctx.fillStyle = 'rgba(226,168,90,.85)';
+  function rec(x,y,len,d){
+    ctx.fillRect(x, y, len, Math.max(2, H*.013));
+    if(d<=0 || len<1.2) return;
+    const yn = y + H/(depth+2);
+    rec(x,             yn, len*alpha, d-1);
+    rec(x+len*(1-alpha),yn, len*alpha, d-1);
+  }
+  rec(0, 8, W, Math.min(depth, 9));
+  /* devil's staircase overlay */
+  ctx.strokeStyle = 'rgba(155,214,168,.85)';
+  ctx.lineWidth = 1.4;
+  ctx.beginPath();
+  for(let i=0;i<W;i++){
+    const t = i/(W-1);
+    let stair=0, p=1, x=t;
+    for(let d=0; d<depth+8; d++){
+      if(x<alpha){ x=x/alpha; p*=.5; }
+      else if(x>1-alpha){ stair+=.5*p; x=(x-(1-alpha))/alpha; p*=.5; }
+      else { stair+=.5*p; break; }
+    }
+    const yy = H-12 - stair*(H-30);
+    if(i===0) ctx.moveTo(i, yy); else ctx.lineTo(i, yy);
+  }
+  ctx.stroke();
+}
+function cantorAddress(t, depth, a){
+  const alpha = lerp(0.05, 0.5, a);
+  let s='', x=t;
+  for(let d=0; d<Math.min(depth+2, 12); d++){
+    if(x<alpha){ s+='0'; x=x/alpha; }
+    else if(x>1-alpha){ s+='2'; x=(x-(1-alpha))/alpha; }
+    else { s+='·'; break; }   /* in the gap */
+  }
+  return s;
+}
+
+/* -------- 2. Koch "snowflake-segment" curve, alphabet {0,1,2,3} -------- */
+function kochPoints(depth, height, asym){
+  let pts = [{x:0, y:0}, {x:1, y:0}];
+  for(let d=0; d<depth; d++){
+    const next = [];
+    for(let i=0; i<pts.length-1; i++){
+      const A = pts[i], B = pts[i+1];
+      const dx = B.x-A.x, dy = B.y-A.y;
+      const segLen = Math.hypot(dx, dy);
+      const p1 = {x: A.x + dx/3, y: A.y + dy/3};
+      const p3 = {x: A.x + 2*dx/3, y: A.y + 2*dy/3};
+      /* Canonical Koch: equilateral bump with vertical offset
+         h0 = segLen/3 * tan(60°)/2  * sign  ;  here we scale by `height`. */
+      const mx = (p1.x + p3.x)/2;
+      const my = (p1.y + p3.y)/2;
+      const nx = -dy/segLen, ny = dx/segLen;
+      const sgn = ((i+d)%2===0) ? 1 : -1;
+      const bump = height * segLen / 3 * (Math.sqrt(3)/2);
+      const p2 = {x: mx + sgn*bump*nx + asym*dx/12, y: my + sgn*bump*ny + asym*dy/12};
+      next.push(A, p1, p2, p3);
+    }
+    next.push(pts[pts.length-1]);
+    pts = next;
+    if(pts.length > 14000) break;
+  }
+  return pts;
+}
+function kochWave(depth, a, b){
+  /* a = bump height (0 = flat, 1 = canonical equilateral, 2 = double-tall);
+     b = parity asymmetry */
+  const pts = kochPoints(Math.min(depth,7), a*2.0, (b-.5)*1.2).sort((u,v)=>u.x-v.x);
+  const w = new Float32Array(N);
+  let j=0;
+  for(let i=0;i<N;i++){
+    const x = i/(N-1);
+    while(j<pts.length-2 && pts[j+1].x<x) j++;
+    const A = pts[j], B = pts[Math.min(j+1, pts.length-1)];
+    const t = Math.abs(B.x-A.x)<1e-9 ? 0 : (x-A.x)/(B.x-A.x);
+    w[i] = lerp(A.y, B.y, clamp(t,0,1));
+  }
+  return normalize(w);
+}
+function kochVisualize(ctx,W,H,depth,a,b){
+  const pts = kochPoints(Math.min(depth,6), a*2.0, (b-.5)*1.2);
+  let minY=1e9, maxY=-1e9;
+  pts.forEach(p=>{ if(p.y<minY) minY=p.y; if(p.y>maxY) maxY=p.y; });
+  const span = Math.max(.01, maxY-minY);
+  ctx.strokeStyle = 'rgba(226,168,90,.92)';
+  ctx.lineWidth = 1.3;
+  ctx.beginPath();
+  pts.forEach((p,i)=>{
+    const x = 16 + p.x*(W-32);
+    const y = H*.55 - ((p.y-minY)/span - .5)*H*.7;
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+}
+function kochAddress(t, depth){
+  /* base-4 cylinder index for which of the 4 sub-segments t lands in */
+  let s='', x=t;
+  for(let d=0; d<Math.min(depth, 9); d++){
+    const k = Math.floor(x*4);
+    s += String(clamp(k,0,3));
+    x = x*4 - Math.floor(x*4);
+  }
+  return s;
+}
+
+/* -------- 3. Weierstrass: lacunary trigonometric series -------- */
+function weierstrassWave(depth, a, b){
+  /* a = base 'a' ∈ (0,1) ; b = integer 'b' ≥ 3.
+     Hardy nondifferentiability: ab > 1 + 3π/2 ≈ 5.712.
+     Hausdorff dim of graph: 2 - log(a)/log(b) when ab > 1. */
+  const aa = lerp(0.25, 0.92, a);
+  const bb = 3 + 2*Math.floor(b*5);   /* 3, 5, 7, 9, 11 */
+  const w = new Float32Array(N);
+  const K = depth + 6;
+  for(let i=0;i<N;i++){
+    const x = i/N;
+    let y=0;
+    for(let k=0; k<K; k++) y += Math.pow(aa,k) * Math.cos(TWO_PI * Math.pow(bb,k) * x);
+    w[i] = y;
+  }
+  return normalize(w);
+}
+function weierstrassValid(a, b){
+  const aa = lerp(0.25, 0.92, a);
+  const bb = 3 + 2*Math.floor(b*5);
+  const product = aa*bb;
+  return { ok: product > 1 + 3*Math.PI/2, aa, bb, ab: product, bound: 1 + 3*Math.PI/2 };
+}
+function weierstrassVisualize(ctx,W,H,depth,a,b){
+  const v = weierstrassValid(a,b);
+  ctx.strokeStyle = v.ok ? 'rgba(226,168,90,.92)' : 'rgba(214,138,147,.85)';
+  ctx.lineWidth = 1.2;
+  ctx.beginPath();
+  const K = depth + 6;
+  let lastY=null;
+  for(let i=0;i<W*2;i++){
+    const x = i/(W*2-1);
+    let y=0;
+    for(let k=0; k<K; k++) y += Math.pow(v.aa,k) * Math.cos(TWO_PI * Math.pow(v.bb,k) * x);
+    /* normalize the visual range using the geometric series bound */
+    const yMax = (1 - Math.pow(v.aa, K))/(1 - v.aa);
+    const yy = H*.5 - (y/yMax)*H*.4;
+    if(i===0) ctx.moveTo(x*W, yy); else ctx.lineTo(x*W, yy);
+    lastY = yy;
+  }
+  ctx.stroke();
+  /* badge */
+  ctx.fillStyle = 'rgba(155,214,168,.7)';
+  ctx.font = '10px JetBrains Mono';
+  ctx.fillText(`a=${v.aa.toFixed(2)}  b=${v.bb}  ab=${v.ab.toFixed(2)}${v.ok?' ✓':' ✗'}`, 14, H-12);
+}
+function weierstrassAddress(t, depth, a, b){
+  /* not address-fractal in the strict sense — encode dyadic position as a courtesy */
+  let s='', x=t;
+  for(let d=0; d<Math.min(depth+2, 12); d++){
+    if(x<.5){ s+='0'; x*=2; } else { s+='1'; x=(x-.5)*2; }
+  }
+  return s;
+}
+
+/* -------- 4. Julia set: orbit-based wavetable -------- */
+function juliaWave(depth, a, b){
+  /* a, b set the parameter c in [-2.0, 0.5] × [-1.25, 1.25] — full Mandelbrot range.
+     For each θ ∈ [0,1) we run the orbit z₀ = ½ e^{2πiθ} under z ↦ z² + c
+     and accumulate the escape-time / smooth-iteration count as the wave. */
+  const cx = lerp(-2.0, 0.5, a);
+  const cy = lerp(-1.25, 1.25, b);
+  const w = new Float32Array(N);
+  const maxIter = 24 + depth*8;
+  for(let i=0;i<N;i++){
+    const th = TWO_PI*i/N;
+    let zx = 0.5*Math.cos(th), zy = 0.5*Math.sin(th);
+    let it=0, bailed=false;
+    for(; it<maxIter; it++){
+      const x2 = zx*zx - zy*zy + cx;
+      const y2 = 2*zx*zy + cy;
+      zx = x2; zy = y2;
+      if(zx*zx + zy*zy > 16){ bailed=true; break; }
+    }
+    /* smooth iteration count, normalized */
+    let value;
+    if(bailed){
+      const r = Math.hypot(zx, zy);
+      const mu = it + 1 - Math.log(Math.log(r))/Math.log(2);
+      value = (mu / maxIter) * 2 - 1;
+    } else {
+      /* trapped — use final |z| */
+      value = Math.tanh(Math.hypot(zx,zy));
+    }
+    /* fold periodically to make a cyclic wavetable */
+    w[i] = value * Math.cos(th) + .25*Math.sin(th)*Math.tanh(zx);
+  }
+  return normalize(w);
+}
+function juliaVisualize(ctx,W,H,depth,a,b){
+  const cx = lerp(-2.0, 0.5, a);
+  const cy = lerp(-1.25, 1.25, b);
+  const maxIter = 24 + depth*4;
+  const img = ctx.createImageData(Math.floor(W), Math.floor(H));
+  for(let yy=0; yy<img.height; yy++){
+    for(let xx=0; xx<img.width; xx++){
+      let zx = (xx/img.width - .5)*3.0;
+      let zy = (yy/img.height - .5)*2.2;
+      let it=0;
+      for(; it<maxIter; it++){
+        const x2 = zx*zx - zy*zy + cx;
+        const y2 = 2*zx*zy + cy;
+        zx = x2; zy = y2;
+        if(zx*zx + zy*zy > 4) break;
+      }
+      const idx = (yy*img.width + xx)*4;
+      const t = it/maxIter;
+      if(it===maxIter){
+        img.data[idx]=11; img.data[idx+1]=13; img.data[idx+2]=15; img.data[idx+3]=255;
+      } else {
+        img.data[idx]   = Math.floor(11 + 215*t);
+        img.data[idx+1] = Math.floor(13 + 155*t);
+        img.data[idx+2] = Math.floor(15 +  75*t);
+        img.data[idx+3] = 255;
+      }
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  /* sampling circle in dynamical plane: |z|=½, centred at origin */
+  ctx.strokeStyle = 'rgba(155,214,168,.85)';
+  ctx.lineWidth = 1.2;
+  const cxImg = 0.5 * W;     /* origin of dynamical plane maps to center of image */
+  const cyImg = 0.5 * H;
+  const rImg  = (0.5/3.0) * W;
+  ctx.beginPath();
+  ctx.arc(cxImg, cyImg, rImg, 0, TWO_PI);
+  ctx.stroke();
+}
+function juliaAddress(t, depth, a, b){
+  /* approximate: walk one orbit step and record sign of imag part as ±1 stream */
+  const cx = lerp(-2.0, 0.5, a);
+  const cy = lerp(-1.25, 1.25, b);
+  const th = TWO_PI*t;
+  let zx = 0.5*Math.cos(th), zy = 0.5*Math.sin(th);
+  let s='';
+  for(let k=0; k<Math.min(depth+2, 12); k++){
+    const x2 = zx*zx - zy*zy + cx;
+    const y2 = 2*zx*zy + cy;
+    zx=x2; zy=y2;
+    s += (zy >= 0) ? '0' : '1';
+    if(zx*zx+zy*zy > 16) break;
+  }
+  return s;
+}
+
+/* -------- 5. Sierpiński Gasket: barycentric base-3 addresses -------- */
+/* Three corners of an equilateral triangle. Address ω ∈ {0,1,2}^ℕ
+   names the IFS sequence Fω₁ ∘ Fω₂ ∘ ... applied to any starting point;
+   the realization point is the limit. The wavetable is a scanline path. */
+function sierpinskiWave(depth, a, b){
+  /* a = scan angle ∈ [0, 2π), b = scan height ∈ [0, 1].
+     For each θ along the path we compute "Sierpinski mass" — the indicator
+     of being in the realized gasket, computed via base-2 digit test. */
+  const w = new Float32Array(N);
+  const ang = TWO_PI*a;
+  const yScan = lerp(-0.05, 1.0, b);
+  const ca = Math.cos(ang), sa = Math.sin(ang);
+  for(let i=0;i<N;i++){
+    const t = i/N;
+    /* parametric path in unit triangle barycentric coords (x,y) ∈ [0,1]^2 */
+    const x0 = t;
+    const y0 = yScan + 0.25*Math.sin(TWO_PI*t);
+    /* rotate around (.5,.35) for moduli A */
+    const xr = .5 + (x0-.5)*ca - (y0-.35)*sa;
+    const yr = .35 + (x0-.5)*sa + (y0-.35)*ca;
+    /* Sierpinski-gasket-by-base-2: a point (u,v) ∈ [0,1)² with u+v<1 is
+       in the gasket iff (u,v) has no binary digit position k where both
+       digits are simultaneously 1. (Standard characterization.) */
+    let mass = 1;
+    let u = xr - Math.floor(xr);
+    let v = yr - Math.floor(yr);
+    let inside = (u >= 0 && v >= 0 && u + v < 1);
+    if(!inside){ mass = -1; }
+    else {
+      for(let d=0; d<Math.min(depth+5, 16); d++){
+        const ub = Math.floor(u*2);
+        const vb = Math.floor(v*2);
+        if(ub===1 && vb===1){ mass = -1; break; }
+        u = u*2 - ub;
+        v = v*2 - vb;
+      }
+    }
+    w[i] = mass * Math.sin(TWO_PI*t) * .85 + mass*.4;
+  }
+  return normalize(w);
+}
+function sierpinskiVisualize(ctx,W,H,depth,a,b){
+  /* Filled gasket via recursive triangle subdivision (3 corners). */
+  ctx.fillStyle = 'rgba(226,168,90,.85)';
+  function tri(ax,ay,bx,by,cx,cy,d){
+    if(d<=0){
+      ctx.beginPath();
+      ctx.moveTo(ax,ay); ctx.lineTo(bx,by); ctx.lineTo(cx,cy);
+      ctx.closePath(); ctx.fill();
+      return;
+    }
+    const abx=(ax+bx)/2, aby=(ay+by)/2;
+    const bcx=(bx+cx)/2, bcy=(by+cy)/2;
+    const cax=(cx+ax)/2, cay=(cy+ay)/2;
+    tri(ax,ay,abx,aby,cax,cay,d-1);
+    tri(abx,aby,bx,by,bcx,bcy,d-1);
+    tri(cax,cay,bcx,bcy,cx,cy,d-1);
+  }
+  const pad = 18;
+  const top  = {x:W*.5, y:pad};
+  const left = {x:pad, y:H-pad};
+  const right= {x:W-pad, y:H-pad};
+  tri(top.x,top.y, left.x,left.y, right.x,right.y, Math.min(depth,7));
+  /* scan path */
+  ctx.strokeStyle = 'rgba(155,214,168,.95)';
+  ctx.lineWidth = 1.4;
+  const ang = TWO_PI*a;
+  const yScan = lerp(-0.05, 1.0, b);
+  const ca = Math.cos(ang), sa = Math.sin(ang);
+  ctx.beginPath();
+  for(let i=0;i<W;i++){
+    const t = i/(W-1);
+    const x0 = t;
+    const y0 = yScan + 0.25*Math.sin(TWO_PI*t);
+    const xr = .5 + (x0-.5)*ca - (y0-.35)*sa;
+    const yr = .35 + (x0-.5)*sa + (y0-.35)*ca;
+    /* map unit-square coords back into the visible triangle */
+    const px = pad + xr*(W-2*pad);
+    const py = pad + yr*(H-2*pad);
+    if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+  }
+  ctx.stroke();
+}
+function sierpinskiAddress(t, depth){
+  /* trinary digit address for the path's t-position */
+  let s='', x=t;
+  for(let d=0; d<Math.min(depth+2, 12); d++){
+    const k = Math.floor(x*3);
+    s += String(clamp(k,0,2));
+    x = x*3 - Math.floor(x*3);
+  }
+  return s;
+}
+
+/* -------- 6. Barnsley Fern: Markov-modulated IFS, classical probabilities -------- */
+const FERN_MAPS = [
+  /* p,    a,   b,   c,    d,    e,   f */
+  { p:0.01, a:0,    b:0,   c:0,    d:0.16, e:0,    f:0    },
+  { p:0.85, a:0.85, b:0.04,c:-0.04,d:0.85, e:0,    f:1.60 },
+  { p:0.07, a:0.20, b:-0.26,c:0.23, d:0.22, e:0,    f:1.60 },
+  { p:0.07, a:-0.15,b:0.28, c:0.26, d:0.24, e:0,    f:0.44 },
+];
+function fernWave(depth, a, b){
+  /* a perturbs the dominant map's affine coefficients (a "moduli of Φ");
+     b shifts the shear (off-diagonal) terms — a Markov perturbation that's address-theoretic.
+     At ±0.15 the fern can break into spirals, fans, or collapse. */
+  const rng = mulberry32(0xC0FFEE | 0);
+  const pts = [];
+  let x=0, y=0;
+  const steps = 6000 + depth*1500;
+  /* perturbed copy of FERN_MAPS */
+  const M = FERN_MAPS.map(m => ({...m}));
+  M[1].a += (a-.5)*0.30;
+  M[1].d += (a-.5)*0.30;
+  M[1].b += (b-.5)*0.15;
+  M[1].c -= (b-.5)*0.15;
+  /* renormalize probabilities */
+  let total = 0;
+  for(const m of M) total += m.p;
+  for(const m of M) m.p /= total;
+  for(let i=0; i<steps; i++){
+    const r = rng();
+    let acc=0, m=M[0];
+    for(const mm of M){ acc += mm.p; if(r < acc){ m = mm; break; } }
+    const nx = m.a*x + m.b*y + m.e;
+    const ny = m.c*x + m.d*y + m.f;
+    x=nx; y=ny;
+    if(i>50) pts.push({x,y});
+  }
+  /* bin x → wavetable */
+  const bins = new Float32Array(N);
+  const counts = new Float32Array(N);
+  let xmin=1e9,xmax=-1e9,ymin=1e9,ymax=-1e9;
+  for(const p of pts){
+    if(p.x<xmin) xmin=p.x; if(p.x>xmax) xmax=p.x;
+    if(p.y<ymin) ymin=p.y; if(p.y>ymax) ymax=p.y;
+  }
+  const xspan = xmax-xmin || 1, yspan = ymax-ymin || 1;
+  for(const p of pts){
+    const u = clamp((p.x - xmin)/xspan, 0, .999);
+    const v = (p.y - ymin)/yspan;
+    const idx = Math.floor(u*N);
+    bins[idx] += (v*2 - 1);
+    counts[idx]++;
+  }
+  for(let i=0;i<N;i++){
+    if(counts[i]) bins[i] /= counts[i];
+    else bins[i] = i ? bins[i-1] : 0;
+  }
+  return normalize(bins);
+}
+function fernVisualize(ctx,W,H,depth,a,b){
+  const rng = mulberry32(0xC0FFEE);
+  let x=0, y=0;
+  const M = FERN_MAPS.map(m=>({...m}));
+  M[1].a += (a-.5)*0.30; M[1].d += (a-.5)*0.30;
+  M[1].b += (b-.5)*0.15; M[1].c -= (b-.5)*0.15;
+  let total=0; for(const m of M) total+=m.p; for(const m of M) m.p/=total;
+  const steps = 12000 + depth*3000;
+  /* track bounds dynamically to handle the post-bifurcation regimes */
+  const buf = [];
+  let xmin=1e9, xmax=-1e9, ymin=1e9, ymax=-1e9;
+  for(let i=0;i<steps;i++){
+    const r = rng();
+    let acc=0, m=M[0];
+    for(const mm of M){ acc+=mm.p; if(r<acc){ m=mm; break; } }
+    const nx = m.a*x + m.b*y + m.e;
+    const ny = m.c*x + m.d*y + m.f;
+    x=nx; y=ny;
+    /* clamp blown-up orbits so we don't hit Infinity */
+    if(!isFinite(x) || !isFinite(y) || Math.abs(x)>1e6 || Math.abs(y)>1e6){ x=0; y=0; continue; }
+    if(i>50){
+      buf.push({x, y});
+      if(x<xmin) xmin=x; if(x>xmax) xmax=x;
+      if(y<ymin) ymin=y; if(y>ymax) ymax=y;
+    }
+  }
+  const sx = xmax-xmin || 1, sy = ymax-ymin || 1;
+  const pad = 12;
+  ctx.fillStyle = 'rgba(226,168,90,.7)';
+  for(const p of buf){
+    const px = pad + ((p.x-xmin)/sx)*(W-2*pad);
+    const py = H - pad - ((p.y-ymin)/sy)*(H-2*pad);
+    ctx.fillRect(px, py, 1, 1);
+  }
+}
+function fernAddress(t, depth, a, b){
+  /* address by which IFS map is most-likely-active for position t — informal */
+  const M = FERN_MAPS.map(m=>({...m}));
+  M[1].a += (a-.5)*0.30; M[1].d += (a-.5)*0.30;
+  let total=0; for(const m of M) total+=m.p; for(const m of M) m.p/=total;
+  const cumulative = M.map((_,i) => M.slice(0,i+1).reduce((s,m)=>s+m.p,0));
+  let s='';
+  let r = t;
+  for(let d=0; d<Math.min(depth+2,12); d++){
+    let k=0;
+    for(let i=0;i<cumulative.length;i++){ if(r<cumulative[i]){ k=i; break; } }
+    s += String(k+1);
+    /* zoom into chosen sub-probability bin */
+    const lo = k===0?0:cumulative[k-1];
+    const hi = cumulative[k];
+    r = (r-lo)/(hi-lo+1e-9);
+  }
+  return s;
+}
+
+/* -------- 7. L-system plant: F → F[+F]F[-F]F -------- */
+function lplantString(depth){
+  let s = 'F';
+  for(let d=0; d<Math.min(depth, 5); d++){
+    let out='';
+    for(const ch of s) out += ch==='F' ? 'F[+F]F[-F]F' : ch;
+    s = out;
+    if(s.length > 18000) break;
+  }
+  return s;
+}
+function turtlePath(word, angle, step, branchScale){
+  let x=0, y=0, dir=-Math.PI/2;
+  const stack = [];
+  const pts = [{x,y,branch:false}];
+  let curStep = step;
+  for(const ch of word){
+    if(ch==='F'){
+      x += Math.cos(dir)*curStep; y += Math.sin(dir)*curStep;
+      pts.push({x,y,branch:false});
+    } else if(ch==='+') dir += angle;
+    else if(ch==='-') dir -= angle;
+    else if(ch==='['){ stack.push({x,y,dir,curStep}); curStep *= branchScale; }
+    else if(ch===']'){
+      const st = stack.pop();
+      if(st){ x=st.x; y=st.y; dir=st.dir; curStep=st.curStep;
+              pts.push({x,y,branch:true}); }
+    }
+  }
+  return pts;
+}
+function pathToWave(pts){
+  let xmin=1e9,xmax=-1e9,ymin=1e9,ymax=-1e9;
+  for(const p of pts){
+    if(p.x<xmin) xmin=p.x; if(p.x>xmax) xmax=p.x;
+    if(p.y<ymin) ymin=p.y; if(p.y>ymax) ymax=p.y;
+  }
+  const sx = xmax-xmin || 1, sy = ymax-ymin || 1;
+  const bins = new Float32Array(N);
+  const counts = new Float32Array(N);
+  for(const p of pts){
+    const u = clamp((p.x-xmin)/sx, 0, .999);
+    const v = (p.y-ymin)/sy;
+    const idx = Math.floor(u*N);
+    bins[idx] += 2*v-1;
+    counts[idx]++;
+  }
+  for(let i=0;i<N;i++){
+    if(counts[i]) bins[i] /= counts[i];
+    else bins[i] = i ? bins[i-1] : 0;
+  }
+  return normalize(bins);
+}
+function lplantWave(depth, a, b){
+  const word = lplantString(depth);
+  const angle = lerp(0.08, 1.40, a);    /* ≈5° → 80° */
+  const scale = lerp(0.40, 0.92, b);
+  return pathToWave(turtlePath(word, angle, 0.015, scale));
+}
+function lplantVisualize(ctx,W,H,depth,a,b){
+  const word = lplantString(Math.min(depth,5));
+  const angle = lerp(0.08, 1.40, a);
+  const scale = lerp(0.40, 0.92, b);
+  const pts = turtlePath(word, angle, 0.015, scale);
+  let xmin=1e9,xmax=-1e9,ymin=1e9,ymax=-1e9;
+  for(const p of pts){
+    if(p.x<xmin) xmin=p.x; if(p.x>xmax) xmax=p.x;
+    if(p.y<ymin) ymin=p.y; if(p.y>ymax) ymax=p.y;
+  }
+  const sx = xmax-xmin || 1, sy = ymax-ymin || 1;
+  const pad = 14;
+  ctx.strokeStyle = 'rgba(226,168,90,.78)';
+  ctx.lineWidth = 0.9;
+  ctx.beginPath();
+  let moved = false;
+  for(const p of pts){
+    const px = pad + ((p.x-xmin)/sx)*(W-2*pad);
+    const py = H - pad - ((p.y-ymin)/sy)*(H-2*pad);
+    if(!moved || p.branch){ ctx.moveTo(px,py); moved=true; }
+    else ctx.lineTo(px,py);
+  }
+  ctx.stroke();
+}
+function lplantAddress(t, depth){
+  /* dyadic position address along the curve */
+  let s='', x=t;
+  for(let d=0; d<Math.min(depth+2, 12); d++){
+    if(x<.5){ s+='0'; x*=2; } else { s+='1'; x=(x-.5)*2; }
+  }
+  return s;
+}
+
+/* -------- 8. Heighway Dragon: {L,R}^ℕ folding -------- */
+function dragonWord(iter){
+  let s = 'FX';
+  for(let d=0; d<Math.min(iter+4, 13); d++){
+    let out='';
+    for(const ch of s){
+      if(ch==='X') out += 'X+YF+';
+      else if(ch==='Y') out += '-FX-Y';
+      else out += ch;
+    }
+    s = out;
+  }
+  return s;
+}
+function dragonPath(depth, angle){
+  const word = dragonWord(depth);
+  let x=0, y=0, dir=0;
+  const pts = [{x,y}];
+  for(const ch of word){
+    if(ch==='F'){ x += Math.cos(dir); y += Math.sin(dir); pts.push({x,y}); }
+    else if(ch==='+') dir += angle;
+    else if(ch==='-') dir -= angle;
+  }
+  return pts;
+}
+function dragonWave(depth, a, b){
+  const angle = lerp(Math.PI/4, 11*Math.PI/18, a);   /* 45° → 110°; canonical 90° at a≈0.692 */
+  return pathToWave(dragonPath(depth, angle));
+}
+function dragonVisualize(ctx,W,H,depth,a,b){
+  const angle = lerp(Math.PI/4, 11*Math.PI/18, a);
+  const pts = dragonPath(Math.min(depth+2, 13), angle);
+  let xmin=1e9,xmax=-1e9,ymin=1e9,ymax=-1e9;
+  for(const p of pts){
+    if(p.x<xmin) xmin=p.x; if(p.x>xmax) xmax=p.x;
+    if(p.y<ymin) ymin=p.y; if(p.y>ymax) ymax=p.y;
+  }
+  const sx = xmax-xmin || 1, sy = ymax-ymin || 1;
+  const pad = 18;
+  ctx.strokeStyle = 'rgba(226,168,90,.85)';
+  ctx.lineWidth = 0.9;
+  ctx.beginPath();
+  pts.forEach((p,i)=>{
+    const px = pad + ((p.x-xmin)/sx)*(W-2*pad);
+    const py = pad + ((p.y-ymin)/sy)*(H-2*pad);
+    if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+  });
+  ctx.stroke();
+}
+function dragonAddress(t, depth){
+  /* binary (L/R) address — the dragon's defining symbolic data */
+  let s='', x=t;
+  for(let d=0; d<Math.min(depth+2, 12); d++){
+    if(x<.5){ s+='L'; x*=2; } else { s+='R'; x=(x-.5)*2; }
+  }
+  return s;
+}
+
+/* -------- 9. Hilbert curve: {0,1,2,3}^ℕ space-filling -------- */
+function hilbertWord(depth){
+  let s = 'A';
+  for(let d=0; d<Math.min(depth, 6); d++){
+    let out='';
+    for(const ch of s){
+      if(ch==='A') out += '-BF+AFA+FB-';
+      else if(ch==='B') out += '+AF-BFB-FA+';
+      else out += ch;
+    }
+    s = out;
+  }
+  return s;
+}
+function hilbertPath(depth, angleAdj){
+  const word = hilbertWord(depth);
+  let x=0, y=0, dir=0;
+  const pts = [{x,y}];
+  const angle = Math.PI/2 + angleAdj;
+  for(const ch of word){
+    if(ch==='F'){ x += Math.cos(dir); y += Math.sin(dir); pts.push({x,y}); }
+    else if(ch==='+') dir += angle;
+    else if(ch==='-') dir -= angle;
+  }
+  return pts;
+}
+function hilbertWave(depth, a, b){
+  const w = pathToWave(hilbertPath(depth+1, lerp(-0.18, 0.18, a)));
+  /* mix with sine harmonic indexed by b */
+  const harm = 1 + Math.floor(b*7);
+  for(let i=0;i<N;i++){
+    w[i] = lerp(w[i], Math.sin(TWO_PI*i/N*harm), 0.18*b);
+  }
+  return normalize(w);
+}
+function hilbertVisualize(ctx,W,H,depth,a,b){
+  const pts = hilbertPath(Math.min(depth+1, 6), lerp(-0.18, 0.18, a));
+  let xmin=1e9,xmax=-1e9,ymin=1e9,ymax=-1e9;
+  for(const p of pts){
+    if(p.x<xmin) xmin=p.x; if(p.x>xmax) xmax=p.x;
+    if(p.y<ymin) ymin=p.y; if(p.y>ymax) ymax=p.y;
+  }
+  const sx = xmax-xmin || 1, sy = ymax-ymin || 1;
+  const pad = 16;
+  ctx.strokeStyle = 'rgba(226,168,90,.85)';
+  ctx.lineWidth = 0.9;
+  ctx.beginPath();
+  pts.forEach((p,i)=>{
+    const px = pad + ((p.x-xmin)/sx)*(W-2*pad);
+    const py = pad + ((p.y-ymin)/sy)*(H-2*pad);
+    if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+  });
+  ctx.stroke();
+}
+function hilbertAddress(t, depth){
+  let s='', x=t;
+  for(let d=0; d<Math.min(depth+2, 12); d++){
+    const k = Math.floor(x*4);
+    s += String(clamp(k,0,3));
+    x = x*4 - Math.floor(x*4);
+  }
+  return s;
+}
+
+/* -------- 10. Newton basins for z³ − (1 + p), p = px + i·py.
+   A, B parameterize the complex constant — the true moduli of the dynamical system.
+   At (A,B) = (0.5, 0.5) we get standard z³ − 1; moving away rotates and rescales
+   the three basins, and at certain (A,B) the basin topology bifurcates. -------- */
+function newtonRoots(px, py){
+  /* roots of z³ = 1 + p */
+  const re = 1 + px, im = py;
+  const r  = Math.hypot(re, im);
+  const theta = Math.atan2(im, re);
+  const cr = Math.pow(r, 1/3);
+  const out = [];
+  for(let k=0; k<3; k++){
+    const a = (theta + 2*Math.PI*k)/3;
+    out.push({x: cr*Math.cos(a), y: cr*Math.sin(a)});
+  }
+  return out;
+}
+function newtonStep(zx, zy, px, py){
+  /* z³ − (1 + p) ;  z' = z − f/f' = z − f·conj(f')/|f'|² */
+  const x2 = zx*zx - zy*zy;
+  const y2 = 2*zx*zy;
+  const x3 = x2*zx - y2*zy;
+  const y3 = x2*zy + y2*zx;
+  const fx = x3 - 1 - px;
+  const fy = y3 - py;
+  const dfx = 3*x2;
+  const dfy = 3*y2;
+  const den = dfx*dfx + dfy*dfy + 1e-12;
+  return {
+    zx: zx - (fx*dfx + fy*dfy)/den,
+    zy: zy - (fy*dfx - fx*dfy)/den,
+  };
+}
+function newtonBasin(zx, zy, iter, px, py, roots){
+  for(let k=0; k<iter; k++){
+    const next = newtonStep(zx, zy, px, py);
+    zx = next.zx; zy = next.zy;
+  }
+  let best = 1e9, basin = 0;
+  for(let j=0;j<3;j++){
+    const dx = zx - roots[j].x, dy = zy - roots[j].y;
+    const d = dx*dx + dy*dy;
+    if(d < best){ best = d; basin = j; }
+  }
+  return { basin, finalZx: zx, finalZy: zy, dist: best };
+}
+function newtonWave(depth, a, b){
+  const px = lerp(-0.6, 0.6, a);
+  const py = lerp(-0.6, 0.6, b);
+  const roots = newtonRoots(px, py);
+  const w = new Float32Array(N);
+  const iters = 12 + depth*4;
+  const r = 1.5;
+  for(let i=0;i<N;i++){
+    const th = TWO_PI*i/N;
+    const zx0 = r*Math.cos(th);
+    const zy0 = r*Math.sin(th);
+    const res = newtonBasin(zx0, zy0, iters, px, py, roots);
+    w[i] = Math.sin(TWO_PI*(res.basin+1)*i/N) + .35*Math.sin(TWO_PI*(res.basin+1.5)*i/N + res.dist*20);
+  }
+  return normalize(w);
+}
+function newtonVisualize(ctx,W,H,depth,a,b){
+  const px = lerp(-0.6, 0.6, a);
+  const py = lerp(-0.6, 0.6, b);
+  const roots = newtonRoots(px, py);
+  const img = ctx.createImageData(W, H);
+  const iters = 8 + depth*3;
+  const span = 4;   /* image plane covers [-2, 2] × [-1.5, 1.5] */
+  for(let yy=0; yy<H; yy++){
+    for(let xx=0; xx<W; xx++){
+      let zx = (xx/W - .5)*span;
+      let zy = (yy/H - .5)*span*0.75;
+      let k=0;
+      for(; k<iters; k++){
+        const next = newtonStep(zx, zy, px, py);
+        zx = next.zx; zy = next.zy;
+      }
+      let best=1e9, basin=0;
+      for(let j=0;j<3;j++){
+        const dx = zx - roots[j].x, dy = zy - roots[j].y;
+        const d = dx*dx + dy*dy;
+        if(d<best){ best=d; basin=j; }
+      }
+      const idx = (yy*W + xx)*4;
+      const cols = [
+        [226,168,90],
+        [155,214,168],
+        [214,138,147],
+      ];
+      const c = cols[basin];
+      const fade = Math.min(1, 1/(1 + best*40));
+      img.data[idx]   = Math.floor(c[0]*fade*0.9 + 8);
+      img.data[idx+1] = Math.floor(c[1]*fade*0.9 + 10);
+      img.data[idx+2] = Math.floor(c[2]*fade*0.9 + 12);
+      img.data[idx+3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  /* sampling circle |z| = 1.5, centred at origin (image-plane origin = (W/2, H/2)) */
+  const cxImg = W*0.5;
+  const cyImg = H*0.5;
+  const rImg = (1.5/span)*W;
+  ctx.strokeStyle = 'rgba(255,255,255,.6)';
+  ctx.lineWidth = 1.1;
+  ctx.beginPath();
+  ctx.arc(cxImg, cyImg, rImg, 0, TWO_PI);
+  ctx.stroke();
+  /* mark the perturbed roots */
+  ctx.fillStyle = 'rgba(255,255,255,.95)';
+  for(const root of roots){
+    const rx = (root.x/span + 0.5)*W;
+    const ry = (root.y/(span*0.75) + 0.5)*H;
+    ctx.beginPath();
+    ctx.arc(rx, ry, 3, 0, TWO_PI);
+    ctx.fill();
+  }
+}
+function newtonAddress(t, depth, a, b){
+  const px = lerp(-0.6, 0.6, a);
+  const py = lerp(-0.6, 0.6, b);
+  const roots = newtonRoots(px, py);
+  const th = TWO_PI*t;
+  const zx0 = 1.5*Math.cos(th);
+  const zy0 = 1.5*Math.sin(th);
+  const res = newtonBasin(zx0, zy0, 16, px, py, roots);
+  return String(res.basin);   /* basin label */
+}
+
+/* ============================================================
+ *  REGISTRY
+ * ============================================================ */
+const FRACTALS = {
+  cantor: {
+    name: 'Cantor',
+    alphabet: '{0, 2}^ℕ',
+    paramA: { label:'Keep ratio α',     transform:(v)=>lerp(0.05,0.5,v).toFixed(3) },
+    paramB: { label:'Indicator → Stair',transform:(v)=>v.toFixed(2) },
+    wave: cantorWave,
+    visualize: cantorVisualize,
+    address: (t,d,a,b)=>cantorAddress(t,d,a),
+    defaults: { modA: 0.629, modB: 0.0, depth: 5 },   /* α = 1/3 standard Cantor */
+    info: {
+      'space':   'Φ : <span class="glyph">𝒞</span> = {0,2}^ℕ → ℝ,&nbsp; Φ(ω) = <span class="math">Σ ωₖ / 3^k</span>',
+      'measure': 'Devil\'s staircase F<sub>α</sub>(t) = self-similar Cantor measure',
+      'dim':     'dim<sub>H</sub>(K<sub>α</sub>) = <span class="math">log 2 / log(1/α)</span> ; phases: α→0 dust · α=1/3 standard · α=1/2 filled',
+    },
+  },
+  koch: {
+    name: 'Koch',
+    alphabet: '{0,1,2,3}^ℕ',
+    paramA: { label:'Bump height',     transform:(v)=>(v*2).toFixed(2), help:'1.00 = canonical equilateral 60°' },
+    paramB: { label:'Parity asymmetry',transform:(v)=>((v-.5)*1.2).toFixed(2) },
+    wave: kochWave,
+    visualize: kochVisualize,
+    address: (t,d,a,b)=>kochAddress(t,d),
+    defaults: { modA: 0.5, modB: 0.5, depth: 4 },   /* canonical equilateral */
+    info: {
+      'space':'IFS of 4 contractions r=1/3 around the line segment',
+      'curve':'4 sub-segments per iteration; canonical bump = √3/6 of segment length',
+      'dim':  'dim<sub>H</sub>(K) = <span class="math">log 4 / log 3 ≈ 1.262</span> at bump=1; past 1 the curve self-overlaps',
+    },
+  },
+  weierstrass: {
+    name: 'Weierstrass',
+    alphabet: 'lacunary trig series',
+    paramA: { label:'Base a',          transform:(v)=>lerp(0.25,0.92,v).toFixed(3) },
+    paramB: { label:'Base b (odd)',    transform:(v)=>String(3+2*Math.floor(v*5)) },
+    wave: weierstrassWave,
+    visualize: weierstrassVisualize,
+    address: (t,d,a,b)=>weierstrassAddress(t,d,a,b),
+    defaults: { modA: 0.672, modB: 0.6, depth: 5 },   /* a≈0.70, b=9 → ab=6.3, fractal phase */
+    info: {
+      'series': '<span class="math">W(x) = Σ aᵏ cos(bᵏ π x)</span>',
+      'hardy':  'nondifferentiable when <span class="math">ab > 1 + 3π/2 ≈ 5.712</span>',
+      'dim':    'dim<sub>H</sub>(graph W) = <span class="math">2 − log(1/a)/log b</span> ; phases: ab≤1 smooth · 1&lt;ab≤5.712 Hardy-smooth · ab&gt;5.712 fractal',
+    },
+    validity: weierstrassValid,
+  },
+  julia: {
+    name: 'Julia',
+    alphabet: 'orbit ⊂ ℂ',
+    paramA: { label:'c.real ∈ [-2.0, 0.5]',transform:(v)=>lerp(-2.0,0.5,v).toFixed(3) },
+    paramB: { label:'c.imag ∈ [-1.25, 1.25]',transform:(v)=>lerp(-1.25,1.25,v).toFixed(3) },
+    wave: juliaWave,
+    visualize: juliaVisualize,
+    address: (t,d,a,b)=>juliaAddress(t,d,a,b),
+    defaults: { modA: 0.52, modB: 0.608, depth: 4 },   /* Douady-rabbit-ish: c ≈ −0.7 + 0.27i */
+    info: {
+      'map':   'z ↦ z² + c with c = a + ib',
+      'fillJ': 'K<sub>c</sub> = { z : orbit bounded } &nbsp; ; &nbsp; J<sub>c</sub> = ∂K<sub>c</sub>',
+      'phase': 'c inside M → J connected · c outside M → J Cantor dust · ∂M = bifurcation locus',
+    },
+  },
+  sierpinski: {
+    name: 'Sierpiński',
+    alphabet: '{0,1,2}^ℕ',
+    paramA: { label:'Path angle θ/2π', transform:(v)=>v.toFixed(3) },
+    paramB: { label:'Path height',     transform:(v)=>v.toFixed(3) },
+    wave: sierpinskiWave,
+    visualize: sierpinskiVisualize,
+    address: (t,d,a,b)=>sierpinskiAddress(t,d),
+    defaults: { modA: 0.0, modB: 0.5, depth: 6 },   /* horizontal scan through the middle */
+    info: {
+      'space': 'IFS of 3 half-contractions toward triangle corners',
+      'addr':  '(u,v) ∈ K iff binary digits never have <span class="math">u_k = v_k = 1</span>',
+      'dim':   'dim<sub>H</sub>(K) = <span class="math">log 3 / log 2 ≈ 1.585</span> &nbsp;·&nbsp; A, B parameterize the scan path through K (realization-side moduli)',
+    },
+  },
+  fern: {
+    name: 'Barnsley Fern',
+    alphabet: '{1,2,3,4}^ℕ_p',
+    paramA: { label:'Map-2 self-affinity',transform:(v)=>((v-.5)*0.30).toFixed(3) },
+    paramB: { label:'Map-2 shear',         transform:(v)=>((v-.5)*0.15).toFixed(3) },
+    wave: fernWave,
+    visualize: fernVisualize,
+    address: (t,d,a,b)=>fernAddress(t,d,a,b),
+    defaults: { modA: 0.5, modB: 0.5, depth: 5 },   /* unperturbed classical fern */
+    info: {
+      'maps':'4 affine contractions with probabilities <span class="math">(.01, .85, .07, .07)</span>',
+      'space':'address space = full shift on 4 letters with Bernoulli measure',
+      'phase':'small perturb → wobbly fern · large perturb → spirals, fans · contractivity loss → blow-up',
+    },
+  },
+  lplant: {
+    name: 'L-System Plant',
+    alphabet: 'F→F[+F]F[-F]F',
+    paramA: { label:'Branch angle',    transform:(v)=>(lerp(0.08,1.40,v)*180/Math.PI).toFixed(1)+'°' },
+    paramB: { label:'Branch contraction',transform:(v)=>lerp(0.40,0.92,v).toFixed(3) },
+    wave: lplantWave,
+    visualize: lplantVisualize,
+    address: (t,d,a,b)=>lplantAddress(t,d),
+    defaults: { modA: 0.270, modB: 0.577, depth: 5 },   /* ≈25°, contraction 0.70 */
+    info: {
+      'rules': 'F → F[+F]F[-F]F  (turtle: F=draw, +/-=turn, []=push/pop)',
+      'limit': 'iterate to obtain a 1D random plant in the inverse limit',
+      'phase': 'small angle, small scale → twig · large angle, large scale → bushy fan',
+    },
+  },
+  dragon: {
+    name: 'Heighway Dragon',
+    alphabet: '{L,R}^ℕ',
+    paramA: { label:'Fold angle',     transform:(v)=>(lerp(45,110,v)).toFixed(1)+'°' },
+    paramB: { label:'(unused)',       transform:(v)=>v.toFixed(2) },
+    wave: dragonWave,
+    visualize: dragonVisualize,
+    address: (t,d,a,b)=>dragonAddress(t,d),
+    defaults: { modA: 0.692, modB: 0.5, depth: 8 },   /* canonical Heighway dragon at 90° */
+    info: {
+      'rules':'X → X+YF+,  Y → −FX−Y',
+      'fold': 'binary L/R turn sequence ; canonical 90° gives Heighway dragon (filled)',
+      'phase':'&lt;90° → open curves · 90° → space-filling · &gt;90° → self-overlapping',
+    },
+  },
+  hilbert: {
+    name: 'Hilbert',
+    alphabet: '{0,1,2,3}^ℕ',
+    paramA: { label:'Angle perturb',  transform:(v)=>(lerp(-0.18,0.18,v)*180/Math.PI).toFixed(1)+'°' },
+    paramB: { label:'Sine harmonic mix',transform:(v)=>String(1+Math.floor(v*7)) },
+    wave: hilbertWave,
+    visualize: hilbertVisualize,
+    address: (t,d,a,b)=>hilbertAddress(t,d),
+    defaults: { modA: 0.5, modB: 0.0, depth: 4 },   /* canonical Hilbert curve, no sine mix */
+    info: {
+      'rules':'A → −BF+AFA+FB−,  B → +AF−BFB−FA+',
+      'fill': 'space-filling curve [0,1] → [0,1]² ; addresses are quaternary',
+      'dim':  'topological dim 1, Hausdorff dim 2 (Lebesgue-equivalent on image)',
+    },
+  },
+  newton: {
+    name: 'Newton',
+    alphabet: 'basin labels',
+    paramA: { label:'Perturb Re(p)', transform:(v)=>lerp(-0.6,0.6,v).toFixed(3), help:'0 = z³ − 1' },
+    paramB: { label:'Perturb Im(p)', transform:(v)=>lerp(-0.6,0.6,v).toFixed(3) },
+    wave: newtonWave,
+    visualize: newtonVisualize,
+    address: (t,d,a,b)=>newtonAddress(t,d,a,b),
+    defaults: { modA: 0.5, modB: 0.5, depth: 4 },   /* p = 0: canonical z³ − 1 */
+    info: {
+      'iter': '<span class="math">z ↦ z − f(z)/f′(z)</span> with f(z) = z³ − (1 + p), p = p<sub>r</sub> + i·p<sub>i</sub>',
+      'roots':'cube roots of (1 + p) ; the three basins rotate and rescale with p',
+      'phase':'p = 0 → standard 3-fold symmetric basins · p ≠ 0 → basins distort, boundaries thicken/thin',
+    },
+  },
+};
+
+/* ============================================================
+ *  AUDIO ENGINE
+ * ============================================================ */
+const els = {};
+['startBtn','droneBtn','noteBtn','randomBtn','useSelectionBtn','usePrimitiveBtn','refreshPrimitiveBtn','clearSelectionBtn',
+ 'mode','depth','modA','modB','modALabel','modBLabel','smooth','drive',
+ 'cutoff','resonance','filterType','voiceCutoff','voiceRes',
+ 'ampA','ampD','ampS','ampR','filterEnvAmt','filterA','filterD','filterS','filterR',
+ 'freq','gain','midiSelect','bendRange','midiModDepth',
+ 'modAVal','modBVal','depthVal','smoothVal','driveVal',
+ 'cutoffVal','resVal','voiceCutoffVal','voiceResVal',
+ 'ampAVal','ampDVal','ampSVal','ampRVal','filterEnvAmtVal','filterAVal','filterDVal','filterSVal','filterRVal',
+ 'freqVal','gainVal','bendRangeVal','midiModDepthVal','filterTypeLabel',
+ 'modeAlphabet','modeInfo','modeWarn','status','midiStatus',
+ 'waveCanvas','specCanvas','fractalCanvas',
+ 'addressDisplay','addressMeta','viewerTag','waveOverlay',
+].forEach(k => els[k] = $(k));
+
+let audioCtx=null, masterGain=null, filter=null, analyser=null;
+let currentPeriodicWave=null;
+let droneOsc=null, droneOn=false;
+let currentWave = new Float32Array(N);
+let baseModeWave = new Float32Array(N);
+let midiAccess=null, selectedMidiInput=null;
+let activeVoices = new Map();
+let pitchBend = 0;
+let modWheelBaseA = null, modWheelBaseB = null;
+let animationId = null;
+let currentView = 'wave';   /* 'wave' | 'fractal' | 'spectrum' */
+
+const VIEW_TAGS = { wave:'§ 2.1', fractal:'§ 1.2', spectrum:'|FFT|' };
+
+function setView(v){
+  currentView = v;
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === v));
+  els.waveCanvas.classList.toggle('hidden', v !== 'wave');
+  els.fractalCanvas.classList.toggle('hidden', v !== 'fractal');
+  els.specCanvas.classList.toggle('hidden', v !== 'spectrum');
+  els.waveOverlay.classList.toggle('hidden', v !== 'wave');
+  els.viewerTag.textContent = VIEW_TAGS[v] || '';
+  /* redraw the now-visible canvas (spectrum self-draws via the animation loop) */
+  if(v === 'wave') drawWave();
+  else if(v === 'fractal') drawFractal();
+  else if(v === 'spectrum') drawSpectrum();
+}
+
+/* selection feature */
+let selection = { active:false, dragging:false, startX:0, endX:0, startIndex:0, endIndex:0, sourceWave:null };
+let primitiveWave = null, primitiveActive = false;
+let cropWaveBase  = null, cropActive = false;
+
+function getParams(){
+  return {
+    mode: els.mode.value,
+    freq: +els.freq.value,
+    gain: +els.gain.value,
+    depth: +els.depth.value,
+    modA: +els.modA.value,
+    modB: +els.modB.value,
+    smooth: +els.smooth.value,
+    drive: +els.drive.value,
+    cutoff: +els.cutoff.value,
+    resonance: +els.resonance.value,
+    filterType: els.filterType.value,
+    voiceCutoff: +els.voiceCutoff.value,
+    voiceRes: +els.voiceRes.value,
+    ampA: +els.ampA.value, ampD: +els.ampD.value, ampS: +els.ampS.value, ampR: +els.ampR.value,
+    filterEnvAmt: +els.filterEnvAmt.value,
+    filterA: +els.filterA.value, filterD: +els.filterD.value, filterS: +els.filterS.value, filterR: +els.filterR.value,
+    bendRange: +els.bendRange.value,
+    midiModDepth: +els.midiModDepth.value,
+  };
+}
+
+function updateLabels(){
+  const p = getParams();
+  const f = FRACTALS[p.mode];
+  els.modeAlphabet.textContent = f.alphabet;
+  els.modALabel.textContent = f.paramA.label;
+  els.modBLabel.textContent = f.paramB.label;
+  els.modAVal.textContent = f.paramA.transform(p.modA);
+  els.modBVal.textContent = f.paramB.transform(p.modB);
+  els.depthVal.textContent = p.depth;
+  els.smoothVal.textContent = p.smooth.toFixed(2);
+  els.driveVal.textContent  = p.drive.toFixed(2);
+  els.cutoffVal.textContent = p.cutoff.toFixed(0)+' Hz';
+  els.resVal.textContent    = p.resonance.toFixed(1);
+  els.filterTypeLabel.textContent = els.filterType.options[els.filterType.selectedIndex].text;
+  els.voiceCutoffVal.textContent  = p.voiceCutoff.toFixed(0)+' Hz';
+  els.voiceResVal.textContent     = p.voiceRes.toFixed(1);
+  els.ampAVal.textContent = p.ampA.toFixed(3)+' s';
+  els.ampDVal.textContent = p.ampD.toFixed(3)+' s';
+  els.ampSVal.textContent = p.ampS.toFixed(2);
+  els.ampRVal.textContent = p.ampR.toFixed(3)+' s';
+  els.filterEnvAmtVal.textContent = p.filterEnvAmt.toFixed(0)+' Hz';
+  els.filterAVal.textContent = p.filterA.toFixed(3)+' s';
+  els.filterDVal.textContent = p.filterD.toFixed(3)+' s';
+  els.filterSVal.textContent = p.filterS.toFixed(2);
+  els.filterRVal.textContent = p.filterR.toFixed(3)+' s';
+  els.freqVal.textContent = p.freq.toFixed(0)+' Hz';
+  els.gainVal.textContent = p.gain.toFixed(2);
+  els.bendRangeVal.textContent = p.bendRange+' st';
+  els.midiModDepthVal.textContent = p.midiModDepth.toFixed(2);
+}
+
+function updateModeInfo(){
+  const p = getParams();
+  const f = FRACTALS[p.mode];
+  let html = '';
+  for(const [k,v] of Object.entries(f.info)){
+    html += `<div class="info-row"><div class="info-key">${k}</div><div class="info-val">${v}</div></div>`;
+  }
+  els.modeInfo.innerHTML = html;
+  /* validity warning */
+  if(f.validity){
+    const v = f.validity(p.modA, p.modB);
+    if(!v.ok){
+      els.modeWarn.classList.add('visible');
+      els.modeWarn.textContent = `Hardy condition violated: ab = ${v.ab.toFixed(3)} ≤ ${v.bound.toFixed(3)}. Function is differentiable; not a true Weierstrass fractal.`;
+    } else {
+      els.modeWarn.classList.remove('visible');
+    }
+  } else {
+    els.modeWarn.classList.remove('visible');
+  }
+  /* update address display */
+  updateAddressDisplay();
+}
+
+function updateAddressDisplay(){
+  const p = getParams();
+  const f = FRACTALS[p.mode];
+  /* sample at the centre of the wavetable t = 0.5 (mid-cycle) */
+  const t = 0.5;
+  const addr = f.address(t, p.depth, p.modA, p.modB);
+  els.addressDisplay.textContent = `[${addr}…]`;
+  els.addressMeta.textContent = `t = 0.500  ·  depth ${p.depth}`;
+}
+
+/* -------- recursive primitive: substitute the fractal's wave for the alphabet -------- */
+function recursivePrimitiveWave(src, depth, a, b){
+  /* take the source wavetable as the "alphabet symbol" and substitute it
+     into a self-similar refinement scheme: w(t) = Σ_d decay^d · sign · src(branches^d · t + phase) */
+  const out = new Float32Array(N);
+  const branches = 2 + Math.floor(a*6);
+  const decay = lerp(0.18, 0.78, b);
+  const phase = 0.137 + a*0.33;
+  for(let i=0;i<N;i++){
+    const t = i/N;
+    let y = 0, weight = 0, amp = 1;
+    for(let d=0; d<Math.min(depth+1, 10); d++){
+      const u = fract(t * Math.pow(branches, d) + phase*d);
+      const sign = (d%2===0) ? 1 : lerp(1, -1, b*0.75);
+      y += amp * sign * sampleAt(src, u);
+      weight += Math.abs(amp);
+      amp *= decay;
+    }
+    out[i] = y/(weight || 1);
+  }
+  return normalize(out);
+}
+
+function buildWave(){
+  const p = getParams();
+  const f = FRACTALS[p.mode];
+  let w = f.wave(p.depth, p.modA, p.modB);
+  w = applyDrive(smoothWave(w, p.smooth), p.drive);
+  currentWave = normalize(w);
+  baseModeWave = Float32Array.from(currentWave);
+  currentPeriodicWave = makePeriodicWave(currentWave);
+  if(droneOsc && currentPeriodicWave) droneOsc.setPeriodicWave(currentPeriodicWave);
+  activeVoices.forEach(v => v.osc.setPeriodicWave(currentPeriodicWave));
+  drawWave();
+  drawFractal();
+  updateAudioParams();
+  updateModeInfo();
+}
+
+function makePeriodicWave(samples){
+  if(!audioCtx) return null;
+  const H = 128;
+  const real = new Float32Array(H+1);
+  const imag = new Float32Array(H+1);
+  for(let k=1; k<=H; k++){
+    let re=0, im=0;
+    for(let n=0; n<samples.length; n++){
+      const ph = TWO_PI*k*n/samples.length;
+      re += samples[n]*Math.cos(ph);
+      im -= samples[n]*Math.sin(ph);
+    }
+    real[k] = re/samples.length;
+    imag[k] = im/samples.length;
+  }
+  return audioCtx.createPeriodicWave(real, imag, {disableNormalization:false});
+}
+
+async function initAudio(){
+  if(audioCtx) return;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  masterGain = audioCtx.createGain();
+  filter = audioCtx.createBiquadFilter();
+  analyser = audioCtx.createAnalyser();
+  analyser.fftSize = 2048;
+  filter.type = 'lowpass';
+  filter.connect(analyser);
+  analyser.connect(masterGain);
+  masterGain.connect(audioCtx.destination);
+  buildWave();
+  updateAudioParams();
+  els.startBtn.textContent = 'Audio + MIDI Ready';
+  els.status.innerHTML = '<span class="ok">Audio ready.</span> Play MIDI notes, the test note, or the drone.';
+  startAnimation();
+}
+
+function midiToFreq(n){ return 440*Math.pow(2, (n-69)/12); }
+function bendFactor(){ const p=getParams(); return Math.pow(2, (pitchBend*p.bendRange)/12); }
+
+function updateAudioParams(){
+  updateLabels();
+  if(!audioCtx) return;
+  const p = getParams();
+  const now = audioCtx.currentTime;
+  if(masterGain) masterGain.gain.setTargetAtTime(p.gain, now, 0.02);
+  if(filter){
+    filter.frequency.setTargetAtTime(p.cutoff, now, 0.02);
+    filter.Q.setTargetAtTime(p.resonance, now, 0.02);
+  }
+  if(droneOsc) droneOsc.frequency.setTargetAtTime(p.freq*bendFactor(), now, 0.02);
+  activeVoices.forEach((v,n) => {
+    v.osc.frequency.setTargetAtTime(midiToFreq(n)*bendFactor(), now, 0.01);
+    if(v.voiceFilter){
+      v.voiceFilter.type = p.filterType;
+      v.voiceFilter.Q.setTargetAtTime(p.voiceRes, now, 0.02);
+    }
+  });
+}
+
+function envCutoff(base, amt, s){ return clamp(base + amt*s, 40, 18000); }
+
+function startVoice(n, vel=100){
+  if(!audioCtx || !currentPeriodicWave) return;
+  if(activeVoices.has(n)) stopVoice(n, true);
+  const p = getParams();
+  const osc = audioCtx.createOscillator();
+  const voiceFilter = audioCtx.createBiquadFilter();
+  const env = audioCtx.createGain();
+  const v = clamp(vel/127, 0.05, 1);
+  const t = audioCtx.currentTime;
+  osc.setPeriodicWave(currentPeriodicWave);
+  osc.frequency.value = midiToFreq(n)*bendFactor();
+  voiceFilter.type = p.filterType;
+  voiceFilter.Q.value = p.voiceRes;
+  voiceFilter.frequency.setValueAtTime(envCutoff(p.voiceCutoff, p.filterEnvAmt, 0), t);
+  env.gain.setValueAtTime(0, t);
+  osc.connect(voiceFilter); voiceFilter.connect(env); env.connect(filter);
+  env.gain.linearRampToValueAtTime(v, t + p.ampA);
+  env.gain.linearRampToValueAtTime(v*p.ampS, t + p.ampA + p.ampD);
+  voiceFilter.frequency.linearRampToValueAtTime(envCutoff(p.voiceCutoff, p.filterEnvAmt, 1), t + p.filterA);
+  voiceFilter.frequency.linearRampToValueAtTime(envCutoff(p.voiceCutoff, p.filterEnvAmt, p.filterS), t + p.filterA + p.filterD);
+  osc.start(t);
+  activeVoices.set(n, { osc, env, voiceFilter, note:n });
+  els.status.innerHTML = `MIDI note <span class="ok">${n}</span> @ ${midiToFreq(n).toFixed(1)} Hz · vel ${vel}`;
+}
+
+function stopVoice(n, fast=false){
+  const v = activeVoices.get(n);
+  if(!v || !audioCtx) return;
+  const p = getParams();
+  const t = audioCtx.currentTime;
+  const rel = fast ? 0.03 : p.ampR;
+  const frel = fast ? 0.03 : p.filterR;
+  try {
+    v.env.gain.cancelScheduledValues(t);
+    v.env.gain.setValueAtTime(Math.max(v.env.gain.value, 0.0001), t);
+    v.env.gain.exponentialRampToValueAtTime(0.0001, t + rel);
+    v.voiceFilter.frequency.cancelScheduledValues(t);
+    v.voiceFilter.frequency.setValueAtTime(v.voiceFilter.frequency.value, t);
+    v.voiceFilter.frequency.linearRampToValueAtTime(clamp(p.voiceCutoff, 40, 18000), t + frel);
+    v.osc.stop(t + Math.max(rel, frel) + 0.05);
+  } catch(e){}
+  activeVoices.delete(n);
+}
+function stopAllVoices(){
+  Array.from(activeVoices.keys()).forEach(n => stopVoice(n, true));
+}
+
+function playNote(d=1.1){
+  if(!audioCtx || !currentPeriodicWave) return;
+  const p = getParams();
+  const n = Math.round(69 + 12*Math.log2(p.freq/440));
+  startVoice(n, 105);
+  setTimeout(() => stopVoice(n), d*1000);
+}
+
+function toggleDrone(){
+  if(!audioCtx || !currentPeriodicWave) return;
+  if(!droneOn){
+    const p = getParams();
+    droneOsc = audioCtx.createOscillator();
+    const droneFilter = audioCtx.createBiquadFilter();
+    droneFilter.type = p.filterType;
+    droneFilter.frequency.value = p.voiceCutoff;
+    droneFilter.Q.value = p.voiceRes;
+    droneOsc._voiceFilter = droneFilter;
+    droneOsc.setPeriodicWave(currentPeriodicWave);
+    droneOsc.frequency.value = p.freq*bendFactor();
+    droneOsc.connect(droneFilter); droneFilter.connect(filter);
+    droneOsc.start();
+    droneOn = true;
+    els.droneBtn.textContent = 'Drone · On';
+    els.droneBtn.classList.add('active');
+    els.status.innerHTML = '<span class="ok">Drone running.</span>';
+  } else {
+    droneOsc.stop(); droneOsc.disconnect(); droneOsc = null;
+    droneOn = false;
+    els.droneBtn.textContent = 'Drone · Off';
+    els.droneBtn.classList.remove('active');
+    els.status.textContent = 'Drone stopped.';
+  }
+}
+
+/* ============================================================
+ *  MIDI
+ * ============================================================ */
+async function initMidi(){
+  if(!navigator.requestMIDIAccess){
+    els.midiStatus.textContent = 'MIDI unsupported';
+    els.status.innerHTML = '<span class="err">No Web MIDI in this browser.</span> Try Chrome or Edge.';
+    return;
+  }
+  try {
+    midiAccess = await navigator.requestMIDIAccess({sysex:false});
+    midiAccess.onstatechange = refreshMidiInputs;
+    refreshMidiInputs();
+  } catch(e){
+    els.midiStatus.textContent = 'MIDI blocked';
+    els.status.innerHTML = '<span class="err">MIDI permission denied.</span>';
+  }
+}
+function refreshMidiInputs(){
+  if(!midiAccess) return;
+  const inputs = Array.from(midiAccess.inputs.values());
+  const prev = selectedMidiInput ? selectedMidiInput.id : els.midiSelect.value;
+  els.midiSelect.innerHTML = '';
+  if(!inputs.length){
+    const opt = document.createElement('option');
+    opt.value=''; opt.textContent='No MIDI devices detected';
+    els.midiSelect.appendChild(opt);
+    els.midiStatus.textContent = 'Not connected';
+    selectedMidiInput = null;
+    return;
+  }
+  inputs.forEach(input => {
+    const opt = document.createElement('option');
+    opt.value = input.id;
+    opt.textContent = input.name || `MIDI Input ${input.id}`;
+    els.midiSelect.appendChild(opt);
+  });
+  const chosen = inputs.find(i=>i.id===prev) || inputs[0];
+  els.midiSelect.value = chosen.id;
+  selectMidiInput(chosen.id);
+}
+function selectMidiInput(id){
+  if(!midiAccess) return;
+  if(selectedMidiInput) selectedMidiInput.onmidimessage = null;
+  selectedMidiInput = midiAccess.inputs.get(id) || null;
+  if(selectedMidiInput){
+    selectedMidiInput.onmidimessage = handleMidiMessage;
+    els.midiStatus.textContent = selectedMidiInput.name || 'Connected';
+    els.status.innerHTML = `<span class="ok">MIDI connected:</span> ${selectedMidiInput.name||'input'}.`;
+  } else {
+    els.midiStatus.textContent = 'Not connected';
+  }
+}
+function handleMidiMessage(ev){
+  if(!audioCtx) initAudio();
+  const [s, d1, d2] = ev.data;
+  const cmd = s & 0xf0;
+  if(cmd===0x90){ d2===0 ? stopVoice(d1) : startVoice(d1, d2); }
+  else if(cmd===0x80){ stopVoice(d1); }
+  else if(cmd===0xe0){ pitchBend = (d1 + (d2<<7) - 8192)/8192; updateAudioParams(); }
+  else if(cmd===0xb0){ handleCC(d1, d2); }
+}
+function handleCC(cc, val){
+  const n = val/127;
+  const p = getParams();
+  if(cc===1){
+    if(modWheelBaseA===null) modWheelBaseA = +els.modA.value;
+    if(modWheelBaseB===null) modWheelBaseB = +els.modB.value;
+    const sweep = (n - 0.5)*p.midiModDepth;
+    els.modA.value = clamp(modWheelBaseA + sweep, 0, 1).toFixed(3);
+    els.modB.value = clamp(modWheelBaseB - sweep*0.65, 0, 1).toFixed(3);
+    buildWave();
+    els.status.innerHTML = `Mod wheel sweeping <span class="ok">Φ moduli</span>: ${(n*100).toFixed(0)}%`;
+  } else if(cc===74){
+    els.cutoff.value = Math.floor(200 + n*13800);
+    updateAudioParams();
+  } else if(cc===71){
+    els.resonance.value = (0.1 + n*15.9).toFixed(1);
+    updateAudioParams();
+  } else if(cc===120 || cc===123){
+    stopAllVoices();
+  }
+}
+
+/* ============================================================
+ *  CANVAS / VIS
+ * ============================================================ */
+function resizeCanvas(c){
+  const r = c.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  const w = Math.max(1, Math.floor(r.width*dpr));
+  const h = Math.max(1, Math.floor(r.height*dpr));
+  if(c.width !== w || c.height !== h){ c.width = w; c.height = h; }
+  return {w, h};
+}
+function drawGrid(ctx, w, h){
+  ctx.clearRect(0,0,w,h);
+  ctx.strokeStyle = 'rgba(255,255,255,.04)';
+  ctx.lineWidth = 1;
+  for(let i=1; i<8; i++){
+    const x = i*w/8;
+    ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke();
+  }
+  for(let i=1; i<5; i++){
+    const y = i*h/5;
+    ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke();
+  }
+  /* center axis */
+  ctx.strokeStyle = 'rgba(226,168,90,.13)';
+  ctx.beginPath(); ctx.moveTo(0, h/2); ctx.lineTo(w, h/2); ctx.stroke();
+}
+
+function drawWave(){
+  if(currentView !== 'wave') return;
+  const {w,h} = resizeCanvas(els.waveCanvas);
+  const ctx = els.waveCanvas.getContext('2d');
+  drawGrid(ctx, w, h);
+  /* selection overlay */
+  if(selection.active || selection.dragging){
+    const x1 = Math.min(selection.startX, selection.endX);
+    const x2 = Math.max(selection.startX, selection.endX);
+    ctx.fillStyle = 'rgba(155,214,168,.10)';
+    ctx.fillRect(x1, 0, Math.max(1, x2-x1), h);
+    ctx.strokeStyle = 'rgba(155,214,168,.6)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x1+0.5, 0.5, Math.max(1, x2-x1)-1, h-1);
+  }
+  /* waveform */
+  ctx.lineWidth = Math.max(1.4, w/700);
+  ctx.strokeStyle = 'rgba(226,168,90,.95)';
+  ctx.shadowColor = 'rgba(226,168,90,.45)';
+  ctx.shadowBlur = 8;
+  ctx.beginPath();
+  for(let i=0; i<currentWave.length; i++){
+    const x = i/(currentWave.length-1) * w;
+    const y = h*.5 - currentWave[i]*h*.40;
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+}
+
+function drawSpectrum(){
+  if(currentView !== 'spectrum') return;
+  const {w,h} = resizeCanvas(els.specCanvas);
+  const ctx = els.specCanvas.getContext('2d');
+  drawGrid(ctx, w, h);
+  if(!analyser){ drawStaticSpectrum(ctx, w, h); return; }
+  const data = new Uint8Array(analyser.frequencyBinCount);
+  analyser.getByteFrequencyData(data);
+  const bars = 180, bw = w/bars;
+  for(let i=0; i<bars; i++){
+    const idx = Math.floor(Math.pow(i/bars, 1.65)*data.length);
+    const bh = data[idx]/255 * h*0.92;
+    const m = i/bars;
+    /* amber → soft green gradient */
+    ctx.fillStyle = `rgba(${Math.floor(226 - 71*m)}, ${Math.floor(168 + 46*m)}, ${Math.floor(90 + 78*m)}, 0.78)`;
+    ctx.fillRect(i*bw, h-bh, Math.max(1, bw-1), bh);
+  }
+}
+function drawStaticSpectrum(ctx, w, h){
+  for(let k=1; k<=96; k++){
+    let re=0, im=0;
+    for(let n=0; n<currentWave.length; n++){
+      const ph = TWO_PI*k*n/currentWave.length;
+      re += currentWave[n]*Math.cos(ph);
+      im -= currentWave[n]*Math.sin(ph);
+    }
+    const mag = Math.sqrt(re*re + im*im)/currentWave.length;
+    const x = Math.pow(k/96, .72)*w;
+    const bh = clamp(mag*9, 0, 1)*h*0.88;
+    ctx.fillStyle = 'rgba(226,168,90,.7)';
+    ctx.fillRect(x, h-bh, Math.max(2, w/96*0.55), bh);
+  }
+}
+
+function drawFractal(){
+  if(currentView !== 'fractal') return;
+  const {w,h} = resizeCanvas(els.fractalCanvas);
+  const ctx = els.fractalCanvas.getContext('2d');
+  ctx.clearRect(0, 0, w, h);
+  ctx.fillStyle = 'rgba(11,13,15,1)';
+  ctx.fillRect(0, 0, w, h);
+  const p = getParams();
+  const f = FRACTALS[p.mode];
+  ctx.save();
+  ctx.translate(0, 0);
+  f.visualize(ctx, w, h, p.depth, p.modA, p.modB);
+  ctx.restore();
+}
+
+function startAnimation(){
+  if(animationId) return;
+  function tick(){
+    drawSpectrum();
+    animationId = requestAnimationFrame(tick);
+  }
+  tick();
+}
+
+/* ============================================================
+ *  WAVE-SELECTION FEATURE
+ * ============================================================ */
+function canvasXToIndex(canvas, clientX){
+  const r = canvas.getBoundingClientRect();
+  const x = clamp(clientX - r.left, 0, r.width);
+  return Math.round(x/r.width * (N-1));
+}
+function canvasXToDrawX(canvas, clientX){
+  const r = canvas.getBoundingClientRect();
+  const scale = canvas.width/r.width;
+  return clamp((clientX - r.left)*scale, 0, canvas.width);
+}
+function resampleSegment(src, i0, i1){
+  i0 = clamp(Math.min(i0, i1), 0, src.length-2);
+  i1 = clamp(Math.max(i0+2, Math.max(i0, i1)), 1, src.length-1);
+  const len = i1 - i0 + 1;
+  const out = new Float32Array(N);
+  for(let i=0; i<N; i++){
+    const pos = i0 + (i/(N-1))*(len-1);
+    const j = Math.floor(pos);
+    const t = pos - j;
+    out[i] = lerp(src[j], src[Math.min(j+1, src.length-1)], t);
+  }
+  return normalize(out);
+}
+function installWave(w, msg){
+  currentWave = normalize(w);
+  currentPeriodicWave = makePeriodicWave(currentWave);
+  if(droneOsc && currentPeriodicWave) droneOsc.setPeriodicWave(currentPeriodicWave);
+  activeVoices.forEach(v => v.osc.setPeriodicWave(currentPeriodicWave));
+  if(msg) els.status.textContent = msg;
+  drawWave();
+  drawFractal();
+}
+function processSelectedWave(src){
+  const p = getParams();
+  let w = Float32Array.from(src);
+  w = smoothWave(w, p.smooth);
+  w = applyDrive(w, p.drive);
+  return normalize(w);
+}
+function refreshCropWave(msg){
+  if(!cropWaveBase){ els.status.textContent = 'No selected waveform patch active.'; return; }
+  cropActive = true; primitiveActive = false;
+  installWave(processSelectedWave(cropWaveBase), msg || 'Selected waveform patch refreshed with current Smoothing and Drive.');
+}
+function getSelectedSegment(){
+  if(!selection.active) return null;
+  const i0 = Math.min(selection.startIndex, selection.endIndex);
+  const i1 = Math.max(selection.startIndex, selection.endIndex);
+  if(i1-i0 < 8) return null;
+  const src = selection.sourceWave || currentWave;
+  return { wave: resampleSegment(src, i0, i1), i0, i1 };
+}
+function applySelectionAsWave(){
+  const seg = getSelectedSegment();
+  if(!seg){ els.status.textContent = 'Drag a wider region across the wave first.'; return; }
+  primitiveActive = false; primitiveWave = null;
+  cropWaveBase = Float32Array.from(seg.wave);
+  cropActive = true;
+  refreshCropWave(`Selected samples ${seg.i0}–${seg.i1} stretched across the period.`);
+}
+function applySelectionAsPrimitive(){
+  const seg = getSelectedSegment();
+  if(!seg){ els.status.textContent = 'Drag a wider region across the wave first.'; return; }
+  cropActive = false; cropWaveBase = null;
+  primitiveWave = Float32Array.from(seg.wave);
+  primitiveActive = true;
+  refreshPrimitiveWave(`Selected samples ${seg.i0}–${seg.i1} promoted to recursive primitive.`);
+}
+function refreshPrimitiveWave(msg){
+  if(!primitiveWave){ els.status.textContent = 'No recursive primitive yet — drag-select a waveform region first.'; return; }
+  const p = getParams();
+  primitiveActive = true;
+  installWave(recursivePrimitiveWave(primitiveWave, p.depth, p.modA, p.modB),
+              msg || 'Recursive primitive refreshed with current depth and moduli.');
+}
+function clearSelection(){
+  selection = { active:false, dragging:false, startX:0, endX:0, startIndex:0, endIndex:0, sourceWave:null };
+  primitiveActive = false; primitiveWave = null;
+  cropActive = false; cropWaveBase = null;
+  buildWave();
+  els.status.textContent = 'Selection cleared. Returned to the selected fractal mode.';
+}
+function initWaveSelection(){
+  const c = els.waveCanvas;
+  c.addEventListener('pointerdown', e => {
+    selection.dragging = true; selection.active = false;
+    selection.sourceWave = Float32Array.from(currentWave);
+    selection.startX = canvasXToDrawX(c, e.clientX);
+    selection.endX = selection.startX;
+    selection.startIndex = canvasXToIndex(c, e.clientX);
+    selection.endIndex = selection.startIndex;
+    c.setPointerCapture(e.pointerId);
+    drawWave();
+  });
+  c.addEventListener('pointermove', e => {
+    if(!selection.dragging) return;
+    selection.endX = canvasXToDrawX(c, e.clientX);
+    selection.endIndex = canvasXToIndex(c, e.clientX);
+    drawWave();
+  });
+  c.addEventListener('pointerup', e => {
+    if(!selection.dragging) return;
+    selection.dragging = false;
+    selection.endX = canvasXToDrawX(c, e.clientX);
+    selection.endIndex = canvasXToIndex(c, e.clientX);
+    selection.active = Math.abs(selection.endIndex - selection.startIndex) >= 8;
+    if(selection.active){
+      const a = Math.min(selection.startIndex, selection.endIndex);
+      const b = Math.max(selection.startIndex, selection.endIndex);
+      els.status.textContent = `Selected samples ${a}–${b}. Press Stretch Selection or As Recursive Primitive.`;
+    } else {
+      els.status.textContent = 'Selection too small — drag a wider region.';
+    }
+    drawWave();
+  });
+}
+
+/* ============================================================
+ *  WIRING
+ * ============================================================ */
+[els.mode, els.freq, els.gain, els.depth, els.modA, els.modB,
+ els.smooth, els.drive, els.cutoff, els.resonance, els.filterType,
+ els.voiceCutoff, els.voiceRes,
+ els.ampA, els.ampD, els.ampS, els.ampR,
+ els.filterEnvAmt, els.filterA, els.filterD, els.filterS, els.filterR,
+ els.bendRange, els.midiModDepth].forEach(el => {
+  el.addEventListener('input', () => {
+    /* params that don't require wave rebuild */
+    const audioOnly = [els.gain, els.freq, els.cutoff, els.resonance, els.filterType,
+                       els.voiceCutoff, els.voiceRes,
+                       els.ampA, els.ampD, els.ampS, els.ampR,
+                       els.filterEnvAmt, els.filterA, els.filterD, els.filterS, els.filterR,
+                       els.bendRange, els.midiModDepth];
+    if(audioOnly.includes(el)){ updateAudioParams(); return; }
+    /* rebuild needed */
+    if(el === els.modA || el === els.modB){
+      modWheelBaseA = +els.modA.value;
+      modWheelBaseB = +els.modB.value;
+    }
+    if(el === els.mode){
+      primitiveActive = false; primitiveWave = null;
+      cropActive = false; cropWaveBase = null;
+      /* apply per-mode defaults so each fractal opens at its iconic form */
+      const f = FRACTALS[els.mode.value];
+      if(f && f.defaults){
+        els.modA.value = f.defaults.modA;
+        els.modB.value = f.defaults.modB;
+        if(f.defaults.depth !== undefined) els.depth.value = f.defaults.depth;
+        modWheelBaseA = f.defaults.modA;
+        modWheelBaseB = f.defaults.modB;
+      }
+      clearSelection();
+    } else if(primitiveActive && primitiveWave){
+      refreshPrimitiveWave();
+    } else if(cropActive && cropWaveBase){
+      refreshCropWave();
+    } else {
+      buildWave();
+    }
+  });
+});
+
+els.startBtn.addEventListener('click', async () => {
+  await initAudio();
+  if(audioCtx.state === 'suspended') await audioCtx.resume();
+  await initMidi();
+});
+els.noteBtn.addEventListener('click', async () => {
+  await initAudio();
+  if(audioCtx.state === 'suspended') await audioCtx.resume();
+  playNote();
+});
+els.droneBtn.addEventListener('click', async () => {
+  await initAudio();
+  if(audioCtx.state === 'suspended') await audioCtx.resume();
+  toggleDrone();
+});
+els.useSelectionBtn.addEventListener('click', applySelectionAsWave);
+els.usePrimitiveBtn.addEventListener('click', applySelectionAsPrimitive);
+els.refreshPrimitiveBtn.addEventListener('click', () => refreshPrimitiveWave());
+els.clearSelectionBtn.addEventListener('click', clearSelection);
+
+els.randomBtn.addEventListener('click', () => {
+  primitiveActive = false; primitiveWave = null;
+  cropActive = false; cropWaveBase = null;
+  const modes = Object.keys(FRACTALS);
+  els.mode.value = modes[Math.floor(Math.random()*modes.length)];
+  els.freq.value = Math.floor(55 + Math.random()*330);
+  els.depth.value = Math.floor(2 + Math.random()*7);
+  els.modA.value = Math.random().toFixed(3);
+  els.modB.value = Math.random().toFixed(3);
+  modWheelBaseA = +els.modA.value;
+  modWheelBaseB = +els.modB.value;
+  els.smooth.value = (Math.random()*0.7).toFixed(2);
+  els.drive.value  = (Math.random()*0.6).toFixed(2);
+  els.cutoff.value = Math.floor(900 + Math.random()*10500);
+  els.resonance.value = (0.5 + Math.random()*5).toFixed(1);
+  buildWave();
+  els.status.innerHTML = '<span class="ok">Random patch loaded.</span>';
+});
+els.midiSelect.addEventListener('change', () => selectMidiInput(els.midiSelect.value));
+window.addEventListener('resize', () => { drawWave(); drawSpectrum(); drawFractal(); });
+
+/* tab switching */
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => setView(tab.dataset.view));
+});
+
+/* keyboard shortcuts: space = drone, n = test note, r = random, v = cycle view */
+window.addEventListener('keydown', e => {
+  if(e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
+  if(e.code === 'Space'){ e.preventDefault(); els.droneBtn.click(); }
+  else if(e.code === 'KeyN'){ e.preventDefault(); els.noteBtn.click(); }
+  else if(e.code === 'KeyR'){ e.preventDefault(); els.randomBtn.click(); }
+  else if(e.code === 'KeyV'){
+    e.preventDefault();
+    const order = ['wave','fractal','spectrum'];
+    setView(order[(order.indexOf(currentView)+1) % order.length]);
+  }
+});
+
+/* boot — apply the initial mode's defaults so it opens at its iconic form */
+(function applyInitialDefaults(){
+  const f = FRACTALS[els.mode.value];
+  if(f && f.defaults){
+    els.modA.value = f.defaults.modA;
+    els.modB.value = f.defaults.modB;
+    if(f.defaults.depth !== undefined) els.depth.value = f.defaults.depth;
+    modWheelBaseA = f.defaults.modA;
+    modWheelBaseB = f.defaults.modB;
+  }
+})();
+updateLabels();
+buildWave();
+initWaveSelection();
+if(navigator.requestMIDIAccess) initMidi();
+</script>
+</body>
+</html>
