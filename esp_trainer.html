@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ESP Trainer — Five Mode Intuition Lab</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: rgba(255, 255, 255, 0.08);
+      --panel-strong: rgba(255, 255, 255, 0.14);
+      --text: #f7f3ff;
+      --muted: #b7abc9;
+      --accent: #9f7aea;
+      --accent2: #5eead4;
+      --good: #7ee787;
+      --bad: #ff7b72;
+      --gold: #ffd166;
+      --shadow: rgba(0, 0, 0, 0.35);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 10% 20%, rgba(159, 122, 234, 0.35), transparent 28%),
+        radial-gradient(circle at 85% 10%, rgba(94, 234, 212, 0.22), transparent 24%),
+        radial-gradient(circle at 50% 95%, rgba(255, 209, 102, 0.13), transparent 32%),
+        var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    .stars {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(circle, rgba(255,255,255,.9) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255,255,255,.45) 1px, transparent 1px);
+      background-size: 90px 90px, 140px 140px;
+      background-position: 0 0, 35px 40px;
+      opacity: .22;
+      mask-image: linear-gradient(to bottom, black, transparent 85%);
+    }
+
+    .wrap {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 48px;
+      position: relative;
+      z-index: 1;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 4.6rem);
+      letter-spacing: -0.06em;
+      line-height: .9;
+      text-shadow: 0 18px 40px var(--shadow);
+    }
+
+    .subtitle {
+      color: var(--muted);
+      max-width: 760px;
+      margin: 12px 0 0;
+      font-size: 1rem;
+      line-height: 1.55;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.08);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 999px;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 10px 30px var(--shadow);
+      white-space: nowrap;
+      font-size: .9rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 280px 1fr 300px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .card {
+      border: 1px solid rgba(255,255,255,.14);
+      background: linear-gradient(180deg, rgba(255,255,255,.11), rgba(255,255,255,.055));
+      border-radius: var(--radius);
+      box-shadow: 0 20px 70px var(--shadow);
+      backdrop-filter: blur(18px);
+      overflow: hidden;
+    }
+
+    .section {
+      padding: 18px;
+    }
+
+    .section + .section {
+      border-top: 1px solid rgba(255,255,255,.11);
+    }
+
+    h2, h3 {
+      margin: 0 0 10px;
+      letter-spacing: -0.02em;
+    }
+
+    h2 { font-size: 1.1rem; }
+    h3 { font-size: .95rem; color: var(--muted); font-weight: 650; }
+
+    .mode-list {
+      display: grid;
+      gap: 10px;
+      max-height: none;
+      overflow: visible;
+    }
+
+    .mode-select-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: .85rem;
+      font-weight: 750;
+    }
+
+    #modeSelect {
+      min-width: 160px;
+      background: rgba(11,16,32,.96);
+    }
+
+    .mode-btn {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.055);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 12px;
+      cursor: pointer;
+      text-align: left;
+      transition: .18s ease;
+    }
+
+    .mode-btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(255,255,255,.25);
+      background: rgba(255,255,255,.10);
+    }
+
+    .mode-btn.active {
+      border-color: rgba(94,234,212,.65);
+      background: linear-gradient(135deg, rgba(94,234,212,.22), rgba(159,122,234,.18));
+      box-shadow: 0 0 0 3px rgba(94,234,212,.08);
+    }
+
+    .mode-name {
+      font-weight: 800;
+      margin-bottom: 3px;
+    }
+
+    .mode-desc {
+      color: var(--muted);
+      font-size: .84rem;
+      line-height: 1.35;
+    }
+
+    .arena {
+      min-height: 650px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    .arena-top {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px;
+      border-bottom: 1px solid rgba(255,255,255,.11);
+    }
+
+    .title-block p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    button.primary, button.secondary, button.choice, select {
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.09);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 10px 13px;
+      font-weight: 750;
+      cursor: pointer;
+      transition: .18s ease;
+    }
+
+    button.primary {
+      background: linear-gradient(135deg, var(--accent), #6d5dfc);
+      border-color: rgba(255,255,255,.22);
+      box-shadow: 0 10px 25px rgba(109,93,252,.25);
+    }
+
+    button.secondary:hover, button.primary:hover, button.choice:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.08);
+    }
+
+    button:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    select {
+      appearance: none;
+      min-width: 120px;
+    }
+
+    .stage {
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      position: relative;
+    }
+
+    .target-card {
+      width: min(430px, 92%);
+      aspect-ratio: 3 / 4;
+      border-radius: 30px;
+      border: 1px solid rgba(255,255,255,.18);
+      background:
+        linear-gradient(145deg, rgba(255,255,255,.14), rgba(255,255,255,.045)),
+        radial-gradient(circle at 50% 30%, rgba(159,122,234,.28), transparent 44%);
+      box-shadow:
+        inset 0 0 80px rgba(255,255,255,.04),
+        0 30px 80px rgba(0,0,0,.45);
+      display: grid;
+      place-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .target-card::before {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,.12);
+    }
+
+    .target-card::after {
+      content: "✦";
+      position: absolute;
+      top: 18px;
+      right: 22px;
+      color: rgba(255,255,255,.28);
+      font-size: 1.6rem;
+    }
+
+    .symbol {
+      font-size: clamp(5rem, 16vw, 10rem);
+      line-height: 1;
+      filter: drop-shadow(0 12px 28px rgba(0,0,0,.38));
+      transform: translateY(-4px);
+    }
+
+    .hidden-symbol {
+      font-size: clamp(4rem, 14vw, 9rem);
+      color: rgba(255,255,255,.18);
+      text-align: center;
+      line-height: 1.1;
+    }
+
+    .reveal-glow {
+      animation: revealPulse .7s ease both;
+    }
+
+    @keyframes revealPulse {
+      0% { transform: scale(.96); filter: brightness(.8); }
+      55% { transform: scale(1.03); filter: brightness(1.35); }
+      100% { transform: scale(1); filter: brightness(1); }
+    }
+
+    .choices {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      width: 100%;
+      padding: 18px;
+      border-top: 1px solid rgba(255,255,255,.11);
+    }
+
+    button.choice {
+      min-height: 78px;
+      font-size: 2rem;
+      background: rgba(255,255,255,.07);
+    }
+
+    button.choice.correct {
+      outline: 3px solid rgba(126,231,135,.7);
+      background: rgba(126,231,135,.18);
+    }
+
+    button.choice.wrong {
+      outline: 3px solid rgba(255,123,114,.65);
+      background: rgba(255,123,114,.14);
+    }
+
+    .stats {
+      display: grid;
+      gap: 12px;
+    }
+
+    .stat {
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.10);
+    }
+
+    .stat .label {
+      font-size: .78rem;
+      color: var(--muted);
+      margin-bottom: 3px;
+    }
+
+    .stat .value {
+      font-size: 1.55rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: .85rem;
+      line-height: 1.45;
+    }
+
+    .feedback {
+      min-height: 42px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.10);
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .feedback.good { color: var(--good); border-color: rgba(126,231,135,.35); }
+    .feedback.bad { color: var(--bad); border-color: rgba(255,123,114,.35); }
+
+    .history {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      min-height: 32px;
+    }
+
+    .dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.09);
+    }
+
+    .dot.hit { background: var(--good); }
+    .dot.miss { background: var(--bad); }
+
+    .meter {
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.10);
+    }
+
+    .meter > div {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transition: width .3s ease;
+    }
+
+    .remote-scene {
+      display: grid;
+      gap: 12px;
+      text-align: center;
+      max-width: 560px;
+    }
+
+    .remote-image {
+      width: min(520px, 92vw);
+      height: 290px;
+      border-radius: 28px;
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow: 0 24px 70px rgba(0,0,0,.38);
+      overflow: hidden;
+      position: relative;
+      background: rgba(255,255,255,.08);
+    }
+
+    .scene-sky, .scene-forest, .scene-ocean, .scene-desert, .scene-city {
+      position: absolute;
+      inset: 0;
+    }
+
+    .scene-sky { background: linear-gradient(#1e90ff, #a8e6ff 55%, #e9f8ff); }
+    .scene-sky::after { content:""; position:absolute; left:40px; top:70px; width:90px; height:90px; border-radius:50%; background:#fff; box-shadow:80px -20px 0 15px #fff, 170px 15px 0 4px #fff, 300px -8px 0 12px #fff; opacity:.82; }
+
+    .scene-forest { background: linear-gradient(#12351e, #1f6d3c); }
+    .scene-forest::before { content:""; position:absolute; inset:auto 0 0; height:70%; background: repeating-linear-gradient(70deg, transparent 0 26px, rgba(0,0,0,.15) 27px 32px); }
+    .scene-forest::after { content:"▲ ▲ ▲ ▲ ▲ ▲ ▲"; position:absolute; left:20px; bottom:20px; font-size:5rem; letter-spacing:8px; color:#072513; text-shadow: 35px -22px 0 #0a3319, 120px -10px 0 #0d4021, 220px -28px 0 #072513; }
+
+    .scene-ocean { background: linear-gradient(#0b4f8a, #00a8c8 65%, #f8dd9a 66%, #eabf6b); }
+    .scene-ocean::after { content:""; position:absolute; left:-30px; right:-30px; top:145px; height:80px; background: repeating-radial-gradient(ellipse at center, rgba(255,255,255,.45) 0 2px, transparent 3px 18px); opacity:.75; }
+
+    .scene-desert { background: linear-gradient(#ffb36b, #ffd08a 55%, #b76e38); }
+    .scene-desert::after { content:""; position:absolute; inset:auto -40px 0; height:130px; background: radial-gradient(ellipse at 25% 100%, #a85f2f 0 35%, transparent 36%), radial-gradient(ellipse at 72% 100%, #ca8248 0 42%, transparent 43%); }
+    .scene-desert::before { content:"☀"; position:absolute; top:26px; right:54px; font-size:4rem; color:#fff4ad; }
+
+    .scene-city { background: linear-gradient(#191d3a, #353d72); }
+    .scene-city::after { content:""; position:absolute; inset:auto 0 0; height:190px; background: linear-gradient(90deg, #090b16 0 13%, transparent 13% 16%, #090b16 16% 28%, transparent 28% 31%, #090b16 31% 45%, transparent 45% 48%, #090b16 48% 62%, transparent 62% 66%, #090b16 66% 82%, transparent 82% 86%, #090b16 86% 100%); }
+    .scene-city::before { content:"·· · ·· ··· · · ··"; position:absolute; left:16px; bottom:120px; z-index:2; color:#ffd166; font-size:3rem; letter-spacing:16px; }
+
+    .audio-pad {
+      width: 170px;
+      height: 170px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,.18);
+      background: radial-gradient(circle, rgba(94,234,212,.28), rgba(159,122,234,.16) 58%, rgba(255,255,255,.06));
+      box-shadow: 0 20px 70px rgba(94,234,212,.15), inset 0 0 35px rgba(255,255,255,.08);
+      font-size: 3rem;
+      cursor: pointer;
+      transition: .2s ease;
+    }
+
+    .audio-pad:hover { transform: scale(1.03); }
+    .audio-pad.playing { animation: audioPulse 1s ease infinite; }
+
+    @keyframes audioPulse {
+      0%, 100% { box-shadow: 0 20px 70px rgba(94,234,212,.15), inset 0 0 35px rgba(255,255,255,.08); }
+      50% { box-shadow: 0 20px 90px rgba(94,234,212,.4), inset 0 0 55px rgba(255,255,255,.14); }
+    }
+
+    .zen-ring {
+      width: min(360px, 80vw);
+      height: min(360px, 80vw);
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.14);
+      display: grid;
+      place-items: center;
+      background: conic-gradient(from 180deg, rgba(159,122,234,.2), rgba(94,234,212,.23), rgba(255,209,102,.18), rgba(159,122,234,.2));
+      box-shadow: inset 0 0 80px rgba(0,0,0,.25), 0 24px 70px rgba(0,0,0,.35);
+      animation: slowSpin 24s linear infinite;
+    }
+
+    .zen-core {
+      width: 68%;
+      height: 68%;
+      border-radius: 50%;
+      background: rgba(11,16,32,.78);
+      border: 1px solid rgba(255,255,255,.13);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 22px;
+      color: var(--muted);
+      animation: reverseSpin 24s linear infinite;
+    }
+
+    @keyframes slowSpin { to { transform: rotate(360deg); } }
+    @keyframes reverseSpin { to { transform: rotate(-360deg); } }
+
+    .settings-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    input[type="checkbox"] { transform: scale(1.15); }
+
+    @media (max-width: 980px) {
+      .grid { grid-template-columns: 1fr; }
+      header { grid-template-columns: 1fr; }
+      .choices { grid-template-columns: repeat(5, 1fr); }
+      .arena { min-height: 580px; }
+    }
+
+    @media (max-width: 620px) {
+      .choices { grid-template-columns: repeat(2, 1fr); }
+      button.choice:last-child { grid-column: span 2; }
+      .arena-top { align-items: stretch; flex-direction: column; }
+      .controls { justify-content: stretch; }
+      .controls > * { flex: 1; }
+    }
+  
+
+    .archive-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .archive-table-wrap {
+      max-height: 250px;
+      overflow: auto;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.12);
+      margin-top: 12px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .78rem;
+    }
+
+    th, td {
+      padding: 8px 9px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    th {
+      color: var(--muted);
+      font-weight: 800;
+      background: rgba(255,255,255,.06);
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(10px);
+    }
+
+    .mode-breakdown {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .mode-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 9px 10px;
+      border-radius: 12px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.08);
+      font-size: .84rem;
+    }
+
+    .mode-row strong { display: block; }
+    .mode-row span { color: var(--muted); font-size: .78rem; }
+
+    .danger {
+      border-color: rgba(255,123,114,.35) !important;
+      color: #ffd1cc !important;
+    }
+
+    @media (max-width: 620px) {
+      .archive-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="stars"></div>
+  <main class="wrap">
+    <header>
+      <div>
+        <h1>ESP Trainer</h1>
+        <p class="subtitle">A five-mode intuition lab. Treat it as playful attention training: guess the hidden target, reveal the result, and watch your session statistics evolve.</p>
+      </div>
+      <div class="pill">✦ Chance baseline: <strong>20%</strong></div>
+    </header>
+
+    <div class="grid">
+      <aside class="card">
+        <div class="section">
+          <h2>Training Modes</h2>
+          <div id="modeList" class="mode-list"></div>
+        </div>
+        <div class="section">
+          <h2>Session Settings</h2>
+          <div class="settings-row">
+            <span class="small">Trials</span>
+            <select id="trialLimit">
+              <option value="10">10</option>
+              <option value="25" selected>25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+              <option value="0">Open</option>
+            </select>
+          </div>
+          <label class="settings-row small">
+            <span>Auto next after guess</span>
+            <input id="autoNext" type="checkbox" checked />
+          </label>
+          <label class="settings-row small">
+            <span>Sound feedback</span>
+            <input id="soundFeedback" type="checkbox" checked />
+          </label>
+        </div>
+        <div class="section small">
+          <strong>Modes:</strong> Zener symbols, color sense, number sense, remote scene, and audio tone. The audio mode hides a tone-class target until you guess.
+        </div>
+      </aside>
+
+      <section class="card arena">
+        <div class="arena-top">
+          <div class="title-block">
+            <h2 id="modeTitle">Zener Cards</h2>
+            <p id="modeInstructions">Guess which symbol is hidden behind the card.</p>
+          </div>
+          <div class="controls">
+            <label class="mode-select-wrap">Mode
+              <select id="modeSelect"></select>
+            </label>
+            <button id="newTrialBtn" class="primary">New Trial</button>
+            <button id="revealBtn" class="secondary" disabled>Reveal</button>
+            <button id="resetBtn" class="secondary">Reset</button>
+          </div>
+        </div>
+
+        <div id="stage" class="stage"></div>
+
+        <div id="choices" class="choices"></div>
+      </section>
+
+      <aside class="card">
+        <div class="section">
+          <h2>Live Score</h2>
+          <div class="stats">
+            <div class="stat">
+              <div class="label">Accuracy</div>
+              <div id="accuracy" class="value">0%</div>
+              <div class="meter"><div id="accuracyMeter"></div></div>
+            </div>
+            <div class="stat">
+              <div class="label">Hits / Trials</div>
+              <div id="hitsTrials" class="value">0 / 0</div>
+            </div>
+            <div class="stat">
+              <div class="label">Current Streak</div>
+              <div id="streak" class="value">0</div>
+            </div>
+            <div class="stat">
+              <div class="label">Best Streak</div>
+              <div id="bestStreak" class="value">0</div>
+            </div>
+          </div>
+        </div>
+        <div class="section">
+          <h2>Feedback</h2>
+          <div id="feedback" class="feedback">Press <strong>New Trial</strong> to begin.</div>
+        </div>
+        <div class="section">
+          <h2>Last Results</h2>
+          <div id="history" class="history"></div>
+        </div>
+        <div class="section small">
+          A fair five-choice trial has a 1-in-5 hit rate. Long sessions are more meaningful than short streaks, because randomness loves drama.
+        </div>
+        <div class="section">
+          <h2>Stats Archive</h2>
+          <div class="stats">
+            <div class="stat">
+              <div class="label">Lifetime Accuracy</div>
+              <div id="lifetimeAccuracy" class="value">0%</div>
+              <div class="meter"><div id="lifetimeAccuracyMeter"></div></div>
+            </div>
+            <div class="stat">
+              <div class="label">Lifetime Hits / Trials</div>
+              <div id="lifetimeHitsTrials" class="value">0 / 0</div>
+            </div>
+          </div>
+          <div class="archive-grid">
+            <button id="exportCsvBtn" class="secondary">Export CSV</button>
+            <button id="exportJsonBtn" class="secondary">Export JSON</button>
+            <button id="importJsonBtn" class="secondary">Import JSON</button>
+            <button id="clearArchiveBtn" class="secondary danger">Clear Archive</button>
+          </div>
+          <input id="importJsonInput" type="file" accept="application/json,.json" hidden />
+          <div id="modeBreakdown" class="mode-breakdown"></div>
+          <div class="archive-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Mode</th>
+                  <th>Guess</th>
+                  <th>Target</th>
+                  <th>Hit</th>
+                </tr>
+              </thead>
+              <tbody id="archiveTable"></tbody>
+            </table>
+          </div>
+          <p class="small">Every scored guess is saved in this browser using localStorage. Export periodically if you want a durable research log.</p>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    const MODES = {
+      zener: {
+        name: "Zener Cards",
+        icon: "◯",
+        desc: "Classic five-symbol ESP practice.",
+        instructions: "Guess which symbol is hidden behind the card.",
+        choices: [
+          { label: "○", name: "Circle" },
+          { label: "＋", name: "Cross" },
+          { label: "≋", name: "Waves" },
+          { label: "□", name: "Square" },
+          { label: "☆", name: "Star" }
+        ]
+      },
+      color: {
+        name: "Color Sense",
+        icon: "◐",
+        desc: "Feel into a hidden color target.",
+        instructions: "Guess the hidden color. The card will reveal the target color after your choice.",
+        choices: [
+          { label: "🔴", name: "Red", color: "#ff5c7a" },
+          { label: "🟡", name: "Gold", color: "#ffd166" },
+          { label: "🟢", name: "Green", color: "#7ee787" },
+          { label: "🔵", name: "Blue", color: "#58a6ff" },
+          { label: "🟣", name: "Violet", color: "#c084fc" }
+        ]
+      },
+      number: {
+        name: "Number Sense",
+        icon: "⁕",
+        desc: "Guess a hidden number from 1 to 5.",
+        instructions: "Let a number arise before thinking too hard. Then choose 1 through 5.",
+        choices: [1,2,3,4,5].map(n => ({ label: String(n), name: String(n) }))
+      },
+      remote: {
+        name: "Remote Scene",
+        icon: "◈",
+        desc: "Guess an image-like scene target.",
+        instructions: "Before revealing, notice whether you sense sky, trees, water, heat, or structures.",
+        choices: [
+          { label: "☁️", name: "Sky", scene: "scene-sky" },
+          { label: "🌲", name: "Forest", scene: "scene-forest" },
+          { label: "🌊", name: "Ocean", scene: "scene-ocean" },
+          { label: "🏜️", name: "Desert", scene: "scene-desert" },
+          { label: "🌃", name: "City", scene: "scene-city" }
+        ]
+      },
+      audio: {
+        name: "Audio Tone",
+        icon: "♪",
+        desc: "Guess the hidden tone class by listening.",
+        instructions: "Press the listening orb. A disguised tone plays. Guess which tone family it belongs to.",
+        choices: [
+          { label: "Low", name: "Low", freq: 196 },
+          { label: "Warm", name: "Warm", freq: 261.63 },
+          { label: "Bright", name: "Bright", freq: 329.63 },
+          { label: "Clear", name: "Clear", freq: 392 },
+          { label: "High", name: "High", freq: 523.25 }
+        ]
+      }
+    };
+
+    const STORAGE_KEY = "espTrainerTrialArchive.v1";
+
+    const state = {
+      mode: "zener",
+      target: null,
+      guessed: false,
+      selectedIndex: null,
+      trials: 0,
+      hits: 0,
+      streak: 0,
+      bestStreak: 0,
+      history: [],
+      archive: loadArchive(),
+      sessionId: makeSessionId(),
+      audioCtx: null,
+      pendingAutoTimer: null
+    };
+
+    const els = {
+      modeList: document.getElementById("modeList"),
+      modeSelect: document.getElementById("modeSelect"),
+      modeTitle: document.getElementById("modeTitle"),
+      modeInstructions: document.getElementById("modeInstructions"),
+      stage: document.getElementById("stage"),
+      choices: document.getElementById("choices"),
+      newTrialBtn: document.getElementById("newTrialBtn"),
+      revealBtn: document.getElementById("revealBtn"),
+      resetBtn: document.getElementById("resetBtn"),
+      accuracy: document.getElementById("accuracy"),
+      accuracyMeter: document.getElementById("accuracyMeter"),
+      hitsTrials: document.getElementById("hitsTrials"),
+      streak: document.getElementById("streak"),
+      bestStreak: document.getElementById("bestStreak"),
+      feedback: document.getElementById("feedback"),
+      history: document.getElementById("history"),
+      trialLimit: document.getElementById("trialLimit"),
+      autoNext: document.getElementById("autoNext"),
+      soundFeedback: document.getElementById("soundFeedback"),
+      lifetimeAccuracy: document.getElementById("lifetimeAccuracy"),
+      lifetimeAccuracyMeter: document.getElementById("lifetimeAccuracyMeter"),
+      lifetimeHitsTrials: document.getElementById("lifetimeHitsTrials"),
+      modeBreakdown: document.getElementById("modeBreakdown"),
+      archiveTable: document.getElementById("archiveTable"),
+      exportCsvBtn: document.getElementById("exportCsvBtn"),
+      exportJsonBtn: document.getElementById("exportJsonBtn"),
+      importJsonBtn: document.getElementById("importJsonBtn"),
+      importJsonInput: document.getElementById("importJsonInput"),
+      clearArchiveBtn: document.getElementById("clearArchiveBtn")
+    };
+
+    function pick(arr) {
+      return Math.floor(Math.random() * arr.length);
+    }
+
+    function makeSessionId() {
+      return "session-" + new Date().toISOString() + "-" + Math.random().toString(36).slice(2, 9);
+    }
+
+    function loadArchive() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (err) {
+        console.warn("Could not read ESP archive:", err);
+        return [];
+      }
+    }
+
+    function saveArchive() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state.archive));
+      } catch (err) {
+        console.warn("Could not save ESP archive:", err);
+        setFeedback("This browser could not save the latest trial. Export your data if storage is full.", "bad");
+      }
+    }
+
+    function downloadText(filename, text, mimeType) {
+      const blob = new Blob([text], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function csvEscape(value) {
+      const s = String(value ?? "");
+      const hasSpecial = s.includes(",") || s.includes('"') || s.includes(String.fromCharCode(10)) || s.includes(String.fromCharCode(13));
+      return hasSpecial ? '"' + s.replaceAll('"', '""') + '"' : s;
+    }
+
+    function archiveToCsv() {
+      const headers = [
+        "sessionId", "timestamp", "mode", "modeName", "target", "guess", "hit",
+        "sessionTrialNumber", "sessionHits", "sessionAccuracy", "streak", "bestStreak"
+      ];
+      const rows = state.archive.map(row => headers.map(h => csvEscape(row[h])).join(","));
+      return [headers.join(","), ...rows].join(String.fromCharCode(10));
+    }
+
+    function formatTime(iso) {
+      try {
+        return new Date(iso).toLocaleString([], {
+          month: "short", day: "numeric", hour: "numeric", minute: "2-digit"
+        });
+      } catch {
+        return iso;
+      }
+    }
+
+    function recordTrial(guessChoice, hit) {
+      const sessionAccuracy = state.trials ? Number(((state.hits / state.trials) * 100).toFixed(2)) : 0;
+      const row = {
+        sessionId: state.sessionId,
+        timestamp: new Date().toISOString(),
+        mode: state.mode,
+        modeName: currentMode().name,
+        target: state.target?.name ?? "",
+        guess: guessChoice?.name ?? "",
+        hit,
+        sessionTrialNumber: state.trials,
+        sessionHits: state.hits,
+        sessionAccuracy,
+        streak: state.streak,
+        bestStreak: state.bestStreak
+      };
+      state.archive.push(row);
+      saveArchive();
+      updateArchiveStats();
+    }
+
+    function currentMode() {
+      return MODES[state.mode];
+    }
+
+    function switchMode(key) {
+      if (!MODES[key] || key === state.mode) return;
+      state.mode = key;
+      clearTimeout(state.pendingAutoTimer);
+      renderModeButtons();
+      renderModeSelect();
+      resetSession(false);
+      newTrial();
+    }
+
+    function renderModeSelect() {
+      els.modeSelect.innerHTML = "";
+      Object.entries(MODES).forEach(([key, mode]) => {
+        const opt = document.createElement("option");
+        opt.value = key;
+        opt.textContent = mode.name;
+        opt.selected = key === state.mode;
+        els.modeSelect.appendChild(opt);
+      });
+    }
+
+    function renderModeButtons() {
+      els.modeList.innerHTML = "";
+      Object.entries(MODES).forEach(([key, mode]) => {
+        const btn = document.createElement("button");
+        btn.className = "mode-btn" + (key === state.mode ? " active" : "");
+        btn.innerHTML = `
+          <div class="mode-name">${mode.icon} ${mode.name}</div>
+          <div class="mode-desc">${mode.desc}</div>
+        `;
+        btn.addEventListener("click", () => switchMode(key));
+        els.modeList.appendChild(btn);
+      });
+    }
+
+    function renderStage(revealed = false) {
+      const mode = currentMode();
+      els.modeTitle.textContent = mode.name;
+      els.modeInstructions.textContent = mode.instructions;
+      els.stage.innerHTML = "";
+
+      if (state.mode === "remote") {
+        const wrap = document.createElement("div");
+        wrap.className = "remote-scene";
+        const image = document.createElement("div");
+        image.className = "remote-image";
+        if (revealed && state.target) {
+          image.innerHTML = `<div class="${state.target.scene}"></div>`;
+          image.classList.add("reveal-glow");
+        } else {
+          image.innerHTML = `<div class="hidden-symbol">?</div>`;
+          image.style.display = "grid";
+          image.style.placeItems = "center";
+        }
+        const note = document.createElement("div");
+        note.className = "small";
+        note.textContent = revealed && state.target ? `Target scene: ${state.target.name}` : "Quietly ask: what kind of place is behind the veil?";
+        wrap.appendChild(image);
+        wrap.appendChild(note);
+        els.stage.appendChild(wrap);
+        return;
+      }
+
+      if (state.mode === "audio") {
+        const wrap = document.createElement("div");
+        wrap.className = "remote-scene";
+        const pad = document.createElement("button");
+        pad.className = "audio-pad";
+        pad.type = "button";
+        pad.innerHTML = revealed ? "♪" : "👂";
+        pad.title = "Play hidden tone";
+        pad.addEventListener("click", () => playTargetTone(pad));
+        const note = document.createElement("div");
+        note.className = "small";
+        note.textContent = revealed && state.target ? `Target tone: ${state.target.name}` : "Press the orb to hear the hidden tone, then guess the tone family.";
+        wrap.appendChild(pad);
+        wrap.appendChild(note);
+        els.stage.appendChild(wrap);
+        return;
+      }
+
+      if (state.mode === "color") {
+        const card = document.createElement("div");
+        card.className = "target-card" + (revealed ? " reveal-glow" : "");
+        if (revealed && state.target) {
+          card.style.background = `radial-gradient(circle at 50% 38%, ${state.target.color}, rgba(255,255,255,.06) 58%), linear-gradient(145deg, rgba(255,255,255,.14), rgba(255,255,255,.045))`;
+          card.innerHTML = `<div class="symbol">${state.target.label}</div>`;
+        } else {
+          card.innerHTML = `<div class="hidden-symbol">?</div>`;
+        }
+        els.stage.appendChild(card);
+        return;
+      }
+
+      if (state.mode === "number") {
+        const card = document.createElement("div");
+        card.className = "target-card" + (revealed ? " reveal-glow" : "");
+        card.innerHTML = revealed && state.target
+          ? `<div class="symbol">${state.target.label}</div>`
+          : `<div class="zen-ring"><div class="zen-core">Let the number appear before the mind starts narrating.</div></div>`;
+        els.stage.appendChild(card);
+        return;
+      }
+
+      const card = document.createElement("div");
+      card.className = "target-card" + (revealed ? " reveal-glow" : "");
+      card.innerHTML = revealed && state.target
+        ? `<div class="symbol">${state.target.label}</div>`
+        : `<div class="hidden-symbol">?</div>`;
+      els.stage.appendChild(card);
+    }
+
+    function renderChoices() {
+      const mode = currentMode();
+      els.choices.innerHTML = "";
+      mode.choices.forEach((choice, index) => {
+        const btn = document.createElement("button");
+        btn.className = "choice";
+        btn.innerHTML = state.mode === "audio" ? `<span style="font-size:1.1rem">${choice.label}</span>` : choice.label;
+        btn.title = choice.name;
+        btn.disabled = !state.target || state.guessed;
+        if (state.guessed) {
+          if (index === mode.choices.indexOf(state.target)) btn.classList.add("correct");
+          else if (index === state.selectedIndex) btn.classList.add("wrong");
+        }
+        btn.addEventListener("click", () => guess(index));
+        els.choices.appendChild(btn);
+      });
+    }
+
+    function newTrial() {
+      clearTimeout(state.pendingAutoTimer);
+      const limit = Number(els.trialLimit.value);
+      if (limit > 0 && state.trials >= limit) {
+        setFeedback(`Session complete: ${state.hits} hits in ${state.trials} trials. Reset or choose Open mode to continue.`, "good");
+        return;
+      }
+      const mode = currentMode();
+      state.target = mode.choices[pick(mode.choices)];
+      state.guessed = false;
+      state.selectedIndex = null;
+      els.revealBtn.disabled = false;
+      renderStage(false);
+      renderChoices();
+      setFeedback(state.mode === "audio" ? "Listen, then choose the hidden tone family." : "New target is hidden. Choose when ready.", "");
+    }
+
+    function guess(index) {
+      if (!state.target || state.guessed) return;
+      const mode = currentMode();
+      state.guessed = true;
+      state.selectedIndex = index;
+      const hit = mode.choices[index] === state.target;
+
+      state.trials += 1;
+      if (hit) {
+        state.hits += 1;
+        state.streak += 1;
+        state.bestStreak = Math.max(state.bestStreak, state.streak);
+      } else {
+        state.streak = 0;
+      }
+      state.history.unshift(hit);
+      state.history = state.history.slice(0, 30);
+
+      recordTrial(mode.choices[index], hit);
+      renderStage(true);
+      renderChoices();
+      updateStats();
+      setFeedback(hit ? `Hit. Target was ${state.target.name}.` : `Miss. Target was ${state.target.name}.`, hit ? "good" : "bad");
+      playFeedback(hit);
+      els.revealBtn.disabled = true;
+
+      if (els.autoNext.checked) {
+        state.pendingAutoTimer = setTimeout(() => newTrial(), 1250);
+      }
+    }
+
+    function revealOnly() {
+      if (!state.target || state.guessed) return;
+      renderStage(true);
+      setFeedback(`Revealed without scoring: ${state.target.name}.`, "");
+      els.revealBtn.disabled = true;
+    }
+
+    function updateStats() {
+      const accuracy = state.trials ? Math.round((state.hits / state.trials) * 100) : 0;
+      els.accuracy.textContent = accuracy + "%";
+      els.accuracyMeter.style.width = Math.min(100, accuracy) + "%";
+      els.hitsTrials.textContent = `${state.hits} / ${state.trials}`;
+      els.streak.textContent = state.streak;
+      els.bestStreak.textContent = state.bestStreak;
+
+      els.history.innerHTML = "";
+      state.history.forEach(hit => {
+        const dot = document.createElement("div");
+        dot.className = "dot " + (hit ? "hit" : "miss");
+        els.history.appendChild(dot);
+      });
+    }
+
+    function updateArchiveStats() {
+      const total = state.archive.length;
+      const hits = state.archive.filter(row => row.hit).length;
+      const accuracy = total ? Math.round((hits / total) * 100) : 0;
+      els.lifetimeAccuracy.textContent = accuracy + "%";
+      els.lifetimeAccuracyMeter.style.width = Math.min(100, accuracy) + "%";
+      els.lifetimeHitsTrials.textContent = `${hits} / ${total}`;
+
+      els.modeBreakdown.innerHTML = "";
+      Object.entries(MODES).forEach(([key, mode]) => {
+        const rows = state.archive.filter(row => row.mode === key);
+        const modeHits = rows.filter(row => row.hit).length;
+        const modeAccuracy = rows.length ? Math.round((modeHits / rows.length) * 100) : 0;
+        const div = document.createElement("div");
+        div.className = "mode-row";
+        div.innerHTML = `
+          <div><strong>${mode.icon} ${mode.name}</strong><span>${modeHits} / ${rows.length} hits</span></div>
+          <strong>${modeAccuracy}%</strong>
+        `;
+        els.modeBreakdown.appendChild(div);
+      });
+
+      els.archiveTable.innerHTML = "";
+      state.archive.slice(-40).reverse().forEach(row => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${formatTime(row.timestamp)}</td>
+          <td>${row.modeName}</td>
+          <td>${row.guess}</td>
+          <td>${row.target}</td>
+          <td>${row.hit ? "✓" : "×"}</td>
+        `;
+        els.archiveTable.appendChild(tr);
+      });
+    }
+
+    function setFeedback(text, kind) {
+      els.feedback.className = "feedback" + (kind ? " " + kind : "");
+      els.feedback.innerHTML = text;
+    }
+
+    function resetSession(startNew = true) {
+      clearTimeout(state.pendingAutoTimer);
+      state.sessionId = makeSessionId();
+      state.target = null;
+      state.guessed = false;
+      state.selectedIndex = null;
+      state.trials = 0;
+      state.hits = 0;
+      state.streak = 0;
+      state.bestStreak = 0;
+      state.history = [];
+      els.revealBtn.disabled = true;
+      updateStats();
+      renderStage(false);
+      renderChoices();
+      setFeedback("Session reset.", "");
+      if (startNew) newTrial();
+    }
+
+    function ensureAudioContext() {
+      if (!state.audioCtx) {
+        state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (state.audioCtx.state === "suspended") state.audioCtx.resume();
+      return state.audioCtx;
+    }
+
+    function playTargetTone(pad) {
+      if (!state.target || state.mode !== "audio") return;
+      const ctx = ensureAudioContext();
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const filter = ctx.createBiquadFilter();
+      const trem = ctx.createOscillator();
+      const tremGain = ctx.createGain();
+
+      const jitter = 1 + (Math.random() - 0.5) * 0.03;
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(state.target.freq * jitter, now);
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(900, now);
+      filter.Q.setValueAtTime(2.5, now);
+
+      trem.type = "sine";
+      trem.frequency.setValueAtTime(5.5, now);
+      tremGain.gain.setValueAtTime(0.035, now);
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.22, now + 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.95);
+
+      trem.connect(tremGain);
+      tremGain.connect(osc.frequency);
+      osc.connect(filter).connect(gain).connect(ctx.destination);
+      osc.start(now);
+      trem.start(now);
+      osc.stop(now + 1.0);
+      trem.stop(now + 1.0);
+
+      if (pad) {
+        pad.classList.add("playing");
+        setTimeout(() => pad.classList.remove("playing"), 1000);
+      }
+    }
+
+    function playFeedback(hit) {
+      if (!els.soundFeedback.checked) return;
+      const ctx = ensureAudioContext();
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = hit ? "triangle" : "sawtooth";
+      osc.frequency.setValueAtTime(hit ? 660 : 160, now);
+      if (hit) osc.frequency.exponentialRampToValueAtTime(990, now + 0.18);
+      else osc.frequency.exponentialRampToValueAtTime(120, now + 0.18);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.08, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.24);
+    }
+
+    els.modeSelect.addEventListener("change", event => switchMode(event.target.value));
+    els.newTrialBtn.addEventListener("click", newTrial);
+    els.revealBtn.addEventListener("click", revealOnly);
+    els.resetBtn.addEventListener("click", () => resetSession(true));
+    els.trialLimit.addEventListener("change", () => {
+      if (Number(els.trialLimit.value) > 0 && state.trials >= Number(els.trialLimit.value)) {
+        setFeedback("Trial limit changed. Reset to start a clean session, or choose Open.", "");
+      }
+    });
+
+    els.exportCsvBtn.addEventListener("click", () => {
+      const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
+      downloadText(`esp-trainer-archive-${stamp}.csv`, archiveToCsv(), "text/csv;charset=utf-8");
+      setFeedback("CSV archive exported.", "good");
+    });
+
+    els.exportJsonBtn.addEventListener("click", () => {
+      const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
+      downloadText(`esp-trainer-archive-${stamp}.json`, JSON.stringify(state.archive, null, 2), "application/json;charset=utf-8");
+      setFeedback("JSON archive exported.", "good");
+    });
+
+    els.importJsonBtn.addEventListener("click", () => els.importJsonInput.click());
+
+    els.importJsonInput.addEventListener("change", async event => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      try {
+        const text = await file.text();
+        const imported = JSON.parse(text);
+        if (!Array.isArray(imported)) throw new Error("Archive file must contain an array of trial records.");
+        const cleaned = imported.filter(row => row && typeof row === "object" && "timestamp" in row && "mode" in row && "hit" in row);
+        state.archive = cleaned;
+        saveArchive();
+        updateArchiveStats();
+        setFeedback(`Imported ${cleaned.length} archived trials.`, "good");
+      } catch (err) {
+        setFeedback("Could not import that JSON archive. Make sure it came from this trainer.", "bad");
+      } finally {
+        event.target.value = "";
+      }
+    });
+
+    els.clearArchiveBtn.addEventListener("click", () => {
+      const ok = confirm("Clear the lifetime ESP archive stored in this browser? Export first if you want to keep it.");
+      if (!ok) return;
+      state.archive = [];
+      saveArchive();
+      updateArchiveStats();
+      setFeedback("Lifetime archive cleared.", "");
+    });
+
+    renderModeButtons();
+    renderModeSelect();
+    renderStage(false);
+    renderChoices();
+    updateStats();
+    updateArchiveStats();
+  </script>
+</body>
+</html>
