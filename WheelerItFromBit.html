@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Information, Physics, Quantum: The Search for Links — J. A. Wheeler, 1989</title>
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+    options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea'] }
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@300;400;500&display=swap');
+
+  :root {
+    --void: #07090f;
+    --void-warm: #0d1018;
+    --paper: #f1ead8;
+    --paper-shadow: #d8d0bb;
+    --paper-edge: #c4bba2;
+    --ink: #14110a;
+    --ink-mid: #3a3422;
+    --ink-faded: #6a6249;
+    --gold: #8a6420;
+    --gold-bright: #b08438;
+    --red: #6a1818;
+    --red-faded: #9a4040;
+    --blue: #1a2c4a;
+    --rule: #8a7e60;
+    --bit-0: #2a3a5a;
+    --bit-1: #6a4818;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--void);
+    background-image:
+      radial-gradient(ellipse 90% 60% at 50% 0%, #181f30 0%, transparent 70%),
+      radial-gradient(ellipse 70% 50% at 50% 100%, #15182a 0%, transparent 70%);
+    background-attachment: fixed;
+    font-family: 'EB Garamond', Georgia, serif;
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 30px 16px 80px;
+    line-height: 1.55;
+  }
+
+  /* Floating bit-field background */
+  .bitfield {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+    opacity: 0.08;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #a0b8e0;
+    letter-spacing: 4px;
+    line-height: 1.8;
+  }
+  .bitfield-inner {
+    position: absolute;
+    inset: -20px;
+    white-space: pre-wrap;
+    word-break: break-all;
+    user-select: none;
+  }
+
+  /* Catalog header bar */
+  .catalog-bar {
+    max-width: 820px;
+    margin: 0 auto 0;
+    background: linear-gradient(90deg, var(--gold) 0%, var(--gold-bright) 50%, var(--gold) 100%);
+    color: #1a1408;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    padding: 7px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 2;
+    border-bottom: 1px solid #4a3a18;
+  }
+  .catalog-bar span { font-weight: 500; }
+
+  .document {
+    max-width: 820px;
+    margin: 0 auto;
+    background: var(--paper);
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,0.25),
+      0 30px 80px rgba(0,0,0,0.7),
+      inset 0 0 60px rgba(120,90,40,0.08);
+    padding: 70px 70px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Edge stains */
+  .document::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse at 0% 0%, rgba(120,80,30,0.15), transparent 25%),
+      radial-gradient(ellipse at 100% 100%, rgba(80,50,20,0.10), transparent 30%),
+      radial-gradient(ellipse at 100% 0%, rgba(60,40,10,0.08), transparent 20%);
+  }
+
+  /* Header */
+  .masthead {
+    text-align: center;
+    margin-bottom: 50px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--rule);
+    position: relative;
+  }
+  .masthead::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 38%;
+    right: 38%;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  .chapter-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 6px;
+    color: var(--gold);
+    margin-bottom: 18px;
+    font-weight: 500;
+  }
+
+  h1.title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 500;
+    font-size: 38px;
+    line-height: 1.15;
+    color: var(--ink);
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+  }
+  h1.title em {
+    font-style: italic;
+    color: var(--red);
+    font-weight: 600;
+  }
+
+  .subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: var(--ink-mid);
+    margin-top: 14px;
+  }
+
+  .author {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    margin-top: 24px;
+    letter-spacing: 1px;
+    color: var(--ink);
+  }
+  .author small {
+    display: block;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 3px;
+    color: var(--gold);
+    margin-top: 6px;
+  }
+
+  .source-line {
+    font-size: 12px;
+    font-style: italic;
+    color: var(--ink-faded);
+    margin-top: 18px;
+    font-family: 'EB Garamond', serif;
+  }
+
+  /* Abstract */
+  .abstract {
+    margin: 0 auto 50px;
+    padding: 28px 32px;
+    border-left: 3px double var(--gold);
+    border-right: 3px double var(--gold);
+    background: rgba(138, 100, 32, 0.04);
+    position: relative;
+  }
+  .abstract::before {
+    content: 'ABSTRACT';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--paper);
+    padding: 0 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    font-weight: 500;
+  }
+  .abstract p {
+    font-size: 15.5px;
+    line-height: 1.7;
+    text-align: justify;
+    hyphens: auto;
+  }
+
+  /* Section headings */
+  h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 500;
+    font-size: 26px;
+    color: var(--ink);
+    margin: 60px 0 24px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--rule);
+    position: relative;
+    letter-spacing: 0.3px;
+  }
+  h2 .sec-num {
+    color: var(--gold);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    margin-right: 14px;
+    vertical-align: middle;
+  }
+
+  h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 20px;
+    color: var(--ink);
+    margin: 32px 0 14px;
+  }
+  h3 .marker {
+    color: var(--red);
+    font-style: normal;
+    font-weight: 600;
+    margin-right: 8px;
+  }
+
+  /* Body paragraphs */
+  p {
+    font-size: 16px;
+    line-height: 1.7;
+    text-align: justify;
+    hyphens: auto;
+    margin-bottom: 14px;
+    text-indent: 1.5em;
+  }
+  p.no-indent { text-indent: 0; }
+  p.lead { text-indent: 0; }
+  p.lead::first-letter {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 56px;
+    line-height: 0.9;
+    float: left;
+    padding: 6px 8px 0 0;
+    color: var(--red);
+    font-weight: 600;
+  }
+
+  /* Inline */
+  em { font-style: italic; }
+  strong { font-weight: 600; }
+
+  .it-from-bit {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 600;
+    color: var(--red);
+    letter-spacing: 0.5px;
+  }
+
+  /* Lists */
+  ul.guide-list {
+    list-style: none;
+    margin: 18px 0 28px 30px;
+    padding-left: 0;
+  }
+  ul.guide-list li {
+    position: relative;
+    padding: 6px 0 6px 30px;
+    font-size: 15.5px;
+    font-style: italic;
+    color: var(--ink-mid);
+  }
+  ul.guide-list li::before {
+    content: '◦';
+    position: absolute;
+    left: 0;
+    top: 6px;
+    color: var(--gold);
+    font-size: 18px;
+    font-style: normal;
+  }
+
+  /* Equations */
+  .equation {
+    margin: 24px 0;
+    padding: 14px 20px;
+    text-align: center;
+    position: relative;
+    background: rgba(26, 44, 74, 0.03);
+    border-top: 1px solid rgba(138, 126, 96, 0.4);
+    border-bottom: 1px solid rgba(138, 126, 96, 0.4);
+  }
+  .equation .eq-num {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--gold);
+  }
+
+  /* Bekenstein sphere figure */
+  .figure {
+    margin: 40px auto;
+    text-align: center;
+  }
+  .figure-svg-wrapper {
+    display: inline-block;
+    padding: 20px;
+    background: radial-gradient(circle at 50% 40%, rgba(20,17,10,0.06) 0%, transparent 70%);
+  }
+  .figure-caption {
+    margin-top: 16px;
+    font-size: 13px;
+    line-height: 1.6;
+    font-style: italic;
+    color: var(--ink-mid);
+    max-width: 580px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: justify;
+    padding: 0 20px;
+  }
+  .figure-caption strong {
+    font-style: normal;
+    color: var(--ink);
+  }
+
+  /* Pull quote */
+  .pull-quote {
+    margin: 32px 40px;
+    padding: 20px 28px;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 19px;
+    line-height: 1.5;
+    color: var(--ink);
+    text-align: center;
+    border-top: 1px solid var(--gold);
+    border-bottom: 1px solid var(--gold);
+    position: relative;
+  }
+  .pull-quote::before, .pull-quote::after {
+    content: '✦';
+    position: absolute;
+    color: var(--gold);
+    font-size: 12px;
+    background: var(--paper);
+    padding: 0 8px;
+  }
+  .pull-quote::before { top: -6px; left: 50%; transform: translateX(-50%); }
+  .pull-quote::after { bottom: -6px; left: 50%; transform: translateX(-50%); }
+
+  /* Section divider */
+  .divider {
+    text-align: center;
+    margin: 50px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 6px;
+    color: var(--gold);
+    user-select: none;
+  }
+  .divider span { padding: 0 8px; }
+
+  /* References */
+  .references {
+    margin-top: 60px;
+    padding-top: 32px;
+    border-top: 2px solid var(--rule);
+  }
+  .references h2 {
+    border-bottom: none;
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .ref-grid {
+    column-count: 2;
+    column-gap: 32px;
+    column-rule: 1px solid rgba(138,126,96,0.3);
+    font-size: 11.5px;
+    line-height: 1.5;
+  }
+  .ref-grid .ref {
+    break-inside: avoid;
+    margin-bottom: 9px;
+    padding-left: 28px;
+    text-indent: -28px;
+    color: var(--ink-mid);
+    text-align: left;
+    font-style: normal;
+  }
+  .ref-grid .ref-num {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--gold);
+    font-size: 10.5px;
+    margin-right: 4px;
+    font-weight: 500;
+  }
+  .ref-grid .ref em { font-style: italic; }
+
+  /* Discussion */
+  .discussion {
+    margin-top: 50px;
+    padding: 28px 32px;
+    background: rgba(26, 44, 74, 0.04);
+    border-left: 3px solid var(--blue);
+  }
+  .discussion h2 {
+    margin-top: 0;
+    border-bottom: 1px solid var(--blue);
+  }
+  .speaker {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-style: italic;
+    color: var(--blue);
+    margin-right: 6px;
+  }
+  .discussion p { text-indent: 0; }
+  .discussion ol {
+    margin: 10px 0 14px 32px;
+    font-size: 15.5px;
+    line-height: 1.65;
+  }
+  .discussion ol li { margin-bottom: 8px; padding-left: 6px; }
+
+  /* Acknowledgements */
+  .ack {
+    margin-top: 48px;
+    padding: 24px 28px;
+    background: rgba(106, 72, 24, 0.04);
+    border: 1px dashed var(--gold);
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--ink-mid);
+  }
+  .ack h2 {
+    margin-top: 0;
+    font-size: 20px;
+    border-bottom: none;
+    text-align: center;
+    color: var(--gold);
+  }
+  .ack p { text-indent: 1.2em; font-size: 14px; }
+
+  /* Footer */
+  .colophon {
+    max-width: 820px;
+    margin: 20px auto 0;
+    padding: 16px;
+    text-align: center;
+    color: rgba(180, 180, 220, 0.4);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    position: relative;
+    z-index: 2;
+  }
+  .colophon .bits {
+    color: rgba(180, 180, 220, 0.25);
+    font-size: 9px;
+    margin-top: 6px;
+    letter-spacing: 4px;
+  }
+
+  /* Inline citation */
+  .cite {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--gold);
+    vertical-align: super;
+    line-height: 0;
+    font-weight: 500;
+  }
+
+  /* Reduce indent for paragraphs immediately after headings */
+  h2 + p, h3 + p, .equation + p, .figure + p, .pull-quote + p {
+    text-indent: 0;
+  }
+
+  @media (max-width: 720px) {
+    body { padding: 16px 6px 40px; }
+    .document { padding: 36px 24px 48px; }
+    h1.title { font-size: 26px; }
+    .author { font-size: 18px; }
+    .ref-grid { column-count: 1; }
+    .pull-quote { margin: 24px 0; padding: 16px 18px; font-size: 16px; }
+    .abstract { padding: 22px 18px; }
+    p { font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bitfield" aria-hidden="true">
+  <div class="bitfield-inner" id="bitfield"></div>
+</div>
+
+<div class="catalog-bar">
+  <span>PROC. 3RD INT. SYMP. FOUND. QUANTUM MECHANICS</span>
+  <span>TOKYO &middot; 28–31 AUG 1989</span>
+  <span>PP. 354–368</span>
+</div>
+
+<article class="document">
+
+  <header class="masthead">
+    <div class="chapter-num">CHAPTER 19</div>
+    <h1 class="title">Information, Physics, Quantum:<br><em>The Search for Links</em></h1>
+    <div class="subtitle">Can we ever expect to understand existence?</div>
+    <div class="author">
+      John Archibald Wheeler
+      <small>PRINCETON UNIVERSITY</small>
+    </div>
+    <div class="source-line">Reproduced from <em>Proc. 3rd Int. Symp. Foundations of Quantum Mechanics</em>, Tokyo, 1989, pp. 354–368. Copyright held by the author.</div>
+  </header>
+
+  <section class="abstract">
+    <p>This report reviews what quantum physics and information theory have to tell us about the age-old question, <em>How come existence?</em> No escape is evident from four conclusions: <strong>(1)</strong> The world cannot be a giant machine, ruled by any preestablished continuum physical law. <strong>(2)</strong> There is no such thing at the microscopic level as space or time or spacetime continuum. <strong>(3)</strong> The familiar probability function or functional, and wave equation or functional wave equation, of standard quantum theory provide mere continuum idealizations and by reason of this circumstance conceal the information-theoretic source from which they derive. <strong>(4)</strong> No element in the description of physics shows itself as closer to primordial than the elementary quantum phenomenon, that is, the elementary device-intermediated act of posing a yes-no physical question and eliciting an answer or, in brief, the elementary act of <em>observer-participancy</em>. Otherwise stated, every physical quantity, every <em>it</em>, derives its ultimate significance from bits, binary yes-or-no indications, a conclusion which we epitomize in the phrase, <span class="it-from-bit">it from bit</span>.</p>
+  </section>
+
+  <h2><span class="sec-num">19.1</span>Quantum Physics Requires a New View of Reality</h2>
+
+  <p class="lead">Revolution in outlook though Kepler, Newton, and Einstein brought us <span class="cite">[1–4]</span>, and still more startling the story of life <span class="cite">[5–7]</span> that evolution forced upon an unwilling world, the ultimate shock to preconceived ideas lies ahead, be it a decade hence, a century or a millenium. The overarching principle of 20th-century physics, the quantum <span class="cite">[8]</span> &mdash; and the principle of complementarity <span class="cite">[9]</span> that is central idea of the quantum &mdash; leaves us no escape, Niels Bohr tells us, <span class="cite">[10]</span> from "a radical revision of our attitude as regards physical reality" and a "fundamental modification of all ideas regarding the absolute character of physical phenomena." Transcending Einstein's summons <span class="cite">[11]</span> of 1908, "This quantum business is so incredibly important and difficult that everyone should busy himself with it," Bohr's modest words direct us to the supreme goal: <em>Deduce the quantum from an understanding of existence.</em></p>
+
+  <p>How make headway toward a goal so great against difficulties so large? The search for understanding presents to us three questions, four no's and five clues:</p>
+
+  <p class="no-indent"><em>Three questions,</em></p>
+  <ul class="guide-list">
+    <li>How come existence?</li>
+    <li>How come the quantum?</li>
+    <li>How come "one world" out of many observer-participants?</li>
+  </ul>
+
+  <p class="no-indent"><em>Four no's,</em></p>
+  <ul class="guide-list">
+    <li>No tower of turtles</li>
+    <li>No laws</li>
+    <li>No continuum</li>
+    <li>No space, no time.</li>
+  </ul>
+
+  <p class="no-indent"><em>Five clues,</em></p>
+  <ul class="guide-list">
+    <li>The boundary of a boundary is zero.</li>
+    <li>No question? No answer!</li>
+    <li>The super-Copernican principle.</li>
+    <li>"Consciousness"</li>
+    <li>More is different.</li>
+  </ul>
+
+  <h2><span class="sec-num">19.2</span>"It from Bit" as Guide in Search for Link Connecting Physics, Quantum and Information</h2>
+
+  <p>In default of a tentative idea or working hypothesis, these questions, no's and clues &mdash; yet to be discussed &mdash; do not move us ahead. Nor will any abundance of clues assist a detective who is unwilling to theorize how the crime was committed! A wrong theory? The policy of the engine inventor, John Kris, reassures us, "Start her up and see why she don't go!" In this spirit <span class="cite">[12–47]</span> I, like other searchers <span class="cite">[48–51]</span>, attempt formulation after formulation of the central issues, and here present a wider overview, taking for working hypothesis the most effective one that has survived this winnowing: <span class="it-from-bit">It from bit.</span> Otherwise put, every <em>it</em> &mdash; every particle, every field of force, even the spacetime continuum itself &mdash; derives its function, its meaning, its very existence entirely &mdash; even if in some contexts indirectly &mdash; from the apparatus-elicited answers to yes or no questions, binary choices <span class="cite">[52]</span>, <strong>bits</strong>.</p>
+
+  <div class="pull-quote">
+    It from bit symbolizes the idea that every item of the physical world has at bottom &mdash; at a very deep bottom, in most instances &mdash; an immaterial source and explanation; that what we call reality arises in the last analysis from the posing of yes-no questions and the registering of equipment-evoked responses; in short, that all things physical are information-theoretic in origin and this is a <em>participatory universe</em>.
+  </div>
+
+  <p>Three examples may illustrate the theme of <span class="it-from-bit">it from bit</span>. First, the photon. With polarizer over the distant source and analyzer of polarization over the photodetector under watch, we ask the yes or no question, "Did the counter register a click during the specified second?" If yes, we often say, "A photon did it." We know perfectly well that the photon existed neither before the emission nor after the detection. However, we also have to recognize that any talk of the photon "existing" during the intermediate period is only a blown-up version of the raw fact, a count.</p>
+
+  <p>The yes or no that is recorded constitutes an unsplitable bit of information. A photon, Wootters and Zurek demonstrate <span class="cite">[53, 54]</span>, cannot be cloned.</p>
+
+  <p>As second example of <span class="it-from-bit">it from bit</span>, we recall the Aharonov-Bohm scheme <span class="cite">[55]</span> to measure a magnetic flux. Electron counters stationed off to the right of a doubly-slit screen give yes-or-no indications of the arrival of an electron from the source located off to the left of the screen, both before the flux is turned on and afterward. That flux of magnetic lines of force finds itself embraced between &mdash; but untouched by &mdash; the two electron beams that fan out from the two slits. The beams interfere. The shift in interference fringes between field off and field on reveals the magnitude of the flux,</p>
+
+  <div class="equation">
+    \[\begin{aligned}
+    &\text{(phase change around perimeter of the included area)} \\
+    &= 2\pi \times \text{(shift of interference pattern, measured in number of fringes)} \\
+    &= \text{(electron charge)} \times \text{(magnetic flux embraced)}/\hbar c
+    \end{aligned}\]
+    <span class="eq-num">(19.1)</span>
+  </div>
+
+  <p>Here $\hbar = 1.0546 \times 10^{-27}\,\text{g cm}^2/\text{s}$ is the quantum in conventional units, or in geometric units <span class="cite">[4, 16]</span> &mdash; where both time and mass are measured in the units of length &mdash; $\hbar = \hbar c = 2.612 \times 10^{-66}\,\text{cm}^2 = $ the square of the Planck length, $1.616 \times 10^{-33}\,\text{cm}$ = what we hereafter term the <em>Planck area</em>.</p>
+
+  <p>Not only in electrodynamics but also in geometrodynamics and in every other gauge-field theory, as Anandan, Aharonov and others point out <span class="cite">[56, 57]</span>, the difference around a circuit in the phase of an appropriately chosen quantum-mechanical probability amplitude provides a measure of the field. Here again the concept of <span class="it-from-bit">it from bit</span> applies <span class="cite">[38]</span>. Field strength or spacetime curvature reveals itself through shift of interference fringes, fringes that stand for nothing but a statistical pattern of yes-or-no registrations.</p>
+
+  <p>When a magnetometer reads that <em>it</em> which we call a magnetic field, no reference at all to a bit seems to show itself. Therefore we look closer. The idea behind the operation of the instrument is simple. A wire of length $l$ carries a current $i$ through a magnetic field $B$ that runs perpendicular to it. In consequence the piece of copper receives in the time $t$ a transfer of momentum $p$ in a direction $z$ perpendicular to the directions of the wire and of the field,</p>
+
+  <div class="equation">
+    \[\begin{aligned}
+    p &= Blit \\
+    &= \text{(flux per unit } z\text{)} \times \text{(charge, } e\text{, of the elementary carrier of current)} \\
+    &\quad \times \text{(number, } N\text{, of carriers that pass in the time } t\text{)}
+    \end{aligned}\]
+    <span class="eq-num">(19.2)</span>
+  </div>
+
+  <p>This impulse is the source of the force that displaces the indicator needle of the magnetometer and gives us an instrument reading. We deal with bits wholesale rather than bits retail when we run the fiducial current through the magnetometer coil, but the definition of field founds itself no less decisively on bits.</p>
+
+  <p>As third and final example of <span class="it-from-bit">it from bit</span> we recall the wonderful quantum finding of Bekenstein <span class="cite">[58–60]</span> &mdash; totally unexpected denouement of earlier classical work of Penrose <span class="cite">[61]</span>, Christodoulou <span class="cite">[62]</span> and Ruffini <span class="cite">[63]</span> &mdash; refined by Hawking <span class="cite">[64, 65]</span> that the surface area of the horizon of a blackhole, rotating or not, <em>measures the entropy of the blackhole</em>. Thus this surface area, partitioned in imagination (Fig. 19.1) into domains each of size $4\hbar \log_e 2$, that is, $2.77\ldots$ times the Planck area, yields the Bekenstein number, $N$; and the Bekenstein number, so Thorne and Zurek explain <span class="cite">[66]</span>, tells us the number of binary digits, the number of bits, that would be required to specify in all detail the configuration of the constituents out of which the blackhole was put together. Entropy is a measure of lost information. To no community of newborn outside observers can the blackhole be made to reveal out of which particular one of $2^N$ configurations it was put together. Its size, an <em>it</em>, is fixed by the number, $N$, of <em>bits</em> of information hidden within it.</p>
+
+  <div class="figure">
+    <div class="figure-svg-wrapper">
+      <svg width="380" height="380" viewBox="0 0 380 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bekenstein bit-sphere: the horizon of a blackhole partitioned into Planck-area domains carrying binary digits.">
+        <defs>
+          <radialGradient id="sphereGrad" cx="35%" cy="30%" r="75%">
+            <stop offset="0%" stop-color="#2a3a5a"/>
+            <stop offset="55%" stop-color="#0d1422"/>
+            <stop offset="100%" stop-color="#020308"/>
+          </radialGradient>
+          <radialGradient id="rim" cx="50%" cy="50%" r="50%">
+            <stop offset="85%" stop-color="transparent"/>
+            <stop offset="97%" stop-color="rgba(176,132,56,0.5)"/>
+            <stop offset="100%" stop-color="rgba(176,132,56,0)"/>
+          </radialGradient>
+        </defs>
+
+        <!-- Sphere body -->
+        <circle cx="190" cy="190" r="155" fill="url(#sphereGrad)" stroke="#1a1408" stroke-width="1.5"/>
+        <circle cx="190" cy="190" r="155" fill="url(#rim)"/>
+
+        <!-- Longitude lines -->
+        <g stroke="rgba(160,184,220,0.18)" stroke-width="0.6" fill="none">
+          <ellipse cx="190" cy="190" rx="155" ry="155"/>
+          <ellipse cx="190" cy="190" rx="130" ry="155"/>
+          <ellipse cx="190" cy="190" rx="95" ry="155"/>
+          <ellipse cx="190" cy="190" rx="50" ry="155"/>
+          <ellipse cx="190" cy="190" rx="10" ry="155"/>
+          <line x1="190" y1="35" x2="190" y2="345"/>
+        </g>
+
+        <!-- Latitude lines -->
+        <g stroke="rgba(160,184,220,0.18)" stroke-width="0.6" fill="none">
+          <ellipse cx="190" cy="190" rx="155" ry="10"/>
+          <ellipse cx="190" cy="190" rx="148" ry="40"/>
+          <ellipse cx="190" cy="190" rx="135" ry="68"/>
+          <ellipse cx="190" cy="190" rx="115" ry="92"/>
+          <ellipse cx="190" cy="190" rx="92" ry="115"/>
+          <ellipse cx="190" cy="190" rx="65" ry="135"/>
+          <ellipse cx="190" cy="190" rx="35" ry="148"/>
+        </g>
+
+        <!-- Bit cells: rows of 0s and 1s populating the sphere face -->
+        <g font-family="JetBrains Mono, monospace" font-size="8" fill="rgba(220,200,160,0.62)" text-anchor="middle">
+          <!-- Row 1 (top) -->
+          <text x="170" y="68">1</text><text x="184" y="68">0</text><text x="198" y="68">1</text><text x="212" y="68">1</text>
+          <!-- Row 2 -->
+          <text x="140" y="90">0</text><text x="155" y="89">1</text><text x="170" y="88">1</text><text x="185" y="87">0</text><text x="200" y="87">1</text><text x="215" y="88">0</text><text x="230" y="89">0</text><text x="245" y="90">1</text>
+          <!-- Row 3 -->
+          <text x="115" y="113">1</text><text x="132" y="111">0</text><text x="149" y="110">1</text><text x="166" y="109">0</text><text x="183" y="108">1</text><text x="200" y="108">1</text><text x="217" y="109">0</text><text x="234" y="110">0</text><text x="251" y="111">1</text><text x="268" y="113">0</text>
+          <!-- Row 4 -->
+          <text x="98" y="137">0</text><text x="115" y="135">1</text><text x="132" y="134">1</text><text x="149" y="133">0</text><text x="166" y="132">0</text><text x="183" y="132">1</text><text x="200" y="132">0</text><text x="217" y="132">1</text><text x="234" y="133">1</text><text x="251" y="134">0</text><text x="268" y="135">1</text><text x="285" y="137">0</text>
+          <!-- Row 5 -->
+          <text x="85" y="161">1</text><text x="102" y="159">1</text><text x="119" y="158">0</text><text x="136" y="157">0</text><text x="153" y="156">1</text><text x="170" y="156">0</text><text x="187" y="156">1</text><text x="204" y="156">1</text><text x="221" y="156">0</text><text x="238" y="156">1</text><text x="255" y="157">0</text><text x="272" y="158">0</text><text x="289" y="159">1</text><text x="306" y="161">1</text>
+          <!-- Row 6 (equator) -->
+          <text x="78" y="186">0</text><text x="95" y="184">1</text><text x="112" y="183">0</text><text x="129" y="182">1</text><text x="146" y="181">1</text><text x="163" y="181">0</text><text x="180" y="181">0</text><text x="197" y="181">1</text><text x="214" y="181">0</text><text x="231" y="181">1</text><text x="248" y="181">1</text><text x="265" y="182">0</text><text x="282" y="183">1</text><text x="299" y="184">0</text><text x="316" y="186">1</text>
+          <!-- Row 7 -->
+          <text x="78" y="207">1</text><text x="95" y="208">0</text><text x="112" y="209">1</text><text x="129" y="210">0</text><text x="146" y="210">1</text><text x="163" y="210">1</text><text x="180" y="210">0</text><text x="197" y="210">0</text><text x="214" y="210">1</text><text x="231" y="210">0</text><text x="248" y="210">0</text><text x="265" y="210">1</text><text x="282" y="209">1</text><text x="299" y="208">0</text><text x="316" y="207">1</text>
+          <!-- Row 8 -->
+          <text x="85" y="232">0</text><text x="102" y="233">1</text><text x="119" y="234">1</text><text x="136" y="235">0</text><text x="153" y="235">0</text><text x="170" y="236">1</text><text x="187" y="236">0</text><text x="204" y="236">1</text><text x="221" y="235">1</text><text x="238" y="235">0</text><text x="255" y="234">1</text><text x="272" y="234">0</text><text x="289" y="233">0</text><text x="306" y="232">1</text>
+          <!-- Row 9 -->
+          <text x="98" y="256">1</text><text x="115" y="257">0</text><text x="132" y="258">0</text><text x="149" y="259">1</text><text x="166" y="260">1</text><text x="183" y="260">0</text><text x="200" y="260">1</text><text x="217" y="260">0</text><text x="234" y="259">0</text><text x="251" y="258">1</text><text x="268" y="257">1</text><text x="285" y="256">0</text>
+          <!-- Row 10 -->
+          <text x="115" y="280">0</text><text x="132" y="281">1</text><text x="149" y="282">0</text><text x="166" y="283">1</text><text x="183" y="284">0</text><text x="200" y="284">0</text><text x="217" y="283">1</text><text x="234" y="282">1</text><text x="251" y="281">0</text><text x="268" y="280">1</text>
+          <!-- Row 11 -->
+          <text x="140" y="302">1</text><text x="155" y="303">1</text><text x="170" y="304">0</text><text x="185" y="305">1</text><text x="200" y="305">0</text><text x="215" y="304">0</text><text x="230" y="303">1</text><text x="245" y="302">0</text>
+          <!-- Row 12 (bottom) -->
+          <text x="170" y="324">0</text><text x="184" y="324">1</text><text x="198" y="324">1</text><text x="212" y="324">0</text>
+        </g>
+
+        <!-- Highlight one cell -->
+        <rect x="183" y="174" width="22" height="14" fill="none" stroke="#b08438" stroke-width="1" opacity="0.7"/>
+        <line x1="205" y1="181" x2="245" y2="160" stroke="#b08438" stroke-width="0.7" opacity="0.7"/>
+        <text x="252" y="158" font-family="EB Garamond, serif" font-style="italic" font-size="10" fill="#b08438">4ℏ log₂2</text>
+
+        <!-- Outer glow -->
+        <circle cx="190" cy="190" r="158" fill="none" stroke="rgba(176,132,56,0.15)" stroke-width="2"/>
+      </svg>
+    </div>
+    <p class="figure-caption"><strong>Fig. 19.1.</strong> Symbolic representation of the "telephone number" of the particular one of the $2^N$ conceivable, but by now indistinguishable, configurations out of which this particular blackhole, of Bekenstein number $N$ and horizon area $4N\hbar \log_e 2$, was put together. Symbol, also, in a broader sense, of the theme that <em>every</em> physical entity, every <em>it</em>, derives from bits. Reproduced from JGST, p. 220.</p>
+  </div>
+
+  <p>The quantum, $\hbar$, in whatever correct physics formula it appears, thus serves as lamp. It lets us see horizon area as information lost, understand wave number of light as photon momentum and think of field flux as bit-registered fringe shift.</p>
+
+  <div class="pull-quote">Giving us its as bits, the quantum presents us with physics as <em>information</em>.</div>
+
+  <p>How come a value for the quantum so small as $\hbar = 2.612 \times 10^{-66}\,\text{cm}^2$? As well as ask why the speed of light is so great as $c = 3 \times 10^{10}\,\text{cm/s}$! No such constant as the speed of light ever makes an appearance in a truly fundamental account of special relativity or Einstein geometrodynamics, and for a simple reason: Time and space are both tools to measure interval. We only then properly conceive them when we measure them in the same units <span class="cite">[4, 16]</span>. The numerical value of the ratio between the second and the centimeter totally lacks teaching power. It is an historical accident. Its occurrence in equations obscured for decades one of Nature's great simplicities. Likewise with $\hbar$! Every equation that contains an $\hbar$ floats a banner, "It from bit". The formula displays a piece of physics that we have learned to translate into information-theoretic terms. Tomorrow we will have learned to understand and express <em>all</em> of physics in the language of information. At that point we will revalue $\hbar = 2.612 \times 10^{-66}\,\text{cm}^2$ &mdash; as we downgrade $c = 3 \times 10^{10}\,\text{cm/s}$ today &mdash; from constant of Nature to artifact of history, and from foundation of truth to enemy of understanding.</p>
+
+  <div class="divider"><span>◆</span><span>◇</span><span>◆</span></div>
+
+  <h2><span class="sec-num">19.3</span>Four No's</h2>
+
+  <p>To the question, "How come the quantum?" we thus answer, "Because what we call existence is an information-theoretic entity." But how come existence? Its as bits, yes; and physics as information, yes; but <em>whose</em> information? How does the vision of one world arise out of the information-gathering activities of many observer-participants? In the consideration of these issues we adopt for guidelines four no's.</p>
+
+  <h3><span class="marker">First no:</span> "No tower of turtles,"</h3>
+  <p>advised William James. Existence is not a globe supported by an elephant, supported by a turtle, supported by yet another turtle, and so on. In other words, no infinite regress. No structure, no plan of organization, no framework of ideas underlaid by another structure or level of ideas, underlaid by yet another level, by yet another, <em>ad infinitum</em>, down to a bottomless night. To endlessness no alternative is evident but loop <span class="cite">[47, 67]</span>, such a loop as this: <em>Physics gives rise to observer-participancy; observer-participancy gives rise to information; and information gives rise to physics.</em></p>
+
+  <p>Existence thus built <span class="cite">[68]</span> on "insubstantial nothingness"? Rutherford and Bohr made a table no less solid when they told us it was 99.9... percent emptiness. Thomas Mann may exaggerate when he suggests <span class="cite">[69]</span> that "&hellip; we are actually bringing about what seems to be happening to us," but Leibniz <span class="cite">[70]</span> reassures us, "Although the whole of this life were said to be nothing but a dream and the physical world nothing but a phantasm, I should call this dream or phantasm real enough if, using reason well, we were never deceived by it."</p>
+
+  <h3><span class="marker">Second no:</span> No laws.</h3>
+  <p>"So far as we can see today, the laws of physics cannot have existed from everlasting to everlasting. They must have come into being at the big bang. There were no gears and pinions, no Swiss watch-makers to put things together, not even a pre-existing plan&hellip; Only a principle of organization which is no organization at all would seem to offer itself. In all of mathematics, nothing of this kind more obviously offers itself than the principle that 'the boundary of boundary is zero.' Moreover, all three great field theories of physics use this principle twice over&hellip; This circumstance would seem to give us some reassurance that we are talking sense when we think of&hellip; physics being" <span class="cite">[32]</span> as foundation-free as a logic loop, the closed circuit of ideas in a self-referential deductive axiomatic system <span class="cite">[71–74]</span>.</p>
+
+  <p>Universe as machine? This universe one among a great ensemble of machine universes, each differing from the others in the values of the dimensionless constants of physics? Our own selected from this ensemble by an anthropic principle of one or another form <span class="cite">[75]</span>? We reject here the concept of universe as machine not least because it "has to postulate explicitly or implicitly, a supermachine, a scheme, a device, a miracle, which will turn out universes in infinite variety and infinite number" <span class="cite">[47]</span>.</p>
+
+  <p>Directly opposite to the concept of universe as machine built on law is the vision of a world self-synthesized. On this view, the notes struck out on a piano by the observer-participants of all places and all times, bits though they are, in and by themselves constitute the great wide world of space and time and things.</p>
+
+  <h3><span class="marker">Third no:</span> No continuum.</h3>
+  <p>No continuum in mathematics and therefore no continuum in physics. A half-century of development in the sphere of mathematical logic <span class="cite">[76]</span> has made it clear that there is no evidence supporting the belief in the existential character of the number continuum. "Belief in this transcendental world," Hermann Weyl tells us, "taxes the strength of our faith hardly less than the doctrines of the early Fathers of the Church or of the scholastic philosophers of the Middle Ages" <span class="cite">[77]</span>. This lesson out of mathematics applies with equal strength to physics. "Just as the introduction of the irrational numbers&hellip; is a convenient myth [which] simplifies the laws of arithmetic&hellip; so physical objects," Willard Van Orman Quine tells us <span class="cite">[78]</span>, "are postulated entities which round out and simplify our account of the flux of existence&hellip; The conceptual scheme of physical objects is a convenient myth, simpler than the literal truth and yet containing that literal truth as a scattered part."</p>
+
+  <p>Nothing so much distinguishes physics as conceived today from mathematics as the difference between the continuum character of the one and the discrete character of the other. Nothing does so much to extinguish this gap as the elementary quantum phenomenon "brought to a close," as Bohr puts it <span class="cite">[10]</span>, by "an irreversible act of amplification," such as the click of a photodetector or the blackening of a grain of photographic emulsion. Irreversible? More than one idealized experiment <span class="cite">[38]</span> illustrates how hard it is, even today, to give an all-inclusive definition of the term irreversible. Those difficulties supply pressure, however, not to retreat to old ground, but to advance to new insight. In brief, continuum-based physics, no; information-based physics, yes.</p>
+
+  <h3><span class="marker">Fourth and last no:</span> No space, no time.</h3>
+  <p>Heaven did not hand down the word "time". Man invented it, perhaps positing hopefully as he did that "Time is Nature's way to keep everything from happening all at once" <span class="cite">[79]</span>. If there are problems with the concept of time, they are of our own creation! As Leibniz tells us, <span class="cite">[80]</span> "&hellip; time and space are not things, but orders of things&hellip;;" or as Einstein put it, <span class="cite">[81]</span> "Time and space are modes by which we think, and not conditions in which we live."</p>
+
+  <p>What are we to say about that weld of space and time into spacetime which Einstein gave us in his 1915 and still standard classical geometrodynamics? On this geometry quantum theory, we know, imposes fluctuations <span class="cite">[13, 14, 82]</span>. Moreover, the predicted fluctuations grow so great at distances of the order of the Planck length that in that domain they put into question the connectivity of space and deprive the very concepts of "before" and "after" of all meaning <span class="cite">[83]</span>. This circumstance reminds us anew that no account of existence can ever hope to rate as fundamental which does not translate all of continuum physics into the language of bits.</p>
+
+  <p>We will not feed time into any deep-reaching account of existence. We must derive time &mdash; and time only in the continuum idealization &mdash; out of <em>it</em>. Likewise with space.</p>
+
+  <div class="divider"><span>◆</span><span>◇</span><span>◆</span></div>
+
+  <h2><span class="sec-num">19.4</span>Five Clues</h2>
+
+  <h3><span class="marker">First clue:</span> The boundary of a boundary is zero.</h3>
+  <p>This central principle of algebraic topology <span class="cite">[84]</span>, identity, triviality, tautology, though it is, is also the unifying theme of Maxwell electrodynamics, Einstein geometrodynamics and almost every version of modern field theory <span class="cite">[42, 85–88]</span>. That one can get so much from so little, almost everything from almost nothing, inspires hope that we will someday complete the mathematization of physics and derive everything from nothing, all law from no law.</p>
+
+  <h3><span class="marker">Second clue:</span> No question, no answer.</h3>
+  <p>Better put, no bit-level question, no bit-level answer. So it is in the game of twenty questions in its surprise version <span class="cite">[89]</span>. And so it is for the electron circulating within the atom or a field within a space. To neither field nor particle can we attribute a coordinate or momentum until a device operates to measure the one or the other. Moreover any apparatus that <em>accurately</em> <span class="cite">[90]</span> measures the one quantity inescapably rules out then and there the operation of equipment to measure the other <span class="cite">[9, 91, 92]</span>. In brief, the choice of question asked, and choice of when it's asked, play a part &mdash; not the whole part, but a part &mdash; in deciding what we have the right to say <span class="cite">[38, 43]</span>.</p>
+
+  <p>Bit-registration of a chosen property of the electron, a bit-registration of the arrival of a photon, Aharonov-Bohm bit-based determination of the magnitude of a field flux, bulk-based count of bits bound in a blackhole: All are examples of physics expressed in the language of information. However, into a bit count that one might have thought to be a private matter, the rest of the nearby world irresistibly thrusts itself. Thus the atom-to-atom distance in a ruler &mdash; basis for a bit count of distance &mdash; evidently has no invariant status, depending as it does on the temperature and pressure of the environment. Likewise the shift of fringes in the Aharonov-Bohm experiment depends not only upon the magnetic flux itself, but also on the charge of the electron. But this electron charge &mdash; when we take the quantum itself to be Nature's fundamental measuring unit &mdash; is governed by the square root of the quantity $e^2/\hbar c = 1/137.036\ldots$, a "constant" which &mdash; for extreme conditions &mdash; is as dependent on the local environment <span class="cite">[93]</span> as is a dielectric "constant" or the atom-to-atom spacing in the ruler.</p>
+
+  <p>The contribution of the environment becomes overwhelmingly evident when we turn from length of bar or flux of field to the motion of alpha particle through cloud chamber, dust particle through 3°K-background radiation or Moon through space. This we know from the analyses of Bohr and Mott <span class="cite">[94]</span>, Zeh <span class="cite">[95, 96]</span>, Joos and Zeh <span class="cite">[97]</span>, Zurek <span class="cite">[98–100]</span> and Unruh and Zurek <span class="cite">[101]</span>. It from bit, yes; but the rest of the world also makes a contribution, a contribution that suitable experimental design can minimize but not eliminate. Unimportant nuisance? No. Evidence the whole show is wired up together? Yes. Objection to the concept of every <em>it</em> from <em>bits</em>? No.</p>
+
+  <p>Build physics, with its false face of continuity, on bits of information! What this enterprise is we perhaps see more clearly when we examine for a moment a thoughtful, careful, wide-reaching exposition <span class="cite">[102]</span> of the directly opposite thesis, that physics at bottom is continuous; that the bit of information is <em>not</em> the basic entity. Rate as false the claim that the bit of information is the basic entity. Instead, attempt to build everything on the foundation of some "grand unified field theory" such as string theory <span class="cite">[103, 104]</span> &mdash; or in default of that, on Einstein's 1915 and still standard geometrodynamics. Hope to derive that theory by way of one or another plausible line of reasoning. But don't try to derive quantum theory. Treat it as supplied free of charge from on high. Treat quantum theory as a magic sausage grinder which takes in as raw meat this theory, that theory or the other theory and turns out a "wave equation," one solution of which is "the" wave function for the universe <span class="cite">[14, 102, 105–107]</span>. From start to finish accept continuity as right and natural: Continuity in the manifold, continuity in the wave equation, continuity in its solution, continuity in the features that it predicts. Among conceivable solutions of this wave equation select as reasonable one which "maximally decoheres," one which exhibits "maximal classicity" &mdash; maximal classicity by reason, not of "something external to the framework of wave function and Schrödinger equation," but something in "the initial conditions of the universe specified within quantum theory itself."</p>
+
+  <p>How compare the opposite outlooks of decoherence and it-from-bit? Remove the casing that surrounds the workings of a giant computer. Examine the bundles of wires that run here and there. What is the status of an individual wire? Mathematical limit of bundle? Or building block of bundle? The one outlook regards the wave equation and wave function to be primordial and precise and built on continuity, and the bit to be idealization. The other outlook regards the bit to be the primordial entity, and wave equation and wave function to be secondary and approximate &mdash; and derived from bits via information theory.</p>
+
+  <p>Derived, yes; but how? No one has done more than William Wootters towards opening up a pathway <span class="cite">[108, 109]</span> from information to quantum theory. He puts into connection two findings, long known, but little known. Already before the advent of wave mechanics, he notes, the analyst of population statistics R. A. Fisher proved <span class="cite">[110, 111]</span> that the proper tool to distinguish one population from another is not the probability of this gene, that gene and the third gene (for example), but the square roots of these probabilities; that is to say, the two probability amplitudes, each probability amplitude being a vector with three components. More precisely, Wootters proves, the <em>distinguishability</em> between the two populations is measured by the angle in Hilbert space between the two state vectors, both real. Fisher, however, was dealing with information that sits "out there". In microphysics, however, the information does not sit out there. Instead, Nature in the small confronts us with a revolutionary pistol, "No question, no answer." Complementarity rules. And complementarity as E.C.G. Stueckelberg proved <span class="cite">[112, 113]</span> as long ago as 1952, and as Saxon made more readily understandable <span class="cite">[114]</span> in 1964, demands that the probability amplitudes of quantum physics must be complex. Thus Wootters <em>derives</em> familiar Hilbert space with its familiar complex probability amplitudes from the twin demands of complementarity and measure of distinguishability.</p>
+
+  <p>Try to go on from Wootters's finding to <em>deduce</em> the full blown machinery of quantum field theory? Exactly not to try to do so &mdash; except as idealization &mdash; is the demand laid on us by the concept of it from bit. How come?</p>
+
+  <p>Probabilities exist "out there" no more than do space or time or the position of the atomic electron. Probability, like time, is a concept invented by humans, and humans have to bear the responsibility for the obscurities that attend it. Obscurities there are whether we consider probability defined as frequency <span class="cite">[115]</span> or defined à la Bayes <span class="cite">[116–119]</span>. Probability in the sense of frequency has no meaning as applied to the spontaneous fission of the particular plutonium nucleus that triggered the November 1, 1952 H-bomb blast.</p>
+
+  <p>What about probabilities of a Bayesian cast, probabilities "interpreted not as frequencies observable through experiments, but as degrees of plausibility one assigns to each hypothesis based on the data and on one's assessment of the plausibility of the hypotheses prior to seeing the data" <span class="cite">[120]</span>. Belief-dependent probabilities, different probabilities assigned to the same proposition by different people <span class="cite">[121]</span>? Probabilities associated <span class="cite">[122]</span> with the view that "objective reality is simply an interpretation of data agreed to by large numbers of people?"</p>
+
+  <p>Heisenberg directs us to the experiences <span class="cite">[123]</span> of the early nuclear-reaction-rate theorist Fritz Houtermans, imprisoned in Kharkov during the time of the Stalin terror, "&hellip; the whole cell would get together to produce an adequate confession &hellip; [and] helped them [the prisoners] to compose their 'legends' and phrase them properly, implicating as few others as possible."</p>
+
+  <p>Existence as confession? Myopic but in some ways illuminating formulation of the demand for intercommunication implicit in the theme of it from bit!</p>
+
+  <p>So much for "No question, no answer."</p>
+
+  <h3><span class="marker">Third clue:</span> The super-Copernican principle.</h3>
+  <p><span class="cite">[47]</span> This principle rejects now-centeredness in any account of existence as firmly as Copernicus repudiated here-centeredness. It repudiates most of all any tacit adoption of here-centeredness in assessing observer-participants and their number.</p>
+
+  <p>What is an observer-participant? One who operates an observing device and participates in the making of meaning, meaning in the sense of Føllesdal <span class="cite">[124]</span>, "Meaning is the joint product of all the evidence that is available to those who communicate." Evidence that is available? The investigator slices a rock and photographs the evidence for the heavy nucleus that arrived in the cosmic radiation of a billion years ago <span class="cite">[38]</span>. Before he can communicate his findings, however, an asteroid atomizes his laboratory, his records, his rocks and him. No contribution to meaning! Or at least no contribution then. A forensic investigation of sufficient detail and wit to reconstruct the evidence of the arrival of that nucleus is difficult to imagine. What about the famous tree that fell in the forest with no one around <span class="cite">[125]</span>? It leaves a fallout of physical evidence so near at hand and so rich that a team of up-to-date investigators can establish what happened beyond all doubt. Their findings contribute to the establishment of meaning.</p>
+
+  <p>"Measurements and observations," it has been said, <span class="cite">[102]</span> "cannot be fundamental notions in a theory which seeks to discuss the early universe when neither existed." On this view the past has a status beyond all questions of observer-participancy. It from bit offers us a different vision: "Reality is theory" <span class="cite">[126]</span>; "the past has no evidence except as it is recorded in the present" <span class="cite">[127]</span>. The photon that we are going to register tonight from that four billion-year old quasar cannot be said to have had an existence "out there" three billion years ago, or two (when it passed an intervening gravitational lens) or one, or even a day ago. Not until we have fixed arrangements at our telescope do we register tonight's quantum as having passed to the left (or right) of the lens or by both routes (as in a double slit experiment). This registration like every delayed-choice experiment <span class="cite">[21, 40]</span>, reminds us that no elementary quantum phenomenon is a phenomenon until, in Bohr's words <span class="cite">[10]</span>, "It has been brought to a close" by "an irreversible act of amplification." <em>What we call the past is built on bits.</em></p>
+
+  <p>Enough bits to structure a universe so rich in features as we know this world to be. Preposterous! Mice and men and all on Earth who may ever come to rank as intercommunicating meaning-establishing observer-participants will never mount a bit count sufficient to bear so great a burden.</p>
+
+  <p>The count of bits needed, huge though it may be, nevertheless, so far as we can judge, does not reach infinity. In default of a better estimate, we follow familiar reasoning <span class="cite">[128]</span> and translate into the language of the bits the entropy of the primordial cosmic fireball as deduced from the entropy of the present 2.735°K (uncertainty &lt;0.05°K) microwave relict radiation <span class="cite">[129]</span> totaled over a 3-sphere of radius $13.2 \times 10^9$ light years (uncertainty &lt;35%) <span class="cite">[130]</span> or $1.25 \times 10^{28}\,\text{cm}$ and of volume $2\pi^2\,\text{radius}^3$,</p>
+
+  <div class="equation">
+    \[\begin{aligned}
+    \text{(number of bits)} &= (\log_2 e) \times \text{(number of nats)} \\
+    &= (\log_2 e) \times \text{(entropy/Boltzmann's constant, } k\text{)} \\
+    &= 1.44\ldots \times \left[(8\pi^4/45)(\text{radius} \cdot kT/\hbar c)^3\right] \\
+    &= 8 \times 10^{88}
+    \end{aligned}\]
+    <span class="eq-num">(19.3)</span>
+  </div>
+
+  <p>It would be totally out of place to compare this overpowering number with the number of bits of information elicited up to date by observer-participancy. So warns the super-Copernican principle. We today, to be sure, through our registering devices, give a tangible meaning to the history of the photon that started on its way from a distant quasar long before there was any observer-participancy anywhere. However, the far more numerous establishers of meaning of time to come have a like inescapable part &mdash; by device-elicited questions and registration of answer &mdash; in generating the "reality" of today. For this purpose, moreover, there are billions of years yet to come, billions on billions of sites of observer-participancy yet to be occupied. How far foot and ferry have carried meaning-making communication in fifty thousand years gives faint feel for how far interstellar propagation is destined <span class="cite">[131, 132]</span> to carry it in fifty billion years.</p>
+
+  <p>Do bits needed balance bits achievable? They must, declares the concept of "world as system self-synthesized by quantum networking" <span class="cite">[47]</span>. By no prediction does this concept more clearly expose itself to destruction, in the sense of Popper <span class="cite">[133]</span>.</p>
+
+  <h3><span class="marker">Fourth clue:</span> "Consciousness".</h3>
+  <p>We have traveled what may seem a dizzying path. First, elementary quantum phenomenon brought to a close by an irreversible act of amplification. Second, the resulting information expressed in the form of bits. Third, this information used by observer-participants &mdash; via communication &mdash; to establish meaning. Fourth, from the past through the billenniums to come, so many observer-participants, so many bits, so much exchange of information, as to build what we call existence.</p>
+
+  <p>Doesn't this it-from-bit view of existence seek to elucidate the physical world, about which we know something, in terms of an entity about which we know almost nothing, consciousness <span class="cite">[134–137]</span>? And doesn't Marie Skłodowska Curie tell us, "Physics deals with things, not people?" Using such and such equipment, making such and such a measurement, I get such and such a number. Who I am has nothing to do with this finding. Or does it? Am I sleepwalking <span class="cite">[138, 139]</span>? Or am I one of those poor souls without the critical power to save himself from pathological science <span class="cite">[140–142]</span>?</p>
+
+  <p>Under such circumstances any claim to have "measured" something falls flat until it can be checked out with one's fellows. Checked how? Morton White reminds us <span class="cite">[143]</span> how the community applies its tests of credibility, and in this connection quotes analyses by Chauncey Wright, Josiah Royce and Charles Saunders Peirce <span class="cite">[144]</span>. Parmenides of Elea <span class="cite">[145]</span> ($\approx$ 515 B.C.–450+ B.C.) may tell us that "What is&hellip; is identical with the thought that recognizes it." We, however, steer clear of the issues connected with "consciousness." The line between the unconscious and the conscious begins to fade <span class="cite">[146]</span> in our day as computers evolve and develop &mdash; as mathematics has &mdash; level upon level upon level of logical structure. We may someday have to enlarge the scope of what we mean by a "who". This granted, we continue to accept &mdash; as essential part of the concept of it from bit &mdash; Føllesdal's guideline <span class="cite">[124]</span>, "Meaning is the joint product of all the evidence that is available to those who <em>communicate</em>." What shall we say of a view of existence <span class="cite">[147]</span> that appears, if not anthropomorphic in its use of the word "who," still overly centered on life and consciousness? It would seem more reasonable to dismiss for the present the semantic overtones of "who" and explore and exploit the insights to be won from the phrases, "communication" and "communication employed to establish meaning."</p>
+
+  <p>Føllesdal's statement supplies, not an answer, but the doorway to new questions. For example, man has not yet learned how to communicate with ant. When he does, will the questions put to the world around by the ant and the answers that he elicits contribute their share, too, to the establishment of meaning? As another issue associated with communication, we have yet to learn how to draw the line between a communication network that is closed, or parochial, and one that is open. And how to use that difference to distinguish between reality and poker &mdash; or another game <span class="cite">[148, 149]</span> &mdash; so intense as to appear more real than reality. No term in Føllesdal's statement posses greater challenge to reflection than "communication," descriptor of a domain of investigation <span class="cite">[150–152]</span> that enlarges in sophistication with each passing year.</p>
+
+  <h3><span class="marker">Fifth and final clue:</span> More is different.</h3>
+  <p><span class="cite">[153]</span> Not by plan but by inner necessity a sufficiently large number of H<sub>2</sub>O molecules collected in a box will manifest solid, liquid and gas phases. Phase changes, superfluidity and superconductivity all bear witness to Anderson's pithy point, more is different.</p>
+
+  <p>We do not have to turn to objects so material as electrons, atoms and molecules to see big numbers generating new features. The evolution from small to large has already in a few decades forced on the computer a structure <span class="cite">[154, 155]</span> reminiscent of biology by reason of its segregation of different activities into distinct organs. Distinct organs, too, the giant telecommunications system of today finds itself inescapably evolving <span class="cite">[151, 152]</span>. Will we someday understand time and space and all the other features that distinguish physics &mdash; and existence itself &mdash; as the similarly self-generated organs of a self-synthesized information system <span class="cite">[156–158]</span>?</p>
+
+  <div class="divider"><span>◆</span><span>◇</span><span>◆</span></div>
+
+  <h2><span class="sec-num">19.5</span>Conclusion</h2>
+
+  <p>The spacetime continuum? Even continuum existence itself? Except as idealization neither the one entity nor the other can make any claim to be a primordial category in the description of Nature. It is wrong, moreover, to regard this or that physical quantity as sitting "out there" with this or that numerical value in default of question asked and answer obtained by way of appropriate observing device. The information thus solicited makes physics and comes in bits. The count of bits drowned in the dark night of a blackhole displays itself as horizon area, expressed in the language of Bekenstein number. The bit count of the cosmos, however it is figured, is ten raised to a very large power. So also is the number of elementary acts of observer-participancy over any time of the order of fifty billion years. And, except via those time-leaping quantum phenomena that we rate as elementary acts of observer-participancy, no way has ever offered itself to construct what we call "reality." That's why we take seriously the theme of <span class="it-from-bit">it from bit</span>.</p>
+
+  <h2><span class="sec-num">19.6</span>Agenda</h2>
+
+  <p>Intimidating though the problem of existence continues to be, the theme of it from bit breaks it down into six issues that invite exploration:</p>
+
+  <h3><span class="marker">One:</span></h3>
+  <p>Go beyond Wootters and determine what, if anything, has to be added to distinguishability and complementarity to obtain <em>all</em> of standard quantum theory.</p>
+
+  <h3><span class="marker">Two:</span></h3>
+  <p>Translate the quantum versions of string theory and of Einstein's geometrodynamics from the language of continuum to the language of bits.</p>
+
+  <h3><span class="marker">Three:</span></h3>
+  <p>Sharpen the concept of bit. Determine whether "an elementary quantum phenomenon brought to a close by an irreversible act of amplification" has at bottom <strong>(1)</strong> the 0-or-1 sharpness of definition of bit number nineteen in a string of binary digits, or <strong>(2)</strong> the accordion property of a mathematical theorem, the length of which, that is, the number of supplementary lemmas contained in which, the analyst can stretch or shrink according to his convenience.</p>
+
+  <h3><span class="marker">Four:</span></h3>
+  <p>Survey one by one with an imaginative eye the powerful tools that mathematics &mdash; including mathematical logic &mdash; has won and now offers to deal with theorems on a wholesale rather than a retail level, and for each such technique work out the transcription into the world of bits. Give special attention to one and another deductive axiomatic system which is able to refer to itself <span class="cite">[159]</span>, one and another <em>self-referential deductive system</em>.</p>
+
+  <h3><span class="marker">Five:</span></h3>
+  <p>From the wheels-upon-wheels-upon-wheels evolution of computer programming dig out, systematize and display every feature that illuminates the level-upon-level-upon-level structure of physics.</p>
+
+  <h3><span class="marker">Six:</span></h3>
+  <p>Capitalize on the findings and outlooks of information theory <span class="cite">[160–163]</span>, algorithmic entropy <span class="cite">[164]</span>, evolution of organisms <span class="cite">[165–167]</span> and pattern recognition <span class="cite">[168–175]</span>. Search out every link each has with physics at the quantum level. Consider, for instance, the string of bits $1111111\ldots$ and its representation as the sum of the two strings $1001110\ldots$ and $0110001\ldots$ Explore and exploit the connection between this information-theoretic statement and the findings of theory and experiment on the correlation between the polarizations of the two photons emitted in the annihilation of singlet positronium <span class="cite">[176]</span> and in like Einstein-Podolsky-Rosen experiments <span class="cite">[177]</span>. Seek out, moreover, every realization in the realm of physics of the information-theoretic triangle inequality recently discovered by Zurek <span class="cite">[178]</span>.</p>
+
+  <h3><span class="marker">Finally:</span></h3>
+  <p>Deplore? No, celebrate the absence of a clean clear definition of the term "bit" as elementary unit in the establishment of meaning. We reject "that view of science which used to say, 'Define your terms before you proceed.' The truly creative nature of any forward step in human knowledge," we know, "is such that theory, concept, law and method of measurement &mdash; forever inseparable &mdash; are born into the world in union <span class="cite">[179]</span>." If and when we learn how to combine bits in fantastically large numbers to obtain what we call existence, we will know better what we mean both by bit and by existence.</p>
+
+  <div class="pull-quote">
+    A single question animates this report: Can we ever expect to understand existence? Clues we have, and work to do, to make headway on that issue. Surely someday, we can believe, we will grasp the central idea of it all as so simple, so beautiful, so compelling that we will all say to each other, "Oh, how could it have been otherwise! How could we all have been so blind so long!"
+  </div>
+
+  <section class="ack">
+    <h2>Acknowledgements</h2>
+    <p>For discussion, advice or judgment on one or another issue taken up in this review, I am indebted to Nandar Balazs, John D. Barrow, Charles H. Bennett, David Deutsch, Robert H. Dicke, Freeman Dyson and the late Richard P. Feynman as well as David Gross, James B. Hartle, John J. Hopfield, Paul C. Jeffries, Bernulf Kanitscheider, Arkady Kheyfets and Rolf W. Landauer; and to Warner A. Miller, John R. Pierce, Willard Van Orman Quine, Benjamin Schumacher and Frank J. Tipler as well as William G. Unruh, Morton White, Eugene P. Wigner, William K. Wootters, Hans Dieter Zeh and Wojciech H. Zurek. For assistance in preparation of this report I thank E. L. Bennett and NSF grant PHY245-6243 to Princeton University. I give special thanks to the sponsors of the 28–31 August 1989 conference ISQM Tokyo '89 at which the then current version of the present analysis was reported.</p>
+    <p>This report evolved from presentations at Santa Fe Institute Conferences, 29 May–2 June and 4–8 June 1989 and at the 3rd International Symposium on Foundations of Quantum Mechanics in the Light of New Technology, Tokyo, 28–31 August 1989, under the title "Information, Physics, Quantum: The Search for Links;" and headed "Can We Ever Expect to Understand Existence?", as the Penrose Lecture at the 20–22 April 1989 annual meeting of Benjamin Franklin's "American Philosophical Society, held at Philadelphia for Promoting Useful Knowledge," and the Accademia Nazionale dei Lincei Conference on La Verità nella Scienza, Rome, 13 October 1989; submitted to proceedings of all four in fulfillment of obligation and in deep appreciation for hospitality. Preparation for publication assisted in part by NSF Grant PHY 245-6243 to Princeton University.</p>
+  </section>
+
+  <section class="discussion">
+    <h2>Discussion</h2>
+    <p><span class="speaker">N. G. van Kampen:</span> Did you mean to say that the observer influences the observed object?</p>
+    <p><span class="speaker">J. A. Wheeler:</span> The observer does not influence the past. Instead, by his choice of question, he decides about what feature of the object he shall have the right to make a clear statement.</p>
+    <p><span class="speaker">J. P. Vigier:</span> Two problems.</p>
+    <ol>
+      <li>The first is that the QSO raise lots of unsolved problems, i.e. &mdash; strange quantized $N_0/\log(1+z)$ relation &mdash; correlation with galaxies (Arp) &mdash; angular correlation with brightest nearby galaxies (Burbidge et al.)</li>
+      <li>The second is that the idea (Einstein et al.) of the reality of fields has led (assuming that "particles" are field singularities) to the only known justification of the geodesic law. To contest it is to make the meaning of dynamical behaviour purely observer-dependent, i.e., to kill the reality of the physical world.</li>
+    </ol>
+    <p><span class="speaker">J. A. Wheeler:</span></p>
+    <ol>
+      <li>The book by Thorne and colleagues, <em>Black Holes: The Membrane Paradigm</em>, describes how a supermassive black hole, endowed via accretion with great angular momentum inside and an accretion disk outside, produces counter-directed jets and radiation of great power. I know no other mechanism able to produce quasars.</li>
+      <li>No one has discovered a way to get a particle of wave length $\lambda$ from point $A$ through empty flat space to a point $B$ at a great distance $L$ without its undergoing on the way a transverse spread of the order $\sqrt{L\lambda}$. This spread imposes an inescapable limitation on the classical concept of "worldline."</li>
+    </ol>
+  </section>
+
+  <section class="references">
+    <h2>References</h2>
+    <div class="ref-grid">
+      <div class="ref"><span class="ref-num">[1]</span> J. Kepler (1571–1630): <em>Harmonices Mundi</em>, 5 books (1619). Kepler's guiding principle, <em>Ubi materia, ibi geometria</em> — where there is matter, there is geometry. See W. Pauli's analysis in <em>Naturerklärung und Psyche</em> (Rascher, Zürich, 1952).</div>
+      <div class="ref"><span class="ref-num">[2]</span> I. Newton: <em>Philosophiae naturalis principia mathematica</em>, 1st ed. (London, 1687).</div>
+      <div class="ref"><span class="ref-num">[3]</span> A. Einstein: "Zur allgemeinen Relativitätstheorie" <em>Preuss. Akad. Wiss. Berlin, Sitzber</em> (1915) 799–801; also (1915) 832–839, 844–847; (1916) 688–696 and (1917) 142–152.</div>
+      <div class="ref"><span class="ref-num">[4]</span> J. A. Wheeler: <em>Journey into Gravity and Spacetime</em> (Scientific American Library, Freeman, New York, 1990), cited hereafter as <strong>JGST</strong>.</div>
+      <div class="ref"><span class="ref-num">[5]</span> J. G. Mendel: "Versuche über Pflanzenhybriden" <em>Verhandlungen des Naturforschenden Vereins in Brünn</em> 4 (1866).</div>
+      <div class="ref"><span class="ref-num">[6]</span> C. R. Darwin: <em>On the Origin of Species by Means of Natural Selection</em> (London, 1859).</div>
+      <div class="ref"><span class="ref-num">[7]</span> J. D. Watson and F. H. C. Crick: "Molecular structure of nucleic acids" <em>Nature</em> 171 (1953) 737–738.</div>
+      <div class="ref"><span class="ref-num">[8]</span> M. Planck: "Zur Theorie des Gesetzes der Energieverteilung im Normalspektrum" <em>Verhand. Deutschen Phys. Gesell.</em> 2 (1900) 237–245.</div>
+      <div class="ref"><span class="ref-num">[9]</span> N. Bohr: "The quantum postulate and the recent development of atomic theory" <em>Nature</em> 121 (1928) 580–590. Reprinted in J. A. Wheeler and W. H. Zurek: <em>Quantum Theory and Measurement</em> (Princeton, 1983), hereafter <strong>WZ</strong>, 87–126.</div>
+      <div class="ref"><span class="ref-num">[10]</span> N. Bohr: "Can quantum-mechanical description of physical reality be considered complete?" <em>Phys. Rev.</em> 48 (1935) 696–702; reprinted in WZ, 145–151.</div>
+      <div class="ref"><span class="ref-num">[11]</span> A. Einstein to J. J. Laub, 1908, undated, Einstein Archives.</div>
+      <div class="ref"><span class="ref-num">[12]</span> J. A. Wheeler: "Assessment of Everett's 'relative state' formulation of quantum theory" <em>Rev. Mod. Phys.</em> 29 (1957) 463–465.</div>
+      <div class="ref"><span class="ref-num">[13]</span> J. A. Wheeler: "On the nature of quantum geometrodynamics" <em>Ann. of Phys.</em> 2 (1957) 604–614.</div>
+      <div class="ref"><span class="ref-num">[14]</span> J. A. Wheeler: "Superspace and the nature of quantum geometrodynamics," in <em>Battelle Rencontres: 1967 Lectures in Mathematics and Physics</em> (Benjamin, 1968) 242–307.</div>
+      <div class="ref"><span class="ref-num">[15]</span> J. A. Wheeler: "Transcending the law of conservation of leptons," <em>Accademia Nazionale dei Lincei</em>, Quaderno N. 157 (1971) 133–164.</div>
+      <div class="ref"><span class="ref-num">[16]</span> C. W. Misner, K. S. Thorne and J. A. Wheeler: <em>Gravitation</em> (Freeman, 1973) p. 1217, cited hereafter as <strong>MTW</strong>.</div>
+      <div class="ref"><span class="ref-num">[17]</span> J. A. Wheeler: "The universe as home for man," in <em>The Nature of Scientific Discovery</em> (Smithsonian, 1975) 261–296.</div>
+      <div class="ref"><span class="ref-num">[18]</span> C. M. Patton and J. A. Wheeler: "Is physics legislated by cosmogony?," in <em>Quantum Gravity</em> (Clarendon, 1975) 538–605.</div>
+      <div class="ref"><span class="ref-num">[19]</span> J. A. Wheeler: "Include the observer in the wave function?" <em>Fundamenta Scientiae</em> 25 (1976) 9–35.</div>
+      <div class="ref"><span class="ref-num">[20]</span> J. A. Wheeler: "Genesis and observership," in <em>Foundational Problems in the Special Sciences</em> (Reidel, 1977) 1–33.</div>
+      <div class="ref"><span class="ref-num">[21]</span> J. A. Wheeler: "The 'past' and the 'delayed choice' double-slit experiment," in <em>Mathematical Foundations of Quantum Theory</em> (Academic, 1978) 9–48.</div>
+      <div class="ref"><span class="ref-num">[22]</span> J. A. Wheeler: "Frontiers of time," in <em>Problems in the Foundations of Physics</em>, ed. N. Toraldo di Francia (North-Holland, 1979) 395–497.</div>
+      <div class="ref"><span class="ref-num">[23]</span> J. A. Wheeler: "The quantum and the universe," in <em>Relativity, Quanta, and Cosmology</em>, Vol. II (Johnson Reprint, 1979) 807–825.</div>
+      <div class="ref"><span class="ref-num">[24]</span> J. A. Wheeler: "Beyond the black hole," in <em>Some Strangeness in the Proportion</em>, ed. H. Woolf (Addison-Wesley, 1980) 341–375.</div>
+      <div class="ref"><span class="ref-num">[25]</span> J. A. Wheeler: "Pregeometry: motivations and prospects," in <em>Quantum Theory and Gravitation</em> (Academic, 1980) 1–11.</div>
+      <div class="ref"><span class="ref-num">[26]</span> J. A. Wheeler: "Law without law," in <em>Structure in Science and Art</em> (Elsevier, 1980) 132–154.</div>
+      <div class="ref"><span class="ref-num">[27]</span> J. A. Wheeler: "Delayed-choice experiments and the Bohr-Einstein dialog," <em>American Philosophical Society and the Royal Society</em> (1980) 9–40.</div>
+      <div class="ref"><span class="ref-num">[28]</span> J. A. Wheeler: "Not consciousness but the distinction between the probe and the probed as central to the elemental quantum act of observation," in <em>The Role of Consciousness in the Physical World</em> (Westview, 1981) 87–111.</div>
+      <div class="ref"><span class="ref-num">[29]</span> J. A. Wheeler: "The elementary quantum act as higgledy-piggledy building mechanism," in <em>Quantum Theory and the Structures of Time and Space</em> (Carl Hanser, 1981) 27–304.</div>
+      <div class="ref"><span class="ref-num">[30]</span> J. A. Wheeler: "The computer and the universe," <em>Int. J. Theo. Phys.</em> 21 (1982) 557–571.</div>
+      <div class="ref"><span class="ref-num">[31]</span> J. A. Wheeler: "Bohr, Einstein, and the strange lesson of the quantum," in <em>Mind in Nature</em> (Harper and Row, 1982) 1–30.</div>
+      <div class="ref"><span class="ref-num">[32]</span> J. A. Wheeler: <em>Physics and Austerity</em> (Anhui Science and Technology, 1982).</div>
+      <div class="ref"><span class="ref-num">[33]</span> J. A. Wheeler: "Particles and geometry," in <em>Unified Theories of Elementary Particles</em> (Springer, 1982) 189–217.</div>
+      <div class="ref"><span class="ref-num">[34]</span> J. A. Wheeler: "Blackholes and new physics," <em>Discovery</em> 7, No. 2 (Winter 1982) 4–7.</div>
+      <div class="ref"><span class="ref-num">[35]</span> J. A. Wheeler: "On recognizing law without law," <em>Am. J. Phys.</em> 51 (1983) 398–404.</div>
+      <div class="ref"><span class="ref-num">[36]</span> J. A. Wheeler: "Jenseits aller Zeitlichkeit," in <em>Die Zeit</em>, Vol. 6 (Oldenbourg, 1983) 17–34.</div>
+      <div class="ref"><span class="ref-num">[37]</span> J. A. Wheeler: "Elementary quantum phenomenon as building unit," in <em>Quantum Optics, Experimental Gravitation, and Measurement Theory</em> (Plenum, 1983) 141–143.</div>
+      <div class="ref"><span class="ref-num">[38]</span> J. A. Wheeler: "Bits, quanta, meaning," in <em>Problems in Theoretical Physics</em> (Salerno, 1984) 121–141.</div>
+      <div class="ref"><span class="ref-num">[39]</span> J. A. Wheeler: "Quantum gravity: the question of measurement," in <em>Quantum Theory of Gravity</em> (Hilger, 1984) 224–233.</div>
+      <div class="ref"><span class="ref-num">[40]</span> W. A. Miller and J. A. Wheeler: "Delayed-choice experiments and Bohr's elementary quantum phenomenon," <em>Proc. ISQM Tokyo, 1983</em> (1984) 140–151.</div>
+      <div class="ref"><span class="ref-num">[41]</span> J. A. Wheeler: "Bohr's 'phenomenon' and 'law without law'," in <em>Chaotic Behavior in Quantum Systems</em> (Plenum, 1985) 363–378.</div>
+      <div class="ref"><span class="ref-num">[42]</span> A. Kheyfets and J. A. Wheeler: "Boundary of a boundary principle and geometric structure of field theories," <em>Int. J. Theo. Phys.</em> 25 (1986) 573–580.</div>
+      <div class="ref"><span class="ref-num">[43]</span> J. A. Wheeler: "Physics as meaning circuit: three problems," in <em>Frontiers of Non-Equilibrium Statistical Physics</em> (Plenum, 1986) 25–32.</div>
+      <div class="ref"><span class="ref-num">[44]</span> J. A. Wheeler: "Interview on the role of the observer in quantum mechanics," in <em>The Ghost in the Atom</em> (Cambridge, 1986) 58–69.</div>
+      <div class="ref"><span class="ref-num">[45]</span> J. A. Wheeler: "How come the quantum," in <em>New Techniques and Ideas in Quantum Measurement Theory</em>, Ann. N.Y. Acad. Sci. 480 (1987) 304–316.</div>
+      <div class="ref"><span class="ref-num">[46]</span> J. A. Wheeler: "Hermann Weyl and the unity of knowledge," <em>American Scientist</em> 74 (1986) 366–375.</div>
+      <div class="ref"><span class="ref-num">[47]</span> J. A. Wheeler: "World as system self-synthesized by quantum networking," <em>IBM J. Res. Dev.</em> 32 (1988) 4–15.</div>
+      <div class="ref"><span class="ref-num">[48]</span> D. M. Greenberger, ed.: <em>New Techniques and Ideas in Quantum Measurement Theory</em>, Ann. N.Y. Acad. Sci. 480 (1986).</div>
+      <div class="ref"><span class="ref-num">[49]</span> B. d'Espagnat: <em>Reality and the Physicist: Knowledge, Duration and the Quantum World</em> (Cambridge, 1989).</div>
+      <div class="ref"><span class="ref-num">[50]</span> P. Mittelstaedt and E. W. Stachow, eds.: <em>Recent Developments in Quantum Logic</em> (Bibliographisches Institut, 1985).</div>
+      <div class="ref"><span class="ref-num">[51]</span> J. S. Bell: <em>Speakable and Unspeakable in Quantum Mechanics</em> (Cambridge, 1987).</div>
+      <div class="ref"><span class="ref-num">[52]</span> J. W. Tukey: "Sequential conversion of continuous data to digital data," Bell Laboratories memorandum (1 September 1947) — marks the introduction of the term "bit". Reprinted in <em>Annals Hist. Computing</em> 6 (1984) 152–155.</div>
+      <div class="ref"><span class="ref-num">[53]</span> W. K. Wootters and W. H. Zurek: "A single quantum cannot be cloned," <em>Nature</em> 279 (1982) 802–803.</div>
+      <div class="ref"><span class="ref-num">[54]</span> W. K. Wootters and W. H. Zurek: "On replicating photons," <em>Nature</em> 304 (1983) 188–189.</div>
+      <div class="ref"><span class="ref-num">[55]</span> Y. Aharonov and D. Bohm: "Significance of electromagnetic potentials in the quantum theory" <em>Phys. Rev.</em> 115 (1959) 485–491.</div>
+      <div class="ref"><span class="ref-num">[56]</span> J. Anandan: "Comment on geometric phase for classical field theories," <em>Phys. Rev. Lett.</em> 60 (1988) 2555.</div>
+      <div class="ref"><span class="ref-num">[57]</span> J. Anandan and Y. Aharonov: "Geometric quantum phase and angles," <em>Phys. Rev.</em> D38 (1988) 1863–1870.</div>
+      <div class="ref"><span class="ref-num">[58]</span> J. D. Bekenstein: "Black holes and the second law," <em>Nuovo Cimento Lett.</em> 4 (1972) 737–740.</div>
+      <div class="ref"><span class="ref-num">[59]</span> J. D. Bekenstein: "Generalized second law of thermodynamics in black-hole physics," <em>Phys. Rev.</em> D9 (1973) 3292–3300.</div>
+      <div class="ref"><span class="ref-num">[60]</span> J. D. Bekenstein: "Black-hole thermodynamics" <em>Physics Today</em> 33 (1980) 24–31.</div>
+      <div class="ref"><span class="ref-num">[61]</span> R. Penrose: "Gravitational collapse: the role of general relativity," <em>Riv. Nuovo Cimento</em> 1 (1969) 252–276.</div>
+      <div class="ref"><span class="ref-num">[62]</span> D. Christodoulou: "Reversible and irreversible transformations in black-hole physics," <em>Phys. Rev. Lett.</em> 25 (1970) 1596–1597.</div>
+      <div class="ref"><span class="ref-num">[63]</span> D. Christodoulou and R. Ruffini: "Reversible transformations of a charged black hole," <em>Phys. Rev.</em> D4 (1971) 3552–3555.</div>
+      <div class="ref"><span class="ref-num">[64]</span> S. W. Hawking: "Particle creation by black holes," <em>Commun. Math. Phys.</em> 43 (1975) 199–220.</div>
+      <div class="ref"><span class="ref-num">[65]</span> S. W. Hawking: "Black holes and thermodynamics," <em>Phys. Rev.</em> 13 (1976) 191–197.</div>
+      <div class="ref"><span class="ref-num">[66]</span> W. H. Zurek and K. S. Thorne: "Statistical mechanical origin of the entropy of a rotating, charged black hole," <em>Phys. Rev. Lett.</em> 20 (1985) 2171–2175.</div>
+      <div class="ref"><span class="ref-num">[67]</span> MTW, p. 1217.</div>
+      <div class="ref"><span class="ref-num">[68]</span> W. Shakespeare: <em>The Tempest</em>, Act IV, Scene 1, lines 148 ff.</div>
+      <div class="ref"><span class="ref-num">[69]</span> T. Mann: <em>Freud, Goethe, Wagner</em> (New York, 1937) p. 20.</div>
+      <div class="ref"><span class="ref-num">[70]</span> G. W. Leibniz as cited in J. R. Newman: <em>The World of Mathematics</em> (Simon and Schuster, 1956).</div>
+      <div class="ref"><span class="ref-num">[71]</span> N. E. Steenrod: <em>Cohomology Operations</em> (Princeton, 1962).</div>
+      <div class="ref"><span class="ref-num">[72]</span> C. Ehresmann: <em>Catégories et Structures</em> (Dunod, 1965).</div>
+      <div class="ref"><span class="ref-num">[73]</span> D. Lohmer: <em>Phänomenologie der Mathematik</em> (Kluwer, 1989).</div>
+      <div class="ref"><span class="ref-num">[74]</span> A. Weil: "De la métaphysique aux mathématiques," <em>Sciences</em>, reprinted in <em>Œuvres Scientifiques</em>, Vol. 2 (Springer, 1979) 408–412.</div>
+      <div class="ref"><span class="ref-num">[75]</span> J. D. Barrow and F. J. Tipler: <em>The Anthropic Cosmological Principle</em> (Oxford, 1986).</div>
+      <div class="ref"><span class="ref-num">[76]</span> F. Feferman: "Turing in the land of O(z)," in R. Herken: <em>The Universal Turing Machine</em> (Oxford, 1988) 113–147.</div>
+      <div class="ref"><span class="ref-num">[77]</span> H. Weyl: "Mathematics and logic," <em>Am. Math. Monthly</em> 53 (1946) 2–13.</div>
+      <div class="ref"><span class="ref-num">[78]</span> W. V. O. Quine: "On what there is," in <em>From a Logical Point of View</em>, 2nd ed. (Harvard, 1980) 1–19.</div>
+      <div class="ref"><span class="ref-num">[79]</span> Discovered among graffiti in the men's room of the Pecan Street Cafe, Austin, Texas.</div>
+      <div class="ref"><span class="ref-num">[80]</span> G. W. Leibniz: <em>Animadversiones ad Joh. George Wachteri librum de recondita Hebraeorum philosophia</em>, c. 1708, unpublished; English translation in P. P. Wiener, <em>Leibniz Selections</em> (Scribners, 1951) p. 488.</div>
+      <div class="ref"><span class="ref-num">[81]</span> A. Einstein: as quoted by A. Forsee in <em>Albert Einstein Theoretical Physicist</em> (Macmillan, 1963) p. 81.</div>
+      <div class="ref"><span class="ref-num">[82]</span> MTW, 43.4.</div>
+      <div class="ref"><span class="ref-num">[83]</span> Ref. 22, p. 411.</div>
+      <div class="ref"><span class="ref-num">[84]</span> E. H. Spanier: <em>Algebraic Topology</em> (McGraw-Hill, 1966).</div>
+      <div class="ref"><span class="ref-num">[85]</span> É. Cartan: <em>La Géométrie des Espaces de Riemann</em>, Mémorial des Sciences Mathématiques (Gauthier-Villars, 1925).</div>
+      <div class="ref"><span class="ref-num">[86]</span> É. Cartan: <em>Leçons sur la Géométrie des Espaces de Riemann</em> (Gauthier-Villars, 1925).</div>
+      <div class="ref"><span class="ref-num">[87]</span> MTW, Chap. 15.</div>
+      <div class="ref"><span class="ref-num">[88]</span> M. Atiyah: <em>Collected Papers. Vol. 5: Gauge Theories</em> (Clarendon, 1988).</div>
+      <div class="ref"><span class="ref-num">[89]</span> Ref. 21, p. 41–42; ref. 22, p. 397–398.</div>
+      <div class="ref"><span class="ref-num">[90]</span> W. K. Wootters and W. H. Zurek: "Complementarity in the double-slit experiment," <em>Phys. Rev.</em> D19 (1979) 473–484.</div>
+      <div class="ref"><span class="ref-num">[91]</span> W. Heisenberg: "Über den anschaulichen Inhalt der quantentheoretischen Kinematik und Mechanik," <em>Zeits. f. Physik</em> 43 (1927) 172–198; in WZ, 62–84.</div>
+      <div class="ref"><span class="ref-num">[92]</span> N. Bohr and L. Rosenfeld: "Zur Frage der Messbarkeit der elektromagnetischen Feldgrössen," <em>Mat.-fys. Medd. Dan. Vid. Selsk.</em> 12, no. 8 (1933); in WZ, 479–534.</div>
+      <div class="ref"><span class="ref-num">[93]</span> D. J. Gross: "On the calculation of the fine-structure constant," <em>Phys. Today</em> 42, No. 12 (1989).</div>
+      <div class="ref"><span class="ref-num">[94]</span> N. F. Mott: "The wave mechanics of α-ray tracks," <em>Proc. Roy. Soc. London</em> A126 (1929) 74–84; in WZ, 129–134.</div>
+      <div class="ref"><span class="ref-num">[95]</span> H. D. Zeh: "On the interpretation of measurement in quantum theory," <em>Found. Phys.</em> 1 (1970) 69–76.</div>
+      <div class="ref"><span class="ref-num">[96]</span> H. D. Zeh: <em>The Physical Basis of the Direction of Time</em> (Springer, 1989).</div>
+      <div class="ref"><span class="ref-num">[97]</span> E. Joos and H. D. Zeh: "The emergence of classical properties through interaction with the environment," <em>Zeits. f. Physik</em> B59 (1985) 223–243.</div>
+      <div class="ref"><span class="ref-num">[98]</span> W. H. Zurek: "Pointer basis of quantum apparatus: Into what mixture does the wavepacket collapse?" <em>Phys. Rev.</em> D24 (1981) 1516–1525.</div>
+      <div class="ref"><span class="ref-num">[99]</span> W. H. Zurek: "Environment-induced superselection rules," <em>Phys. Rev.</em> D26 (1982) 1862–1880.</div>
+      <div class="ref"><span class="ref-num">[100]</span> W. H. Zurek: "Information transfer in quantum measurements: irreversibility and amplification," in <em>Quantum Optics, Experimental Gravitation and Measurement Theory</em> (Plenum, 1983) 87–116.</div>
+      <div class="ref"><span class="ref-num">[101]</span> W. G. Unruh and W. H. Zurek: "Reduction of a wave packet in quantum Brownian motion," <em>Phys. Rev.</em> D40 (1989) 1071–1094.</div>
+      <div class="ref"><span class="ref-num">[102]</span> J. B. Hartle: "Progress in quantum cosmology," preprint, UC Santa Barbara, 1989.</div>
+      <div class="ref"><span class="ref-num">[103]</span> M. B. Green, J. H. Schwarz and E. Witten: <em>Superstring Theory</em> (Cambridge, 1987).</div>
+      <div class="ref"><span class="ref-num">[104]</span> L. Brink and M. Henneaux: <em>Principles of String Theory</em> (Plenum, 1988).</div>
+      <div class="ref"><span class="ref-num">[105]</span> S. W. Hawking: "The Boundary Conditions of the Universe," in <em>Astrophysical Cosmology</em> (Vatican City, 1982) 563–594.</div>
+      <div class="ref"><span class="ref-num">[106]</span> A. Vilenkin: "Creation of universes from nothing," <em>Phys. Lett.</em> B117 (1982) 25–28.</div>
+      <div class="ref"><span class="ref-num">[107]</span> J. B. Hartle and S. W. Hawking: "Wave function of the universe," <em>Phys. Rev.</em> D28 (1983) 2960–2975.</div>
+      <div class="ref"><span class="ref-num">[108]</span> W. K. Wootters: "The acquisition of information from quantum measurements," Ph.D. dissertation, University of Texas at Austin (1980).</div>
+      <div class="ref"><span class="ref-num">[109]</span> W. K. Wootters: "Statistical distribution and Hilbert space," <em>Phys. Rev.</em> 23 (1981) 357–362.</div>
+      <div class="ref"><span class="ref-num">[110]</span> R. A. Fisher: "On the dominance ratio," <em>Proc. Roy. Soc. Edin.</em> 42 (1922) 321–341.</div>
+      <div class="ref"><span class="ref-num">[111]</span> R. A. Fisher: <em>Statistical Methods and Statistical Inference</em> (Hafner, 1956) 8–17.</div>
+      <div class="ref"><span class="ref-num">[112]</span> E. C. G. Stueckelberg: "Théorème H et unitarité de S," <em>Helv. Phys. Acta</em> 25 (1952) 577–580.</div>
+      <div class="ref"><span class="ref-num">[113]</span> E. C. G. Stueckelberg: "Quantum theory in real Hilbert space," <em>Helv. Phys. Acta</em> 33 (1960) 727–752.</div>
+      <div class="ref"><span class="ref-num">[114]</span> D. S. Saxon: <em>Elementary Quantum Mechanics</em> (Holden, 1964).</div>
+      <div class="ref"><span class="ref-num">[115]</span> H. J. Larson: <em>Introduction to Probability Theory and Statistical Inference</em>, 2nd ed. (Wiley, 1974).</div>
+      <div class="ref"><span class="ref-num">[116]</span> E. Schrödinger: "The Foundation of the Theory of Probability," <em>Proc. Roy. Irish Acad.</em> 51A (1947) 51–66, 141–146.</div>
+      <div class="ref"><span class="ref-num">[117]</span> E. T. Jaynes: "Bayesian methods: General background," in <em>Maximum Entropy and Bayesian Methods in Applied Statistics</em> (Cambridge, 1986) 1–25.</div>
+      <div class="ref"><span class="ref-num">[118]</span> R. Viertl, ed.: <em>Probability and Bayesian Statistics</em> (World Scientific, 1987).</div>
+      <div class="ref"><span class="ref-num">[119]</span> R. D. Rosenkrantz, ed.: <em>E. T. Jaynes: Papers on Probability, Statistics and Statistical Physics</em> (Reidel-Kluwer, 1989).</div>
+      <div class="ref"><span class="ref-num">[120]</span> P. J. Denning: "Bayesian learning," <em>American Sci.</em> 77 (1989) 216–218.</div>
+      <div class="ref"><span class="ref-num">[121]</span> J. O. Berger and D. A. Berry: "Statistical analysis and the illusion of objectivity," <em>American Sci.</em> 76 (1988) 159–165.</div>
+      <div class="ref"><span class="ref-num">[122]</span> J. Burke: <em>The Day the Universe Changed</em> (Little, Brown, 1985).</div>
+      <div class="ref"><span class="ref-num">[123]</span> F. Beck [pseud. of Fritz Houtermans] and W. Godin: <em>Russian Purge and The Extraction of Confessions</em> (Hurst and Blackett, 1951).</div>
+      <div class="ref"><span class="ref-num">[124]</span> D. Føllesdal: "Meaning and experience," in <em>Mind and Language</em>, ed. S. Guttenplan (Clarendon, 1975) 25–44.</div>
+      <div class="ref"><span class="ref-num">[125]</span> G. Berkeley: <em>Treatise Concerning the Principles of Understanding</em>, Dublin (1710; 2nd ed. 1734).</div>
+      <div class="ref"><span class="ref-num">[126]</span> T. Segerstedt: as quoted in ref. 22, p. 415.</div>
+      <div class="ref"><span class="ref-num">[127]</span> Ref. 21, p. 41.</div>
+      <div class="ref"><span class="ref-num">[128]</span> Ya. B. Zel'dovich and I. D. Novikov: <em>Relativistic Astrophysics, Vol. 1: Stars and Relativity</em> (Chicago, 1971).</div>
+      <div class="ref"><span class="ref-num">[129]</span> J. Mather et al.: "A preliminary measurement of the cosmic microwave background spectrum by the COBE Satellite," <em>Astrophys. J. Lett.</em> (1990).</div>
+      <div class="ref"><span class="ref-num">[130]</span> MTW, p. 738, Box 27.4; or JGST, Chap. 13, p. 242.</div>
+      <div class="ref"><span class="ref-num">[131]</span> G. K. O'Neill: <em>The High Frontier</em>, 4th ed. (Space Studies Institute, 1989).</div>
+      <div class="ref"><span class="ref-num">[132]</span> R. Jastrow: <em>Journey to the Stars: Space Exploration — Tomorrow and Beyond</em> (Bantam, 1989).</div>
+      <div class="ref"><span class="ref-num">[133]</span> K. Popper: <em>Conjectures and Refutations: the Growth of Scientific Knowledge</em> (Basic Books, 1962).</div>
+      <div class="ref"><span class="ref-num">[134]</span> R. W. Fuller and P. Putnam: "On the origin of order in behavior," <em>General Systems</em> 12 (1966) 111–121.</div>
+      <div class="ref"><span class="ref-num">[135]</span> R. W. Fuller: "Causal and Moral Law: Their Relationship as Examined in Terms of a Model of the Brain," Monday Evening Papers (Wesleyan, 1967).</div>
+      <div class="ref"><span class="ref-num">[136]</span> G. M. Edelman: <em>Neural Darwinism</em> (Basic Books, 1987).</div>
+      <div class="ref"><span class="ref-num">[137]</span> W. H. Calvin: <em>The Cerebral Symphony</em> (Bantam, 1990).</div>
+      <div class="ref"><span class="ref-num">[138]</span> W. W. Collins: <em>The Moonstone</em> (London, 1968).</div>
+      <div class="ref"><span class="ref-num">[139]</span> J. Allan Hobson: <em>Sleep</em> (Scientific American Library, Freeman, 1989) 86, 89, 175, 185, 186.</div>
+      <div class="ref"><span class="ref-num">[140]</span> I. Langmuir: "Pathological Science," 1953 colloquium, <em>Phys. Today</em> 42, No. 12 (1989) 36–48.</div>
+      <div class="ref"><span class="ref-num">[141]</span> N. S. Hetherington: <em>Science and Objectivity: Episodes in the History of Astronomy</em> (Iowa State, 1988).</div>
+      <div class="ref"><span class="ref-num">[142]</span> W. Sheehan: <em>Planets and Perception: Telescopic Views and Interpretations</em> (Arizona, 1988).</div>
+      <div class="ref"><span class="ref-num">[143]</span> M. White: <em>Science and Sentiment in America: Philosophical Thought from Jonathan Edwards to John Dewey</em> (Oxford, 1972).</div>
+      <div class="ref"><span class="ref-num">[144]</span> C. S. Peirce: <em>The Philosophy of Peirce: Selected Writings</em>, ed. J. Buchler (Routledge, 1940), passages from pp. 335–358.</div>
+      <div class="ref"><span class="ref-num">[145]</span> Parmenides of Elea [c. 515 B.C.–450 B.C.], poem <em>Nature</em>, part <em>Truth</em>, as summarized by A. C. Lloyd, <em>Encyclopedia Britannica</em> 17 (1959) 327.</div>
+      <div class="ref"><span class="ref-num">[146]</span> G. B. Pugh: <em>On the Origin of Human Values</em> (New York, 1976); chapter preprinted in <em>Zygon</em> 11 (1976) 2–24.</div>
+      <div class="ref"><span class="ref-num">[147]</span> F. W. J. von Schelling [1775–1854]: in <em>Schellings Werke</em>, ed. M. Schröter (Beck, 1958–1959), esp. Vol. 5, pp. 428–430.</div>
+      <div class="ref"><span class="ref-num">[148]</span> J. von Neumann and O. Morgenstern: <em>Theory of Games and Economic Behavior</em> (Princeton, 1944).</div>
+      <div class="ref"><span class="ref-num">[149]</span> J. Wang: <em>Theory of Games</em> (Oxford, 1988).</div>
+      <div class="ref"><span class="ref-num">[150]</span> J. R. Pierce: <em>Symbols, Signals and Noise: The Nature and Process of Communication</em> (Harper, 1961).</div>
+      <div class="ref"><span class="ref-num">[151]</span> M. Schwartz: <em>Telecommunication Networks: Protocols, Modeling and Analysis</em> (Addison-Wesley, 1987).</div>
+      <div class="ref"><span class="ref-num">[152]</span> M. S. Roden: <em>Digital Communication Systems Design</em> (Prentice Hall, 1988).</div>
+      <div class="ref"><span class="ref-num">[153]</span> P. W. Anderson: "More is different," <em>Science</em> 177 (1972) 393–396.</div>
+      <div class="ref"><span class="ref-num">[154]</span> C. Mead and L. Conway: <em>Introduction to VLSI Systems</em> (Addison-Wesley, 1980).</div>
+      <div class="ref"><span class="ref-num">[155]</span> P. B. Schneck: <em>Supercomputer Architecture</em> (Kluwer, 1987).</div>
+      <div class="ref"><span class="ref-num">[156]</span> F. E. Yates, ed.: <em>Self-Organizing Systems: The Emergence of Order</em> (Plenum, 1987).</div>
+      <div class="ref"><span class="ref-num">[157]</span> H. Haken: <em>Information and Self-Organization: A Macroscopic Approach to Complex Systems</em> (Springer, 1988).</div>
+      <div class="ref"><span class="ref-num">[158]</span> T. Kohonen: <em>Self-Organization and Associative Memory</em>, 3rd ed. (Springer, 1989).</div>
+      <div class="ref"><span class="ref-num">[159]</span> C. Smorynski: <em>Self-reference and Model Logic</em> (Springer, 1985).</div>
+      <div class="ref"><span class="ref-num">[160]</span> G. J. Chaitin: <em>Algorithmic Information Theory</em>, rev. 1987 ed. (Cambridge, 1988).</div>
+      <div class="ref"><span class="ref-num">[161]</span> J. P. Delahaye: "Chaitin's equation; an extension of Gödel's theorem," <em>Notices Amer. Math. Soc.</em> 36 (1989) 948–987.</div>
+      <div class="ref"><span class="ref-num">[162]</span> J. F. Traub, G. W. Wasilkowski and H. Woznaikowski: <em>Information-Based Complexity</em> (Academic, 1988).</div>
+      <div class="ref"><span class="ref-num">[163]</span> P. Young: <em>The Nature of Information</em> (Praeger Greenwood, 1987).</div>
+      <div class="ref"><span class="ref-num">[164]</span> W. H. Zurek: "Algorithmic randomness and physical entropy," <em>Phys. Rev.</em> A40 (1989) 4731–4751.</div>
+      <div class="ref"><span class="ref-num">[165]</span> M. Eigen and R. Winkler: <em>Das Spiel: Naturgesetze steuern den Zufall</em> (Piper, 1975).</div>
+      <div class="ref"><span class="ref-num">[166]</span> W. M. Elsasser: <em>Reflections on a Theory of Organisms</em> (Orbis, 1987).</div>
+      <div class="ref"><span class="ref-num">[167]</span> G. Nicolis and I. Prigogine: <em>Exploring Complexity: An Introduction</em> (Freeman, 1989).</div>
+      <div class="ref"><span class="ref-num">[168]</span> S. Watanabe, ed.: <em>Methodologies of Pattern Recognition</em> (Academic, 1967).</div>
+      <div class="ref"><span class="ref-num">[169]</span> J. Tou and R. C. Gonzalez: <em>Pattern Recognition Principles</em> (Addison-Wesley, 1974).</div>
+      <div class="ref"><span class="ref-num">[170]</span> H. Haken, ed.: <em>Pattern Formation by Dynamic Systems and Pattern Recognition</em> (Springer, 1979).</div>
+      <div class="ref"><span class="ref-num">[171]</span> H. Small and E. Garfield: "The geography of science: disciplinary and national mappings," <em>J. Info. Sci.</em> 11 (1985) 147–159.</div>
+      <div class="ref"><span class="ref-num">[172]</span> M. Agu: "Field theory of pattern recognition," <em>Phys. Rev.</em> A37 (1988) 4415–4418.</div>
+      <div class="ref"><span class="ref-num">[173]</span> M. Minsky and S. Papert: <em>Perceptrons: An Introduction to Computational Geometry</em>, 2nd ed. (MIT, 1988).</div>
+      <div class="ref"><span class="ref-num">[174]</span> L. A. Steen: "The science of patterns," <em>Science</em> 240 (1988) 611–616.</div>
+      <div class="ref"><span class="ref-num">[175]</span> B. M. Bennett, D. D. Hoffman and C. Prakash: <em>Observer Mechanics: A Formal Theory of Perception</em> (Academic, 1989).</div>
+      <div class="ref"><span class="ref-num">[176]</span> J. A. Wheeler: "Polyelectrons," <em>Ann. New York Acad. Sci.</em> 46 (1946) 219–238.</div>
+      <div class="ref"><span class="ref-num">[177]</span> D. Bohm: "The paradox of Einstein, Rosen and Podolsky," originally section 15–19, Chap. 22 of D. Bohm: <em>Quantum Theory</em> (Prentice-Hall, 1950); reprinted in WZ, 356–368.</div>
+      <div class="ref"><span class="ref-num">[178]</span> W. H. Zurek: "Thermodynamic cost of computation: Algorithmic complexity and the information metric," <em>Nature</em> 34 (1989) 119–124.</div>
+      <div class="ref"><span class="ref-num">[179]</span> E. F. Taylor and J. A. Wheeler: <em>Spacetime Physics</em> (Freeman, 1963) p. 102.</div>
+    </div>
+  </section>
+
+</article>
+
+<div class="colophon">
+  PRINCETON · TOKYO · ROME · PHILADELPHIA · SANTA FE · 1989
+  <div class="bits">01001001 01010100 00100000 01000110 01010010 01001111 01001101 00100000 01000010 01001001 01010100</div>
+</div>
+
+<script>
+  // Populate the floating bit field with a wall of binary digits
+  (function() {
+    const target = document.getElementById('bitfield');
+    if (!target) return;
+    let out = '';
+    const cols = 90;
+    const rows = 80;
+    for (let r = 0; r < rows; r++) {
+      let line = '';
+      for (let c = 0; c < cols; c++) {
+        line += Math.random() < 0.5 ? '0' : '1';
+        if (c < cols - 1) line += ' ';
+      }
+      out += line + '\n';
+    }
+    target.textContent = out;
+  })();
+</script>
+
+</body>
+</html>
