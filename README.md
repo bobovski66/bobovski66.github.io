@@ -1,78 +1,105 @@
-# Christopher Lee‑Jenkins
+# Christopher Lee-Jenkins
 
-## About Me
+I'm a mathematician and educator working at the seams of differential topology (symplectic and contact), information geometry, machine learning, and creative computation. I build visual, hands-on tools both to teach and to test ideas. My current research program is **Observational Geometry**: the geometry of inference.
 
-I’m a mathematician and educator exploring the seams between differential topology (symplectic/contact), information geometry, machine learning, and creative computation. I build visual, hands‑on tools—both to teach and to test ideas. Current interests include replicator flows & softmax bundles, interference patterns, NLSE/solitons, voltage/graph models, and topology‑driven data analysis.
-
-- Personal site: https://bobovski66.github.io  
+- Personal site: https://bobovski66.github.io
 - GitHub: https://github.com/bobovski66
 
 ---
 
-## Site Files
+## Observational Geometry & Information Geometry
 
-Below is a comprehensive list of the interactive pages and documents hosted on `bobovski66.github.io`. Each link opens a standalone project or article.
+Replicator dynamics on the simplex, softmax bundles, Fisher–Rao structure, and game-theoretic flows.
 
-### Core pages
+- [Fisher Geometry App](fisher_geometry_app.html)
+- [Softmax Atlas Viewer](softmax_atlas_viewer.html)
+- [Softmax Torus Knot](softmax_torus_knot.html)
+- [Replicator Dynamics](replicator_dynamics.html)
+- [Replicator 3D](replicator3d.html)
+- [Geometric Replicator](geometric_replicator.html)
+- [Simplex Game Theory Lab](simplex_game_theory_lab.html)
+- [3D Game Theory](gametheory3d.html)
+- [Business Game Sim](bizness_game_sim.html)
+- Paper: [Replicator Dynamics via Softmax Bundle](replicator_dynamics_via_softmax_bundle.pdf)
 
-- https://bobovski66.github.io/EM_Screen.html  
-- https://bobovski66.github.io/EldritchInquiries.html  
-- https://bobovski66.github.io/FiniteSubgroupTorus.html  
-- https://bobovski66.github.io/FourierInterference.html  
-- https://bobovski66.github.io/HiQ.html  
-- https://bobovski66.github.io/PsychotronicUniverse_CIA.html  
-- https://bobovski66.github.io/SimpleSabotageFieldManual.html  
-- https://bobovski66.github.io/UAP_Timeline.html  
-- https://bobovski66.github.io/bearden_eftv.html  
-- https://bobovski66.github.io/bearden_starwars.html  
-- https://bobovski66.github.io/binomial_vs_geometric.html  
-- https://bobovski66.github.io/bizness_game_sim.html  
-- https://bobovski66.github.io/celestial-cartography.html  
-- https://bobovski66.github.io/demoivre_wheel.html  
-- https://bobovski66.github.io/dino_chrono.html  
-- https://bobovski66.github.io/fisher_geometry_app.html  
-- https://bobovski66.github.io/floyd.html  
-- https://bobovski66.github.io/galaxies.html  
-- https://bobovski66.github.io/galaxies_torus.html  
-- https://bobovski66.github.io/gametheory3d.html  
-- https://bobovski66.github.io/geometric_replicator.html  
-- https://bobovski66.github.io/graphs.html  
-- https://bobovski66.github.io/hopf_stereo.html  
-- https://bobovski66.github.io/index.html  
-- https://bobovski66.github.io/interference.html  
-- https://bobovski66.github.io/ithroot.html  
-- https://bobovski66.github.io/mandelbulb-explorer.html  
-- https://bobovski66.github.io/mathtree.html  
-- https://bobovski66.github.io/modular.html  
-- https://bobovski66.github.io/mult_tables.html  
-- https://bobovski66.github.io/normal.html  
-- https://bobovski66.github.io/note-trainer.html  
-- https://bobovski66.github.io/og_mystery_histograms.html  
-- https://bobovski66.github.io/ontic_collapse.html  
-- https://bobovski66.github.io/partialderivgame.html  
-- https://bobovski66.github.io/pizza.html  
-- https://bobovski66.github.io/replicator3d.html  
-- https://bobovski66.github.io/replicator_dynamics.html  
-- https://bobovski66.github.io/simplex_game_theory_lab.html  
-- https://bobovski66.github.io/softmax_atlas_viewer.html  
-- https://bobovski66.github.io/softmax_torus_knot.html  
-- https://bobovski66.github.io/solarsim.html  
-- https://bobovski66.github.io/synth.html  
-- https://bobovski66.github.io/time_warp.html  
-- https://bobovski66.github.io/torus_group_visual.html  
-- https://bobovski66.github.io/torus_knot_surface%20punk.html  
-- https://bobovski66.github.io/torus_knot_surface.html  
-- https://bobovski66.github.io/torus_knot_surface_punk.html
+## Topology & Differential Geometry
 
-### PDF documents
+Toric manifolds, contact and symplectic structures, Hopf fibrations, torus actions.
 
-Some pages link to PDF documents that accompany the interactive visualizations:
+- [Hopf Stereographic](hopf_stereo.html)
+- [Torus Group Visualization](torus_group_visual.html)
+- [Finite Subgroups of the Torus](FiniteSubgroupTorus.html)
+- [Torus Knot Surface](torus_knot_surface.html)
+- [Torus Knot Surface (Punk)](torus_knot_surface_punk.html)
+- [Galaxies on the Torus](galaxies_torus.html)
+- [Math Tree](mathtree.html)
+- Paper: [Contact Descent](contact_descent.pdf)
+- Paper: [Contact Hamiltonians](contact_hamiltonians.pdf)
 
-- https://bobovski66.github.io/LAFB_redacted.pdf  
-- https://bobovski66.github.io/contact_descent.pdf  
-- https://bobovski66.github.io/contact_hamiltonians.pdf  
-- https://bobovski66.github.io/replicator_dynamics_via_softmax_bundle.pdf
+## Physics & Dynamical Systems
+
+Solar dynamics, nonlinear Schrödinger equations, quantum-to-classical transitions, electromagnetism, warp geometries.
+
+- [Solar Simulation](solarsim.html)
+- [Galaxies](galaxies.html)
+- [EM Screen](EM_Screen.html)
+- [Time Warp](time_warp.html)
+- [Wave Interference](interference.html)
+- [Fourier Interference](FourierInterference.html)
+- [NLS (Nonlinear Schrödinger)](NLS/)
+- [Quant-um](Quant-um/)
+- [Quantum to Classical](Quantum2Classical/)
+- [Hamiltones Warp Bubble](hamiltones-warp-bubble/)
+- [Rotating Magnetic Levitation](rotmaglev/)
+
+## Algebra, Number Theory, & Fractals
+
+Roots of unity, modular arithmetic, Fibonacci, Mandelbulb, Collatz, graph entropy.
+
+- [De Moivre Wheel](demoivre_wheel.html)
+- [Roots of Unity](ithroot.html)
+- [Modular Visualizer](modular.html)
+- [Multiplication Tables](mult_tables.html)
+- [Mandelbulb Explorer](mandelbulb-explorer.html)
+- [Graphs](graphs.html)
+- [Fibonacci](Fibo/)
+- [Fractal](Fractal/)
+- [Polynomial Roots](PolyRoots/)
+- [Graph Entropy](GraphEntropy/)
+- [Collatz (Reproducible)](collatz_cd_reproducible/)
+
+## Teaching
+
+Materials for MATH& 146 and MATH& 107, plus recreational and OG-themed pedagogical tools.
+
+- [Normal Distribution](normal.html)
+- [Partial Derivative Game](partialderivgame.html)
+- [Pizza (OG Quiz)](pizza.html)
+- [HiQ (Peg-Jumping Puzzle)](HiQ.html)
+- [AIcademic](AIcademic/)
+- [Articles](Articles/)
+
+## Music & Audio
+
+Synthesizers, note training, and performance tools.
+
+- [PolyMorph Synth](synth.html)
+- [Note Trainer](note-trainer.html)
+- [Floyd](floyd.html)
+
+## Esoteric Traditions & Anomalous Phenomena
+
+Flying Saucer Party museum exhibit, UAP timeline, NUFORC field records, and chronologies of mainstream acceptance.
+
+- [UAP Timeline](UAP_Timeline.html)
+- [Eldritch Inquiries](EldritchInquiries.html)
+- [Dinosaur Chronology](dino_chrono.html)
+- [NUFORC Records](NUFORC/)
+- [Brain](Brain/)
+- Document: [LAFB (Redacted)](LAFB_redacted.pdf)
 
 ---
 
-Feel free to explore the links above for a mix of mathematical visualizations, interactive simulations, and expository documents showcasing work in topology, dynamics, and information geometry.
+## About
+
+Welcome to my personal GitHub repository. This space serves as a collection of my work in mathematics, machine learning, computational research, and creative computation.
