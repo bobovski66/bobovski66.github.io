@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEON RULES — A Card Game</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap');
+
+:root{
+  --bg:#0a0e1a;
+  --panel:#111729;
+  --teal:#2fd8c4;
+  --amber:#ffb84d;
+  --magenta:#ff4da6;
+  --red:#ff5566;
+  --green:#3ddc84;
+  --blue:#4d9fff;
+  --yellow:#ffd24d;
+  --wild:#9d6dff;
+  --ink:#e8ecf5;
+  --dim:#6b7794;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:
+    radial-gradient(ellipse at 20% 0%, #15203a 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 100%, #1a1330 0%, transparent 55%),
+    var(--bg);
+  color:var(--ink);
+  font-family:'Rajdhani',sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+.scan{position:fixed;inset:0;pointer-events:none;z-index:999;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,0.12) 0 2px,transparent 2px 4px);
+  opacity:.35;mix-blend-mode:multiply}
+
+header{
+  text-align:center;padding:18px 12px 6px;
+}
+h1{
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(26px,5vw,46px);
+  letter-spacing:.18em;
+  background:linear-gradient(90deg,var(--teal),var(--amber),var(--magenta));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  text-shadow:0 0 28px rgba(47,216,196,.25);
+}
+.sub{color:var(--dim);font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:.3em}
+
+#setup{max-width:520px;margin:40px auto;background:var(--panel);
+  border:1px solid #243150;border-radius:14px;padding:34px;
+  box-shadow:0 0 50px rgba(0,0,0,.5)}
+#setup h2{font-family:'Share Tech Mono',monospace;color:var(--teal);
+  letter-spacing:.15em;margin-bottom:22px;font-size:18px}
+.opt-row{margin:18px 0}
+.opt-row label{display:block;color:var(--amber);letter-spacing:.12em;
+  font-size:14px;margin-bottom:10px;font-weight:600}
+.choices{display:flex;gap:10px;flex-wrap:wrap}
+.choice{flex:1;min-width:64px;padding:12px;text-align:center;cursor:pointer;
+  background:#0c1222;border:1px solid #243150;border-radius:9px;
+  font-family:'Share Tech Mono',monospace;letter-spacing:.1em;
+  transition:.15s;color:var(--ink)}
+.choice:hover{border-color:var(--teal)}
+.choice.active{background:linear-gradient(135deg,rgba(47,216,196,.18),rgba(255,77,166,.12));
+  border-color:var(--teal);color:var(--teal);box-shadow:0 0 18px rgba(47,216,196,.25)}
+.btn{display:block;width:100%;margin-top:26px;padding:15px;cursor:pointer;
+  font-family:'Share Tech Mono',monospace;letter-spacing:.2em;font-size:15px;
+  background:linear-gradient(135deg,var(--teal),var(--magenta));
+  border:none;border-radius:10px;color:#06121a;font-weight:700;
+  transition:.15s;box-shadow:0 0 22px rgba(47,216,196,.3)}
+.btn:hover{transform:translateY(-2px);box-shadow:0 0 32px rgba(255,77,166,.4)}
+
+#game{display:none;max-width:1080px;margin:0 auto;padding:8px 14px 40px}
+.bots{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin:8px 0 18px}
+.bot{background:var(--panel);border:1px solid #243150;border-radius:11px;
+  padding:12px 16px;min-width:150px;text-align:center;transition:.2s;position:relative}
+.bot.turn{border-color:var(--amber);box-shadow:0 0 24px rgba(255,184,77,.35)}
+.bot .name{font-family:'Share Tech Mono',monospace;color:var(--teal);
+  letter-spacing:.1em;font-size:14px}
+.bot .cc{color:var(--amber);font-size:13px;margin-top:4px;font-family:'Share Tech Mono',monospace}
+.minicards{display:flex;justify-content:center;gap:3px;margin-top:8px;flex-wrap:wrap}
+.mini{width:14px;height:20px;border-radius:3px;background:#2a3556;border:1px solid #3d4d78}
+.uno-flag{position:absolute;top:-10px;right:-8px;background:var(--magenta);
+  color:#fff;font-family:'Share Tech Mono',monospace;font-size:10px;
+  padding:2px 7px;border-radius:8px;letter-spacing:.1em;
+  box-shadow:0 0 14px rgba(255,77,166,.6);animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.55}}
+
+.table{display:flex;justify-content:center;align-items:center;gap:32px;
+  margin:14px 0 26px;min-height:170px;flex-wrap:wrap}
+.pile{text-align:center}
+.pile .lbl{color:var(--dim);font-family:'Share Tech Mono',monospace;
+  font-size:11px;letter-spacing:.2em;margin-bottom:8px}
+
+.card{width:84px;height:124px;border-radius:11px;position:relative;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  font-family:'Share Tech Mono',monospace;font-weight:700;font-size:34px;
+  border:3px solid rgba(255,255,255,.85);
+  box-shadow:0 6px 16px rgba(0,0,0,.45);transition:transform .15s,box-shadow .15s;
+  user-select:none;flex-shrink:0}
+.card .corner{position:absolute;font-size:14px;font-weight:700}
+.card .corner.tl{top:5px;left:7px}
+.card .corner.br{bottom:5px;right:7px;transform:rotate(180deg)}
+.card.red{background:linear-gradient(150deg,#ff7a85,#d62f44)}
+.card.green{background:linear-gradient(150deg,#5fe89e,#1fae5f)}
+.card.blue{background:linear-gradient(150deg,#79b8ff,#2b6fd6)}
+.card.yellow{background:linear-gradient(150deg,#ffe27a,#e0a800);color:#3a2b00}
+.card.wild{background:conic-gradient(from 0deg,var(--red),var(--yellow),var(--green),var(--blue),var(--red))}
+.card.back{background:linear-gradient(150deg,#1c2747,#0c1222);
+  border-color:#3d4d78;color:var(--teal);font-size:13px;letter-spacing:.1em}
+.card.playable{cursor:pointer}
+.card.playable:hover{transform:translateY(-14px) scale(1.04);
+  box-shadow:0 14px 30px rgba(47,216,196,.4);border-color:var(--teal)}
+.card.disabled{opacity:.42;cursor:not-allowed}
+
+.hand-wrap{margin-top:10px}
+.hand-wrap .lbl{text-align:center;color:var(--dim);
+  font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.2em;margin-bottom:10px}
+.hand{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;
+  padding:10px;min-height:140px}
+
+.controls{display:flex;justify-content:center;gap:12px;margin-top:18px;flex-wrap:wrap}
+.ctrl{padding:12px 22px;cursor:pointer;font-family:'Share Tech Mono',monospace;
+  letter-spacing:.12em;background:var(--panel);border:1px solid #243150;
+  border-radius:9px;color:var(--ink);transition:.15s;font-size:14px}
+.ctrl:hover{border-color:var(--amber);color:var(--amber)}
+.ctrl.draw{border-color:var(--teal);color:var(--teal)}
+.ctrl.uno{border-color:var(--magenta);color:var(--magenta);font-weight:700}
+.ctrl:disabled{opacity:.4;cursor:not-allowed}
+
+#log{max-width:560px;margin:22px auto 0;background:#0c1222;border:1px solid #243150;
+  border-radius:10px;padding:14px 18px;height:120px;overflow-y:auto;
+  font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--dim)}
+#log div{margin:3px 0;line-height:1.5}
+#log .me{color:var(--teal)}
+#log .bot{color:var(--amber)}
+#log .sys{color:var(--magenta)}
+
+#colorpick{display:none;position:fixed;inset:0;z-index:50;
+  background:rgba(5,8,16,.85);align-items:center;justify-content:center}
+.cp-box{background:var(--panel);border:1px solid #243150;border-radius:14px;
+  padding:30px;text-align:center}
+.cp-box h3{font-family:'Share Tech Mono',monospace;color:var(--teal);
+  letter-spacing:.14em;margin-bottom:20px}
+.cp-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.cp{width:90px;height:90px;border-radius:12px;cursor:pointer;border:3px solid transparent;
+  transition:.15s;box-shadow:0 4px 14px rgba(0,0,0,.4)}
+.cp:hover{transform:scale(1.07);border-color:#fff}
+.cp.red{background:linear-gradient(150deg,#ff7a85,#d62f44)}
+.cp.green{background:linear-gradient(150deg,#5fe89e,#1fae5f)}
+.cp.blue{background:linear-gradient(150deg,#79b8ff,#2b6fd6)}
+.cp.yellow{background:linear-gradient(150deg,#ffe27a,#e0a800)}
+
+#overlay{display:none;position:fixed;inset:0;z-index:60;
+  background:rgba(5,8,16,.9);align-items:center;justify-content:center;text-align:center}
+.over-box{padding:40px}
+.over-box h2{font-family:'Share Tech Mono',monospace;font-size:42px;letter-spacing:.1em;
+  background:linear-gradient(90deg,var(--teal),var(--amber),var(--magenta));
+  -webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:10px}
+.over-box p{color:var(--dim);font-family:'Share Tech Mono',monospace;
+  letter-spacing:.1em;margin-bottom:24px}
+
+.dir{font-family:'Share Tech Mono',monospace;color:var(--amber);font-size:13px;
+  letter-spacing:.15em;text-align:center;margin-bottom:4px}
+</style>
+</head>
+<body>
+<div class="scan"></div>
+<header>
+  <h1>NEON RULES</h1>
+  <div class="sub">A MATCH-AND-PLAY CARD GAME</div>
+</header>
+
+<div id="setup">
+  <h2>// CONFIGURE MATCH</h2>
+  <div class="opt-row">
+    <label>ROBOTIC OPPONENTS</label>
+    <div class="choices" id="botChoices">
+      <div class="choice" data-bots="1">1</div>
+      <div class="choice active" data-bots="2">2</div>
+      <div class="choice" data-bots="3">3</div>
+    </div>
+  </div>
+  <div class="opt-row">
+    <label>AI DIFFICULTY</label>
+    <div class="choices" id="diffChoices">
+      <div class="choice" data-diff="easy">EASY</div>
+      <div class="choice active" data-diff="normal">NORMAL</div>
+      <div class="choice" data-diff="hard">HARD</div>
+    </div>
+  </div>
+  <button class="btn" id="startBtn">▸ DEAL CARDS</button>
+</div>
+
+<div id="game">
+  <div class="dir" id="dirDisplay">↻ CLOCKWISE</div>
+  <div class="bots" id="bots"></div>
+  <div class="table">
+    <div class="pile">
+      <div class="lbl">DRAW PILE</div>
+      <div class="card back" id="drawPile">DRAW</div>
+    </div>
+    <div class="pile">
+      <div class="lbl">DISCARD</div>
+      <div id="discard"></div>
+    </div>
+  </div>
+  <div class="hand-wrap">
+    <div class="lbl">YOUR HAND</div>
+    <div class="hand" id="hand"></div>
+  </div>
+  <div class="controls">
+    <button class="ctrl draw" id="drawBtn">⊕ DRAW CARD</button>
+    <button class="ctrl uno" id="unoBtn">! CALL UNO</button>
+    <button class="ctrl" id="passBtn" disabled>PASS</button>
+    <button class="ctrl" id="restartBtn">↺ NEW MATCH</button>
+  </div>
+  <div id="log"></div>
+</div>
+
+<div id="colorpick">
+  <div class="cp-box">
+    <h3>// CHOOSE A COLOR</h3>
+    <div class="cp-grid">
+      <div class="cp red" data-c="red"></div>
+      <div class="cp green" data-c="green"></div>
+      <div class="cp blue" data-c="blue"></div>
+      <div class="cp yellow" data-c="yellow"></div>
+    </div>
+  </div>
+</div>
+
+<div id="overlay">
+  <div class="over-box">
+    <h2 id="overTitle">VICTORY</h2>
+    <p id="overSub"></p>
+    <button class="btn" id="overBtn" style="max-width:280px;margin:0 auto">▸ PLAY AGAIN</button>
+  </div>
+</div>
+
+<script>
+const COLORS=['red','green','blue','yellow'];
+const BOT_NAMES=['KVASIR','LEVIATHAN','ONE-GOOD-EYE'];
+let state={};
+
+function buildDeck(){
+  const d=[];
+  for(const c of COLORS){
+    d.push({color:c,type:'num',val:0});
+    for(let n=1;n<=9;n++){d.push({color:c,type:'num',val:n});d.push({color:c,type:'num',val:n});}
+    for(const t of ['skip','reverse','draw2']){d.push({color:c,type:t});d.push({color:c,type:t});}
+  }
+  for(let i=0;i<4;i++){d.push({color:'wild',type:'wild'});d.push({color:'wild',type:'wild4'});}
+  return d;
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function label(card){
+  if(card.type==='num')return String(card.val);
+  if(card.type==='skip')return'⊘';
+  if(card.type==='reverse')return'⇄';
+  if(card.type==='draw2')return'+2';
+  if(card.type==='wild')return'W';
+  if(card.type==='wild4')return'+4';
+}
+
+function canPlay(card,top,activeColor){
+  if(card.color==='wild')return true;
+  if(card.color===activeColor)return true;
+  if(card.type==='num'&&top.type==='num'&&card.val===top.val)return true;
+  if(card.type!=='num'&&card.type===top.type)return true;
+  return false;
+}
+
+// ---- setup ----
+let cfg={bots:2,diff:'normal'};
+document.getElementById('botChoices').addEventListener('click',e=>{
+  if(!e.target.dataset.bots)return;
+  document.querySelectorAll('#botChoices .choice').forEach(c=>c.classList.remove('active'));
+  e.target.classList.add('active');cfg.bots=+e.target.dataset.bots;
+});
+document.getElementById('diffChoices').addEventListener('click',e=>{
+  if(!e.target.dataset.diff)return;
+  document.querySelectorAll('#diffChoices .choice').forEach(c=>c.classList.remove('active'));
+  e.target.classList.add('active');cfg.diff=e.target.dataset.diff;
+});
+document.getElementById('startBtn').onclick=startGame;
+document.getElementById('restartBtn').onclick=()=>location.reload();
+document.getElementById('overBtn').onclick=()=>location.reload();
+
+function startGame(){
+  document.getElementById('setup').style.display='none';
+  document.getElementById('game').style.display='block';
+  const deck=shuffle(buildDeck());
+  const players=[{name:'YOU',human:true,hand:[]}];
+  for(let i=0;i<cfg.bots;i++)players.push({name:BOT_NAMES[i],human:false,hand:[]});
+  for(let r=0;r<7;r++)for(const p of players)p.hand.push(deck.pop());
+  // first non-wild on discard
+  let first=deck.pop();
+  while(first.color==='wild'){deck.unshift(first);first=deck.pop();}
+  state={deck,discard:[first],players,turn:0,dir:1,activeColor:first.color,
+    pendingDraw:0,unoCalled:new Set(),over:false};
+  applyFirstCard();
+  render();
+  log('sys','MATCH BEGINS. '+(state.players.length-1)+' robotic opponents engaged.');
+  if(!current().human)setTimeout(botTurn,1100);
+}
+
+function applyFirstCard(){
+  const c=state.discard[0];
+  if(c.type==='skip')state.turn=next(0);
+  else if(c.type==='reverse'){if(state.players.length===2)state.turn=next(0);else{state.dir=-1;}}
+  else if(c.type==='draw2'){state.pendingDraw=2;}
+}
+
+function current(){return state.players[state.turn];}
+function next(from){let n=from;n=(n+state.dir+state.players.length)%state.players.length;return n;}
+function drawFromDeck(){
+  if(state.deck.length===0){
+    const top=state.discard.pop();
+    state.deck=shuffle(state.discard);
+    state.discard=[top];
+    log('sys','Reshuffled discard into draw pile.');
+  }
+  return state.deck.pop();
+}
+
+function log(cls,msg){
+  const el=document.getElementById('log');
+  const d=document.createElement('div');d.className=cls;d.textContent='» '+msg;
+  el.appendChild(d);el.scrollTop=el.scrollHeight;
+}
+
+function render(){
+  // bots
+  const bw=document.getElementById('bots');bw.innerHTML='';
+  state.players.forEach((p,i)=>{
+    if(p.human)return;
+    const div=document.createElement('div');
+    div.className='bot'+(i===state.turn?' turn':'');
+    let minis='';for(let k=0;k<Math.min(p.hand.length,12);k++)minis+='<div class="mini"></div>';
+    const uno=p.hand.length===1?'<div class="uno-flag">UNO!</div>':'';
+    div.innerHTML=uno+'<div class="name">'+p.name+'</div><div class="cc">'+p.hand.length+' cards</div><div class="minicards">'+minis+'</div>';
+    bw.appendChild(div);
+  });
+  // discard
+  const top=state.discard[state.discard.length-1];
+  const disc=document.getElementById('discard');
+  disc.innerHTML='';
+  const dc=cardEl(top,false);
+  if(top.color==='wild'){dc.style.boxShadow='0 0 26px '+colorGlow(state.activeColor);
+    dc.style.borderColor=cssColor(state.activeColor);}
+  disc.appendChild(dc);
+  // hand
+  const hand=document.getElementById('hand');hand.innerHTML='';
+  const you=state.players[0];
+  const myTurn=state.turn===0&&!state.over;
+  you.hand.forEach((card,idx)=>{
+    const playable=myTurn&&playableNow(card);
+    const el=cardEl(card,true);
+    if(playable){el.classList.add('playable');el.onclick=()=>humanPlay(idx);}
+    else if(myTurn){el.classList.add('disabled');}
+    hand.appendChild(el);
+  });
+  document.getElementById('dirDisplay').textContent=state.dir===1?'↻ CLOCKWISE':'↺ COUNTER-CLOCKWISE';
+  document.getElementById('drawBtn').disabled=!myTurn;
+  document.getElementById('unoBtn').disabled=!(myTurn&&you.hand.length===2);
+}
+
+function playableNow(card){
+  const top=state.discard[state.discard.length-1];
+  if(state.pendingDraw>0){
+    // must stack same draw type
+    if(state.pendingDraw>0&&(top.type==='draw2')&&card.type==='draw2')return true;
+    if(state.pendingDraw>0&&(top.type==='wild4')&&card.type==='wild4')return true;
+    return false;
+  }
+  return canPlay(card,top,state.activeColor);
+}
+
+function cssColor(c){return{red:'#ff5566',green:'#3ddc84',blue:'#4d9fff',yellow:'#ffd24d'}[c]||'#9d6dff';}
+function colorGlow(c){return{red:'rgba(255,85,102,.6)',green:'rgba(61,220,132,.6)',blue:'rgba(77,159,255,.6)',yellow:'rgba(255,210,77,.6)'}[c]||'rgba(157,109,255,.6)';}
+
+function cardEl(card,full){
+  const el=document.createElement('div');
+  el.className='card '+card.color;
+  const l=label(card);
+  el.innerHTML='<div class="corner tl">'+l+'</div>'+l+'<div class="corner br">'+l+'</div>';
+  return el;
+}
+
+// ---- human actions ----
+function humanPlay(idx){
+  if(state.turn!==0||state.over)return;
+  const card=state.players[0].hand[idx];
+  if(!playableNow(card))return;
+  if(card.color==='wild'){
+    pendingWildIdx=idx;
+    document.getElementById('colorpick').style.display='flex';
+    return;
+  }
+  doPlay(0,idx,card.color);
+}
+let pendingWildIdx=null;
+document.querySelectorAll('.cp').forEach(cp=>{
+  cp.onclick=()=>{
+    document.getElementById('colorpick').style.display='none';
+    doPlay(0,pendingWildIdx,cp.dataset.c);
+  };
+});
+document.getElementById('drawBtn').onclick=()=>{
+  if(state.turn!==0||state.over)return;
+  if(state.pendingDraw>0){
+    for(let i=0;i<state.pendingDraw;i++)state.players[0].hand.push(drawFromDeck());
+    log('me','You drew '+state.pendingDraw+' cards.');
+    state.pendingDraw=0;
+    endTurn();
+  }else{
+    const c=drawFromDeck();
+    state.players[0].hand.push(c);
+    log('me','You drew a card.');
+    render();
+    // if drawn card is playable, allow play; else pass
+    if(playableNow(c)){
+      document.getElementById('passBtn').disabled=false;
+      log('sys','Playable card drawn — play it or PASS.');
+    }else{
+      endTurn();
+    }
+  }
+};
+document.getElementById('passBtn').onclick=()=>{
+  document.getElementById('passBtn').disabled=true;
+  endTurn();
+};
+document.getElementById('unoBtn').onclick=()=>{
+  state.unoCalled.add(0);
+  log('me','YOU CALLED UNO!');
+};
+
+function doPlay(pi,idx,chosenColor){
+  const p=state.players[pi];
+  const card=p.hand.splice(idx,1)[0];
+  state.discard.push(card);
+  state.activeColor=card.color==='wild'?chosenColor:card.color;
+  const who=p.human?'You':p.name;
+  log(p.human?'me':'bot',who+' played '+describe(card)+(card.color==='wild'?' → '+chosenColor.toUpperCase():'')+'.');
+  document.getElementById('passBtn').disabled=true;
+
+  // uno penalty check for humans handled on next action; bots auto-call
+  if(p.hand.length===1&&!p.human){state.unoCalled.add(pi);log('bot',p.name+' calls UNO!');}
+  if(p.hand.length===0){win(pi);return;}
+  // forgot uno penalty (human)
+  if(p.human&&p.hand.length===1&&!state.unoCalled.has(0)){
+    p.hand.push(drawFromDeck());p.hand.push(drawFromDeck());
+    log('sys','You forgot to call UNO! +2 penalty.');
+  }
+
+  // effects
+  if(card.type==='reverse'){
+    if(state.players.length===2){applyEffectThenAdvance('skip');return;}
+    state.dir*=-1;log('sys','Direction reversed.');
+  }
+  if(card.type==='skip'){applyEffectThenAdvance('skip');return;}
+  if(card.type==='draw2'){state.pendingDraw+=2;}
+  if(card.type==='wild4'){state.pendingDraw+=4;}
+  state.unoCalled.delete(pi)||0;
+  if(p.hand.length>1)state.unoCalled.delete(pi);
+  endTurn();
+}
+
+function describe(card){
+  const cn=card.color==='wild'?'':card.color.toUpperCase()+' ';
+  const t={num:String(card.val),skip:'SKIP',reverse:'REVERSE',draw2:'DRAW-TWO',wild:'WILD',wild4:'WILD DRAW-FOUR'}[card.type];
+  return cn+t;
+}
+
+function applyEffectThenAdvance(type){
+  // skip the next player
+  if(type==='skip'){
+    const skipped=next(state.turn);
+    log('sys',state.players[skipped].name===undefined?'':'');
+    state.turn=next(skipped);
+  }
+  render();
+  proceed();
+}
+
+function endTurn(){
+  state.turn=next(state.turn);
+  render();
+  proceed();
+}
+
+function proceed(){
+  if(state.over)return;
+  render();
+  if(!current().human){
+    setTimeout(botTurn, cfg.diff==='hard'?700:1000);
+  }else{
+    // human turn: if pending draw and no stack option, must draw
+    if(state.pendingDraw>0){
+      const can=state.players[0].hand.some(c=>playableNow(c));
+      if(!can){
+        log('sys','You must draw '+state.pendingDraw+' cards. Tap DRAW CARD.');
+      }
+    }
+  }
+}
+
+// ---- bot AI ----
+function botTurn(){
+  if(state.over)return;
+  const pi=state.turn;const p=state.players[pi];
+  const top=state.discard[state.discard.length-1];
+
+  // handle pending draw
+  if(state.pendingDraw>0){
+    const stackable=p.hand.findIndex(c=>(top.type==='draw2'&&c.type==='draw2')||(top.type==='wild4'&&c.type==='wild4'));
+    if(stackable>=0&&cfg.diff!=='easy'){
+      const c=p.hand[stackable];
+      doPlay(pi,stackable,c.color==='wild'?bestColor(p):c.color);
+      return;
+    }else{
+      for(let i=0;i<state.pendingDraw;i++)p.hand.push(drawFromDeck());
+      log('bot',p.name+' drew '+state.pendingDraw+' cards.');
+      state.pendingDraw=0;
+      endTurn();return;
+    }
+  }
+
+  const playable=[];
+  p.hand.forEach((c,i)=>{if(canPlay(c,top,state.activeColor))playable.push(i);});
+  if(playable.length===0){
+    const c=drawFromDeck();p.hand.push(c);
+    log('bot',p.name+' drew a card.');
+    if(canPlay(c,top,state.activeColor)){
+      doPlay(pi,p.hand.length-1,c.color==='wild'?bestColor(p):c.color);
+    }else{endTurn();}
+    return;
+  }
+  // choose best card
+  let idx=chooseBot(p,playable,top);
+  const c=p.hand[idx];
+  doPlay(pi,idx,c.color==='wild'?bestColor(p):c.color);
+}
+
+function chooseBot(p,playable,top){
+  if(cfg.diff==='easy')return playable[Math.floor(Math.random()*playable.length)];
+  // normal/hard: prefer action cards when opponents low, dump high numbers, save wilds
+  const scored=playable.map(i=>{
+    const c=p.hand[i];let s=0;
+    if(c.type==='num')s=c.val;
+    if(c.type==='draw2')s=20;
+    if(c.type==='skip')s=18;
+    if(c.type==='reverse')s=15;
+    if(c.type==='wild')s=cfg.diff==='hard'?5:8;
+    if(c.type==='wild4')s=cfg.diff==='hard'?6:9;
+    // hard: aggressive when an opponent near uno
+    if(cfg.diff==='hard'){
+      const nearWin=state.players.some((q,qi)=>qi!==state.turn&&q.hand.length<=2);
+      if(nearWin&&['draw2','skip','wild4','reverse'].includes(c.type))s+=30;
+    }
+    return{i,s};
+  });
+  scored.sort((a,b)=>b.s-a.s);
+  return scored[0].i;
+}
+
+function bestColor(p){
+  const cnt={red:0,green:0,blue:0,yellow:0};
+  p.hand.forEach(c=>{if(cnt[c.color]!==undefined)cnt[c.color]++;});
+  return Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0];
+}
+
+function win(pi){
+  state.over=true;render();
+  const p=state.players[pi];
+  document.getElementById('overTitle').textContent=p.human?'YOU WIN':p.name+' WINS';
+  document.getElementById('overSub').textContent=p.human?'All cards cleared. Flawless.':'The machine empties its hand first.';
+  document.getElementById('overlay').style.display='flex';
+  log('sys',(p.human?'You':p.name)+' won the match!');
+}
+</script>
+</body>
+</html>
