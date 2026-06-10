@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Rotating n-Cube Projection</title>
+<style>
+  :root{
+    --bg:#05070d;
+    --panel:#111827dd;
+    --ink:#e5e7eb;
+    --muted:#9ca3af;
+    --line:#60a5fa;
+    --accent:#a78bfa;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    min-height:100vh;
+    overflow:hidden;
+    background:
+      radial-gradient(circle at 20% 15%, #172554 0%, transparent 32%),
+      radial-gradient(circle at 75% 70%, #312e81 0%, transparent 34%),
+      var(--bg);
+    color:var(--ink);
+    font-family:system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  }
+  canvas{
+    display:block;
+    width:100vw;
+    height:100vh;
+  }
+  .panel{
+    position:fixed;
+    left:18px;
+    top:18px;
+    width:min(380px, calc(100vw - 36px));
+    background:var(--panel);
+    border:1px solid #334155;
+    border-radius:18px;
+    padding:16px 16px 14px;
+    backdrop-filter: blur(10px);
+    box-shadow:0 18px 45px #0008;
+  }
+  h1{
+    margin:0 0 4px;
+    font-size:20px;
+    font-weight:750;
+    letter-spacing:.2px;
+  }
+  .sub{
+    margin:0 0 14px;
+    color:var(--muted);
+    font-size:13px;
+    line-height:1.35;
+  }
+  .row{
+    display:grid;
+    grid-template-columns: 92px 1fr 52px;
+    gap:10px;
+    align-items:center;
+    margin:10px 0;
+  }
+  label{
+    color:#cbd5e1;
+    font-size:13px;
+  }
+  output{
+    color:#f8fafc;
+    font-variant-numeric:tabular-nums;
+    text-align:right;
+    font-size:13px;
+  }
+  input[type="range"]{width:100%}
+  .buttons{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:12px;
+  }
+  button{
+    border:1px solid #475569;
+    color:#f8fafc;
+    background:#1e293b;
+    padding:8px 10px;
+    border-radius:999px;
+    cursor:pointer;
+    font-size:13px;
+  }
+  button:hover{background:#334155}
+  .stats{
+    margin-top:12px;
+    color:#cbd5e1;
+    font-size:12px;
+    line-height:1.45;
+  }
+  .stats span{
+    color:#fff;
+    font-variant-numeric:tabular-nums;
+  }
+  .legend{
+    position:fixed;
+    right:18px;
+    bottom:18px;
+    max-width:min(420px, calc(100vw - 36px));
+    color:#cbd5e1;
+    background:#020617aa;
+    border:1px solid #1e293b;
+    border-radius:16px;
+    padding:12px 14px;
+    backdrop-filter:blur(8px);
+    font-size:12px;
+    line-height:1.45;
+  }
+  @media(max-width:720px){
+    .legend{display:none}
+    .panel{font-size:12px}
+  }
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+
+<section class="panel">
+  <h1>Rotating n-Cube Projection</h1>
+  <p class="sub">
+    A hypercube in dimensions 3 through 13, rotated in n-space, projected to 3D, then drawn with perspective.
+  </p>
+
+  <div class="row">
+    <label for="dim">Dimension</label>
+    <input id="dim" type="range" min="3" max="13" step="1" value="4">
+    <output id="dimOut">4D</output>
+  </div>
+
+  <div class="row">
+    <label for="speed">Speed</label>
+    <input id="speed" type="range" min="0" max="2.5" step="0.01" value="0.75">
+    <output id="speedOut">0.75</output>
+  </div>
+
+  <div class="row">
+    <label for="scale">Scale</label>
+    <input id="scale" type="range" min="60" max="380" step="1" value="180">
+    <output id="scaleOut">180</output>
+  </div>
+
+  <div class="row">
+    <label for="depth">Depth</label>
+    <input id="depth" type="range" min="1.5" max="8" step="0.05" value="4.3">
+    <output id="depthOut">4.30</output>
+  </div>
+
+  <div class="row">
+    <label for="fade">Fade</label>
+    <input id="fade" type="range" min="0" max="1" step="0.01" value="0.45">
+    <output id="fadeOut">0.45</output>
+  </div>
+
+  <div class="buttons">
+    <button id="pause">Pause</button>
+    <button id="reset">Reset view</button>
+    <button id="randomize">Randomize spin</button>
+  </div>
+
+  <div class="stats">
+    vertices: <span id="verts">16</span> &nbsp; edges: <span id="edges">32</span><br/>
+    Drag to rotate the final 3D view. Mouse wheel zooms.
+  </div>
+</section>
+
+<div class="legend">
+  Mathematically: vertices are all sign vectors in {−1,1}<sup>n</sup>. Edges connect vertices differing in exactly one coordinate. The code rotates in coordinate planes, projects nD → 3D using weighted orthonormal-ish directions, then applies ordinary 3D perspective.
+</div>
+
+<script>
+(() => {
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d", { alpha:false });
+
+  const dimEl = document.getElementById("dim");
+  const speedEl = document.getElementById("speed");
+  const scaleEl = document.getElementById("scale");
+  const depthEl = document.getElementById("depth");
+  const fadeEl = document.getElementById("fade");
+  const dimOut = document.getElementById("dimOut");
+  const speedOut = document.getElementById("speedOut");
+  const scaleOut = document.getElementById("scaleOut");
+  const depthOut = document.getElementById("depthOut");
+  const fadeOut = document.getElementById("fadeOut");
+  const vertsOut = document.getElementById("verts");
+  const edgesOut = document.getElementById("edges");
+
+  const pauseBtn = document.getElementById("pause");
+  const resetBtn = document.getElementById("reset");
+  const randomizeBtn = document.getElementById("randomize");
+
+  let W = 0, H = 0, DPR = 1;
+  let n = 4;
+  let vertices = [];
+  let edges = [];
+  let basis3 = [];
+  let spinRates = [];
+  let paused = false;
+  let t = 0;
+  let last = performance.now();
+
+  let viewYaw = -0.45;
+  let viewPitch = 0.35;
+  let zoom = 1.0;
+  let dragging = false;
+  let prevMouse = [0,0];
+
+  function resize(){
+    DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    W = Math.floor(innerWidth * DPR);
+    H = Math.floor(innerHeight * DPR);
+    canvas.width = W;
+    canvas.height = H;
+    canvas.style.width = innerWidth + "px";
+    canvas.style.height = innerHeight + "px";
+  }
+
+  function generateHypercube(dim){
+    n = dim;
+    const count = 1 << n;
+    vertices = new Array(count);
+    for(let mask=0; mask<count; mask++){
+      const v = new Float64Array(n);
+      for(let i=0; i<n; i++) v[i] = (mask & (1 << i)) ? 1 : -1;
+      vertices[mask] = v;
+    }
+
+    edges = [];
+    for(let mask=0; mask<count; mask++){
+      for(let i=0; i<n; i++){
+        const other = mask ^ (1 << i);
+        if(mask < other) edges.push([mask, other, i]);
+      }
+    }
+
+    basis3 = [];
+    // Deterministic “projection directions” from each coordinate axis into 3D.
+    // Higher dimensions contribute less so 13D remains readable instead of exploding.
+    for(let i=0; i<n; i++){
+      const a = i * 2.399963229728653; // golden-angle-ish
+      const b = (i + 1) * 1.113516364;
+      const weight = Math.pow(0.88, i);
+      basis3.push([
+        Math.cos(a) * Math.cos(b) * weight,
+        Math.sin(a) * Math.cos(b) * weight,
+        Math.sin(b) * weight
+      ]);
+    }
+
+    spinRates = [];
+    for(let i=0; i<n; i++){
+      for(let j=i+1; j<n; j++){
+        // Not all planes rotate equally; nearby coordinate planes dominate.
+        const strength = 0.18 + 0.60 / (1 + Math.abs(i-j));
+        const sign = ((i * 17 + j * 31) % 2) ? 1 : -1;
+        spinRates.push([i, j, sign * strength * (0.65 + ((i+j) % 5) * 0.11)]);
+      }
+    }
+
+    vertsOut.textContent = vertices.length.toString();
+    edgesOut.textContent = edges.length.toString();
+  }
+
+  function randomizeSpin(){
+    for(const r of spinRates){
+      r[2] = (Math.random() < .5 ? -1 : 1) * (0.12 + Math.random() * 0.85);
+    }
+  }
+
+  function rotateND(v, time, speed){
+    const p = new Float64Array(v);
+    for(const [i,j,rate] of spinRates){
+      const angle = time * speed * rate;
+      const c = Math.cos(angle), s = Math.sin(angle);
+      const xi = p[i], xj = p[j];
+      p[i] = c * xi - s * xj;
+      p[j] = s * xi + c * xj;
+    }
+    return p;
+  }
+
+  function projectTo3D(p){
+    let x=0, y=0, z=0;
+    for(let i=0; i<n; i++){
+      x += p[i] * basis3[i][0];
+      y += p[i] * basis3[i][1];
+      z += p[i] * basis3[i][2];
+    }
+    const norm = Math.sqrt(n);
+    return [x/norm, y/norm, z/norm];
+  }
+
+  function rotateView(P){
+    let [x,y,z] = P;
+
+    const cy = Math.cos(viewYaw), sy = Math.sin(viewYaw);
+    let x1 = cy*x + sy*z;
+    let z1 = -sy*x + cy*z;
+
+    const cp = Math.cos(viewPitch), sp = Math.sin(viewPitch);
+    let y2 = cp*y - sp*z1;
+    let z2 = sp*y + cp*z1;
+
+    return [x1, y2, z2];
+  }
+
+  function draw(now){
+    requestAnimationFrame(draw);
+    const dt = Math.min(0.05, (now - last) / 1000);
+    last = now;
+    if(!paused) t += dt;
+
+    const speed = parseFloat(speedEl.value);
+    const scale = parseFloat(scaleEl.value) * DPR * zoom;
+    const depth = parseFloat(depthEl.value);
+    const fade = parseFloat(fadeEl.value);
+
+    ctx.fillStyle = "#05070d";
+    ctx.fillRect(0,0,W,H);
+
+    // starry dust
+    ctx.save();
+    ctx.globalAlpha = 0.18;
+    ctx.fillStyle = "#e0f2fe";
+    for(let k=0;k<80;k++){
+      const x = (Math.sin(k*937.7 + t*.03)*0.5+0.5)*W;
+      const y = (Math.sin(k*431.1 + 4.7)*0.5+0.5)*H;
+      ctx.fillRect(x,y,1.2*DPR,1.2*DPR);
+    }
+    ctx.restore();
+
+    const pts = vertices.map(v => {
+      const p = rotateND(v, t, speed);
+      const q = rotateView(projectTo3D(p));
+      const denom = depth - q[2];
+      const perspective = depth / denom;
+      return {
+        x: W/2 + q[0] * scale * perspective,
+        y: H/2 + q[1] * scale * perspective,
+        z: q[2],
+        p: perspective
+      };
+    });
+
+    // Draw far edges first
+    const sortedEdges = edges.map(e => {
+      const a = pts[e[0]], b = pts[e[1]];
+      return { e, z:(a.z+b.z)/2 };
+    }).sort((A,B) => A.z - B.z);
+
+    ctx.lineCap = "round";
+    for(const item of sortedEdges){
+      const [ia, ib, axis] = item.e;
+      const a = pts[ia], b = pts[ib];
+      const depthAlpha = Math.max(0.06, Math.min(1, 0.33 + 0.32 * item.z));
+      const axisHue = (205 + axis * 137.5) % 360;
+      const alpha = (1 - fade) * 0.95 + fade * depthAlpha;
+      ctx.strokeStyle = `hsla(${axisHue}, 92%, 68%, ${alpha})`;
+      ctx.lineWidth = DPR * Math.max(0.45, 1.35 + 0.65 * (a.p + b.p) / 2);
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
+      ctx.stroke();
+    }
+
+    // Vertices
+    const sortedPts = pts.slice().sort((A,B) => A.z - B.z);
+    for(const p of sortedPts){
+      const r = DPR * Math.max(1.0, 2.1 * p.p);
+      const alpha = Math.max(0.18, Math.min(1, 0.45 + 0.45 * p.z));
+      ctx.fillStyle = `rgba(248,250,252,${alpha})`;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, r, 0, Math.PI*2);
+      ctx.fill();
+    }
+
+    // center glow
+    const g = ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.min(W,H)*0.42);
+    g.addColorStop(0,"rgba(96,165,250,0.045)");
+    g.addColorStop(1,"rgba(96,165,250,0)");
+    ctx.fillStyle = g;
+    ctx.fillRect(0,0,W,H);
+  }
+
+  function syncUI(){
+    dimOut.textContent = dimEl.value + "D";
+    speedOut.textContent = parseFloat(speedEl.value).toFixed(2);
+    scaleOut.textContent = scaleEl.value;
+    depthOut.textContent = parseFloat(depthEl.value).toFixed(2);
+    fadeOut.textContent = parseFloat(fadeEl.value).toFixed(2);
+  }
+
+  dimEl.addEventListener("input", () => {
+    syncUI();
+    generateHypercube(parseInt(dimEl.value,10));
+  });
+  for(const el of [speedEl, scaleEl, depthEl, fadeEl]){
+    el.addEventListener("input", syncUI);
+  }
+
+  pauseBtn.addEventListener("click", () => {
+    paused = !paused;
+    pauseBtn.textContent = paused ? "Resume" : "Pause";
+  });
+
+  resetBtn.addEventListener("click", () => {
+    viewYaw = -0.45;
+    viewPitch = 0.35;
+    zoom = 1.0;
+  });
+
+  randomizeBtn.addEventListener("click", randomizeSpin);
+
+  canvas.addEventListener("pointerdown", e => {
+    dragging = true;
+    prevMouse = [e.clientX, e.clientY];
+    canvas.setPointerCapture(e.pointerId);
+  });
+  canvas.addEventListener("pointermove", e => {
+    if(!dragging) return;
+    const dx = e.clientX - prevMouse[0];
+    const dy = e.clientY - prevMouse[1];
+    prevMouse = [e.clientX, e.clientY];
+    viewYaw += dx * 0.008;
+    viewPitch += dy * 0.008;
+    viewPitch = Math.max(-Math.PI/2 + 0.02, Math.min(Math.PI/2 - 0.02, viewPitch));
+  });
+  canvas.addEventListener("pointerup", e => {
+    dragging = false;
+    try{ canvas.releasePointerCapture(e.pointerId); }catch(_){}
+  });
+  canvas.addEventListener("wheel", e => {
+    e.preventDefault();
+    zoom *= Math.exp(-e.deltaY * 0.001);
+    zoom = Math.max(0.25, Math.min(4.0, zoom));
+  }, { passive:false });
+
+  window.addEventListener("resize", resize);
+  resize();
+  syncUI();
+  generateHypercube(4);
+  requestAnimationFrame(draw);
+})();
+</script>
+</body>
+</html>
