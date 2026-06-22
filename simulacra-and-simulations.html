@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulacra and Simulations — Baudrillard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0d0e;
+    --bg-panel: #0f1416;
+    --bg-rule: #16201f;
+    --teal: #38d6c4;
+    --teal-dim: #1f7a72;
+    --amber: #e0a23a;
+    --magenta: #d65a9a;
+    --ink: #c9d6d4;
+    --ink-dim: #6f817e;
+    --ink-faint: #44524f;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 1.7;
+    letter-spacing: 0.01em;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--teal-dim); color: var(--bg); }
+
+  .scanline {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(56, 214, 196, 0.012) 0px,
+      rgba(56, 214, 196, 0.012) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    z-index: 999;
+    mix-blend-mode: screen;
+  }
+
+  .wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 28px 120px;
+  }
+
+  /* ---- masthead ---- */
+  header {
+    padding: 72px 0 0;
+    border-bottom: 1px solid var(--bg-rule);
+    margin-bottom: 56px;
+  }
+
+  .meta-line {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    color: var(--teal-dim);
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+    margin-bottom: 36px;
+  }
+  .meta-line .blink {
+    color: var(--teal);
+    animation: blink 1.4s step-end infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  h1 {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: clamp(2.6rem, 8vw, 4.4rem);
+    line-height: 0.96;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  h1 .amp { color: var(--amber); font-weight: 300; }
+
+  .byline {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    color: var(--ink-dim);
+    margin: 22px 0 40px;
+  }
+  .byline b { color: var(--magenta); font-weight: 400; }
+
+  .source {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+    padding: 14px 0 28px;
+    line-height: 1.6;
+  }
+
+  /* ---- epigraph ---- */
+  .epigraph {
+    border-left: 2px solid var(--teal-dim);
+    padding: 6px 0 6px 26px;
+    margin: 0 0 64px;
+  }
+  .epigraph p {
+    font-size: 1.35rem;
+    font-weight: 300;
+    line-height: 1.45;
+    color: var(--ink);
+  }
+  .epigraph .second {
+    color: var(--teal);
+    margin-top: 14px;
+    font-weight: 400;
+  }
+  .epigraph cite {
+    display: block;
+    margin-top: 18px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    color: var(--ink-dim);
+    font-style: normal;
+    text-transform: uppercase;
+  }
+
+  /* ---- section headings ---- */
+  section { margin-bottom: 64px; }
+
+  .sect-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: var(--teal-dim);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+  }
+  h2 {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    font-size: clamp(1.7rem, 5vw, 2.4rem);
+    line-height: 1.05;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    color: var(--amber);
+    margin-bottom: 28px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--bg-rule);
+  }
+
+  p { margin-bottom: 22px; }
+  p:last-child { margin-bottom: 0; }
+
+  .lede { color: var(--ink); }
+  em { color: var(--teal); font-style: italic; }
+  strong { color: var(--amber); font-weight: 600; }
+
+  blockquote {
+    margin: 28px 0;
+    padding: 4px 0 4px 24px;
+    border-left: 2px solid var(--bg-rule);
+    color: var(--ink-dim);
+    font-size: 0.98rem;
+  }
+
+  /* ---- the four phases panel ---- */
+  .phases {
+    margin: 8px 0;
+    counter-reset: phase;
+  }
+  .phase {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 4px 22px;
+    align-items: start;
+    padding: 22px 0;
+    border-top: 1px solid var(--bg-rule);
+  }
+  .phase:last-child { border-bottom: 1px solid var(--bg-rule); }
+  .phase .num {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.5rem;
+    color: var(--teal);
+    line-height: 1;
+    padding-top: 4px;
+  }
+  .phase .body h3 {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: var(--ink);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    margin-bottom: 4px;
+  }
+  .phase .body .order {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--magenta);
+    margin-bottom: 6px;
+  }
+  .phase .body p {
+    margin: 0;
+    font-size: 0.96rem;
+    color: var(--ink-dim);
+    line-height: 1.55;
+  }
+  .phase.turn {
+    background: linear-gradient(90deg, rgba(214,90,154,0.06), transparent);
+  }
+  .phase.turn .num { color: var(--magenta); }
+
+  .turn-note {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    color: var(--ink-dim);
+    margin-top: 24px;
+    padding: 16px 20px;
+    border: 1px solid var(--bg-rule);
+    background: var(--bg-panel);
+    line-height: 1.6;
+  }
+  .turn-note b { color: var(--teal); font-weight: 400; }
+
+  /* ---- pull statement ---- */
+  .pull {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 300;
+    font-size: clamp(1.4rem, 4.5vw, 2rem);
+    line-height: 1.3;
+    color: var(--ink);
+    margin: 48px 0;
+    padding: 0 0 0 4px;
+  }
+  .pull .hi { color: var(--teal); font-weight: 500; }
+
+  /* ---- case studies (disneyland / watergate) ---- */
+  .case {
+    background: var(--bg-panel);
+    border: 1px solid var(--bg-rule);
+    padding: 28px 30px;
+    margin: 32px 0;
+  }
+  .case .tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .case .tag::before {
+    content: "";
+    width: 7px; height: 7px;
+    background: var(--amber);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--amber);
+  }
+  .case p:last-child { margin-bottom: 0; }
+  .case p { font-size: 0.98rem; }
+
+  /* ---- definition pair ---- */
+  .defpair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--bg-rule);
+    border: 1px solid var(--bg-rule);
+    margin: 28px 0;
+  }
+  .defpair > div {
+    background: var(--bg-panel);
+    padding: 22px 24px;
+  }
+  .defpair h4 {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 10px;
+  }
+  .defpair .x h4 { color: var(--magenta); }
+  .defpair p { margin: 0; font-size: 0.95rem; color: var(--ink-dim); line-height: 1.55; }
+  @media (max-width: 560px) {
+    .defpair { grid-template-columns: 1fr; }
+  }
+
+  /* ---- footer ---- */
+  footer {
+    margin-top: 80px;
+    padding-top: 28px;
+    border-top: 1px solid var(--bg-rule);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--ink-faint);
+    line-height: 1.8;
+  }
+  footer .end { color: var(--teal-dim); }
+
+  a { color: var(--teal); text-decoration: none; border-bottom: 1px solid var(--teal-dim); }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+<div class="scanline"></div>
+
+<div class="wrap">
+
+  <header>
+    <div class="meta-line">
+      <span>FILE :: THEORY / SIMULATION</span>
+      <span>ORDER &gt; 3<span class="blink">_</span></span>
+    </div>
+    <h1>Simulacra<br><span class="amp">&amp;</span> Simulations</h1>
+    <p class="byline">JEAN <b>BAUDRILLARD</b></p>
+    <div class="source">
+      SOURCE: Jean Baudrillard, Selected Writings,<br>
+      ed. Mark Poster (Stanford: Stanford University Press, 1988), pp. 166&ndash;184.
+    </div>
+  </header>
+
+  <div class="epigraph">
+    <p>The simulacrum is never that which conceals the truth; it is the truth which conceals that there is none.</p>
+    <p class="second">The simulacrum is true.</p>
+    <cite>Ecclesiastes</cite>
+  </div>
+
+  <!-- ====== THE MAP AND THE TERRITORY ====== -->
+  <section>
+    <span class="sect-label">00 / Precession</span>
+    <h2>The Precession of Simulacra</h2>
+    <p class="lede">Borges told of cartographers who drew a map so detailed it covered the territory exactly; with the decline of the Empire the map frayed, and shreds of it lingered in the deserts. As an allegory of simulation that fable now keeps only the discrete charm of a second-order simulacrum.</p>
+    <p>Abstraction today is no longer that of the map, the double, the mirror, or the concept. Simulation is no longer the simulation of a territory, a referential being, or a substance. It is the generation by models of a real without origin or reality: a <em>hyperreal</em>. The territory no longer precedes the map, nor survives it. Henceforth it is the map that precedes the territory; it is the map that engenders the territory. If the fable were revived today, it would be the territory whose shreds rot slowly across the map; it is the real whose vestiges subsist here and there, in deserts that are no longer those of the Empire but our own. <em>The desert of the real itself.</em></p>
+    <p>Something has disappeared: the sovereign difference between map and territory that was the abstraction's charm. With simulation, whose operation is nuclear and genetic rather than specular and discursive, all of metaphysics goes too. The real is produced from miniaturized units, from matrices and memory banks and command models, and can be reproduced an indefinite number of times. It need no longer be rational, for it is no longer measured against any ideal; it is nothing more than operational. No longer enveloped by an imaginary, it is no longer real at all. It is hyperreal: the product of an irradiating synthesis of combinatory models in a hyperspace without atmosphere.</p>
+    <p>The age of simulation begins with a liquidation of all referentials; worse, with their artificial resurrection in systems of signs. It is no longer a question of imitation, of reduplication, or even of parody. It is a question of substituting signs of the real for the real itself: an operation to deter every real process by its operational double, a programmatic, flawless descriptive machine that furnishes all the signs of the real and short-circuits all its vicissitudes.</p>
+  </section>
+
+  <!-- ====== THE FOUR PHASES ====== -->
+  <section>
+    <span class="sect-label">01 / The divine irreference of images</span>
+    <h2>The Successive Phases of the Image</h2>
+
+    <p>To dissimulate is to feign not to have what one has; to simulate is to feign to have what one hasn't. One implies a presence, the other an absence. But simulation is not simply feigning: someone who feigns illness can lie in bed and pretend, while someone who simulates illness produces in himself some of the symptoms. Feigning leaves the reality principle intact; the difference is masked, never erased. Simulation threatens the very difference between the true and the false, the real and the imaginary.</p>
+
+    <p>The image passes through four orders:</p>
+
+    <div class="phases">
+      <div class="phase">
+        <div class="num">1</div>
+        <div class="body">
+          <h3>Reflection</h3>
+          <div class="order">Sacrament · good appearance</div>
+          <p>It is the reflection of a basic reality. The representation is faithful; the sign and the real are taken as equivalent.</p>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="num">2</div>
+        <div class="body">
+          <h3>Perversion</h3>
+          <div class="order">Malefice · evil appearance</div>
+          <p>It masks and perverts a basic reality. This is the order of ideology: a betrayal of the real by signs.</p>
+        </div>
+      </div>
+      <div class="phase turn">
+        <div class="num">3</div>
+        <div class="body">
+          <h3>Absence</h3>
+          <div class="order">Sorcery · plays at appearance</div>
+          <p>It masks the <em>absence</em> of a basic reality. The sign now pretends to be an appearance, concealing that there is nothing beneath it.</p>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="num">4</div>
+        <div class="body">
+          <h3>Pure Simulacrum</h3>
+          <div class="order">Simulation · no longer appearance at all</div>
+          <p>It bears no relation to any reality whatever. It is its own pure simulacrum, exchanging only with itself, in an uninterrupted circuit without reference or circumference.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="turn-note">
+      THE DECISIVE TURNING POINT &gt;&gt; the move from signs that dissimulate <b>something</b> to signs that dissimulate that there is <b>nothing</b>. The first still implies a theology of truth and secrecy; the second inaugurates the age of simulacra, where there is no God to recognize his own, and no last judgment to separate the true from its artificial resurrection, since everything is already dead and risen in advance.
+    </div>
+  </section>
+
+  <!-- ====== ICONOCLASM ====== -->
+  <section>
+    <span class="sect-label">02 / The murderous capacity of images</span>
+    <h2>Iconoclasts &amp; Iconolaters</h2>
+    <p>The Iconoclasts' rage to destroy images came precisely because they sensed the omnipotence of simulacra: their power to erase God from human consciousness, and the destructive truth they suggest, that ultimately there has never been any God, that only simulacra exist, that God himself has only ever been his own simulacrum. Had they believed the images merely masked the Platonic idea of God, there would have been no reason to destroy them; one can live with a distorted truth. Their despair came from the suspicion that the images concealed nothing at all.</p>
+    <p>So the iconoclasts, accused of despising images, were the ones who accorded them their true worth; the iconolaters, content to venerate God at one remove, possessed in another sense the most modern minds, already enacting his disappearance in the epiphany of his representations. All of Western good faith was staked on the wager of representation: that a sign could exchange for meaning, and that something, God, could guarantee the exchange. But if God himself can be simulated, the whole system becomes weightless; it is no longer anything but a gigantic simulacrum, never again exchanging for the real, only circulating in itself.</p>
+
+    <div class="defpair">
+      <div>
+        <h4>Representation</h4>
+        <p>Starts from the principle that the sign and the real are equivalent. It tries to absorb simulation by reading it as false representation.</p>
+      </div>
+      <div class="x">
+        <h4>Simulation</h4>
+        <p>Starts from the radical negation of the sign as value. It envelops the whole edifice of representation as itself a simulacrum.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== HYPERREAL CASES ====== -->
+  <section>
+    <span class="sect-label">03 / Hyperreal &amp; imaginary</span>
+    <h2>The Deterrence Machines</h2>
+
+    <p>When the real is no longer what it used to be, nostalgia assumes its full meaning. There is a proliferation of myths of origin and signs of reality; a panic-stricken production of the real and the referential. Simulation appears as a strategy of the real, the neo-real, and the hyperreal, whose universal double is a strategy of deterrence.</p>
+
+    <div class="case">
+      <div class="tag">Case · Disneyland</div>
+      <p>Disneyland is a perfect model of all the entangled orders of simulation. It is presented as imaginary in order to make us believe that the rest is real, when in fact all of Los Angeles and the America around it are no longer real but of the order of the hyperreal. Disneyland is there to conceal that it is the <em>"real"</em> country, all of real America, which is Disneyland; just as prisons are there to conceal that it is the social in its entirety which is carceral. The point is not a false representation of reality, but concealing that the real is no longer real, and so saving the reality principle.</p>
+    </div>
+
+    <div class="case">
+      <div class="tag">Case · Watergate</div>
+      <p>Same scenario: a scandal-effect concealing that there is no difference between the facts and their denunciation; the same methods used by the CIA and the Washington Post journalists. The denunciation of scandal always pays homage to the law. Watergate succeeded above all in imposing the idea that Watergate <em>was</em> a scandal; an extraordinary reinjection of political morality on a global scale. Capital, immoral and unscrupulous, can only function behind a moral superstructure, and whoever regenerates that public morality by indignation furthers the order of capital. Watergate is not a scandal: this is what must be said at all cost.</p>
+    </div>
+
+    <p class="pull">Everything is metamorphosed into its inverse <span class="hi">in order to be perpetuated in its purged form.</span></p>
+
+    <p>It is always a question of proving the real by the imaginary; proving truth by scandal; proving the law by transgression; proving work by the strike; proving the system by crisis and capital by revolution. A hormonal treatment by negativity and crisis. Power can stage its own murder to rediscover a glimmer of existence and legitimacy: the Kennedys are murdered because they still had a political dimension; the others had a right only to simulated murders, needing that aura of an artificial menace to conceal that they were mannequins of power. In olden days the king had to die, and that was his strength; today he does his utmost to pretend to die, so as to preserve the blessing of power.</p>
+  </section>
+
+  <!-- ====== STRATEGY OF THE REAL ====== -->
+  <section>
+    <span class="sect-label">04 / Strategy of the real</span>
+    <h2>The Impossibility of Illusion</h2>
+    <p>Illusion is no longer possible, because the real is no longer possible. Try to organize a fake hold-up: check that your weapons are harmless, take a trustworthy hostage, demand ransom. You will not succeed, for the web of artificial signs will be inextricably mixed with real elements; a police officer will really shoot, a customer will really faint, the phoney ransom will really be turned over to you. You find yourself immediately in the real, one of whose functions is precisely to devour every attempt at simulation.</p>
+
+    <p>A simulated hold-up is more dangerous than a real one. A real hold-up only upsets the order of things and the right of property; a simulated one interferes with the very principle of reality. This is why order always opts for the real. Parody makes obedience and transgression equivalent, and that is the most serious crime, since it cancels the difference upon which the law is based. The challenge of simulation is irreceivable by power: how can you punish the simulation of virtue, which is as serious as the simulation of crime?</p>
+
+    <p>The only weapon of power against this defection is to reinject realness and referentiality everywhere, to convince us of the reality of the social, the gravity of the economy, the finality of production. It was capital which first fed on the destruction of every referential, which established a radical law of equivalence and exchange; that same logic now hardens against it. When power, threatened by simulation, gambles on remanufacturing artificial social and political stakes, it only multiplies the signs and accelerates the play of simulation. It is too late.</p>
+
+    <p class="pull">Hence the hysteria of our time: <span class="hi">the production and reproduction of the real.</span></p>
+
+    <p>Power, too, now produces nothing but signs of its resemblance, and a collective demand for signs of power forms around its disappearance. Ideology corresponds to a betrayal of reality by signs; simulation corresponds to a short-circuit of reality and its reduplication by signs. It is always a false problem to want to restore the truth beneath the simulacrum. This is ultimately why power accords so well with discourses on ideology, for these are all discourses of truth, always serviceable against the mortal blows of simulation.</p>
+  </section>
+
+  <footer>
+    JEAN BAUDRILLARD &middot; SIMULACRA AND SIMULATIONS<br>
+    SELECTED WRITINGS, ED. MARK POSTER &middot; STANFORD UNIV. PRESS, 1988<br>
+    <span class="end">&gt;&gt; END OF TRANSMISSION _</span>
+  </footer>
+
+</div>
+</body>
+</html>
