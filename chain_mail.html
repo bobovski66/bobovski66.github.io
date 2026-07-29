@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chain mail — the link of statistical Legendrians</title>
+<style>
+:root{
+  --bg:#0c110f; --panel:#111815; --panel2:#0e1512; --line:#243029;
+  --text:#eef0e9; --muted:#93a89c; --faint:#5f7469;
+  --crossing:#e0a3c6; --sel:#7fd88a; --edge:#c79a3a;
+  --paperfont:'Crimson Pro',Georgia,serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:var(--paperfont);overflow:hidden}
+#app{height:100vh;display:grid;grid-template-rows:auto 1fr}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 20px;
+  border-bottom:1px solid var(--line);background:linear-gradient(180deg,#121a16,#0c110f)}
+.title{font-size:21px;letter-spacing:.01em}.title span{color:#3fb59f;font-style:italic}
+.sub{font-size:12.5px;color:var(--muted);font-style:italic;text-align:right;max-width:470px}
+main{display:grid;grid-template-columns:1.25fr 400px;height:100%;min-height:0}
+#leftcol{display:grid;grid-template-rows:1.5fr 1fr;min-height:0;min-width:0}
+#linkstage{position:relative;min-height:0;background:radial-gradient(ellipse at 50% 42%,#141d19,#0a0f0d 76%);border-bottom:1px solid var(--line)}
+#frontstage{position:relative;min-height:0;background:#0a0f0d}
+canvas{display:block;width:100%;height:100%}
+#linkCanvas{cursor:grab}#linkCanvas:active{cursor:grabbing}
+.stagelabel{position:absolute;left:16px;top:12px;font:600 11px/1 'Segoe UI',Arial,sans-serif;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--muted);pointer-events:none}
+.stagenote{position:absolute;left:16px;right:16px;bottom:9px;color:var(--faint);font-size:11px;font-style:italic;line-height:1.4;pointer-events:none}
+aside{min-height:0;overflow:auto;background:var(--panel);border-left:1px solid var(--line)}
+.panel{padding:13px 16px;border-bottom:1px solid var(--line)}
+.panel-title{font:600 10px/1.2 'Segoe UI',Arial,sans-serif;text-transform:uppercase;letter-spacing:.16em;color:var(--muted);margin-bottom:9px}
+select,button{width:100%;background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-size:13px;font-family:'Segoe UI',Arial,sans-serif;cursor:pointer}
+button:hover,select:focus{border-color:#3fb59f;outline:none}
+.eq{background:var(--panel2);border-left:3px solid #3fb59f;padding:8px 11px;border-radius:8px;font-style:italic;color:#dfe3d8;font-size:12.5px;line-height:1.5;margin-top:9px}
+.eq b{color:var(--edge);font-style:normal}
+.invcard{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:11px 12px}
+.invcard .lab{font:600 9.5px/1.2 'Segoe UI',Arial,sans-serif;text-transform:uppercase;letter-spacing:.13em;color:var(--muted);margin-bottom:6px}
+.invcard .big{font-family:'Consolas',monospace;font-size:22px;line-height:1.15;color:#3fb59f}
+.invcard .cap{font-size:11px;color:var(--faint);font-style:italic;margin-top:5px;line-height:1.35}
+.verdict{margin-top:10px;font-size:12.5px;line-height:1.45}
+.verdict .tag{font-family:'Consolas',monospace;padding:1px 7px;border-radius:6px;border:1px solid var(--line);font-size:12px}
+.tag.unlink{color:var(--muted)}.tag.torus{color:var(--edge);border-color:rgba(199,154,58,.5)}
+.tag.borro{color:var(--crossing);border-color:rgba(224,163,198,.55)}
+.matrix{width:100%;border-collapse:collapse;font-family:'Consolas',monospace;font-size:12px;margin-top:4px}
+.matrix td,.matrix th{border:1px solid var(--line);padding:4px 0;text-align:center}
+.matrix th{color:var(--muted);font-weight:400}
+.matrix td.lk{color:var(--edge);font-weight:700}.matrix td.un{color:var(--faint)}.matrix td.diag{background:var(--panel2);color:var(--faint)}
+.hint{color:var(--muted);font-size:12px;line-height:1.45}
+.persprow{display:flex;align-items:center;gap:9px;padding:5px 0;font-size:13px}
+.dot{width:11px;height:11px;border-radius:50%;flex:0 0 auto}
+.perspname{flex:1;font-style:italic}.perspval{font-family:Consolas,monospace;font-size:11px;color:var(--muted)}
+.chk{display:flex;align-items:center;gap:8px;font-size:13px;padding:3px 0;font-family:'Segoe UI',Arial,sans-serif}
+.chk input{accent-color:#3fb59f}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:1000px){main{grid-template-columns:1fr}aside{position:absolute;right:0;top:56px;bottom:0;width:min(400px,92vw);box-shadow:-20px 0 40px rgba(0,0,0,.4)}}
+</style>
+</head>
+<body>
+<div id="app">
+<header>
+  <div class="title">Chain mail — <span>the link of statistical Legendrians</span></div>
+  <div class="sub">The compactified curves drawn as actual circles in the solid torus, threaded exactly as their linking numbers dictate. Drag the 3D view to see how the perspectives are woven.</div>
+</header>
+<main>
+  <div id="leftcol">
+    <section id="linkstage">
+      <canvas id="linkCanvas"></canvas>
+      <div class="stagelabel">The link · circles in S¹×ℝ²</div>
+      <div class="stagenote">Each ring is one perspective's compactified Legendrian. How they thread is the topological type — read off, not stipulated. Drag to rotate · scroll to zoom.</div>
+    </section>
+    <section id="frontstage">
+      <canvas id="frontCanvas"></canvas>
+      <div class="stagelabel">Fronts · z = ψ(θ)</div>
+      <div class="stagenote">The same perspectives as graphs. Linking is the winding of (δ′, δ) around the origin as θ goes around the circle.</div>
+    </section>
+  </div>
+
+  <aside>
+    <div class="panel">
+      <div class="panel-title">Perspective collection</div>
+      <select id="collSelect"></select>
+      <div class="eq" id="collDesc"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Topological type</div>
+      <div class="invcard">
+        <div class="big" id="linkType">—</div>
+        <div class="cap" id="linkCap"></div>
+      </div>
+      <div class="verdict" id="verdict"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Linking matrix ℓ<sub>ij</sub> ∈ ℤ</div>
+      <table class="matrix" id="matrix"></table>
+      <div class="hint" style="margin-top:7px">Integer winding of (δ′, δ) around 0 for each pair. 0 = unlinked; ±1 = singly linked; ±2 = doubly, etc.</div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Perspectives</div>
+      <div id="perspList"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">3D view</div>
+      <div class="grid2">
+        <button id="resetCam">Reset camera</button>
+        <button id="spinBtn">Auto-spin: off</button>
+      </div>
+      <label class="chk" style="margin-top:9px"><input type="checkbox" id="showTorus" checked /> Guide torus</label>
+      <label class="chk"><input type="checkbox" id="showTubes" checked /> Solid tubes</label>
+    </div>
+  </aside>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+'use strict';
+const PAL=['#3fb59f','#c79a3a','#d98a6a','#7fa8d8','#b98ad0','#8fc47a'];
+const PALn=[0x3fb59f,0xc79a3a,0xd98a6a,0x7fa8d8,0xb98ad0,0x8fc47a];
+const CSS={line:'#243029',muted:'#93a89c',faint:'#5f7469',edge:'#c79a3a',crossing:'#e0a3c6',sel:'#7fd88a'};
+
+function num(f){return t=>(f(t+1e-5)-f(t-1e-5))/2e-5}
+function P2pi(v,dp){return {v,dp:dp||num(v)}}
+
+const collections={
+  torus3:{
+    name:'Three phase-shifted tilts  (each pair links)', group:'Geometric toy models', range:[0,2*Math.PI],
+    desc:'Three cosine tilts 120° apart. Every pair winds once around the other — a <b>(3,3) torus-link-like</b> weave. Not Borromean: all three pairs genuinely link.',
+    persp:[
+      {name:'phase 0°',   f:P2pi(t=>Math.cos(t), t=>-Math.sin(t))},
+      {name:'phase 120°', f:P2pi(t=>Math.cos(t-2*Math.PI/3), t=>-Math.sin(t-2*Math.PI/3))},
+      {name:'phase 240°', f:P2pi(t=>Math.cos(t-4*Math.PI/3), t=>-Math.sin(t-4*Math.PI/3))}
+    ]
+  },
+  torus3_double:{
+    name:'Second-harmonic tilts  (each pair links twice)', group:'Geometric toy models', range:[0,2*Math.PI],
+    desc:'Three cos(2θ) tilts, phase-staggered. Each pair now winds <b>twice</b> — linking number ±2 per pair. The weave is tighter.',
+    persp:[
+      {name:'2θ, 0°',   f:P2pi(t=>Math.cos(2*t), t=>-2*Math.sin(2*t))},
+      {name:'2θ, 120°', f:P2pi(t=>Math.cos(2*t-2*Math.PI/3), t=>-2*Math.sin(2*t-2*Math.PI/3))},
+      {name:'2θ, 240°', f:P2pi(t=>Math.cos(2*t-4*Math.PI/3), t=>-2*Math.sin(2*t-4*Math.PI/3))}
+    ]
+  },
+  nested:{
+    name:'Nested amplitudes  (unlinked)', group:'Geometric toy models', range:[0,2*Math.PI],
+    desc:'Three cosine tilts, same phase, different amplitude. No pair winds: the rings are <b>unlinked</b>, nested like tree rings.',
+    persp:[
+      {name:'amp 1.0', f:P2pi(t=>1.0*Math.cos(t)+2, t=>-1.0*Math.sin(t))},
+      {name:'amp 0.6', f:P2pi(t=>0.6*Math.cos(t)+1, t=>-0.6*Math.sin(t))},
+      {name:'amp 0.3', f:P2pi(t=>0.3*Math.cos(t), t=>-0.3*Math.sin(t))}
+    ]
+  },
+  hopf2:{
+    name:'Two tilts  (Hopf link)', group:'Geometric toy models', range:[0,2*Math.PI],
+    desc:'The minimal case: two phase-offset cosine tilts winding once around each other. The <b>Hopf link</b> — the smallest nontrivial weave.',
+    persp:[
+      {name:'phase 0°',   f:P2pi(t=>Math.cos(t), t=>-Math.sin(t))},
+      {name:'phase 180°', f:P2pi(t=>Math.cos(t-Math.PI), t=>-Math.sin(t-Math.PI))}
+    ]
+  },
+  penta:{
+    name:'Five phase-shifted tilts', group:'Geometric toy models', range:[0,2*Math.PI],
+    desc:'Five cosine tilts around the circle. Every pair links once — a five-strand woven fabric, the chain mail at scale.',
+    persp:[0,1,2,3,4].map(k=>({name:`phase ${Math.round(k*72)}°`, f:P2pi(t=>Math.cos(t-k*2*Math.PI/5), t=>-Math.sin(t-k*2*Math.PI/5))}))
+  },
+  mixed:{
+    name:'One flat, two winding', group:'Geometric toy models', range:[0,2*Math.PI],
+    desc:'A constant perspective and two winding ones. The flat ring links each winder once; the two winders link each other. A mixed weave.',
+    persp:[
+      {name:'flat ψ=0',   f:P2pi(t=>0, t=>0)},
+      {name:'phase 0°',   f:P2pi(t=>Math.cos(t), t=>-Math.sin(t))},
+      {name:'phase 180°', f:P2pi(t=>Math.cos(t-Math.PI), t=>-Math.sin(t-Math.PI))}
+    ]
+  },
+  /* ---------- GENUINELY PERIODIC: directional exponential families ---------- */
+  vonmises:{
+    name:'Von Mises (circular normal), 3 directions', group:'Directional families · genuinely periodic', range:[0,2*Math.PI],
+    desc:'Three <b>von Mises</b> families — the circular normal, the canonical exponential family on the circle. ψ(θ)=log I₀(κ(θ)) with concentration peaking at mean-directions 120° apart; I₀ is the real Bessel normalizer. Genuinely periodic, no fudging. Every pair weaves once.',
+    persp:[0,1,2].map(k=>{const mu=k*2*Math.PI/3;
+      const I0=x=>{let s=1,t=1;for(let m=1;m<40;m++){t*=(x*x)/(4*m*m);s+=t;if(t<1e-16)break}return s};
+      return {name:`μ=${Math.round(mu*180/Math.PI)}°`, f:P2pi(t=>Math.log(I0(1+0.8*Math.cos(t-mu))))};})
+  },
+  wrappednormal:{
+    name:'Wrapped normal, 3 directions', group:'Directional families · genuinely periodic', range:[0,2*Math.PI],
+    desc:'Three <b>wrapped normal</b> families — a Gaussian wrapped onto the circle, its density a Jacobi theta function θ₃. The periodic potential log θ₃((θ−μ)/2, q) peaks at directions 120° apart. A second familiar face for directional statisticians.',
+    persp:[0,1,2].map(k=>{const mu=k*2*Math.PI/3;
+      const th3=(phi,q)=>{let s=1;for(let n=1;n<=30;n++)s+=2*Math.pow(q,n*n)*Math.cos(2*n*phi);return s};
+      return {name:`μ=${Math.round(mu*180/Math.PI)}°`, f:P2pi(t=>Math.log(Math.max(1e-9,th3((t-mu)/2,0.5))))};})
+  },
+  wrappedcauchy:{
+    name:'Wrapped Cauchy, 3 directions', group:'Directional families · genuinely periodic', range:[0,2*Math.PI],
+    desc:'Three <b>wrapped Cauchy</b> families, density ∝ (1−ρ²)/(1+ρ²−2ρcos(θ−μ)). The periodic log-density potential peaks at 120°-spaced directions. Heavier-tailed than von Mises; the weave is the same type, the shape sharper.',
+    persp:[0,1,2].map(k=>{const mu=k*2*Math.PI/3;
+      return {name:`μ=${Math.round(mu*180/Math.PI)}°`, f:P2pi(t=>-Math.log(1+0.36-1.2*Math.cos(t-mu)))};})
+  },
+
+  /* ---------- CLASSICAL families, periodized by driving θ around a loop ---------- */
+  bernoulli_loop:{
+    name:'Bernoulli, θ driven around a loop', group:'Classical families · periodized for comparison', range:[0,2*Math.PI],
+    desc:'Three <b>Bernoulli</b> families (ψ=log(1+e^θ), the real softplus log-partition) whose natural parameter θ is driven around a closed loop θ(φ)=2cos(φ−phase), phases 120° apart. The ψ is genuinely Bernoulli\'s; we only choose a periodic <i>path</i> through natural-parameter space so the curves close. Each pair links once.',
+    persp:[0,1,2].map(k=>{const ph=k*2*Math.PI/3;
+      return {name:`phase ${Math.round(ph*180/Math.PI)}°`, f:P2pi(t=>{const th=2*Math.cos(t-ph);return Math.log(1+Math.exp(th))})};})
+  },
+  poisson_loop:{
+    name:'Poisson, θ driven around a loop', group:'Classical families · periodized for comparison', range:[0,2*Math.PI],
+    desc:'Three <b>Poisson</b> families (ψ=e^θ, the real Poisson log-partition) with θ driven around θ(φ)=1.4cos(φ−phase), phases 120° apart. Real ψ, periodic path. The asymmetry of e^θ shapes the rings differently from Bernoulli — same linking, different geometry.',
+    persp:[0,1,2].map(k=>{const ph=k*2*Math.PI/3;
+      return {name:`phase ${Math.round(ph*180/Math.PI)}°`, f:P2pi(t=>Math.exp(1.4*Math.cos(t-ph)))};})
+  },
+  gaussian_loop:{
+    name:'Gaussian, θ driven around a loop  (links twice!)', group:'Classical families · periodized for comparison', range:[0,2*Math.PI],
+    desc:'Three <b>Gaussian</b> families (ψ=θ²/2) with θ driven around θ(φ)=2cos(φ−phase). Because ψ is quadratic, ψ(θ(φ))=(1+cos2(φ−phase)) is a <b>second harmonic</b> — so each pair links <b>twice</b>, not once. The convexity of the Gaussian potential literally tightens the weave. A striking contrast with Bernoulli/Poisson under the identical construction.',
+    persp:[0,1,2].map(k=>{const ph=k*2*Math.PI/3;
+      return {name:`phase ${Math.round(ph*180/Math.PI)}°`, f:P2pi(t=>0.5*Math.pow(2*Math.cos(t-ph),2))};})
+  }
+};
+
+const state={key:'torus3', showTorus:true, showTubes:true, spin:false};
+let coll=collections[state.key], P=[], linkMatrix=[];
+
+/* pairwise linking = integer winding of (δ', δ) around origin over the period */
+function pairLink(i,j){
+  const [a,b]=coll.range,N=4000,fi=P[i].f,fj=P[j].f;
+  let w=0,prev=null;
+  for(let k=0;k<=N;k++){const th=a+(b-a)*k/N;
+    const dv=fi.dp(th)-fj.dp(th), dz=fi.v(th)-fj.v(th);
+    const ang=Math.atan2(dz,dv);
+    if(prev!==null){let d=ang-prev;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;w+=d}
+    prev=ang;}
+  return Math.round(w/(2*Math.PI));
+}
+function recompute(){
+  const n=P.length;linkMatrix=Array.from({length:n},()=>Array(n).fill(0));
+  for(let i=0;i<n;i++)for(let j=i+1;j<n;j++){const l=pairLink(i,j);linkMatrix[i][j]=linkMatrix[j][i]=l}
+}
+
+/* ---------- 3D link scene ---------- */
+const linkCanvas=document.getElementById('linkCanvas');
+const scene=new THREE.Scene();
+const renderer=new THREE.WebGLRenderer({canvas:linkCanvas,antialias:true,alpha:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
+const camera=new THREE.PerspectiveCamera(44,1,.1,200);
+const orbit={phi:1.0,theta:.7,dist:16,target:new THREE.Vector3(0,0,0)};
+function applyCam(){camera.position.set(orbit.dist*Math.sin(orbit.phi)*Math.cos(orbit.theta),orbit.dist*Math.cos(orbit.phi),orbit.dist*Math.sin(orbit.phi)*Math.sin(orbit.theta)).add(orbit.target);camera.lookAt(orbit.target)}
+function resizeLink(){const w=linkCanvas.clientWidth,h=linkCanvas.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
+new ResizeObserver(resizeLink).observe(linkCanvas);applyCam();
+scene.add(new THREE.AmbientLight(0xffffff,0.75));
+const dl=new THREE.DirectionalLight(0xffffff,0.7);dl.position.set(5,8,6);scene.add(dl);
+const dl2=new THREE.DirectionalLight(0x88bbaa,0.35);dl2.position.set(-6,-3,-4);scene.add(dl2);
+
+let dragging=false,lx=0,ly=0;
+linkCanvas.addEventListener('pointerdown',e=>{dragging=true;lx=e.clientX;ly=e.clientY;linkCanvas.setPointerCapture(e.pointerId)});
+linkCanvas.addEventListener('pointermove',e=>{if(!dragging)return;const dx=e.clientX-lx,dy=e.clientY-ly;lx=e.clientX;ly=e.clientY;orbit.theta-=dx*.006;orbit.phi=Math.max(.12,Math.min(Math.PI-.12,orbit.phi-dy*.006));applyCam()});
+linkCanvas.addEventListener('pointerup',()=>dragging=false);
+linkCanvas.addEventListener('wheel',e=>{e.preventDefault();orbit.dist=Math.max(6,Math.min(60,orbit.dist*Math.exp(e.deltaY*.0008)));applyCam()},{passive:false});
+
+const linkGroup=new THREE.Group();scene.add(linkGroup);
+function clearGroup(g){while(g.children.length){const o=g.children.pop();if(o.geometry)o.geometry.dispose();if(o.material)o.material.dispose()}}
+
+const R_CORE=5.0, S_MER=1.7;
+function embedPoint(th,p,z){const rad=R_CORE + S_MER*p;return new THREE.Vector3(rad*Math.cos(th), S_MER*z, rad*Math.sin(th))}
+function buildLink(){
+  clearGroup(linkGroup);
+  const [a,b]=coll.range;
+  if(state.showTorus){
+    const tg=new THREE.TorusGeometry(R_CORE,S_MER*1.15,16,80);
+    const tm=new THREE.MeshBasicMaterial({color:0x1a2620,transparent:true,opacity:0.22,wireframe:true});
+    const torus=new THREE.Mesh(tg,tm);torus.rotation.x=Math.PI/2;linkGroup.add(torus);
+  }
+  P.forEach((p,idx)=>{
+    const N=260,pts=[];
+    for(let k=0;k<=N;k++){const th=a+(b-a)*k/N;pts.push(embedPoint(th,p.f.dp(th),p.f.v(th)))}
+    const curve=new THREE.CatmullRomCurve3(pts,true);
+    if(state.showTubes){
+      const geo=new THREE.TubeGeometry(curve,320,0.17,12,true);
+      const mat=new THREE.MeshStandardMaterial({color:PALn[idx%PALn.length],roughness:0.45,metalness:0.15});
+      linkGroup.add(new THREE.Mesh(geo,mat));
+    } else {
+      const geo=new THREE.BufferGeometry().setFromPoints(curve.getPoints(420));
+      linkGroup.add(new THREE.Line(geo,new THREE.LineBasicMaterial({color:PALn[idx%PALn.length]})));
+    }
+  });
+}
+
+/* ---------- front canvas ---------- */
+const frontCanvas=document.getElementById('frontCanvas');
+function drawFront(){
+  const c=frontCanvas,dpr=devicePixelRatio||1,Wc=c.clientWidth,Hc=c.clientHeight;if(!Wc||!Hc)return;
+  if(c.width!==Math.floor(Wc*dpr)||c.height!==Math.floor(Hc*dpr)){c.width=Math.floor(Wc*dpr);c.height=Math.floor(Hc*dpr)}
+  const ctx=c.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,Wc,Hc);
+  const [a,b]=coll.range,N=500;let zMin=Infinity,zMax=-Infinity;
+  const curves=P.map(p=>{const pts=[];for(let i=0;i<=N;i++){const t=a+(b-a)*i/N,z=p.f.v(t);pts.push([t,z]);zMin=Math.min(zMin,z);zMax=Math.max(zMax,z)}return pts});
+  const padL=42,padR=16,padT=26,padB=24,iw=Wc-padL-padR,ih=Hc-padT-padB;
+  if(zMax-zMin<1e-6){zMax+=1;zMin-=1}const zp=(zMax-zMin)*.08;zMin-=zp;zMax+=zp;
+  const xm=t=>padL+(t-a)/(b-a)*iw, ym=z=>padT+ih-(z-zMin)/(zMax-zMin)*ih;
+  ctx.strokeStyle=CSS.line;ctx.strokeRect(padL,padT,iw,ih);
+  ctx.fillStyle=CSS.faint;ctx.font='11px Consolas';ctx.textAlign='center';ctx.fillText('θ  (periodic: ends identified)',padL+iw/2,Hc-7);
+  ctx.save();ctx.translate(13,padT+ih/2);ctx.rotate(-Math.PI/2);ctx.fillText('z = ψ',0,0);ctx.restore();
+  curves.forEach((pts,idx)=>{ctx.strokeStyle=PAL[idx%PAL.length];ctx.lineWidth=2.2;ctx.beginPath();pts.forEach(([t,z],i)=>i?ctx.lineTo(xm(t),ym(z)):ctx.moveTo(xm(t),ym(z)));ctx.stroke()});
+  ctx.textAlign='left';ctx.font='11px Georgia';P.forEach((p,idx)=>{ctx.fillStyle=PAL[idx%PAL.length];ctx.fillText('ψ'+idx,padL+7+idx*28,padT+13)});
+}
+
+/* ---------- classify ---------- */
+function classify(){
+  const n=P.length;const vals=[];
+  for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)vals.push(Math.abs(linkMatrix[i][j]));
+  const total=vals.reduce((a,b)=>a+b,0);
+  const allSame=vals.every(v=>v===vals[0]);
+  if(total===0)return {type:'Unlink',cap:`${n} unlinked rings`,tag:'unlink',
+    txt:'No pair winds around another. The rings separate freely — nested, not woven.'};
+  if(n===2)return {type: Math.abs(linkMatrix[0][1])===1?'Hopf link':`(2,${2*Math.abs(linkMatrix[0][1])}) torus link`,
+    cap:`lk = ${linkMatrix[0][1]}`,tag:'torus',
+    txt:`The two rings wind ${Math.abs(linkMatrix[0][1])}× around each other.`};
+  if(allSame&&vals[0]>=1)return {type:`(${n},${n*vals[0]}) torus-type link`,cap:`every pair links ±${vals[0]}`,tag:'torus',
+    txt:`All ${vals.length} pairs link equally (${vals[0]}). A symmetric woven fabric — the chain mail. Remove any ring and the rest stay woven.`};
+  return {type:'Mixed link',cap:`pairwise ${vals.join(', ')}`,tag:'torus',
+    txt:'A heterogeneous weave: different pairs link different amounts. Read the matrix for the full pattern.'};
+}
+
+/* ---------- panels ---------- */
+function updatePanels(){
+  document.getElementById('collDesc').innerHTML=coll.desc;
+  const cl=classify();
+  document.getElementById('linkType').textContent=cl.type;
+  document.getElementById('linkCap').textContent=cl.cap;
+  document.getElementById('verdict').innerHTML=`<span class="tag ${cl.tag}">${cl.type}</span> &nbsp; ${cl.txt}`;
+  const n=P.length,m=document.getElementById('matrix');let html='<tr><th></th>';
+  for(let j=0;j<n;j++)html+=`<th>${j}</th>`;html+='</tr>';
+  for(let i=0;i<n;i++){html+=`<tr><th>${i}</th>`;for(let j=0;j<n;j++){
+    if(i===j)html+='<td class="diag">·</td>';
+    else html+=`<td class="${linkMatrix[i][j]?'lk':'un'}">${linkMatrix[i][j]>0?'+':''}${linkMatrix[i][j]}</td>`}
+    html+='</tr>'}
+  m.innerHTML=html;
+  const pl=document.getElementById('perspList');pl.innerHTML='';
+  P.forEach((p,i)=>{const row=document.createElement('div');row.className='persprow';
+    row.innerHTML=`<span class="dot" style="background:${PAL[i%PAL.length]}"></span><span class="perspname">${p.name}</span>`;
+    pl.appendChild(row)});
+}
+
+function load(){
+  coll=collections[state.key];
+  P=coll.persp.map((p,i)=>({name:p.name,f:p.f,color:PAL[i%PAL.length]}));
+  recompute();buildLink();drawFront();updatePanels();
+}
+
+const sel=document.getElementById('collSelect');
+const byGroup={};
+for(const [k,c] of Object.entries(collections)){const g=c.group||'Other';(byGroup[g]=byGroup[g]||[]).push([k,c])}
+for(const [g,items] of Object.entries(byGroup)){
+  const og=document.createElement('optgroup');og.label=g;
+  for(const [k,c] of items){const o=document.createElement('option');o.value=k;o.textContent=c.name;og.appendChild(o)}
+  sel.appendChild(og);
+}
+sel.value=state.key;sel.onchange=e=>{state.key=e.target.value;load()};
+document.getElementById('resetCam').onclick=()=>{orbit.phi=1.0;orbit.theta=.7;orbit.dist=16;orbit.target.set(0,0,0);applyCam()};
+document.getElementById('spinBtn').onclick=e=>{state.spin=!state.spin;e.target.textContent='Auto-spin: '+(state.spin?'on':'off')};
+document.getElementById('showTorus').onchange=e=>{state.showTorus=e.target.checked;buildLink()};
+document.getElementById('showTubes').onchange=e=>{state.showTubes=e.target.checked;buildLink()};
+new ResizeObserver(()=>drawFront()).observe(frontCanvas);
+window.addEventListener('resize',()=>{resizeLink();drawFront()});
+
+function animate(){requestAnimationFrame(animate);if(state.spin&&!dragging){orbit.theta+=.004;applyCam()}renderer.render(scene,camera)}
+load();resizeLink();animate();
+setTimeout(()=>{resizeLink();drawFront()},60);
+</script>
+</body>
+</html>
