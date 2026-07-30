@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STARFRONT — Galactic Conquest</title>
+<style>
+  :root{
+    --void:#070b18;
+    --void2:#0c1226;
+    --panel:#111a33;
+    --ink:#dfe6ff;
+    --dim:#7f8bb8;
+    --line:#26314f;
+    --gold:#f4c15a;
+    --bg-grad:radial-gradient(120% 90% at 50% 0%,#12183a 0%,#070b18 60%);
+    --p0:#4fd1e0; --p1:#e8563f; --p2:#7ee06a; --p3:#c07af0; --p4:#f0a24f; --p5:#5a7cf0;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg-grad);color:var(--ink);font-family:"DM Mono",ui-monospace,"SF Mono",Menlo,monospace;overflow:hidden;transition:background .4s,color .4s}
+  #app{display:flex;height:100%;width:100%}
+  #stage{flex:1;position:relative}
+  canvas{display:block;width:100%;height:100%;cursor:crosshair}
+  #side{width:326px;flex-shrink:0;background:linear-gradient(180deg,var(--void2),var(--void));border-left:1px solid var(--line);display:flex;flex-direction:column;padding:15px 15px 12px;gap:11px;overflow:hidden}
+  .brand{display:flex;justify-content:space-between;align-items:flex-start}
+  h1{font-family:"Space Grotesk",system-ui,sans-serif;font-weight:700;font-size:19px;letter-spacing:.24em;margin:0;color:var(--ink)}
+  h1 span{color:var(--gold)}
+  .sub{font-size:9px;letter-spacing:.3em;color:var(--dim);margin-top:-4px;text-transform:uppercase}
+
+  /* turn owner banner — whose turn it is, dominant */
+  .turnbar{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:11px;position:relative;overflow:hidden;
+    background:linear-gradient(100deg, color-mix(in srgb, var(--turncol,#4fd1e0) 22%, var(--panel)) 0%, var(--panel) 60%);
+    border:1px solid color-mix(in srgb, var(--turncol,#4fd1e0) 45%, var(--line))}
+  .turnbar .tdot{width:14px;height:14px;border-radius:50%;background:var(--turncol,#4fd1e0);box-shadow:0 0 12px var(--turncol,#4fd1e0);flex-shrink:0}
+  .turnbar .tname{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:15px;letter-spacing:.03em;flex:1;color:var(--ink)}
+  .turnbar .treinf{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:13px;color:var(--gold);white-space:nowrap;font-variant-numeric:tabular-nums}
+  .turnbar.enemy{--turncol:var(--dim)}
+
+  /* phase rail — a stepper you progress through */
+  .phaserail{display:flex;gap:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel)}
+  .pstep{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 4px;font-family:"Space Grotesk",sans-serif;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);border-right:1px solid var(--line);position:relative;transition:.2s}
+  .pstep:last-child{border-right:none}
+  .pstep .pnum{width:16px;height:16px;border-radius:50%;border:1px solid var(--line);display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;transition:.2s}
+  .pstep.done{color:var(--dim)}
+  .pstep.done .pnum{background:var(--dim);border-color:var(--dim);color:var(--void)}
+  .pstep.current{color:var(--gold);background:color-mix(in srgb, var(--gold) 12%, transparent)}
+  .pstep.current .pnum{background:var(--gold);border-color:var(--gold);color:#1a1200;box-shadow:0 0 10px color-mix(in srgb,var(--gold) 60%,transparent)}
+
+  .btns{display:flex;gap:7px}
+  .btns button{flex:1}
+  button{font-family:"Space Grotesk",sans-serif;font-size:12px;letter-spacing:.12em;text-transform:uppercase;padding:12px 11px;border:1px solid var(--line);border-radius:9px;background:var(--panel);color:var(--ink);cursor:pointer;transition:.15s;font-weight:500}
+  button:hover:not(:disabled){border-color:var(--gold);background:color-mix(in srgb,var(--gold) 10%,var(--panel))}
+  button:active:not(:disabled){transform:translateY(1px)}
+  button:disabled{opacity:.28;cursor:not-allowed}
+  button.go{background:linear-gradient(180deg, color-mix(in srgb,var(--gold) 78%, #000) , color-mix(in srgb,var(--gold) 52%, #000));border-color:var(--gold);color:#fff;font-weight:600}
+  button.go:hover:not(:disabled){filter:brightness(1.12)}
+  .hint{font-size:10px;color:var(--dim);line-height:1.55;min-height:26px;padding:0 2px}
+  .tip{color:var(--gold)}
+
+  /* roster */
+  .roster{display:flex;flex-direction:column;gap:4px}
+  .rosterhdr{display:flex;justify-content:space-between;align-items:center;font-size:8px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);margin-bottom:1px}
+  .rosterhdr button{padding:4px 8px;font-size:8px;letter-spacing:.1em;text-transform:none;border-radius:6px}
+  .prow{display:flex;align-items:center;gap:9px;font-size:11px;padding:6px 10px;border-radius:8px;background:color-mix(in srgb,var(--panel) 60%, transparent);border:1px solid transparent;transition:.15s}
+  .prow.active{border-color:color-mix(in srgb,var(--gold) 50%,var(--line));background:color-mix(in srgb,var(--gold) 8%,var(--panel))}
+  .prow.rival{border-left:2px solid var(--p1);background:color-mix(in srgb,var(--p1) 8%,var(--panel))}
+  .prow.rival .st{color:color-mix(in srgb,var(--p1) 70%,var(--dim))}
+  .prow.targetable{border-color:var(--gold);cursor:pointer;animation:tgtpulse 1s ease-in-out infinite}
+  .prow.targetable:hover{background:color-mix(in srgb,var(--gold) 16%,var(--panel))}
+  .prow.targetable .st{color:var(--gold)}
+  @keyframes tgtpulse{0%,100%{box-shadow:0 0 0 0 rgba(244,193,90,0)}50%{box-shadow:0 0 0 2px rgba(244,193,90,.35)}}
+  .dot{width:11px;height:11px;border-radius:50%;flex-shrink:0;box-shadow:0 0 8px currentColor}
+  .prow .nm{flex:1;letter-spacing:.04em}
+  .prow .st{color:var(--dim);font-variant-numeric:tabular-nums;font-size:10px;letter-spacing:.03em}
+  .prow.dead{opacity:.3;text-decoration:line-through}
+  .prow.me{border-left:2px solid var(--gold)}
+  .prow.me .nm{color:var(--gold)}
+  .prow.hiddenrow{display:none}
+
+  .logwrap{flex:1;display:flex;flex-direction:column;min-height:0;border-top:1px solid var(--line);padding-top:9px;gap:5px}
+  .logttl{font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:var(--dim)}
+  #log{flex:1;overflow-y:auto;font-size:10.5px;line-height:1.55;color:var(--dim);display:flex;flex-direction:column;gap:2px;scrollbar-width:thin}
+  #log .me{color:var(--p0)}
+  #log .hit{color:var(--gold)}
+  #log b{color:var(--ink);font-weight:500}
+
+  #cards{display:flex;flex-direction:column;gap:6px}
+  .cardhdr{display:flex;justify-content:space-between;align-items:center;font-size:8px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim)}
+  .cardhdr button{padding:5px 9px;font-size:9px;letter-spacing:.08em;text-transform:none}
+  .hand{display:flex;gap:6px}
+  .card{flex:1 1 0;min-width:0;border:1px solid var(--line);border-radius:9px;padding:0;background:linear-gradient(160deg,var(--panel),var(--void2));cursor:pointer;transition:.16s;position:relative;overflow:hidden;height:58px;display:flex;flex-direction:column;justify-content:flex-end}
+  .card::before{content:"";position:absolute;inset:0;background:radial-gradient(90% 70% at 50% -10%, var(--suitcol,#4fd1e0) 0%, transparent 55%);opacity:.28;transition:.16s}
+  .card:hover:not(.disabled){border-color:var(--gold);transform:translateY(-2px)}
+  .card:hover:not(.disabled)::before{opacity:.42}
+  .card.disabled{opacity:.42;cursor:not-allowed}
+  .card.armed{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold),0 0 16px color-mix(in srgb,var(--gold) 40%,transparent)}
+  .card .csym{position:absolute;top:5px;left:0;right:0;text-align:center;font-size:19px;color:var(--suitcol,#4fd1e0);filter:drop-shadow(0 0 6px currentColor);line-height:1}
+  .card .cn{font-family:"Space Grotesk",sans-serif;font-size:9.5px;font-weight:600;letter-spacing:.02em;text-align:center;padding:4px 3px 6px;position:relative;z-index:1;line-height:1.15}
+  .card .rare{position:absolute;top:4px;right:5px;font-size:8px;color:var(--gold);z-index:2}
+  .handempty{font-size:9px;color:var(--dim);padding:4px 2px;line-height:1.5}
+  #cardModal{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(7,11,24,.55);backdrop-filter:blur(3px);z-index:30}
+  #cardModal.show{display:flex}
+  .cmCard{width:250px;border:1px solid var(--gold);border-radius:14px;background:linear-gradient(180deg,var(--panel),var(--void2));padding:0;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6);animation:cmpop .18s ease}
+  @keyframes cmpop{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+  .cmTop{height:88px;display:flex;align-items:center;justify-content:center;position:relative;border-bottom:1px solid var(--line)}
+  .cmSuit{font-size:44px;line-height:1;filter:drop-shadow(0 0 12px currentColor)}
+  .cmRare{position:absolute;top:9px;right:12px;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
+  .cmTag{position:absolute;top:9px;left:12px;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim)}
+  .cmBody{padding:14px 16px 16px}
+  .cmName{font-family:"Space Grotesk",sans-serif;font-size:19px;font-weight:700;letter-spacing:.03em;margin-bottom:4px}
+  .cmSuitName{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);margin-bottom:10px}
+  .cmDesc{font-size:12px;line-height:1.55;color:var(--ink);margin-bottom:8px}
+  .cmNote{font-size:10px;line-height:1.5;color:var(--dim);min-height:14px;margin-bottom:14px}
+  .cmBtns{display:flex;gap:8px}
+  .cmBtns button{flex:1;padding:10px}
+  .tip{color:var(--gold)}
+  #banner{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;background:rgba(7,11,24,.82);backdrop-filter:blur(4px);z-index:20;gap:18px;text-align:center;padding:24px;overflow-y:auto}
+  #banner h2{font-family:"Space Grotesk",sans-serif;font-size:40px;letter-spacing:.1em;margin:0}
+  #banner p{color:var(--dim);max-width:440px;line-height:1.7;font-size:12px;letter-spacing:.04em}
+  #banner.hidden{display:none}
+  .commanderWrap{width:min(820px,92vw);display:flex;flex-direction:column;gap:8px}
+  .commanderLabel{font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--dim)}
+  .commanderGrid{display:grid;grid-template-columns:repeat(4,minmax(145px,1fr));gap:9px}
+  .commanderPick{position:relative;text-align:left;padding:13px 12px 11px;min-height:142px;text-transform:none;letter-spacing:0;border-radius:12px;overflow:hidden}
+  .commanderPick::before{content:"";position:absolute;inset:0;background:radial-gradient(100% 80% at 50% 0%,var(--ccol) 0%,transparent 65%);opacity:.14}
+  .commanderPick.selected{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold),0 0 24px rgba(244,193,90,.22)}
+  .commanderPick .cicon{font-size:25px;color:var(--ccol);filter:drop-shadow(0 0 8px var(--ccol));position:relative}
+  .commanderPick .cname{font-size:14px;font-weight:700;color:var(--ink);margin:5px 0 1px;position:relative}
+  .commanderPick .ctitle{font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--ccol);margin-bottom:7px;position:relative}
+  .commanderPick .cpass{font-family:"DM Mono",monospace;font-size:9px;line-height:1.45;color:var(--dim);position:relative}
+  .commanderPick .ccards{font-family:"DM Mono",monospace;font-size:8px;line-height:1.4;color:var(--gold);margin-top:7px;position:relative}
+  .prow .cmd{display:block;font-size:7px;letter-spacing:.08em;color:var(--dim);margin-top:1px}
+  @media(max-width:900px){.commanderGrid{grid-template-columns:repeat(2,minmax(145px,1fr))}.commanderPick{min-height:125px}}
+  .setup{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  .setup label{font-size:11px;letter-spacing:.14em;color:var(--dim);display:flex;flex-direction:column;gap:6px;text-transform:uppercase}
+  select{font-family:"DM Mono",monospace;background:var(--panel);color:var(--ink);border:1px solid var(--line);padding:8px 12px;border-radius:7px;font-size:13px}
+  #tooltip{position:absolute;pointer-events:none;background:rgba(9,13,30,.95);border:1px solid var(--gold);border-radius:6px;padding:6px 10px;font-size:11px;letter-spacing:.05em;z-index:15;display:none;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+  .dice{display:flex;gap:5px;align-items:center;font-variant-numeric:tabular-nums}
+  .die{width:20px;height:20px;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:"Space Grotesk",sans-serif}
+  .die.a{background:var(--p1);color:#fff}
+  .die.d{background:#243055;color:var(--ink)}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="stage">
+    <canvas id="cv"></canvas>
+    <div id="tooltip"></div>
+    <div id="cardModal"></div>
+    <div id="banner">
+      <h1 style="font-size:44px;letter-spacing:.3em">STAR<span style="color:var(--gold)">FRONT</span></h1>
+      <p>A galaxy of contested systems drifts in the dark. Choose a commander, claim territory, mass fleets along your borders, and drive every rival faction into extinction. Reinforcements scale with the systems and whole sectors you hold.</p>
+      <div class="commanderWrap">
+        <div class="commanderLabel">Choose your commander · rival factions use standard command</div>
+        <div class="commanderGrid" id="commanderGrid"></div>
+      </div>
+      <div class="setup">
+        <label>Rival AIs
+          <select id="selAI"><option>2</option><option selected>3</option><option>4</option><option>5</option></select>
+        </label>
+        <label>Galaxy size
+          <select id="selMap"><option value="26">Compact · 26</option><option value="34" selected>Standard · 34</option><option value="44">Sprawling · 44</option></select>
+        </label>
+        <label>AI cunning
+          <select id="selDiff"><option value="0">Reckless</option><option value="1" selected>Tactical</option><option value="2">Ruthless</option></select>
+        </label>
+      </div>
+      <button class="go" id="btnStart" style="padding:13px 40px">Launch Campaign</button>
+    </div>
+  </div>
+  <div id="side">
+    <div class="brand">
+      <div>
+        <h1>STAR<span>FRONT</span></h1>
+        <div class="sub">Galactic Conquest</div>
+      </div>
+    </div>
+
+    <div class="turnbar" id="turnbar">
+      <span class="tdot" id="turnDot"></span>
+      <span class="tname" id="turnName">—</span>
+      <span class="treinf" id="turnReinf"></span>
+    </div>
+
+    <div class="phaserail" id="phaserail">
+      <div class="pstep" data-ph="reinforce"><span class="pnum">1</span><span class="plbl">Reinforce</span></div>
+      <div class="pstep" data-ph="attack"><span class="pnum">2</span><span class="plbl">Attack</span></div>
+      <div class="pstep" data-ph="fortify"><span class="pnum">3</span><span class="plbl">Fortify</span></div>
+    </div>
+
+    <div class="btns">
+      <button class="go" id="btnAction" disabled>—</button>
+      <button id="btnUndoReinf" disabled title="Undo the most recent fleet placed this reinforcement phase">Undo Fleet</button>
+      <button id="btnEnd" disabled>End Turn</button>
+    </div>
+    <div class="hint" id="hint"></div>
+
+    <div class="roster" id="players"></div>
+
+    <div id="cards"></div>
+
+    <div class="logwrap">
+      <div class="logttl">Command Feed</div>
+      <div id="log"></div>
+    </div>
+  </div>
+</div>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>
+const CV=document.getElementById('cv'),X=CV.getContext('2d');
+const PNAME=['You','Vex Collective','Orrin Dominion','Cygnus Pact','Ashfall Legion','Nyx Swarm'];
+const COMMANDERS={
+  kael:{name:'Admiral Kael',title:'Fleet Doctrine',suit:'fleet',sym:'⬢',col:'#4fd1e0',
+    passive:'Your first border deployment each turn gains one additional fleet.',
+    cards:['battleline','coordassault','logistics']},
+  veyra:{name:'Seraph Veyra',title:'Nova Doctrine',suit:'nova',sym:'✦',col:'#f4c15a',
+    passive:'Holding at least half of any sector grants +1 reinforcement each turn.',
+    cards:['stellarforge','solarascension','controlledflare']},
+  orr:{name:'Navigator Orr',title:'Rift Doctrine',suit:'rift',sym:'◈',col:'#c07af0',
+    passive:'Fortification may travel through your entire connected empire.',
+    cards:['phasewithdrawal','temporalecho','wormhole']},
+  nyx:{name:'Warden Nyx',title:'Disruption Doctrine',suit:'rift',sym:'⛧',col:'#e8563f',
+    passive:'The first system conquered from you each round becomes neutral instead.',
+    cards:['falseorders','signalghost','fracture']}
+};
+let SELECTED_COMMANDER='kael';
+let W,H,DPR;
+
+// --- fixed dark palette ---
+let PCOL=[];
+function readPalette(){
+  const cs=getComputedStyle(document.documentElement);
+  PCOL=[0,1,2,3,4,5].map(i=>cs.getPropertyValue('--p'+i).trim());
+}
+const INK={starA:'rgba(200,220,255,',neutral:'#5a6484',nodeCore:'#0a0f22',edge:'120,140,200',edgeHot:'210,110,110',
+  label:'rgba(170,190,240,',hull:1,sel:'#ffffff',neb:.5,star:.9};
+function ink(){return INK;}
+
+function resize(){DPR=Math.min(2,window.devicePixelRatio||1);W=CV.clientWidth;H=CV.clientHeight;CV.width=W*DPR;CV.height=H*DPR;X.setTransform(DPR,0,0,DPR,0,0);if(G){buildBackdrop();draw();}}
+window.addEventListener('resize',resize);
+
+let G=null; // game state
+
+// hex -> rgba helper
+function rgba(hex,a){hex=hex.replace('#','');if(hex.length===3)hex=hex.split('').map(c=>c+c).join('');const n=parseInt(hex,16);return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`;}
+
+// ---------- MAP GENERATION ----------
+function genMap(n){
+  // Poisson-ish scatter of star systems, Delaunay-free neighbor linking by proximity
+  const pad=70, cols=Math.ceil(Math.sqrt(n*W/H)), rows=Math.ceil(n/cols);
+  const cw=(W-2*pad)/cols, ch=(H-2*pad)/rows;
+  let nodes=[];
+  for(let i=0;i<n;i++){
+    const gx=i%cols, gy=Math.floor(i/cols);
+    nodes.push({
+      id:i,
+      x:pad+cw*(gx+.5)+(Math.random()-.5)*cw*.75,
+      y:pad+ch*(gy+.5)+(Math.random()-.5)*ch*.75,
+      owner:-1, troops:1, adj:[], sector:0, name:starName()
+    });
+  }
+  nodes=nodes.slice(0,n);
+  // link nearest neighbors (each node connects to ~3-4 closest)
+  for(const a of nodes){
+    const d=nodes.filter(b=>b!==a).map(b=>({b,d:Math.hypot(a.x-b.x,a.y-b.y)})).sort((p,q)=>p.d-q.d);
+    const k=3+(Math.random()<.5?1:0);
+    for(let i=0;i<k&&i<d.length;i++){
+      const b=d[i].b;
+      if(!a.adj.includes(b.id)){a.adj.push(b.id);b.adj.push(a.id);}
+    }
+  }
+  // ensure connected graph: link components
+  const seen=new Set(),stack=[0];seen.add(0);
+  while(stack.length){const c=nodes[stack.pop()];for(const j of c.adj)if(!seen.has(j)){seen.add(j);stack.push(j);}}
+  for(const nd of nodes){if(!seen.has(nd.id)){
+    let best=null,bd=1e9;for(const s of nodes)if(seen.has(s.id)){const dd=Math.hypot(nd.x-s.x,nd.y-s.y);if(dd<bd){bd=dd;best=s;}}
+    nd.adj.push(best.id);best.adj.push(nd.id);seen.add(nd.id);
+    // re-flood
+    const st=[nd.id];while(st.length){const c=nodes[st.pop()];for(const j of c.adj)if(!seen.has(j)){seen.add(j);st.push(j);}}
+  }}
+  // sectors via k-means-ish clustering for continent bonuses
+  const nSec=Math.max(3,Math.round(n/6));
+  let cents=[];for(let i=0;i<nSec;i++)cents.push({x:nodes[Math.floor(Math.random()*n)].x,y:nodes[Math.floor(Math.random()*n)].y});
+  for(let it=0;it<8;it++){
+    for(const nd of nodes){let bi=0,bd=1e9;cents.forEach((c,i)=>{const d=Math.hypot(nd.x-c.x,nd.y-c.y);if(d<bd){bd=d;bi=i;}});nd.sector=bi;}
+    cents=cents.map((c,i)=>{const g=nodes.filter(nd=>nd.sector===i);if(!g.length)return c;return{x:g.reduce((s,nd)=>s+nd.x,0)/g.length,y:g.reduce((s,nd)=>s+nd.y,0)/g.length};});
+  }
+  // Empty k-means cells are possible on unlucky seeds. Drop them and reindex
+  // so every sector is safe to score and render.
+  const groups=cents.map((c,i)=>({c,mem:nodes.filter(nd=>nd.sector===i)})).filter(g=>g.mem.length);
+  const secNames=shuffle(SECNAMES).slice(0,groups.length);
+  const sectors=groups.map((g,i)=>{
+    g.mem.forEach(nd=>nd.sector=i);
+    return {id:i,name:secNames[i]||('Sector '+i),cx:g.c.x,cy:g.c.y,members:g.mem.map(m=>m.id),bonus:Math.max(2,Math.round(g.mem.length/2)),color:SECCOL[i%SECCOL.length]};
+  });
+  return {nodes,sectors};
+}
+const SECNAMES=['Perseus Reach','Kestrel Verge','Halcyon Drift','Umbral Expanse','Vela Spur','Corvid Marches','Tycho Belt','Sable Rift','Aurorae Fold','Hollow Crown','Meridian Gulf'];
+const SECCOL=['#1c2f4a','#3a2740','#243d2c','#402a24','#2d2b47','#3d3a20','#1f3f42'];
+const SYL1=['Zar','Vex','Ory','Cyg','Kae','Nyx','Tor','Sol','Rhe','Mir','Ael','Dûn','Vor','Ith','Qel','Bri','Xan','Umb'];
+const SYL2=['on','ax','is','us','eth','ara','ion','ex','os','un','yr','an','ael','ir','oth'];
+function starName(){return (pick(SYL1)+pick(SYL2)+(Math.random()<.3?'-'+(Math.floor(Math.random()*90)+10):'')).replace(/^(.)/,c=>c.toUpperCase());}
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+// ---------- GAME SETUP ----------
+// Build a connected home region for each faction, then scatter the remaining
+// holdings with a local bias. The result has recognizable fronts without
+// turning the opening into four sealed blobs.
+function assignStartingTerritories(nodes,nP){
+  nodes.forEach(n=>{n.owner=-1;n.troops=1;n.shield=false;});
+  const targets=Array(nP).fill(Math.floor(nodes.length/nP));
+  for(let i=0;i<nodes.length%nP;i++)targets[i]++;
+
+  // Farthest-point seeds keep home regions from being born on top of each other.
+  const seeds=[nodes[Math.floor(Math.random()*nodes.length)]];
+  while(seeds.length<nP){
+    const pool=nodes.filter(n=>!seeds.includes(n));
+    const next=pool.map(n=>({n,d:Math.min(...seeds.map(s=>Math.hypot(n.x-s.x,n.y-s.y)))+Math.random()*12}))
+      .sort((a,b)=>b.d-a.d)[0].n;
+    seeds.push(next);
+  }
+
+  const counts=Array(nP).fill(0);
+  seeds.forEach((n,p)=>{n.owner=p;counts[p]=1;});
+  const coreGoals=targets.map(t=>Math.max(2,Math.round(t*.66)));
+
+  const claim=(p,n)=>{n.owner=p;counts[p]++;};
+  const frontierFor=p=>{
+    const ids=new Set();
+    for(const n of nodes)if(n.owner===p)for(const j of n.adj)if(nodes[j].owner<0)ids.add(j);
+    return [...ids].map(id=>nodes[id]);
+  };
+  const localScore=(p,n)=>{
+    let same=0,other=0;
+    for(const j of n.adj){if(nodes[j].owner===p)same++;else if(nodes[j].owner>=0)other++;}
+    const dist=Math.hypot(n.x-seeds[p].x,n.y-seeds[p].y);
+    return same*4-other*.75-dist/Math.max(W,H)+Math.random()*1.5;
+  };
+
+  // First grow a genuinely connected home region for each player.
+  let guard=0;
+  while(counts.some((c,p)=>c<coreGoals[p])&&guard++<nodes.length*4){
+    for(const p of shuffle([...Array(nP).keys()])){
+      if(counts[p]>=coreGoals[p])continue;
+      let pool=frontierFor(p);
+      if(!pool.length)pool=nodes.filter(n=>n.owner<0);
+      if(pool.length)claim(p,pool.sort((a,b)=>localScore(p,b)-localScore(p,a))[0]);
+    }
+  }
+
+  // Give each faction one or two genuine outposts, then place the final
+  // holdings near home. This preserves a little opening disorder without
+  // returning to the old checkerboard of isolated systems.
+  const outpostsLeft=targets.map((t,p)=>Math.min(2,Math.max(0,t-coreGoals[p]-1)));
+  guard=0;
+  while(counts.some((c,p)=>c<targets[p])&&guard++<nodes.length*5){
+    for(const p of shuffle([...Array(nP).keys()])){
+      if(counts[p]>=targets[p])continue;
+      const open=nodes.filter(n=>n.owner<0);if(!open.length)break;
+      let pickNode;
+      if(outpostsLeft[p]>0){
+        pickNode=open.map(n=>{
+          const same=n.adj.filter(j=>nodes[j].owner===p).length;
+          const dist=Math.hypot(n.x-seeds[p].x,n.y-seeds[p].y)/Math.max(W,H);
+          return {n,score:dist-same*3+Math.random()*.35};
+        }).sort((a,b)=>b.score-a.score)[0].n;
+        outpostsLeft[p]--;
+      }else{
+        pickNode=open.sort((a,b)=>localScore(p,b)-localScore(p,a))[0];
+      }
+      claim(p,pickNode);
+    }
+  }
+  return seeds;
+}
+
+function newGame(nAI,mapN,diff,commanderId){
+  const {nodes,sectors}=genMap(mapN);
+  const nP=nAI+1;
+  const seeds=assignStartingTerritories(nodes,nP);
+  const START=Math.max(3,Math.round(mapN*1.1/nP));
+  for(let p=0;p<nP;p++){
+    const mine=nodes.filter(n=>n.owner===p);
+    let extra=Math.max(0,START-mine.length);
+    if(extra>0){seeds[p].troops++;extra--;}
+    while(extra-->0){
+      const candidates=mine.slice().sort((a,b)=>{
+        const as=a.adj.filter(j=>nodes[j].owner===p).length,bs=b.adj.filter(j=>nodes[j].owner===p).length;
+        return bs-as||a.troops-b.troops;
+      });
+      candidates[Math.floor(Math.random()*Math.min(3,candidates.length))].troops++;
+    }
+  }
+  G={nodes,sectors,nP,diff:+diff,turn:0,phase:'reinforce',reinf:0,sel:null,log:[],
+     players:Array.from({length:nP},(_,i)=>({i,name:PNAME[i],col:PCOL[i],alive:true,human:i===0,commander:i===0?commanderId:null})),
+     moved:false,conqueredThisTurn:false,anim:[],stars:[],nebulae:[],t:0,
+     setBonusLevel:0,pendingCard:null,warDice:0,ripples:[],stamps:[],diceShow:null,
+     reinfHistory:[],fortifyMovesUsed:0,fractures:[]};
+  for(const pl of G.players){
+    pl.hand=[];pl.blockedNext=false;pl.terraforms=[];
+    pl.bonusReinfNext=0;pl.reinfPenaltyNext=0;pl.attackPenaltyNext=0;pl.attackBoostNext=0;
+    pl.passiveDeployUsed=false;pl.extraFortify=0;pl.lastPlayedCard=null;
+    pl.coordinatedTarget=null;pl.coordinatedCharges=0;pl.wormholes=[];pl.wardenUsed=false;
+    if(pl.human){
+      const sig=COMMANDERS[pl.commander].cards;
+      pl.hand.push(pick(sig));
+    }
+  }
+  buildBackdrop();
+  logMsg('Campaign begins across the <b>'+sectors.length+'</b> sectors of the frontier.','');
+  logMsg(`<b>${COMMANDERS[G.players[0].commander].name}</b> assumes command with a signature card in hand.`,'me');
+  startHuman();resize();startAmbient();
+}
+// persistent starfield + nebula clouds, regenerated on new map / resize
+function buildBackdrop(){
+  if(!G)return;
+  const R=mulberry(G.nodes.length*97+G.sectors.length*13+7);
+  // three parallax layers of stars
+  const stars=[];
+  const layers=[{n:Math.round(W*H/9000),r:.7,tw:.4},{n:Math.round(W*H/16000),r:1.3,tw:.9},{n:Math.round(W*H/40000),r:2.1,tw:1.4}];
+  layers.forEach((L,li)=>{for(let i=0;i<L.n;i++)stars.push({x:R()*W,y:R()*H,r:L.r*(.6+R()*.8),tw:L.tw,ph:R()*6.28,depth:li});});
+  G.stars=stars;
+  // nebula blobs anchored near sector centroids, tinted by sector color
+  G.nebulae=G.sectors.map(s=>({x:s.cx+(R()-.5)*60,y:s.cy+(R()-.5)*60,r:120+R()*90,base:s.color,tint:s.id}));
+}
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+let ambientRAF=null;
+function startAmbient(){if(ambientRAF)cancelAnimationFrame(ambientRAF);const loop=()=>{if(!G)return;G.t+=.016;if(G.anim.length)tickAnim();if(G.ripples.length){for(const rp of G.ripples)rp.life-=.03;G.ripples=G.ripples.filter(rp=>rp.life>0);}if(G.stamps.length){for(const sp of G.stamps)sp.life-=.018;G.stamps=G.stamps.filter(sp=>sp.life>0);}if(G.diceShow){const age=G.t-G.diceShow.born;if(age>1.15)G.diceShow.life-=.05;if(G.diceShow.life<=0)G.diceShow=null;}draw();ambientRAF=requestAnimationFrame(loop);};ambientRAF=requestAnimationFrame(loop);}
+function ownedBy(p){return G.nodes.filter(n=>n.owner===p);}
+function sectorOwner(s){const m=s.members;if(!m.length)return -1;const o=G.nodes[m[0]].owner;return m.every(id=>G.nodes[id].owner===o)?o:-1;}
+function computeReinf(){
+  const p=G.turn,pl=G.players[p],terr=ownedBy(p).length;
+  let r=Math.max(3,Math.floor(terr/3));
+  let bonusTxt=[];
+  for(const sec of G.sectors){if(sectorOwner(sec)===p){r+=sec.bonus;bonusTxt.push(sec.name+' +'+sec.bonus);}}
+  const tf=(pl.terraforms||[]).filter(id=>G.nodes[id].owner===p).length;
+  if(tf>0){r+=tf;bonusTxt.push('Terraform +'+tf);}
+  if(pl.commander==='veyra'&&G.sectors.some(sec=>sec.members.filter(id=>G.nodes[id].owner===p).length>=Math.ceil(sec.members.length/2))){
+    r++;bonusTxt.push('Veyra foothold +1');
+  }
+  const pen=Math.min(r-1,pl.reinfPenaltyNext||0);
+  if(pen>0){r-=pen;bonusTxt.push('False Orders −'+pen);pl.reinfPenaltyNext=0;}
+  G.reinf=r;G.reinfBonus=bonusTxt;
+}
+
+// ================= CARD SYSTEM =================
+// Hybrid: every card is a playable effect AND carries a suit (Fleet/Nova/Rift).
+// Draw one card when you conquer >=1 system in a turn. Hand cap 5.
+// Trade in 3-of-a-kind or one-of-each for escalating bulk reinforcements.
+const SUITS={fleet:{sym:'⬢',name:'Fleet',col:'#4fd1e0'},nova:{sym:'✦',name:'Nova',col:'#f4c15a'},rift:{sym:'◈',name:'Rift',col:'#c07af0'}};
+const CARDS=[
+  // --- territorial ---
+  {id:'annex',name:'Annex',suit:'nova',rare:2,tag:'territory',
+   desc:'Instantly capture an adjacent enemy system that holds exactly 1 fleet.',
+   need:p=>enemyNeighbors(p,n=>n.troops===1).length>0,
+   targets:p=>enemyNeighbors(p,n=>n.troops===1),
+   run:(p,t)=>{const was=t.owner;t.owner=p;t.troops=1;t.shield=false;ripple(t);log2(p,`annexes <b>${t.name}</b>.`);checkElim(was);}},
+  {id:'jump',name:'Jump Drive',suit:'rift',rare:1,tag:'territory',
+   desc:'Relocate all but one fleet from one of your systems to any other system you own.',
+   need:p=>ownedBy(p).filter(n=>n.troops>1).length>0&&ownedBy(p).length>1,
+   two:true,
+   srcs:p=>ownedBy(p).filter(n=>n.troops>1),
+   dsts:(p,s)=>ownedBy(p).filter(n=>n.id!==s.id),
+   run:(p,s,d)=>{const mv=s.troops-1;d.troops+=mv;s.troops=1;ripple(d);log2(p,`jumps <b>${mv}</b> fleets ${s.name}→${d.name}.`);}},
+  {id:'terra',name:'Terraform',suit:'nova',rare:1,tag:'territory',
+   desc:'Permanently grant +1 reinforcement from a system you hold. Grants a fleet now, and every turn you hold it.',
+   need:p=>ownedBy(p).some(n=>!(G.players[p].terraforms||[]).includes(n.id)),
+   targets:p=>ownedBy(p).filter(n=>!(G.players[p].terraforms||[]).includes(n.id)),
+   run:(p,t)=>{G.players[p].terraforms.push(t.id);
+     // apply the bonus immediately: add to the reinforce pool if still deploying, else drop a fleet on the system
+     if(p===G.turn&&G.phase==='reinforce'){G.reinf++;}
+     else{t.troops++;}
+     ripple(t);log2(p,`terraforms <b>${t.name}</b> (+1 reinforcement now &amp; each turn).`);}},
+  // --- disruption ---
+  {id:'sabotage',name:'Sabotage',suit:'rift',rare:1,tag:'disrupt',
+   desc:'Remove up to 2 fleets from any enemy system (leaves at least 1).',
+   need:p=>anyEnemy(p).length>0,
+   targets:p=>anyEnemy(p),
+   run:(p,t)=>{const rem=Math.min(2,t.troops-1);t.troops-=rem;ripple(t);log2(p,`sabotages <b>${t.name}</b> (-${rem}).`);}},
+  {id:'defect',name:'Defect',suit:'rift',rare:2,tag:'disrupt',
+   desc:'A 1-fleet enemy system adjacent to you defects to neutral (unowned).',
+   need:p=>enemyNeighbors(p,n=>n.troops===1).length>0,
+   targets:p=>enemyNeighbors(p,n=>n.troops===1),
+   run:(p,t)=>{const was=t.owner;t.owner=-1;t.troops=1;t.shield=false;ripple(t);log2(p,`turns <b>${t.name}</b> neutral.`);checkElim(was);}},
+  {id:'ion',name:'Ion Storm',suit:'nova',rare:1,tag:'disrupt',
+   desc:'Target rival makes no attacks on their next turn.',
+   need:p=>G.players.some(q=>q.alive&&q.i!==p),
+   pickPlayer:true,
+   run:(p,q)=>{G.players[q].blockedNext=true;log2(p,`unleashes an ion storm on <b>${G.players[q].name}</b>.`);}},
+  // --- economic / tactical support ---
+  {id:'muster',name:'Muster',suit:'fleet',rare:0,tag:'econ',
+   desc:'Add 3 fleets to any one system you own.',
+   need:p=>ownedBy(p).length>0,
+   targets:p=>ownedBy(p),
+   run:(p,t)=>{t.troops+=3;ripple(t);log2(p,`musters +3 at <b>${t.name}</b>.`);}},
+  {id:'deploy',name:'Rapid Deploy',suit:'fleet',rare:0,tag:'econ',
+   desc:'Add 1 fleet to every one of your border systems.',
+   need:p=>borderSystems(p).length>0,
+   run:(p)=>{const b=borderSystems(p);b.forEach(n=>{n.troops++;ripple(n);});log2(p,`rapid-deploys +1 to ${b.length} border systems.`);}},
+  {id:'wargames',name:'War Games',suit:'fleet',rare:1,tag:'econ',
+   desc:'+1 attack die on every assault for the rest of this turn.',
+   need:p=>true,
+   run:(p)=>{G.warDice++;log2(p,`runs war games (+1 attack die this turn).`);}},
+  {id:'starseed',name:'Starseed',suit:'rift',rare:2,tag:'territory',
+   desc:'Seed a colony onto any enemy system holding 1–2 fleets, anywhere on the map. It becomes yours with 1 fleet.',
+   need:p=>G.nodes.some(n=>n.owner>=0&&n.owner!==p&&n.troops<=2),
+   targets:p=>G.nodes.filter(n=>n.owner>=0&&n.owner!==p&&n.troops<=2),
+   run:(p,t)=>{const was=t.owner;t.owner=p;t.troops=1;t.shield=false;ripple(t);stampSigil(t);log2(p,`seeds a colony on <b>${t.name}</b>.`);checkElim(was);}},
+
+  // --- stabilizing / comeback tools ---
+  {id:'aegis',name:'Aegis Array',suit:'fleet',rare:1,tag:'defense',
+   desc:'Add 1 fleet to one of your systems and shield it. The shield prevents its next fleet loss while defending.',
+   need:p=>ownedBy(p).length>0,
+   targets:p=>ownedBy(p),
+   run:(p,t)=>{t.troops++;t.shield=true;ripple(t);log2(p,`raises an aegis over <b>${t.name}</b>.`);}},
+  {id:'colonysurge',name:'Colony Surge',suit:'nova',rare:0,tag:'econ',
+   desc:'Add 1 fleet to each of your three weakest systems.',
+   need:p=>ownedBy(p).length>0,
+   run:(p)=>{const ts=ownedBy(p).slice().sort((a,b)=>a.troops-b.troops||threatOf(b)-threatOf(a)).slice(0,3);ts.forEach(t=>{t.troops++;ripple(t);});log2(p,`surges +1 fleet into ${ts.length} vulnerable systems.`);}},
+  {id:'riftnet',name:'Rift Network',suit:'rift',rare:0,tag:'econ',
+   desc:'Choose one of your systems. Up to four systems you hold in that sector gain +1 fleet.',
+   need:p=>ownedBy(p).length>0,
+   targets:p=>ownedBy(p),
+   run:(p,t)=>{const ts=G.sectors[t.sector].members.map(id=>G.nodes[id]).filter(n=>n.owner===p)
+      .sort((a,b)=>(borderSystems(p).includes(b)?1:0)-(borderSystems(p).includes(a)?1:0)||a.troops-b.troops).slice(0,4);
+      ts.forEach(n=>{n.troops++;ripple(n);});log2(p,`opens a rift network across <b>${G.sectors[t.sector].name}</b> (+1 to ${ts.length}).`);}},
+
+  // --- COMMANDER SIGNATURE SETS ---
+  {id:'battleline',name:'Battle Line',suit:'fleet',rare:1,tag:'defense',commander:'kael',drawWeight:2.2,
+   desc:'Choose two adjacent systems you own. Each gains 1 fleet and an Aegis shield.',
+   need:p=>ownedBy(p).some(a=>a.adj.some(j=>G.nodes[j].owner===p)),two:true,
+   srcs:p=>ownedBy(p).filter(a=>a.adj.some(j=>G.nodes[j].owner===p)),
+   dsts:(p,a)=>a.adj.map(j=>G.nodes[j]).filter(n=>n.owner===p),
+   run:(p,a,b)=>{for(const n of [a,b]){n.troops++;n.shield=true;ripple(n);}log2(p,`forms a shielded battle line at <b>${a.name}</b> and <b>${b.name}</b>.`);}},
+  {id:'coordassault',name:'Coordinated Assault',suit:'fleet',rare:1,tag:'disrupt',commander:'kael',drawWeight:2,
+   desc:'Choose an enemy system bordering at least two of yours. Your next two assaults against it gain +1 attack die.',
+   need:p=>G.nodes.some(t=>t.owner!==p&&t.owner>=0&&t.adj.filter(j=>G.nodes[j].owner===p).length>=2),
+   targets:p=>G.nodes.filter(t=>t.owner!==p&&t.owner>=0&&t.adj.filter(j=>G.nodes[j].owner===p).length>=2),
+   run:(p,t)=>{const pl=G.players[p];pl.coordinatedTarget=t.id;pl.coordinatedCharges=2;log2(p,`coordinates converging assaults on <b>${t.name}</b>.`);}},
+  {id:'logistics',name:'Logistics Command',suit:'fleet',rare:0,tag:'econ',commander:'kael',drawWeight:2.5,
+   desc:'Gain one additional fortification this turn.',need:p=>true,
+   run:p=>{G.players[p].extraFortify++;log2(p,`authorizes an additional fortification.`);}},
+
+  {id:'stellarforge',name:'Stellar Forge',suit:'nova',rare:0,tag:'econ',commander:'veyra',drawWeight:2.5,
+   desc:'Choose one of your systems. Your three weakest systems in that sector each gain 1 fleet.',
+   need:p=>ownedBy(p).length>0,targets:p=>ownedBy(p),
+   run:(p,t)=>{const ts=G.sectors[t.sector].members.map(id=>G.nodes[id]).filter(n=>n.owner===p).sort((a,b)=>a.troops-b.troops).slice(0,3);ts.forEach(n=>{n.troops++;ripple(n);});log2(p,`kindles a stellar forge in <b>${G.sectors[t.sector].name}</b> (+1 to ${ts.length}).`);}},
+  {id:'solarascension',name:'Solar Ascension',suit:'nova',rare:1,tag:'econ',commander:'veyra',drawWeight:2,
+   desc:'Gain 2 reinforcements for every complete sector you control.',
+   need:p=>G.sectors.some(sec=>sectorOwner(sec)===p)&&(p!==0||G.phase==='reinforce'),
+   run:p=>{const n=G.sectors.filter(sec=>sectorOwner(sec)===p).length,amt=2*n;G.reinf+=amt;log2(p,`draws <b>+${amt}</b> fleets from solar ascension.`);}},
+  {id:'controlledflare',name:'Controlled Flare',suit:'nova',rare:2,tag:'disrupt',commander:'veyra',drawWeight:1.4,
+   desc:'Choose a sector. Every system there loses 1 fleet, but none falls below 1.',
+   need:p=>G.nodes.some(n=>n.troops>1),targets:p=>G.nodes.filter(n=>G.sectors[n.sector].members.some(id=>G.nodes[id].troops>1)),
+   run:(p,t)=>{const ns=G.sectors[t.sector].members.map(id=>G.nodes[id]);let hit=0;for(const n of ns)if(n.troops>1){n.troops--;ripple(n);hit++;}log2(p,`releases a controlled flare across <b>${G.sectors[t.sector].name}</b> (${hit} systems thinned).`);}},
+
+  {id:'phasewithdrawal',name:'Phase Withdrawal',suit:'rift',rare:1,tag:'defense',commander:'orr',drawWeight:2,
+   desc:'Move all but one fleet from a border system to any system you own, then shield the evacuated system.',
+   need:p=>borderSystems(p).some(n=>n.troops>1)&&ownedBy(p).length>1,two:true,
+   srcs:p=>borderSystems(p).filter(n=>n.troops>1),dsts:(p,s)=>ownedBy(p).filter(n=>n.id!==s.id),
+   run:(p,s,d)=>{const mv=s.troops-1;s.troops=1;d.troops+=mv;s.shield=true;ripple(s);ripple(d);log2(p,`phases ${mv} fleets from <b>${s.name}</b> to <b>${d.name}</b>.`);}},
+  {id:'temporalecho',name:'Temporal Echo',suit:'rift',rare:1,tag:'econ',commander:'orr',drawWeight:1.8,
+   desc:'Return the last common or uncommon card you played to your hand.',
+   need:p=>{const id=G.players[p].lastPlayedCard,c=id&&cardById(id);return !!c&&c.rare<2&&G.players[p].hand.length<5;},
+   run:p=>{const id=G.players[p].lastPlayedCard;G.players[p].hand.push(id);log2(p,`recovers <b>${cardById(id).name}</b> from a temporal echo.`);}},
+  {id:'wormhole',name:'Wormhole Lattice',suit:'rift',rare:0,tag:'territory',commander:'orr',drawWeight:2.5,
+   desc:'Choose two systems you own. They count as adjacent until the start of your next turn.',
+   need:p=>ownedBy(p).length>1,two:true,srcs:p=>ownedBy(p),dsts:(p,s)=>ownedBy(p).filter(n=>n.id!==s.id),
+   run:(p,a,b)=>{G.players[p].wormholes.push({a:a.id,b:b.id});log2(p,`opens a wormhole between <b>${a.name}</b> and <b>${b.name}</b>.`);}},
+
+  {id:'falseorders',name:'False Orders',suit:'rift',rare:1,tag:'disrupt',commander:'nyx',drawWeight:2,
+   desc:'A rival loses 2 reinforcements next turn; you gain 2 next turn.',
+   need:p=>G.players.some(q=>q.alive&&q.i!==p),pickPlayer:true,
+   run:(p,q)=>{G.players[q].reinfPenaltyNext=(G.players[q].reinfPenaltyNext||0)+2;G.players[p].bonusReinfNext+=2;log2(p,`feeds false orders to <b>${G.players[q].name}</b>.`);}},
+  {id:'signalghost',name:'Signal Ghost',suit:'rift',rare:0,tag:'defense',commander:'nyx',drawWeight:2.5,
+   desc:'Choose two systems you own. Rival AI overestimates each by 3 fleets until your next turn.',
+   need:p=>ownedBy(p).length>1,two:true,srcs:p=>ownedBy(p),dsts:(p,s)=>ownedBy(p).filter(n=>n.id!==s.id),
+   run:(p,a,b)=>{a.ghost=true;b.ghost=true;ripple(a);ripple(b);log2(p,`casts signal ghosts over <b>${a.name}</b> and <b>${b.name}</b>.`);}},
+  {id:'fracture',name:'Fracture',suit:'rift',rare:2,tag:'disrupt',commander:'nyx',drawWeight:1.4,
+   desc:'Choose a connected lane. It is severed for everyone until the start of your next turn.',
+   need:p=>G.nodes.some(n=>n.adj.length),two:true,srcs:p=>G.nodes,
+   dsts:(p,s)=>s.adj.map(j=>G.nodes[j]).filter(n=>!isFractured(s.id,n.id)),
+   run:(p,a,b)=>{G.fractures.push({a:Math.min(a.id,b.id),b:Math.max(a.id,b.id),owner:p});log2(p,`fractures the lane between <b>${a.name}</b> and <b>${b.name}</b>.`);}},
+
+  // --- beneficial INSTANTS: resolve on draw and do not occupy the hand ---
+  {id:'reservecache',name:'Reserve Cache',suit:'fleet',rare:1,tag:'instant',instant:true,drawWeight:2.1,
+   desc:'Hidden reserves surface — gain +2 reinforcements at the start of your next turn.',
+   run:(p)=>{G.players[p].bonusReinfNext+=2;log2(p,`discovers a <b>reserve cache</b> (+2 next turn).`);}},
+  {id:'veterans',name:'Veteran Crews',suit:'nova',rare:1,tag:'instant',instant:true,drawWeight:1.8,
+   desc:'Your next assault gains +1 attack die.',
+   run:(p)=>{G.players[p].attackBoostNext=1;log2(p,`rallies <b>veteran crews</b> (+1 die on the next assault).`);}},
+  {id:'repairs',name:'Emergency Repairs',suit:'rift',rare:1,tag:'instant',instant:true,drawWeight:2.1,
+   desc:'Your two weakest systems each gain 1 fleet immediately.',
+   run:(p)=>{const ts=ownedBy(p).slice().sort((a,b)=>a.troops-b.troops).slice(0,2);ts.forEach(t=>{t.troops++;ripple(t);});log2(p,`completes <b>emergency repairs</b> (+1 at ${ts.length} systems).`);}},
+
+  // --- rare hazards: lighter weights keep conquest rewards mostly rewarding ---
+  {id:'solarflare',name:'Solar Flare',suit:'nova',rare:1,tag:'hazard',instant:true,drawWeight:1.15,
+   desc:'A solar flare scatters your fleets — your largest system loses 2 fleets (min 1).',
+   run:(p)=>{const big=ownedBy(p).slice().sort((a,b)=>b.troops-a.troops)[0];if(!big)return;const rem=Math.min(2,big.troops-1);big.troops-=rem;ripple(big);log2(p,`is hit by a <b>solar flare</b> — ${big.name} loses ${rem}.`);}},
+  {id:'defectors',name:'Defectors',suit:'rift',rare:1,tag:'hazard',instant:true,drawWeight:1.15,
+   desc:'Unrest spreads — one of your border systems loses 1 fleet to desertion (min 1).',
+   run:(p)=>{const b=borderSystems(p).filter(n=>n.troops>1);const t=b.length?b[Math.floor(Math.random()*b.length)]:ownedBy(p).slice().sort((a,b)=>b.troops-a.troops)[0];if(!t||t.troops<2)return;t.troops--;ripple(t);log2(p,`suffers <b>defectors</b> — ${t.name} loses 1.`);}},
+  {id:'blockaderun',name:'Supply Blockade',suit:'fleet',rare:1,tag:'hazard',instant:true,drawWeight:1.15,
+   desc:'Your supply lines are cut — your next assault rolls 1 fewer attack die.',
+   run:(p)=>{G.players[p].attackPenaltyNext=1;log2(p,`hits a <b>supply blockade</b> (−1 die on the next assault).`);}},
+];
+function cardById(id){return CARDS.find(c=>c.id===id);}
+function edgeKey(a,b){return a<b?a+':'+b:b+':'+a;}
+function isFractured(a,b){const k=edgeKey(a,b);return (G.fractures||[]).some(e=>edgeKey(e.a,e.b)===k);}
+function wormholeLinked(a,b,p){return (G.players[p]?.wormholes||[]).some(e=>edgeKey(e.a,e.b)===edgeKey(a.id,b.id));}
+function areLinked(a,b,p){return (!isFractured(a.id,b.id)&&a.adj.includes(b.id))||wormholeLinked(a,b,p);}
+function linkedNodes(a,p){return G.nodes.filter(b=>b.id!==a.id&&areLinked(a,b,p));}
+function friendlyConnected(a,b,p){
+  if(a.owner!==p||b.owner!==p)return false;
+  const seen=new Set([a.id]),q=[a];
+  while(q.length){const n=q.shift();if(n.id===b.id)return true;for(const x of linkedNodes(n,p))if(x.owner===p&&!seen.has(x.id)){seen.add(x.id);q.push(x);}}
+  return false;
+}
+function canFortify(a,b,p){return G.players[p].commander==='orr'?friendlyConnected(a,b,p):areLinked(a,b,p);}
+function enemyNeighbors(p,filt){const set=new Set();for(const n of ownedBy(p))for(const t of linkedNodes(n,p)){if(t.owner>=0&&t.owner!==p&&(!filt||filt(t)))set.add(t);}return[...set];}
+function anyEnemy(p){return G.nodes.filter(n=>n.owner>=0&&n.owner!==p&&n.troops>1);}
+function borderSystems(p){return ownedBy(p).filter(n=>linkedNodes(n,p).some(t=>t.owner!==p));}
+function effectiveTroops(n,viewer){return n.troops+((n.ghost&&n.owner!==viewer)?3:0);}
+function ripple(n){G.ripples.push({x:n.x,y:n.y,life:1,col:n.owner>=0?PCOL[n.owner]:'#8895bb'});}
+function stampSigil(n){if(n.owner<0)return;G.stamps.push({x:n.x,y:n.y,p:n.owner,life:1});}
+
+// ---------- PLAYER SIGILS ----------
+// Each player gets a distinct procedural emblem, deterministic from index.
+// Style, point count, and inner motif vary so all six read differently.
+const SIGIL={
+  0:{shape:'star',pts:5,inner:'dot',rot:0},
+  1:{shape:'poly',pts:3,inner:'bars',rot:Math.PI},
+  2:{shape:'poly',pts:6,inner:'ring',rot:0},
+  3:{shape:'star',pts:6,inner:'cross',rot:Math.PI/6},
+  4:{shape:'poly',pts:4,inner:'dot',rot:Math.PI/4},
+  5:{shape:'star',pts:8,inner:'ring',rot:0}
+};
+function drawSigil(cx,cy,r,pIdx,alpha,spin){
+  const s=SIGIL[pIdx]||SIGIL[0], col=PCOL[pIdx];
+  X.save();
+  X.translate(cx,cy);X.rotate(s.rot+(spin||0));
+  X.globalAlpha=alpha;
+  X.strokeStyle=col;X.lineWidth=1.6;X.lineJoin='round';
+  X.shadowColor=col;X.shadowBlur=6*alpha;
+  // outer figure
+  X.beginPath();
+  if(s.shape==='star'){
+    for(let i=0;i<s.pts*2;i++){const ra=i%2?r*.46:r;const a=Math.PI*i/s.pts-Math.PI/2;const x=Math.cos(a)*ra,y=Math.sin(a)*ra;i?X.lineTo(x,y):X.moveTo(x,y);}
+  }else{
+    for(let i=0;i<s.pts;i++){const a=2*Math.PI*i/s.pts-Math.PI/2;const x=Math.cos(a)*r,y=Math.sin(a)*r;i?X.lineTo(x,y):X.moveTo(x,y);}
+  }
+  X.closePath();X.stroke();
+  // inner motif
+  X.shadowBlur=0;
+  if(s.inner==='dot'){X.fillStyle=col;X.beginPath();X.arc(0,0,r*.18,0,7);X.fill();}
+  else if(s.inner==='ring'){X.beginPath();X.arc(0,0,r*.4,0,7);X.stroke();}
+  else if(s.inner==='cross'){X.beginPath();X.moveTo(-r*.4,0);X.lineTo(r*.4,0);X.moveTo(0,-r*.4);X.lineTo(0,r*.4);X.stroke();}
+  else if(s.inner==='bars'){X.beginPath();X.moveTo(-r*.35,-r*.15);X.lineTo(r*.35,-r*.15);X.moveTo(-r*.35,r*.15);X.lineTo(r*.35,r*.15);X.stroke();}
+  X.restore();X.globalAlpha=1;
+}
+function log2(p,html){logMsg(`${G.players[p].name} ${html}`,p===0?'me':'');}
+
+// weighted draw by rarity (0 common .. 2 rare); modest swing → rares are scarce
+function drawCard(p){
+  const pl=G.players[p];
+  const pool=CARDS.filter(c=>!c.commander||(pl.human&&c.commander===pl.commander));
+  const weights=pool.map(c=>c.drawWeight??([0,1,2].includes(c.rare)?[6,3,1.4][c.rare]:3));
+  let tot=weights.reduce((a,b)=>a+b,0),roll=Math.random()*tot,pick=pool[0];
+  for(let i=0;i<pool.length;i++){roll-=weights[i];if(roll<=0){pick=pool[i];break;}}
+  if(pick.instant){
+    logMsg(`${pl.name} draws an instant: <b>${pick.name}</b>!`,p===0?'me':'','hit');pick.run(p);draw();updateUI();return;
+  }
+  if(pl.hand.length>=5){logMsg(`${pl.name}'s command deck is full — no card drawn.`,p===0?'me':'');return;}
+  pl.hand.push(pick.id);
+  logMsg(`${pl.name} draws a command card${p===0?': <b>'+pick.name+'</b>':''}.`,p===0?'me':'');
+}
+
+// set trade-in: 3 same suit OR one of each. Escalating bonus.
+function findSet(hand){
+  const bySuit={};hand.forEach((id,i)=>{const s=cardById(id).suit;(bySuit[s]=bySuit[s]||[]).push(i);});
+  for(const s in bySuit)if(bySuit[s].length>=3)return bySuit[s].slice(0,3);
+  const one=[];const used=new Set();
+  for(const s of ['fleet','nova','rift']){const idx=hand.findIndex((id,i)=>!used.has(i)&&cardById(id).suit===s);if(idx<0)return null;used.add(idx);one.push(idx);}
+  return one.length===3?one:null;
+}
+function setBonusAmount(){return 8+G.setBonusLevel*3;}
+function tradeInSet(p){
+  const pl=G.players[p];const idxs=findSet(pl.hand);if(!idxs)return false;
+  const amt=setBonusAmount();G.setBonusLevel++;
+  // remove those cards (high→low)
+  idxs.sort((a,b)=>b-a).forEach(i=>pl.hand.splice(i,1));
+  return amt;
+}
+
+
+// ---------- RENDER ----------
+function draw(){
+  if(!G)return;
+  const K=ink(), t=G.t||0;
+  X.clearRect(0,0,W,H);
+
+  // --- nebula clouds (soft radial gradients tinted by sector) ---
+  X.save();
+  X.globalCompositeOperation = 'lighter';
+  for(const nb of G.nebulae){
+    const drift=Math.sin(t*.15+nb.tint)*8;
+    const g=X.createRadialGradient(nb.x+drift,nb.y,0,nb.x+drift,nb.y,nb.r);
+    const own=sectorOwner(G.sectors[nb.tint]);
+    const c=own>=0?PCOL[own]:nb.base;
+    g.addColorStop(0,rgba(c,K.neb*(own>=0?.32:.5)));
+    g.addColorStop(.5,rgba(c,K.neb*.14));
+    g.addColorStop(1,rgba(c,0));
+    X.fillStyle=g;X.beginPath();X.arc(nb.x+drift,nb.y,nb.r,0,7);X.fill();
+  }
+  // per-system owned plasma: each controlled star bleeds its owner's color
+  // into the surrounding space, so contiguous holdings pool into visible territory
+  for(const n of G.nodes){
+    if(n.owner<0)continue;
+    const c=PCOL[n.owner];
+    const puff=1+.06*Math.sin(t*.9+n.id*1.7);
+    const rad=64*puff;
+    const g=X.createRadialGradient(n.x,n.y,4,n.x,n.y,rad);
+    g.addColorStop(0,rgba(c,.18));
+    g.addColorStop(.45,rgba(c,.08));
+    g.addColorStop(1,rgba(c,0));
+    X.fillStyle=g;X.beginPath();X.arc(n.x,n.y,rad,0,7);X.fill();
+  }
+  X.restore();
+
+  // --- parallax starfield (twinkle) ---
+  for(const st of G.stars){
+    const tw=.55+.45*Math.sin(t*st.tw+st.ph);
+    X.fillStyle=K.starA+(tw*K.star*(.4+st.depth*.3)).toFixed(3)+')';
+    X.beginPath();X.arc(st.x,st.y,st.r,0,7);X.fill();
+  }
+
+  // --- sector hull membranes (rounded blob outline via connected members) ---
+  for(const s of G.sectors){
+    const own=sectorOwner(s);
+    const pts=s.members.map(id=>G.nodes[id]);
+    const c=own>=0?PCOL[own]:s.color;
+    X.save();
+    X.globalAlpha=K.hull;
+    for(const p of pts){
+      const g=X.createRadialGradient(p.x,p.y,6,p.x,p.y,50);
+      g.addColorStop(0,rgba(c,own>=0?.20:.16));
+      g.addColorStop(1,rgba(c,0));
+      X.fillStyle=g;X.beginPath();X.arc(p.x,p.y,50,0,7);X.fill();
+    }
+    X.restore();
+    // owned sector: player's sigil at centroid, gently pulsing
+    if(own>=0){
+      const pulse=.5+.5*Math.sin(t*1.6+s.id);
+      drawSigil(s.cx,s.cy,15+pulse*1.5,own,.5+pulse*.35,Math.sin(t*.4+s.id)*.15);
+    }
+  }
+  // sector labels
+  for(const s of G.sectors){
+    const own=sectorOwner(s);
+    X.fillStyle=K.label+(own>=0?.7:.42)+')';
+    X.font='700 9.5px "Space Grotesk"';X.textAlign='center';X.letterSpacing='1.5px';
+    X.fillText(s.name.toUpperCase(),s.cx,s.cy-32);
+    if(own>=0){X.fillStyle=rgba(PCOL[own],.9);X.fillText('◆ '+G.players[own].name.toUpperCase()+' +'+s.bonus,s.cx,s.cy+40);}
+    X.letterSpacing='0px';
+  }
+
+  // --- connection lanes ---
+  for(const a of G.nodes)for(const j of a.adj){if(j>a.id){const b=G.nodes[j],broken=isFractured(a.id,b.id),same=a.owner===b.owner;
+    if(broken){X.strokeStyle='rgba(244,193,90,.55)';X.lineWidth=2;X.setLineDash([2,9]);X.lineDashOffset=-t*16;}
+    else if(same){const c=a.owner>=0?PCOL[a.owner]:K.neutral;X.strokeStyle=rgba(c,.42);X.lineWidth=2;X.shadowColor=rgba(c,.4);X.shadowBlur=4;}
+    else{X.strokeStyle='rgba('+K.edgeHot+',.58)';X.lineWidth=2;X.setLineDash([4,4]);X.lineDashOffset=t*8;}
+    X.beginPath();X.moveTo(a.x,a.y);X.lineTo(b.x,b.y);X.stroke();X.setLineDash([]);X.shadowBlur=0;X.lineWidth=1;
+  }}
+  for(const pl of G.players)for(const e of pl.wormholes||[]){const a=G.nodes[e.a],b=G.nodes[e.b],cmd=pl.commander?COMMANDERS[pl.commander]:null;X.strokeStyle=rgba(cmd?cmd.col:pl.col,.75);X.lineWidth=2.2;X.setLineDash([1,7]);X.lineDashOffset=-t*20;X.beginPath();X.moveTo(a.x,a.y);X.lineTo(b.x,b.y);X.stroke();X.setLineDash([]);X.lineWidth=1;}
+
+  // --- highlight lanes from selection (animated flow) ---
+  if(G.sel!=null){
+    const s=G.nodes[G.sel];
+    for(const b of linkedNodes(s,s.owner)){
+      const hostile=b.owner!==s.owner;
+      const valid=(G.phase==='attack'&&hostile&&s.troops>1)||(G.phase==='fortify'&&!hostile&&s.troops>1&&canFortify(s,b,s.owner));
+      if(valid){
+        const c=hostile?'#f4c15a':PCOL[0];
+        X.strokeStyle=c;X.lineWidth=2.6;X.shadowColor=c;X.shadowBlur=8;
+        X.setLineDash([6,7]);X.lineDashOffset=-t*30;
+        X.beginPath();X.moveTo(s.x,s.y);X.lineTo(b.x,b.y);X.stroke();
+        X.setLineDash([]);X.shadowBlur=0;X.lineWidth=1;
+        // flowing pip toward target
+        const f=(t*.4)%1, px=s.x+(b.x-s.x)*f, py=s.y+(b.y-s.y)*f;
+        X.fillStyle=c;X.beginPath();X.arc(px,py,2.6,0,7);X.fill();
+      }
+    }
+  }
+
+  // --- card targeting: pulse valid target nodes ---
+  if(G.cardMode){
+    const valid=validTargets();
+    const pulse=.5+.5*Math.sin(t*4);
+    for(const n of valid){
+      X.strokeStyle=rgba('#f4c15a',.5+pulse*.5);X.lineWidth=2.5;
+      X.setLineDash([4,4]);X.lineDashOffset=-t*24;
+      X.beginPath();X.arc(n.x,n.y,20+pulse*3,0,7);X.stroke();
+      X.setLineDash([]);X.lineWidth=1;
+    }
+    if(G.cardMode.src){const s=G.cardMode.src;X.strokeStyle='#fff';X.lineWidth=2.5;X.beginPath();X.arc(s.x,s.y,22,0,7);X.stroke();X.lineWidth=1;}
+  }
+
+  // --- conquest ripples ---
+  for(const rp of G.ripples){
+    X.strokeStyle=rgba(rp.col,rp.life*.8);X.lineWidth=2.5*rp.life+.5;
+    X.beginPath();X.arc(rp.x,rp.y,(1-rp.life)*46+8,0,7);X.stroke();X.lineWidth=1;
+  }
+
+  // --- conquest sigil stamps (fly in, overshoot, settle) ---
+  for(const sp of G.stamps){
+    const prog=1-sp.life;                 // 0..1
+    const scale=prog<.6? (prog/.6)*1.25 : 1.25-(prog-.6)/.4*.25; // pop then settle to 1
+    const a=Math.min(1,prog*3)*sp.life*1.4;
+    const spin=(1-prog)*Math.PI;
+    drawSigil(sp.x,sp.y,26*scale,sp.p,Math.min(1,a),spin);
+  }
+
+  // --- attack pulses ---
+  for(const an of G.anim){
+    X.strokeStyle=an.col;X.globalAlpha=an.life;X.lineWidth=2+an.life*2.5;
+    X.shadowColor=an.col;X.shadowBlur=12*an.life;
+    X.beginPath();X.moveTo(an.x1,an.y1);X.lineTo(an.x2,an.y2);X.stroke();
+    // travelling shot
+    const f=1-an.life, px=an.x1+(an.x2-an.x1)*f, py=an.y1+(an.y2-an.y1)*f;
+    X.fillStyle='#fff';X.beginPath();X.arc(px,py,3.5*an.life+1,0,7);X.fill();
+    X.globalAlpha=1;X.shadowBlur=0;X.lineWidth=1;
+  }
+
+  // --- star systems (nodes) ---
+  for(const n of G.nodes){
+    const col=n.owner>=0?PCOL[n.owner]:K.neutral;
+    const isSel=G.sel===n.id;
+    const r=13;
+    const canAct=n.owner===0&&n.troops>1&&(G.phase==='attack'||G.phase==='fortify');
+    // outer glow (breathing for actionable, selected)
+    const breathe=canAct?(.6+.4*Math.sin(t*3+n.id)):1;
+    X.fillStyle=rgba(col,(.22)*breathe);
+    X.beginPath();X.arc(n.x,n.y,r+6,0,7);X.fill();
+    if(isSel){
+      X.strokeStyle=K.sel;X.lineWidth=2.5;X.setLineDash([5,4]);X.lineDashOffset=-t*20;
+      X.beginPath();X.arc(n.x,n.y,r+7,0,7);X.stroke();X.setLineDash([]);X.lineWidth=1;
+    }
+    // core disc
+    X.beginPath();X.arc(n.x,n.y,r,0,7);
+    const cg=X.createRadialGradient(n.x-3,n.y-3,1,n.x,n.y,r);
+    cg.addColorStop(0,K.nodeCore);cg.addColorStop(1,rgba(col,.25));
+    X.fillStyle=cg;X.fill();
+    X.lineWidth=2.4;X.strokeStyle=col;X.shadowColor=col;X.shadowBlur=isSel?10:5;X.stroke();X.shadowBlur=0;X.lineWidth=1;
+    // small specular highlight (upper-left) so nodes read as spheres
+    const twk=.6+.4*Math.sin(t*2.2+n.id*2.3);
+    X.fillStyle=rgba('#ffffff',(.5)*twk);
+    X.beginPath();X.arc(n.x-4,n.y-4,2,0,7);X.fill();
+    // active aegis shield
+    if(n.shield){
+      X.strokeStyle=rgba('#f4c15a',.9);X.lineWidth=2;X.setLineDash([3,3]);X.lineDashOffset=t*10;
+      X.beginPath();X.arc(n.x,n.y,r+10,0,7);X.stroke();X.setLineDash([]);X.lineWidth=1;
+    }
+    if(n.ghost){X.strokeStyle=rgba('#c07af0',.75);X.lineWidth=1.5;X.beginPath();X.arc(n.x,n.y,r+14+2*Math.sin(t*3+n.id),0,7);X.stroke();X.lineWidth=1;}
+    // troop count
+    X.fillStyle='#fff';X.font='700 12px "Space Grotesk"';X.textAlign='center';X.textBaseline='middle';
+    X.fillText(n.troops,n.x,n.y+.5);X.textBaseline='alphabetic';
+  }
+
+  // --- vignette: gently darken the edges ---
+  const vg=X.createRadialGradient(W/2,H*.45,Math.min(W,H)*.3,W/2,H*.5,Math.max(W,H)*.72);
+  vg.addColorStop(0,'rgba(7,11,24,0)');vg.addColorStop(1,'rgba(4,6,14,.55)');
+  X.fillStyle=vg;X.fillRect(0,0,W,H);
+
+  // --- big dramatic dice roll at the bottom of the map ---
+  if(G.diceShow){
+    const ds=G.diceShow, age=t-ds.born;
+    const introT=Math.min(1,age/.28);                 // slide/scale in
+    const ease=1-Math.pow(1-introT,3);
+    const alpha=ds.life;
+    const S=44, gap=10, pad=14;                        // die size, spacing
+    const aN=ds.a.length, dN=ds.d.length;
+    const groupW=aN*S+(aN-1)*gap, groupW2=dN*S+(dN-1)*gap;
+    const vsW=42;
+    const totalW=groupW+vsW+groupW2+pad*2;
+    const cx=W/2, by=H-64;                             // baseline y
+    const yoff=(1-ease)*40;
+    X.save();X.globalAlpha=alpha;
+    // backdrop tray
+    const trayY=by-S/2-pad, trayH=S+pad*2;
+    X.fillStyle='rgba(9,13,30,.82)';
+    roundRect(cx-totalW/2, trayY+yoff, totalW, trayH, 14);X.fill();
+    X.strokeStyle=rgba('#f4c15a',.5*alpha);X.lineWidth=1.5;
+    roundRect(cx-totalW/2, trayY+yoff, totalW, trayH, 14);X.stroke();X.lineWidth=1;
+    let x=cx-totalW/2+pad;
+    const drawBigDie=(val,col,winner,blocked)=>{
+      const jitter = age<.32 ? (Math.random()-.5)*4*(1-introT) : 0; // brief shake on land
+      const dy=by-S/2+yoff+jitter;
+      X.save();X.translate(x+S/2,by+yoff);
+      const pop = age<.4 ? 1+Math.sin(Math.min(1,age/.4)*Math.PI)*.12 : 1;
+      X.scale(pop,pop);X.translate(-(x+S/2),-(by+yoff));
+      // die body
+      const g=X.createLinearGradient(x,dy,x,dy+S);
+      g.addColorStop(0,rgba(col,.95));g.addColorStop(1,rgba(col,.6));
+      X.fillStyle=g;roundRect(x,dy,S,S,9);X.fill();
+      if(winner){X.strokeStyle='#fff';X.lineWidth=2.5;roundRect(x,dy,S,S,9);X.stroke();X.lineWidth=1;
+        X.shadowColor='#fff';X.shadowBlur=12;roundRect(x,dy,S,S,9);X.stroke();X.shadowBlur=0;}
+      if(blocked){
+        X.strokeStyle='#f4c15a';X.lineWidth=3;roundRect(x-2,dy-2,S+4,S+4,11);X.stroke();X.lineWidth=1;
+        X.shadowColor='#f4c15a';X.shadowBlur=14;roundRect(x-2,dy-2,S+4,S+4,11);X.stroke();X.shadowBlur=0;
+      }
+      // pips
+      X.fillStyle=winner?'#fff':'rgba(255,255,255,.92)';
+      drawPips(x,dy,S,val);
+      if(blocked){
+        X.fillStyle='#f4c15a';X.font='700 18px "Space Grotesk"';X.textAlign='center';X.textBaseline='middle';
+        X.fillText('⛨',x+S-3,dy+4);X.textBaseline='alphabetic';
+      }
+      X.restore();
+      x+=S+gap;
+    };
+    // attacker dice: a shielded winning comparison is shown as intercepted,
+    // not as a successful fleet loss.
+    ds.a.forEach((v,i)=>{
+      const rawWin=i<Math.min(ds.a.length,ds.d.length)&&v>ds.d[i];
+      const blocked=ds.aegisBlocked&&ds.aegisPair===i;
+      drawBigDie(v,ds.attCol,rawWin&&!blocked,blocked);
+    });
+    // vs
+    X.fillStyle=rgba('#dfe6ff',.6*alpha);
+    X.font='700 15px "Space Grotesk"';X.textAlign='center';X.textBaseline='middle';
+    X.fillText('VS',x+vsW/2,by+yoff);x+=vsW;
+    // defender dice
+    ds.d.forEach((v,i)=>{const isWin=i<Math.min(ds.a.length,ds.d.length)&&!(ds.a[i]>v);drawBigDie(v,ds.defCol,isWin,false);});
+    // loss readout under the tray
+    X.fillStyle=rgba('#f4c15a',.9*alpha);X.font='600 11px "Space Grotesk"';X.textAlign='center';
+    const shieldNote=ds.aegisBlocked?'⛨ AEGIS BLOCKED 1   ·   ':'';
+    X.fillText(`${shieldNote}attacker −${ds.al}   ·   defender −${ds.dl}`, cx, trayY+trayH+yoff+15);
+    X.restore();
+  }
+}
+function roundRect(x,y,w,h,r){X.beginPath();X.moveTo(x+r,y);X.arcTo(x+w,y,x+w,y+h,r);X.arcTo(x+w,y+h,x,y+h,r);X.arcTo(x,y+h,x,y,r);X.arcTo(x,y,x+w,y,r);X.closePath();}
+function drawPips(x,y,S,val){
+  const u=S/4, cx=x+S/2, cy=y+S/2, r=S*.075;
+  const P={ // pip layout per face
+    1:[[2,2]],2:[[1,1],[3,3]],3:[[1,1],[2,2],[3,3]],
+    4:[[1,1],[3,1],[1,3],[3,3]],5:[[1,1],[3,1],[2,2],[1,3],[3,3]],
+    6:[[1,1],[3,1],[1,2],[3,2],[1,3],[3,3]]
+  };
+  const face=P[val]||P[6];
+  for(const [px,py] of face){X.beginPath();X.arc(x+px*u,y+py*u,r,0,7);X.fill();}
+}
+function pushAnim(a,b,col){G.anim.push({x1:a.x,y1:a.y,x2:b.x,y2:b.y,col,life:1});}
+function tickAnim(){for(const an of G.anim)an.life-=.06;G.anim=G.anim.filter(a=>a.life>0);}
+
+// ---------- INTERACTION ----------
+CV.addEventListener('mousemove',e=>{
+  const m=mouse(e),n=nodeAt(m);const tt=document.getElementById('tooltip');
+  if(n){const s=G.sectors[n.sector];tt.style.display='block';tt.style.left=(m.x+16)+'px';tt.style.top=(m.y+12)+'px';
+    const shield=n.shield?' · <span style="color:#f4c15a">⛨ Aegis active</span>':'';const ghost=n.ghost?' · <span style="color:#c07af0">◈ Signal ghost</span>':'';
+    tt.innerHTML=`<b style="color:${n.owner>=0?PCOL[n.owner]:'#888'}">${n.name}</b> · ${n.troops}⬢ · <span style="color:#7f8bb8">${s.name}</span>${shield}${ghost}`;
+  }else tt.style.display='none';
+});
+CV.addEventListener('mouseleave',()=>document.getElementById('tooltip').style.display='none');
+CV.addEventListener('click',e=>{
+  if(!G||G.turn!==0)return;
+  const n=nodeAt(mouse(e));if(!n)return;
+  onClickNode(n);
+});
+function mouse(e){const r=CV.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};}
+function nodeAt(m){for(const n of G.nodes)if(Math.hypot(n.x-m.x,n.y-m.y)<16)return n;return null;}
+
+function onClickNode(n){
+  if(G.cardMode){handleCardTarget(n);return;}
+  const ph=G.phase,pl=G.players[0];
+  if(ph==='reinforce'){
+    if(n.owner===0&&G.reinf>0){deployFleet(0,n,true);G.reinf--;updateUI();draw();if(G.reinf===0)logMsg('All reinforcements deployed.','me');}
+    return;
+  }
+  if(ph==='attack'){
+    if(G.sel==null){if(n.owner===0&&n.troops>1)G.sel=n.id;draw();updateUI();return;}
+    const a=G.nodes[G.sel];if(n.id===a.id){G.sel=null;draw();updateUI();return;}
+    if(n.owner===0){if(n.troops>1)G.sel=n.id;draw();updateUI();return;}
+    if(areLinked(a,n,0)&&n.owner!==0&&a.troops>1)resolveAttack(a,n);return;
+  }
+  if(ph==='fortify'){
+    if(G.sel==null){if(n.owner===0&&n.troops>1)G.sel=n.id;draw();updateUI();return;}
+    const a=G.nodes[G.sel];if(n.id===a.id){G.sel=null;draw();updateUI();return;}
+    if(n.owner===0&&canFortify(a,n,0)){
+      const move=a.troops-1;n.troops+=move;a.troops=1;G.sel=null;G.moved=true;G.fortifyMovesUsed++;
+      logMsg(`Redeployed <b>${move}</b> fleets ${a.name} → ${n.name}.`,'me');
+      if(G.fortifyMovesUsed>=1+pl.extraFortify)endTurn();else{updateUI();draw();}return;
+    }
+    if(n.owner===0&&n.troops>1)G.sel=n.id;draw();updateUI();
+  }
+}
+
+function deployFleet(p,n,record){
+  const pl=G.players[p];let amount=1;n.troops++;
+  if(pl.commander==='kael'&&!pl.passiveDeployUsed&&linkedNodes(n,p).some(x=>x.owner!==p)){
+    n.troops++;amount++;pl.passiveDeployUsed=true;log2(p,`turns the first border deployment into a double muster.`);
+  }
+  if(record)G.reinfHistory.push({id:n.id,amount,kaelBonus:amount-1});
+}
+function rememberCard(p,cid){
+  const c=cardById(cid);if(c&&cid!=='temporalecho'&&c.rare<2)G.players[p].lastPlayedCard=cid;
+}
+function completeConquest(attacker,s,t,move){
+  const defender=t.owner,ward=defender>=0&&G.players[defender].commander==='nyx'&&!G.players[defender].wardenUsed;
+  if(ward){
+    G.players[defender].wardenUsed=true;t.owner=-1;t.troops=1;t.shield=false;t.ghost=false;
+    logMsg(`<span class="hit">⛧ Warden Nyx denies ${t.name}; the system falls neutral.</span>`,'hit');ripple(t);return false;
+  }
+  t.owner=attacker;t.shield=false;t.ghost=false;t.troops=move;s.troops-=move;
+  logMsg(`<span class="hit">${G.players[attacker].name} seizes ${t.name}!</span>`,attacker===0?'me':'');
+  G.conqueredThisTurn=true;ripple(t);stampSigil(t);checkElim(defender);return true;
+}
+// ---------- COMBAT ----------
+function rollDice(atk,def,bonus){
+  bonus=bonus||0;
+  const a=[],d=[];
+  // base dice are capped by troops (atk-1); the War Games bonus die is granted on top
+  const na=Math.max(1,Math.min(3,atk-1)+bonus), nd=Math.min(2,def);
+  for(let i=0;i<na;i++)a.push(1+Math.floor(Math.random()*6));
+  for(let i=0;i<nd;i++)d.push(1+Math.floor(Math.random()*6));
+  a.sort((x,y)=>y-x);d.sort((x,y)=>y-x);
+  // compare the top pairs; extra attacker dice improve the best pair (that's the bonus)
+  let al=0,dl=0;
+  for(let i=0;i<Math.min(a.length,d.length);i++){if(a[i]>d[i])dl++;else al++;}
+  return {a,d,al,dl};
+}
+function showDice(r,attCol,defCol){
+  G.diceShow={a:r.a.slice(),d:r.d.slice(),al:r.al,dl:r.dl,attCol,defCol,
+    aegisBlocked:!!r.aegisBlocked,aegisPair:r.aegisPair??-1,life:1,born:G.t};
+}
+function consumeAttackModifier(p,targetId){
+  const pl=G.players[p];let mod=G.warDice||0;
+  if(pl.attackBoostNext){mod++;pl.attackBoostNext=0;log2(p,`commits veteran crews to the assault.`);}
+  if(pl.attackPenaltyNext){mod--;pl.attackPenaltyNext=0;log2(p,`fights through a supply blockade.`);}
+  if(pl.coordinatedCharges>0&&pl.coordinatedTarget===targetId){mod++;pl.coordinatedCharges--;log2(p,`executes a coordinated assault.`);if(!pl.coordinatedCharges)pl.coordinatedTarget=null;}
+  return mod;
+}
+function applyAegis(t,r){
+  if(!t.shield||r.dl<=0)return;
+  // Preserve which winning attacker die was cancelled so the dice tray can
+  // show the shield interception instead of visually reporting a false loss.
+  let pair=-1;
+  for(let i=0;i<Math.min(r.a.length,r.d.length);i++){
+    if(r.a[i]>r.d[i]){pair=i;break;}
+  }
+  r.dl--;
+  r.aegisBlocked=true;
+  r.aegisPair=pair;
+  t.shield=false;
+  G.ripples.push({x:t.x,y:t.y,life:1,col:'#f4c15a'});
+  logMsg(`<span class="hit">⛨ <b>${t.name}</b>'s aegis blocks one fleet loss.</span>`,'hit');
+}
+function resolveAttack(s,t){
+  const r=rollDice(s.troops,t.troops,consumeAttackModifier(s.owner,t.id));
+  applyAegis(t,r);s.troops-=r.al;t.troops-=r.dl;
+  pushAnim(s,t,'#f4c15a');tickAnim();showDice(r,PCOL[s.owner],t.owner>=0?PCOL[t.owner]:'#8895bb');
+  const you=s.owner===0;logMsg(`${diceStr(r)} · <b>${s.name}</b>→<b>${t.name}</b>`,you?'me':'',true);
+  if(t.troops<=0){const move=Math.max(1,Math.min(s.troops-1,3));completeConquest(s.owner,s,t,move);}
+  G.sel=(s.troops>1)?s.id:null;draw();updateUI();if(checkWin())return;
+}
+function diceStr(r){
+  const A=r.a.map(v=>`<span class="die a">${v}</span>`).join('');
+  const D=r.d.map(v=>`<span class="die d">${v}</span>`).join('');
+  return `<span class="dice">${A} <span style="color:#7f8bb8">vs</span> ${D}</span> <span style="color:#7f8bb8">(-${r.al}/-${r.dl})</span>`;
+}
+function checkElim(p){
+  if(p<0)return;
+  if(ownedBy(p).length===0&&G.players[p].alive){
+    G.players[p].alive=false;
+    logMsg(`<b>${G.players[p].name} eliminated.</b>`,'hit');
+  }
+}
+function checkWin(){
+  const alive=G.players.filter(p=>p.alive);
+  if(alive.length===1){endGame(alive[0]);return true;}
+  if(!G.players[0].alive){endGame(alive.find(p=>!p.human)||alive[0]);return true;}
+  return false;
+}
+
+// ---------- TURN FLOW ----------
+function startHuman(){
+  G.turn=0;G.phase='reinforce';G.sel=null;G.moved=false;G.conqueredThisTurn=false;G.warDice=0;G.reinfHistory=[];G.fortifyMovesUsed=0;
+  for(const q of G.players)q.wardenUsed=false;
+  const pl=G.players[0];pl.passiveDeployUsed=false;pl.extraFortify=0;pl.wormholes=[];
+  G.fractures=(G.fractures||[]).filter(e=>e.owner!==0);for(const n of ownedBy(0))n.ghost=false;
+  const reserve=pl.bonusReinfNext||0;pl.bonusReinfNext=0;computeReinf();if(reserve){G.reinf+=reserve;G.reinfBonus.push('Reserve +'+reserve);}
+  logMsg(`— ${COMMANDERS[pl.commander].name} — <b>${G.reinf}</b> reinforcements`+(G.reinfBonus.length?' ('+G.reinfBonus.join(', ')+')':''),'me');updateUI();draw();
+}
+function nextPhase(){
+  if(G.turn!==0)return;
+  if(G.phase==='reinforce'){
+    if(G.reinf>0){flash('Deploy all reinforcements first.');return;}
+    G.reinfHistory=[];
+    G.phase='attack';G.sel=null;
+  }else if(G.phase==='attack'){
+    G.phase='fortify';G.sel=null;
+  }else if(G.phase==='fortify'){
+    endTurn();return;
+  }
+  updateUI();draw();
+}
+function endTurn(){
+  G.sel=null;
+  // reward: conquering at least one system this turn earns a command card
+  if(G.conqueredThisTurn){drawCard(G.turn);G.conqueredThisTurn=false;}
+  // advance to next alive player
+  let t=G.turn;
+  do{t=(t+1)%G.nP;}while(!G.players[t].alive);
+  G.turn=t;
+  if(t===0){startHuman();return;}
+  // AI turn
+  G.phase='ai';updateUI();draw();
+  setTimeout(()=>runAI(t),380);
+}
+
+// ---------- AI ----------
+// AI card play: greedily play cards with clear immediate value (bounded to ~2/turn)
+function aiPlayCards(p){
+  const pl=G.players[p];let plays=0;
+  const order=['annex','starseed','controlledflare','fracture','defect','sabotage','ion','falseorders','battleline','aegis','signalghost','coordassault','stellarforge','riftnet','colonysurge','solarascension','muster','deploy','terra','phasewithdrawal','jump','wormhole','logistics','wargames','temporalecho'];
+  let guard=0;
+  while(plays<2&&guard++<16){let acted=false;
+    for(const cid of order){const idx=pl.hand.indexOf(cid);if(idx<0)continue;const c=cardById(cid);if(c.need&&!c.need(p))continue;let ok=true;
+      if(cid==='annex'||cid==='defect'){const ts=c.targets(p);if(!ts.length){ok=false;}else c.run(p,ts.sort((a,b)=>enemyValue(b)-enemyValue(a))[0]);}
+      else if(cid==='starseed'){const ts=c.targets(p);if(!ts.length)ok=false;else c.run(p,ts.sort((a,b)=>a.troops-b.troops)[0]);}
+      else if(cid==='sabotage'){const ts=c.targets(p);if(!ts.length)ok=false;else c.run(p,ts.sort((a,b)=>b.troops-a.troops)[0]);}
+      else if(cid==='ion'||cid==='falseorders'){const q=strongestRival(p);if(q<0)ok=false;else c.run(p,q);}
+      else if(cid==='aegis'){const t=borderSystems(p).filter(n=>!n.shield).sort((a,b)=>threatOf(b,p)-threatOf(a,p))[0];if(!t)ok=false;else c.run(p,t);}
+      else if(cid==='battleline'){const a=borderSystems(p).find(n=>n.adj.some(j=>G.nodes[j].owner===p));if(!a)ok=false;else{const b=a.adj.map(j=>G.nodes[j]).filter(n=>n.owner===p).sort((x,y)=>threatOf(y,p)-threatOf(x,p))[0];if(!b)ok=false;else c.run(p,a,b);}}
+      else if(cid==='signalghost'){const ts=borderSystems(p).slice().sort((a,b)=>threatOf(b,p)-threatOf(a,p));if(ts.length<2)ok=false;else c.run(p,ts[0],ts[1]);}
+      else if(cid==='coordassault'){const ts=c.targets(p);if(!ts.length)ok=false;else c.run(p,ts.sort((a,b)=>a.troops-b.troops)[0]);}
+      else if(cid==='stellarforge'||cid==='riftnet'){const t=(borderSystems(p)[0]||ownedBy(p)[0]);if(!t)ok=false;else c.run(p,t);}
+      else if(cid==='controlledflare'){const t=G.nodes.filter(n=>n.owner!==p&&n.troops>1).sort((a,b)=>b.troops-a.troops)[0];if(!t)ok=false;else c.run(p,t);}
+      else if(cid==='fracture'){let pair=null;for(const a of ownedBy(p))for(const j of a.adj){const b=G.nodes[j];if(b.owner!==p&&!isFractured(a.id,b.id)){pair=[a,b];break;}if(pair)break;}if(!pair)ok=false;else c.run(p,pair[0],pair[1]);}
+      else if(cid==='phasewithdrawal'||cid==='jump'){const a=(cid==='phasewithdrawal'?borderSystems(p):ownedBy(p)).filter(n=>n.troops>2).sort((x,y)=>y.troops-x.troops)[0],b=borderSystems(p).sort((x,y)=>threatOf(y,p)-threatOf(x,p))[0];if(!a||!b||a.id===b.id)ok=false;else c.run(p,a,b);}
+      else if(cid==='wormhole'){const a=ownedBy(p).filter(n=>n.adj.every(j=>G.nodes[j].owner===p)).sort((x,y)=>y.troops-x.troops)[0],b=borderSystems(p)[0];if(!a||!b||a.id===b.id)ok=false;else c.run(p,a,b);}
+      else if(cid==='terra'){const t=ownedBy(p).find(n=>!pl.terraforms.includes(n.id));if(!t)ok=false;else c.run(p,t);}
+      else if(cid==='muster'){const t=borderSystems(p).sort((a,b)=>threatOf(b,p)-threatOf(a,p))[0];if(!t)ok=false;else c.run(p,t);}
+      else if(['deploy','colonysurge','solarascension','logistics','wargames','temporalecho'].includes(cid))c.run(p);
+      else ok=false;
+      if(ok){rememberCard(p,cid);pl.hand.splice(idx,1);plays++;acted=true;break;}
+    }
+    if(!acted)break;
+  }
+}
+function enemyValue(n){return (nearComplete(n.owner,n.sector)?2:0)+1;}
+function threatOf(n,viewer=n.owner){return linkedNodes(n,n.owner).filter(x=>x.owner!==n.owner).reduce((s,x)=>s+effectiveTroops(x,viewer),0);}
+function strongestRival(p){let best=-1,bv=-1;G.players.forEach(q=>{if(q.alive&&q.i!==p){const v=ownedBy(q.i).reduce((s,n)=>s+n.troops,0);if(v>bv){bv=v;best=q.i;}}});return best;}
+
+function runAI(p){
+  if(!G.players[p].alive){endTurn();return;}
+  G.turn=p;G.warDice=0;G.fortifyMovesUsed=0;const pl=G.players[p];pl.passiveDeployUsed=false;pl.extraFortify=0;pl.wormholes=[];
+  G.fractures=(G.fractures||[]).filter(e=>e.owner!==p);for(const n of ownedBy(p))n.ghost=false;
+  const reserve=pl.bonusReinfNext||0;pl.bonusReinfNext=0;computeReinf();if(reserve){G.reinf+=reserve;G.reinfBonus.push('Reserve +'+reserve);}
+  const diff=G.diff,setAmt=findSet(pl.hand)?tradeInSet(p):false;if(setAmt){G.reinf+=setAmt;logMsg(`${pl.name} trades a card set for +${setAmt} fleets.`,'');}
+  aiPlayCards(p);const ionBlocked=pl.blockedNext;pl.blockedNext=false;
+  let pool=G.reinf;const mine=ownedBy(p),borders=borderSystems(p);
+  const scored=borders.map(n=>({n,score:threatOf(n,p)*(1+.4*diff)+nearComplete(p,n.sector)*4+Math.random()*2})).sort((a,b)=>b.score-a.score);
+  const targets=scored.length?scored:mine.map(n=>({n}));let gi=0;
+  while(pool-->0){const t=targets[gi%Math.min(targets.length,3+diff)].n;deployFleet(p,t,false);gi++;}
+  logMsg(`${pl.name} reinforces the front.`,'');draw();
+  if(ionBlocked){logMsg(`${pl.name} is ion-locked — its fleets cannot attack this turn.`,'');setTimeout(()=>aiFortify(p),500);return;}
+  let attacks=0,maxA=diff===0?6:(diff===1?8:14);
+  function attackStep(){
+    if(attacks++>maxA){aiFortify(p);return;}
+    const src=ownedBy(p).filter(n=>n.troops>1&&linkedNodes(n,p).some(x=>x.owner!==p));let best=null;
+    for(const a of src)for(const t of linkedNodes(a,p)){if(t.owner===p)continue;
+      const ratio=a.troops/(effectiveTroops(t,p)+.5),need=diff===0?1.0:diff===1?1.32:1.1,completes=nearComplete(p,t.sector)>.0?.6:0,sc=ratio-need+completes+Math.random()*.15;
+      if(ratio>=need&&(!best||sc>best.sc))best={a,t,sc};
+    }
+    if(!best){aiFortify(p);return;}
+    const r=rollDice(best.a.troops,best.t.troops,consumeAttackModifier(p,best.t.id));applyAegis(best.t,r);best.a.troops-=r.al;best.t.troops-=r.dl;
+    pushAnim(best.a,best.t,PCOL[p]);tickAnim();showDice(r,PCOL[p],best.t.owner>=0?PCOL[best.t.owner]:'#8895bb');
+    if(best.t.troops<=0){const move=Math.max(1,Math.min(best.a.troops-1,3));completeConquest(p,best.a,best.t,move);if(checkWin())return;}
+    draw();updateUI();setTimeout(attackStep,240);
+  }
+  setTimeout(attackStep,260);
+}
+function nearComplete(p,secId){
+  const s=G.sectors[secId];const held=s.members.filter(id=>G.nodes[id].owner===p).length;
+  return held>=s.members.length-1&&held<s.members.length?1:0;
+}
+function aiFortify(p){
+  const pl=G.players[p],max=1+pl.extraFortify;
+  for(let k=0;k<max;k++){
+    const mine=ownedBy(p),interior=mine.filter(n=>n.troops>1&&linkedNodes(n,p).every(x=>x.owner===p)),border=borderSystems(p);if(!interior.length||!border.length)break;
+    const a=interior.sort((x,y)=>y.troops-x.troops)[0];let candidates=border.filter(b=>b.id!==a.id&&canFortify(a,b,p));if(!candidates.length)break;
+    const b=candidates.sort((x,y)=>threatOf(y,p)-threatOf(x,p))[0],mv=a.troops-1;b.troops+=mv;a.troops=1;
+  }
+  draw();updateUI();setTimeout(()=>{if(!checkWin())endTurn();},300);
+}
+
+// ---------- UI ----------
+// ---------- HUMAN CARD PLAY ----------
+// G.cardMode = {card, stage, src}  when awaiting target selection
+function armCard(cardId){
+  if(G.turn!==0)return;
+  const c=cardById(cardId);
+  if(c.need&&!c.need(0)){flash('No valid target for '+c.name+'.');return;}
+  // cards with no target: play immediately
+  if(c.pickPlayer){promptRivalPick(c,cardId);return;}
+  if(!c.targets&&!c.two){playCard(cardId,()=>c.run(0));return;}
+  G.cardMode={card:c,cardId,stage:1,src:null};
+  const label=c.two?'Select the first system.':'Select a target for '+c.name+'.';
+  setHint('<span class="tip">'+c.name+':</span> '+label+' <span style="color:#e8563f;cursor:pointer" id="cancelCard">✕ cancel</span>');
+  draw();renderCards();
+  setTimeout(()=>{const x=document.getElementById('cancelCard');if(x)x.onclick=cancelCard;},0);
+}
+function cancelCard(){G.cardMode=null;setHint('');updateUI();draw();}
+function validTargets(){
+  if(!G.cardMode)return[];
+  const {card,stage,src}=G.cardMode;
+  if(card.two)return stage===1?card.srcs(0):card.dsts(0,src);
+  return card.targets(0);
+}
+function handleCardTarget(n){
+  const cm=G.cardMode,c=cm.card;
+  const valid=validTargets();
+  if(!valid.includes(n)){flash('Invalid target.');return;}
+  if(c.two){
+    if(cm.stage===1){cm.src=n;cm.stage=2;setHint('<span class="tip">'+c.name+':</span> now select the destination system. <span style="color:#e8563f;cursor:pointer" id="cancelCard">✕ cancel</span>');draw();renderCards();setTimeout(()=>{const x=document.getElementById('cancelCard');if(x)x.onclick=cancelCard;},0);return;}
+    playCard(cm.cardId,()=>c.run(0,cm.src,n));
+  }else{
+    playCard(cm.cardId,()=>c.run(0,n));
+  }
+}
+function promptRivalPick(c,cardId){
+  const rivals=G.players.filter(q=>q.alive&&q.i!==0);
+  if(!rivals.length){flash('No rival to target.');return;}
+  // enter rival-pick mode: player rows in the sidebar become clickable
+  G.rivalPick={cardId,run:c.run};
+  setHint('<span class="tip">'+c.name+':</span> click a rival in the roster above to target them. <span style="color:#e8563f;cursor:pointer" id="cancelCard">✕ cancel</span>');
+  updateUI();
+  setTimeout(()=>{const x=document.getElementById('cancelCard');if(x)x.onclick=cancelRivalPick;},0);
+}
+function cancelRivalPick(){G.rivalPick=null;setHint('');updateUI();draw();}
+function chooseRival(q){
+  if(!G.rivalPick)return;
+  if(!G.players[q]||!G.players[q].alive||q===0){flash('Pick a living rival.');return;}
+  const {cardId,run}=G.rivalPick;G.rivalPick=null;
+  playCard(cardId,()=>run(0,q));
+}
+function playCard(cardId,effect){
+  const pl=G.players[0],idx=pl.hand.indexOf(cardId);if(idx<0)return;
+  pl.hand.splice(idx,1);G.cardMode=null;G.rivalPick=null;setHint('');effect();rememberCard(0,cardId);draw();updateUI();if(checkWin())return;
+}
+function tryTradeIn(){
+  if(G.turn!==0)return;
+  if(G.phase!=='reinforce'){flash('Trade card sets during reinforcement.');return;}
+  const set=findSet(G.players[0].hand);
+  if(!set){flash('Need three of one suit, or one of each.');return;}
+  const amt=tradeInSet(0);
+  G.reinf+=amt;
+  logMsg(`You trade a card set for <b>+${amt}</b> reinforcements.`,'me');
+  updateUI();draw();
+}
+function renderCards(){
+  const box=document.getElementById('cards');
+  if(G.turn!==0){box.innerHTML='';return;}
+  const hand=G.players[0].hand;
+  const hasSet=!!findSet(hand),canTrade=hasSet&&G.phase==='reinforce';
+  let html=`<div class="cardhdr"><span>Command Cards · ${hand.length}/5</span>`;
+  html+=`<button id="btnTrade" ${canTrade?'class="go"':'disabled'} title="Trade sets during reinforcement">Trade set +${setBonusAmount()}</button></div>`;
+  html+='<div class="hand">';
+  if(!hand.length)html+='<div class="handempty">Conquer a system this turn to draw a command card.</div>';
+  hand.forEach(cid=>{
+    const c=cardById(cid),su=SUITS[c.suit];
+    const playable=!c.need||c.need(0);
+    const armed=G.cardMode&&G.cardMode.cardId===cid;
+    const rt=['','◆','★'][c.rare]||'';
+    html+=`<div class="card ${playable?'':'disabled'} ${armed?'armed':''}" data-cid="${cid}" style="--suitcol:${su.col}">
+      <span class="rare">${rt}</span>
+      <span class="csym">${su.sym}</span>
+      <div class="cn">${c.name}</div></div>`;
+  });
+  html+='</div>';
+  box.innerHTML=html;
+  const tbn=document.getElementById('btnTrade');if(tbn)tbn.onclick=tryTradeIn;
+  box.querySelectorAll('.card').forEach(el=>{
+    el.onclick=()=>{const cid=el.dataset.cid;
+      if(G.cardMode&&G.cardMode.cardId===cid){cancelCard();return;}
+      openCardModal(cid);};
+  });
+}
+function openCardModal(cid){
+  const c=cardById(cid),su=SUITS[c.suit];
+  const playable=!c.need||c.need(0);
+  const rt=['Common','Uncommon','Rare'][c.rare]||'';
+  const tagName=(c.commander?COMMANDERS[c.commander].name+' · ':'')+({territory:'Territorial',disrupt:'Disruption',econ:'Logistics',defense:'Defense'}[c.tag]||'');
+  const note=playable?'':'<span style="color:var(--p1)">No valid target on the board right now.</span>';
+  const m=document.getElementById('cardModal');
+  m.innerHTML=`<div class="cmCard">
+    <div class="cmTop" style="background:radial-gradient(120% 140% at 50% 20%, ${rgba(su.col,.28)} 0%, transparent 70%)">
+      <span class="cmTag">${tagName}</span>
+      <span class="cmRare">${rt}</span>
+      <span class="cmSuit" style="color:${su.col}">${su.sym}</span>
+    </div>
+    <div class="cmBody">
+      <div class="cmName">${c.name}</div>
+      <div class="cmSuitName">${su.name} suit</div>
+      <div class="cmDesc">${c.desc}</div>
+      <div class="cmNote">${note}</div>
+      <div class="cmBtns">
+        <button id="cmCancel">Close</button>
+        <button class="go" id="cmPlay" ${playable?'':'disabled'}>Play</button>
+      </div>
+    </div></div>`;
+  m.classList.add('show');
+  document.getElementById('cmCancel').onclick=closeCardModal;
+  m.onclick=(e)=>{if(e.target===m)closeCardModal();};
+  const pb=document.getElementById('cmPlay');
+  if(playable)pb.onclick=()=>{closeCardModal();armCard(cid);};
+}
+function closeCardModal(){const m=document.getElementById('cardModal');m.classList.remove('show');m.innerHTML='';}
+function setHint(html){document.getElementById('hint').innerHTML=html;}
+
+function updateUI(){
+  const ph=G.phase,turnP=G.players[G.turn],cmd=G.players[0].commander?COMMANDERS[G.players[0].commander]:null;
+  const tb=document.getElementById('turnbar');tb.style.setProperty('--turncol',turnP.col);tb.classList.toggle('enemy',G.turn!==0);
+  document.getElementById('turnDot').style.background=turnP.col;
+  document.getElementById('turnName').textContent=G.turn===0?('Your Command · '+cmd.name):turnP.name;
+  const tr=document.getElementById('turnReinf');if(G.turn===0&&ph==='reinforce'&&G.reinf>0)tr.textContent='⬢ '+G.reinf+' to deploy';else if(G.turn!==0)tr.textContent='thinking…';else tr.textContent='';
+  const stepOrder=['reinforce','attack','fortify'],curIdx=stepOrder.indexOf(ph);document.querySelectorAll('.pstep').forEach(el=>{const i=stepOrder.indexOf(el.dataset.ph);el.classList.toggle('current',G.turn===0&&i===curIdx);el.classList.toggle('done',G.turn===0&&curIdx>=0&&i<curIdx);});
+  const pc=document.getElementById('players');pc.innerHTML='';const picking=!!G.rivalPick;
+  G.players.forEach(pl=>{const t=ownedBy(pl.i).length,trs=ownedBy(pl.i).reduce((a,n)=>a+n.troops,0),d=document.createElement('div'),targetable=picking&&pl.alive&&pl.i!==0;
+    d.className='prow'+(G.turn===pl.i?' active':'')+(pl.alive?'':' dead')+(targetable?' targetable':'')+(pl.i===0?' me':'');
+    d.title=pl.human?COMMANDERS[pl.commander].passive:'Standard command: no commander passive or signature cards.';
+    const commandLabel=pl.human?`<span class="cmd">${COMMANDERS[pl.commander].name}</span>`:'';
+    d.innerHTML=`<span class="dot" style="color:${pl.col};background:${pl.col}"></span><span class="nm">${pl.name}${commandLabel}</span><span class="st">${targetable?'◎ target':t+'◆ '+trs+'⬢'}</span>`;
+    if(targetable)d.onclick=()=>chooseRival(pl.i);pc.appendChild(d);
+  });
+  const btn=document.getElementById('btnAction'),undo=document.getElementById('btnUndoReinf'),end=document.getElementById('btnEnd'),hint=document.getElementById('hint');renderCards();
+  if(G.turn!==0){btn.disabled=true;undo.disabled=true;end.disabled=true;btn.textContent='Enemy Moving…';btn.className='';hint.innerHTML='';return;}
+  end.disabled=false;btn.disabled=false;undo.disabled=ph!=='reinforce'||!G.reinfHistory.length;
+  if(ph==='reinforce'){btn.textContent=G.reinf>0?'Deploy — '+G.reinf+' left':'Begin Attack →';btn.className=G.reinf>0?'':'go';hint.innerHTML=G.reinf>0?'<span class="tip">Click your systems</span> to deploy fleets. '+cmd.passive:'All fleets deployed. Move on to the attack phase.';}
+  else if(ph==='attack'){btn.textContent='Begin Fortify →';btn.className='';hint.innerHTML=G.sel!=null?'<span class="tip">Click a linked enemy system</span> to attack.':'<span class="tip">Click one of your systems</span> (2+ fleets) to stage an assault.';}
+  else if(ph==='fortify'){const left=1+G.players[0].extraFortify-G.fortifyMovesUsed;btn.textContent='End Turn';btn.className='go';hint.innerHTML=G.sel!=null?'<span class="tip">Choose a friendly destination</span>.':`${left} fortification${left===1?'':'s'} remaining. ${cmd.passive}`;}
+  end.textContent=ph==='fortify'?'Skip / End':'End Turn';
+}
+function flash(msg){const h=document.getElementById('hint');const o=h.innerHTML;h.innerHTML='<span style="color:#e8563f">'+msg+'</span>';setTimeout(()=>updateUI(),1400);}
+function logMsg(html,cls,dice){const l=document.getElementById('log');const d=document.createElement('div');if(cls)d.className=cls;d.innerHTML=html;l.insertBefore(d,l.firstChild);while(l.children.length>60)l.removeChild(l.lastChild);}
+function endGame(winner){
+  G.phase='over';
+  const b=document.getElementById('banner');b.classList.remove('hidden');
+  b.innerHTML=`<h2 style="color:${winner.col}">${winner.human?'VICTORY':'DEFEAT'}</h2>
+    <p>${winner.human?'The frontier is yours. Every rival faction has been driven from the stars.':G.players[0].alive===false?G.players.find(p=>p.human).name+' has fallen. <b style="color:'+winner.col+'">'+winner.name+'</b> rules the galaxy.':winner.name+' consolidated total control.'}</p>
+    <button class="go" onclick="location.reload()" style="padding:13px 40px">New Campaign</button>`;
+}
+
+// buttons
+document.getElementById('btnAction').onclick=()=>{
+  if(G.turn!==0)return;
+  if(G.phase==='reinforce'&&G.reinf>0)return;
+  nextPhase();
+};
+document.getElementById('btnUndoReinf').onclick=()=>{
+  if(!G||G.turn!==0||G.phase!=='reinforce')return;
+  while(G.reinfHistory.length){
+    const h=G.reinfHistory.pop(),n=G.nodes[h.id];
+    if(n&&n.owner===0&&n.troops>h.amount){
+      n.troops-=h.amount;G.reinf++;
+      if(h.kaelBonus)G.players[0].passiveDeployUsed=false;
+      updateUI();draw();return;
+    }
+  }
+  updateUI();
+};
+document.getElementById('btnEnd').onclick=()=>{if(G.turn!==0)return;if(G.phase==='reinforce'&&G.reinf>0){flash('Deploy all reinforcements first.');return;}endTurn();};
+document.getElementById('btnStart').onclick=()=>{
+  document.getElementById('banner').classList.add('hidden');
+  newGame(+document.getElementById('selAI').value,+document.getElementById('selMap').value,document.getElementById('selDiff').value,SELECTED_COMMANDER);
+};
+function renderCommanderChoices(){
+  const g=document.getElementById('commanderGrid');g.innerHTML='';
+  for(const [id,c] of Object.entries(COMMANDERS)){
+    const b=document.createElement('button');b.className='commanderPick'+(id===SELECTED_COMMANDER?' selected':'');b.style.setProperty('--ccol',c.col);
+    b.innerHTML=`<div class="cicon">${c.sym}</div><div class="cname">${c.name}</div><div class="ctitle">${c.title}</div><div class="cpass">${c.passive}</div><div class="ccards">${c.cards.map(x=>cardById(x)?.name||x).join(' · ')}</div>`;
+    b.onclick=()=>{SELECTED_COMMANDER=id;renderCommanderChoices();};g.appendChild(b);
+  }
+}
+renderCommanderChoices();
+readPalette();
+resize();
+</script>
+</body>
+</html>
