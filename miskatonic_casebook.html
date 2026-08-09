@@ -249,6 +249,26 @@ body.case-geometry .meter>div{background:linear-gradient(90deg,#517f78,#8e7560 6
 .selected-case-summary{
   border-left:3px solid var(--gold);background:#171a1b;padding:10px 12px;margin:12px 0 2px;color:#ddd2bc;
 }
+.resume-panel{
+  margin:18px 0 22px;
+  padding:14px 16px;
+  border:1px solid #6d6045;
+  border-left:4px solid var(--gold);
+  border-radius:10px;
+  background:linear-gradient(180deg,#24251f,#151817);
+  box-shadow:0 8px 22px rgba(0,0,0,.28);
+}
+.resume-panel h3{margin:2px 0 4px;font-size:1.12rem}
+.resume-panel p{margin:3px 0;color:#d7cdb9}
+.resume-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.resume-actions button:first-child{
+  flex:1 1 230px;
+  background:linear-gradient(180deg,#3a2f22,#241c14);
+  border-color:var(--gold-dim);
+  color:var(--gold);
+}
+.resume-actions button:last-child{flex:0 0 auto}
+.resume-saved{color:var(--muted);font-size:.72rem}
 .scenario-card.geometry-case-card{
   background:
     linear-gradient(rgba(101,171,161,.045) 1px,transparent 1px),
@@ -847,6 +867,20 @@ main{
 }
 .note.known{color:#999;text-decoration:line-through;background:#111;cursor:pointer}
 .note.known:hover{color:#c5bcaa;border-color:#676052}
+.note.known.own-evidence{
+  color:#aaa18f;
+  border-color:#756642;
+  background:linear-gradient(180deg,#1b1a16,#111);
+  box-shadow:inset 3px 0 0 #9a7a3f;
+}
+.case-source-badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  margin-left:5px;padding:1px 5px;border-radius:999px;
+  border:1px solid #4f7f86;background:linear-gradient(180deg,#16262b,#10191c);color:#9fd9df;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
+  font:700 .57rem var(--font-mark);letter-spacing:.55px;
+  text-decoration:none!important;vertical-align:1px;white-space:nowrap;
+}
 .note.pending-known{color:#b7ad98;border-color:#625f58;background:#16191a;cursor:default;box-shadow:inset 3px 0 0 #6e7d75}
 .note.marked{color:#e5c875;border-color:#a8894e}
 .evidence-card{padding:7px;border:1px solid #444842;margin:5px 0;border-radius:5px;background:#1c2021;font-size:12px}
@@ -1328,6 +1362,17 @@ main{
     <h2 id="startCaseTitle" class="case-title" style="text-align:center">Choose a Case</h2>
     <p id="startCasePitch" style="text-align:center">Select an investigation, then choose the investigator you will play.</p>
 
+    <div id="resumePanel" class="resume-panel hidden">
+      <div class="subtitle" style="text-align:left;letter-spacing:2px">Unfinished Investigation</div>
+      <h3 id="resumeCaseTitle">Saved Case</h3>
+      <p id="resumeCaseMeta"></p>
+      <div id="resumeSavedAt" class="resume-saved"></div>
+      <div class="resume-actions">
+        <button id="resumeBtn" type="button">Resume Last Case</button>
+        <button id="discardSaveBtn" type="button">Discard Save</button>
+      </div>
+    </div>
+
     <div class="scenario-heading">1 · Choose Case</div>
     <div id="scenarioChoices" class="scenarios"></div>
     <div id="selectedCaseSummary" class="selected-case-summary hidden"></div>
@@ -1402,7 +1447,7 @@ main{
           <h3>Turn Resources</h3>
           <div class="resources map-resource-grid">
             <div class="resource" title="Movement points: spend 1 per square. Entering a room ends normal movement.">Move<b id="moveRes">0</b><span>board steps</span></div>
-            <div class="resource" title="Insight is temporary currency earned through cards and investigation. Most investigators begin each turn with 0; Nathaniel begins with 1. Market cards cost 2–4. Unspent Insight is lost when your next turn begins.">Insight<b id="insightRes">0</b><span>buy cards</span></div>
+            <div class="resource" title="Insight is temporary currency earned through cards and investigation. Most investigators lose unspent Insight between turns. Eliza may retain up to 1; Nathaniel begins each turn with 1. Market cards cost 2–4.">Insight<b id="insightRes">0</b><span>buy cards</span></div>
             <div class="resource" title="Resolve is temporary. It adds to creature tests and can be spent to seal portals or banish creatures.">Resolve<b id="resolveRes">0</b><span>resist & seal</span></div>
             <div class="resource" title="You may normally play two Action cards per turn. Quick cards do not use an Action play.">Cards<b id="playsRes">0 / 2</b><span>plays used</span></div>
           </div>
@@ -1459,7 +1504,7 @@ main{
           <div id="evidenceTray" class="evidence-tray"></div>
           <div class="casebook-divider"></div>
         </section>
-        <p class="small">Crossed-out entries are ruled out. You may mark at most one suspicion in each category; choosing a new one replaces the old marker.</p>
+        <p class="small"><span class="case-source-badge" style="margin-left:0">YOUR CARD</span> marks crossed-out Evidence you physically hold and may reveal when refuting a rival Suggestion. Other crossed-out entries are Evidence you learned later. You may mark at most one suspicion in each category; choosing a new one replaces the old marker.</p>
         <div id="casebook"></div>
         <div id="humanEvidence" class="hidden"></div>
       </div>
@@ -1472,7 +1517,7 @@ main{
         <div class="rules-callout"><b>Keep these actions separate:</b> Move, Action-card plays, your once-per-turn Suggestion, once-per-room Investigation, and Resolve actions are different things. Using one normally does not spend the others.</div>
 
         <h3>Your Turn</h3>
-        <p><b>Start of turn:</b> draw Action cards until you have at least five in hand. Move and Resolve reset to 0. <b>Most investigators begin with 0 Insight; Nathaniel Orne begins with 1.</b> You normally have two Action-card plays.</p>
+        <p><b>Start of turn:</b> draw Action cards until you have at least five in hand. Move and Resolve reset to 0. Most investigators lose any unspent Insight between turns. <b>Inspector Eliza Graves may carry up to 1 unspent Insight into her next turn; Nathaniel Orne begins each turn with 1 Insight.</b> You normally have two Action-card plays.</p>
         <p><b>1. Roll Movement:</b> roll one die. The result becomes your Move for the turn.</p>
         <p><b>2. Act in any useful order:</b> after rolling, you may interleave movement, card plays, Investigation, your Suggestion, Resolve actions, and Market purchase as their requirements allow.</p>
         <p><b>3. Move:</b> click an adjacent legal square to spend 1 Move. Movement is orthogonal through corridors and doorways. <b>Portal and creature squares are occupied spaces:</b> investigator meeples may not enter or pass through those squares and must route around them. Door thresholds are kept clear of portals and creatures. <b>Undo Move</b> rewinds ordinary movement <b>one step at a time</b>, restoring both your previous square and the Move you had at that point; press it repeatedly to walk your route backward as far as the stored movement history allows. The history is cleared when movement reveals a new room scene, triggers a creature encounter, or you take another consequential action. Portals, Impossible Shortcuts, and Common Interior crossings are not part of the undo history. Entering a new room ends ordinary movement for the turn. If you <em>begin</em> your turn in a room, you may use that room first and then leave with your remaining Move. A Suggestion or Investigation does not itself erase unused Move.</p>
@@ -1488,7 +1533,7 @@ main{
         <p><b>Desperate Pursuit:</b> you may play this card only while you have a Madness card in hand. Choose and discard <b>1 Madness</b>, then gain <b>+4 Move</b>. That is the entire effect.</p>
 
         <h3>Insight and the Market</h3>
-        <p>Insight is temporary deckbuilding currency. <b>It is meant to be earned during the turn rather than received automatically.</b> Each room can provide <b>1 Insight once per investigator</b> through Investigation. When a rival refutes your Suggestion by showing you an Evidence card you did <b>not</b> already know, you gain <b>1 Insight</b>; seeing the same card again gives no standard Insight. Patient Inquiry and other Action cards, sealing portals, and banishing creatures can also generate it. Market cards cost 2–4 Insight, and you may buy only one per turn. Unspent Insight disappears when your next turn begins. Nathaniel Orne is the exception to the normal economy: he begins each turn with 1 Insight. The shared Market contains two copies of each of 20 upgrade types; five are face-up at a time until the supply is exhausted.</p>
+        <p>Insight is temporary deckbuilding currency. <b>It is meant to be earned during the turn rather than received automatically.</b> Each room can provide <b>1 Insight once per investigator</b> through Investigation. When a rival refutes your Suggestion by showing you an Evidence card you did <b>not</b> already know, you gain <b>1 Insight</b>; seeing the same card again gives no standard Insight. Patient Inquiry and other Action cards, sealing portals, and banishing creatures can also generate it. Market cards cost 2–4 Insight, and you may buy only one per turn. Most investigators lose all unspent Insight between turns. <b>Eliza retains up to 1 unspent Insight; Nathaniel instead begins every turn with 1 Insight.</b> The shared Market contains two copies of each of 20 upgrade types; five are face-up at a time until the supply is exhausted.</p>
 
         <h3>Resolve, Nerve, and Creatures</h3>
         <p><b>Nerve</b> is a permanent character bonus used only for creature tests. It is never spent. Whenever you enter a room containing a creature, test:</p>
@@ -1582,7 +1627,7 @@ function creatureLingerExposure(cr){return creatureProfile(cr).lingerExposure||1
 
 const CHARACTERS = [
  {name:"Inspector Eliza Graves",role:"The Logician",color:"#c96d62",nerve:1,
-  power:"Whenever a rival shows you new Evidence, gain 1 additional Insight.",ai:"logician"},
+  power:"Retain up to 1 unspent Insight between turns.",ai:"logician"},
  {name:"Dr. Eleanor Vale",role:"The Alienist",color:"#6fa1a8",nerve:1,
   power:"The first Madness added to your deck each round is ignored.",ai:"balanced"},
  {name:"Mae Wren",role:"The Spiritualist",color:"#9b79b2",nerve:0,
@@ -2223,6 +2268,177 @@ let refuteResolver = null;
 let suggestionResolver = null;
 let evidenceRevealResolver = null;
 let activeStorySequence = null;
+
+const AUTOSAVE_KEY="miskatonic-casebook-autosave-v1";
+const AUTOSAVE_VERSION=1;
+let autosaveEnabled=true;
+
+function saveReplacer(key,value){
+  if(value instanceof Set)return {__miskatonicType:"Set",values:[...value]};
+  return value;
+}
+function saveReviver(key,value){
+  if(value && value.__miskatonicType==="Set")return new Set(value.values||[]);
+  return value;
+}
+function readAutosave(){
+  try{
+    const raw=localStorage.getItem(AUTOSAVE_KEY);
+    if(!raw)return null;
+    const payload=JSON.parse(raw,saveReviver);
+    if(payload?.version!==AUTOSAVE_VERSION || !payload.state?.scenarioId)return null;
+    return payload;
+  }catch(err){
+    console.warn("Could not read Miskatonic autosave.",err);
+    return null;
+  }
+}
+function clearAutosave(){
+  try{localStorage.removeItem(AUTOSAVE_KEY)}catch(err){}
+  refreshResumePanel();
+}
+function saveAutosave(resumeMode="human"){
+  if(!autosaveEnabled || !state?.players?.length || state.gameOver)return false;
+  try{
+    const payload={
+      version:AUTOSAVE_VERSION,
+      savedAt:Date.now(),
+      resumeMode,
+      scenarioId:state.scenarioId,
+      selectedDoomLimit:state.doomLimit||10,
+      state,
+      roomRects:roomRects.map(r=>({...r})),
+      doors:Object.fromEntries(
+        Object.entries(doors).map(([rid,list])=>[rid,list.map(d=>({...d}))])
+      )
+    };
+    localStorage.setItem(AUTOSAVE_KEY,JSON.stringify(payload,saveReplacer));
+    return true;
+  }catch(err){
+    console.warn("Could not save Miskatonic autosave.",err);
+    return false;
+  }
+}
+function autosaveHumanCheckpoint(){
+  if(!state?.players?.length || state.gameOver)return;
+  if(state.current===0 && (state.phase==="awaitRoll"||state.phase==="human")){
+    saveAutosave("human");
+  }
+}
+function savedTimeLabel(ms){
+  if(!ms)return "";
+  try{
+    return new Date(ms).toLocaleString([],{
+      month:"short",day:"numeric",hour:"numeric",minute:"2-digit"
+    });
+  }catch(err){return ""}
+}
+function refreshResumePanel(){
+  const panel=document.getElementById("resumePanel");
+  if(!panel)return;
+  const save=readAutosave();
+  panel.classList.toggle("hidden",!save);
+  if(!save)return;
+
+  const scenario=SCENARIOS[save.scenarioId];
+  const human=save.state?.players?.[0];
+  document.getElementById("resumeCaseTitle").textContent=scenario?.title||"Saved Investigation";
+  document.getElementById("resumeCaseMeta").textContent=
+    `${human?.name||"Investigator"} · Round ${save.state?.round||1} · Doom ${save.state?.doom||0} / ${save.state?.doomLimit||10}`;
+  const stamp=savedTimeLabel(save.savedAt);
+  document.getElementById("resumeSavedAt").textContent=stamp?`Last autosave: ${stamp}`:"";
+}
+function showGameShell(){
+  document.getElementById("startScreen").classList.add("hidden");
+  document.getElementById("game").classList.remove("hidden");
+  document.body.classList.add("game-running");
+  document.getElementById("caseHeaderTitle").textContent=ACTIVE_SCENARIO.title;
+  document.getElementById("caseHeaderSetting").textContent=`${ACTIVE_SCENARIO.location}, ${ACTIVE_SCENARIO.date}`;
+}
+function resumeLastCase(){
+  const save=readAutosave();
+  if(!save)return;
+
+  const scenario=SCENARIOS[save.scenarioId];
+  if(!scenario){
+    clearAutosave();
+    return;
+  }
+
+  autosaveEnabled=false;
+  selectedScenarioId=save.scenarioId;
+  selectedDoomLimit=save.selectedDoomLimit||save.state.doomLimit||10;
+  selectedCharacter=save.state.players?.[0]?.charIndex??null;
+
+  installScenario(scenario);
+
+  // Restore mutable architectural geometry after installing the scenario shell.
+  if(Array.isArray(save.roomRects) && save.roomRects.length===ROOMS.length){
+    roomRects=save.roomRects.map(r=>({...r}));
+  }
+  if(save.doors){
+    doors=Object.fromEntries(
+      Object.entries(save.doors).map(([rid,list])=>[rid,list.map(d=>({...d}))])
+    );
+  }
+
+  state=save.state;
+  // Defensive defaults allow saves from this version to survive minor future UI
+  // additions without turning missing optional fields into errors.
+  state.moveUndoStack ||= [];
+  state.storyRecorded ||= new Set();
+  state.storySeen ||= {rooms:new Set(),doom:new Set(),portal:false};
+  state.players.forEach(p=>{
+    p.known ||= new Set();
+    p.acknowledged ||= new Set();
+    p.played ||= new Set();
+    p.investigatedRooms ||= new Set();
+    p.aiTested ||= {Suspect:new Set(),Relic:new Set(),Entity:new Set()};
+    for(const cat of ["Suspect","Relic","Entity"])p.aiTested[cat] ||= new Set();
+  });
+
+  activeStorySequence=null;
+  closeModal();
+  showGameShell();
+  renderAll();
+  lastBoardWrapSize={w:0,h:0};
+  requestAnimationFrame(()=>requestAnimationFrame(scheduleBoardScale));
+  autosaveEnabled=true;
+
+  log("The Casebook opens where you left it.",true);
+
+  if(save.resumeMode==="afterHumanTurn"){
+    // The saved hand/retention cleanup is complete, but no rival turn was
+    // committed to the checkpoint. Resume by advancing into the rival round.
+    state.phase="resume";
+    renderAll();
+    setTimeout(advanceTurn,350);
+  }else if(state.current===0){
+    state.phase=state.players[0].rolled?"human":"awaitRoll";
+    renderAll();
+    saveAutosave("human");
+  }else{
+    // Older or unusual checkpoint: normalize to the last human investigator.
+    state.current=0;
+    state.phase=state.players[0].rolled?"human":"awaitRoll";
+    renderAll();
+    saveAutosave("human");
+  }
+}
+function confirmNewMystery(){
+  showModal(`<div class="subtitle">New Mystery</div>
+    <h2>Close This Case?</h2>
+    <p>Starting a new mystery will erase the saved investigation.</p>
+    <div class="modal-actions">
+      <button onclick="closeModal()">Keep Playing</button>
+      <button onclick="eraseCaseAndRestart()">Start New Mystery</button>
+    </div>`);
+}
+window.eraseCaseAndRestart=function(){
+  autosaveEnabled=false;
+  clearAutosave();
+  location.reload();
+};
 
 function shuffled(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
 function rand(a){return a[Math.floor(Math.random()*a.length)]}
@@ -3002,11 +3218,7 @@ function setupGame(){
     storySeen:{rooms:new Set([starts[0]]),doom:new Set(),portal:false},
     madnessBlockedRound:-1,gameOver:false
   };
-  document.getElementById("startScreen").classList.add("hidden");
-  document.getElementById("game").classList.remove("hidden");
-  document.body.classList.add("game-running");
-  document.getElementById("caseHeaderTitle").textContent=ACTIVE_SCENARIO.title;
-  document.getElementById("caseHeaderSetting").textContent=`${ACTIVE_SCENARIO.location}, ${ACTIVE_SCENARIO.date}`;
+  showGameShell();
   renderAll();
   lastBoardWrapSize={w:0,h:0};
   requestAnimationFrame(()=>requestAnimationFrame(scheduleBoardScale));
@@ -3042,7 +3254,10 @@ function startTurn(){
     }
     return;
   }
-  p.move=0;p.insight=(p.charIndex===5?1:0);p.resolve=0;p.bought=false;p.acted=false;p.rolled=false;p.suggestedThisTurn=false;
+  const carriedInsight=p.charIndex===0?Math.min(1,p.insight):0;
+  p.move=0;
+  p.insight=p.charIndex===5?1:carriedInsight;
+  p.resolve=0;p.bought=false;p.acted=false;p.rolled=false;p.suggestedThisTurn=false;
   state.moveUndoStack=[];state.lastHumanAction=null;
   p.cardPlays=0;p.cardLimit=2;p.quickUsed=false;p.purchaseLockIndex=null;
   p.played=new Set();p.specials={};
@@ -3095,6 +3310,7 @@ function finishTurn(p,keepIndices=[]){
   });
   p.hand=[...forcedMadness,...retainedNormal];
   p.played=new Set();
+  if(p.isHuman)saveAutosave("afterHumanTurn");
   advanceTurn();
 }
 function requestHumanEndTurn(){
@@ -3270,6 +3486,7 @@ function renderAll(){
     chip.style.setProperty("--turn-color",cp.color);
     chip.textContent=cp.isHuman?"Your turn":`${cp.name}'s turn`;
   }
+  autosaveHumanCheckpoint();
 }
 function renderBoard(){
   const board=document.getElementById("board");board.innerHTML="";
@@ -3587,8 +3804,13 @@ function renderCasebook(){
     cards.forEach(card=>{
       const n=document.createElement("span");n.className="note";
       if(p.acknowledged.has(card)){
+        const isOwnEvidence=p.evidence.includes(card);
         n.classList.add("known");
-        n.title="Click to return this clue to Unfiled Evidence";
+        if(isOwnEvidence)n.classList.add("own-evidence");
+        const source=p.knownSources[card]||"Known Evidence";
+        n.title=isOwnEvidence
+          ? "In your original Evidence hand — you physically hold this card and may reveal it to refute another investigator's Suggestion. Click to return it to Unfiled Evidence."
+          : `${source} — you know this card, but it is not in your Evidence hand and cannot be used by you to refute another investigator. Click to return it to Unfiled Evidence.`;
         n.onclick=()=>{
           p.acknowledged.delete(card);
           renderCasebook();
@@ -3616,6 +3838,13 @@ function renderCasebook(){
         };
       }
       n.textContent=card;
+      if(p.acknowledged.has(card) && p.evidence.includes(card)){
+        const badge=document.createElement("span");
+        badge.className="case-source-badge";
+        badge.textContent="YOUR CARD";
+        badge.title="This card was in your starting Evidence hand. You may show it to refute another investigator's Suggestion.";
+        n.appendChild(badge);
+      }
       list.appendChild(n);
     });
     row.append(label,list);wrap.appendChild(row);
@@ -4274,10 +4503,6 @@ async function resolveSuggestion(suggester,suggestion){
       // farmed for Insight.
       if(isNewEvidence)suggester.insight++;
 
-      // Eliza's Logician power rewards the same genuinely new deduction with one
-      // additional Insight.
-      if(isNewEvidence && suggester.charIndex===0)suggester.insight++;
-
       // Cross-Examination applies to exactly the next refutation shown this turn,
       // then expires as its card text promises.
       if(suggester.specials.cross){
@@ -4289,9 +4514,6 @@ async function resolveSuggestion(suggester,suggestion){
         suggester.known.add(shown);
         suggester.knownSources[shown]=`Shown by ${responder.name}`;
         log(`${responder.name} privately shows you: ${shown}.${isNewEvidence?" New Evidence: +1 Insight.":""}`,true);
-        if(isNewEvidence && suggester.charIndex===0){
-          log(`Eliza's Logician ability grants +1 additional Insight.`,true);
-        }
         const record=await showEvidenceReveal(shown,responder,suggestion);
         if(record){
           suggester.acknowledged.add(shown);
@@ -4549,10 +4771,12 @@ function evaluateAccusation(p,acc){
   const correct=Object.keys(state.solution).every(k=>state.solution[k]===acc[k]);
   if(correct){
     state.gameOver=true;
+    clearAutosave();
     renderAll();
     beginStorySequence([endingScene("solved",p,acc)],()=>location.reload());
   }else if(p.isHuman){
     state.gameOver=true;
+    clearAutosave();
     renderAll();
     beginStorySequence([endingScene("wrong",p,acc)],()=>location.reload());
   }else{
@@ -4841,7 +5065,7 @@ async function runAITurn(p){
   }
   // A creature blocks deductions in its room. AI investigators must clear it
   // before they can make a Suggestion there, just like the human player.
-  const po=portalAtRoom(p.room),sealCost=p.charIndex===3?1:2;
+  const po=portalAtRoom(p.room),sealCost=sealPortalCost(p);
   let cr=creatureAtRoom(p.room);
   if(cr&&p.resolve>=creatureBanishCost(cr)){
     banishCreature(p);
@@ -5258,6 +5482,7 @@ function mythosPhase(onComplete){
 
   if(state.doom>=(state.doomLimit||10)){
     state.gameOver=true;
+    clearAutosave();
     scenes.push(endingScene("doom"));
     beginStorySequence(scenes,()=>location.reload());
     return;
@@ -5277,7 +5502,23 @@ document.querySelectorAll("[data-doom-limit]").forEach(btn=>{
 });
 
 document.getElementById("startButton").onclick=setupGame;
-document.getElementById("restartBtn").onclick=()=>location.reload();
+document.getElementById("restartBtn").onclick=confirmNewMystery;
+document.getElementById("resumeBtn").onclick=resumeLastCase;
+document.getElementById("discardSaveBtn").onclick=()=>{
+  const save=readAutosave();
+  if(!save)return;
+  showModal(`<div class="subtitle">Saved Investigation</div>
+    <h2>Discard the Saved Case?</h2>
+    <p>This removes the resume point. It does not affect a case currently open in another window.</p>
+    <div class="modal-actions">
+      <button onclick="closeModal()">Keep Save</button>
+      <button onclick="discardSavedCase()">Discard Save</button>
+    </div>`);
+};
+window.discardSavedCase=function(){
+  clearAutosave();
+  closeModal();
+};
 document.getElementById("rollBtn").onclick=()=>{
   const p=state.players[0];if(state.current!==0||p.rolled)return;
   state.moveUndoStack=[];state.lastHumanAction="roll";
@@ -5308,6 +5549,9 @@ window.addEventListener("resize",()=>{
   lastBoardWrapSize={w:0,h:0};
   scheduleBoardScale();
 });
+window.addEventListener("beforeunload",()=>{
+  autosaveHumanCheckpoint();
+});
 
 function applyScenarioShell(){
   if(selectedScenarioId){
@@ -5321,6 +5565,7 @@ function applyScenarioShell(){
 
 buildScenarioChoices();
 buildCharacterChoices();
+refreshResumePanel();
 </script>
 </body>
 </html>
