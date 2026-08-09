@@ -31,6 +31,11 @@ body{
     radial-gradient(circle at 50% 10%,#2c3538 0,#14181a 45%,#08090a 100%);
   font-family:var(--font-body); font-size:1.06rem; min-height:100vh; overflow-x:hidden;
 }
+body.game-running{
+  height:100vh;
+  height:100dvh;
+  overflow:hidden;
+}
 button,select{font:inherit}
 button{
   color:var(--ink); font-family:var(--font-mark); letter-spacing:.4px;
@@ -297,15 +302,22 @@ body.case-geometry .doom-option.selected{border-color:#75c2b3}
   box-shadow:0 6px 16px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.08), 0 0 0 1px rgba(201,163,95,.35);
 }
 #game{
-  padding:clamp(6px,.8vw,12px);
+  padding:clamp(4px,.55vw,8px);
   max-width:none;
   width:100%;
   margin:auto;
 }
+#game:not(.hidden){
+  height:100vh;
+  height:100dvh;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
 .topbar{
   display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center;
   background:linear-gradient(180deg,rgba(30,34,36,.97),rgba(21,24,26,.98));
-  border:1px solid #5b584b;padding:12px 16px;border-radius:14px;margin-bottom:12px;
+  border:1px solid #5b584b;padding:8px 12px;border-radius:12px;margin-bottom:7px;
   box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,.05);
 }
 .brand{font-size:clamp(1.15rem,1.2vw,1.45rem);letter-spacing:1px}
@@ -322,13 +334,15 @@ body.case-geometry .doom-option.selected{border-color:#75c2b3}
 .layout{
   display:grid;
   grid-template-columns:
-    minmax(168px,clamp(168px,12vw,215px))
+    minmax(150px,clamp(150px,11vw,190px))
     minmax(0,1fr)
-    minmax(290px,clamp(290px,21vw,365px));
+    minmax(330px,clamp(330px,23vw,390px));
   gap:var(--ui-gap);
-  align-items:start;
-  height:calc(100vh - clamp(86px,9vh,112px));
+  align-items:stretch;
+  flex:1 1 auto;
+  height:auto;
   min-height:0;
+  overflow:hidden;
 }
 .panel{
   background:linear-gradient(180deg,rgba(30,34,36,.96),rgba(21,24,26,.98));
@@ -347,23 +361,51 @@ body.case-geometry .doom-option.selected{border-color:#75c2b3}
 .players{
   display:flex;
   flex-direction:column;
-  gap:clamp(6px,.6vh,9px)
+  gap:clamp(4px,.45vh,6px)
 }
+.layout > aside:first-child h3{
+  text-align:center;
+  margin:0 0 6px;
+  font-size:clamp(.88rem,.82rem + .15vw,1rem);
+}
+.layout > aside:first-child hr{display:none}
 .player{
   border:1px solid #4f534e;background:linear-gradient(180deg,#24292b,#1d2022);
-  padding:clamp(8px,.8vw,12px);border-radius:10px;position:relative; box-shadow:0 6px 16px rgba(0,0,0,.24);
+  padding:6px 7px;border-radius:9px;position:relative;box-shadow:0 4px 10px rgba(0,0,0,.22);
 }
-.player.active{border-color:var(--gold);box-shadow:0 0 0 1px #8d733e inset, 0 10px 18px rgba(0,0,0,.28)}
-.player .tokenDot{width:13px;height:13px;border-radius:50%;display:inline-block;margin-right:6px;box-shadow:0 0 0 1px rgba(255,255,255,.25), 0 2px 6px rgba(0,0,0,.4)}
-.player .badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-.badge{font-size:clamp(.74rem,.72rem + .1vw,.86rem);background:#111415;border:1px solid #3d413e;padding:4px 7px;border-radius:999px}
+.player.active{border-color:var(--gold);box-shadow:0 0 0 1px #8d733e inset,0 7px 14px rgba(0,0,0,.26)}
+.player .player-name{
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  font-size:clamp(.72rem,.69rem + .08vw,.82rem);line-height:1.08;
+}
+.player .player-role{
+  text-align:center;
+  margin-top:2px;
+  font-size:clamp(.62rem,.59rem + .06vw,.7rem);
+  line-height:1.05;
+}
+.player .tokenDot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:5px;flex:0 0 auto;box-shadow:0 0 0 1px rgba(255,255,255,.25),0 2px 5px rgba(0,0,0,.4)}
+.player .badges{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:3px;
+  margin-top:5px;
+}
+.badge{
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  min-height:24px;
+  font-size:clamp(.59rem,.57rem + .05vw,.68rem);
+  line-height:1.05;
+  background:#111415;border:1px solid #3d413e;padding:3px 4px;border-radius:6px;
+  white-space:normal;
+}
+.badge.room-badge{grid-column:1/-1;min-height:22px;color:#d7cdb9}
+.badge.wide-badge{grid-column:1/-1}
 main{
   min-width:0;
   min-height:0;
   max-height:100%;
-  overflow-y:auto;
-  overflow-x:hidden;
-  scrollbar-gutter:stable;
+  overflow:hidden;
 }
 .board-wrap{
   background:
@@ -371,9 +413,14 @@ main{
     linear-gradient(180deg,#1d2123,#111416);
   border:1px solid #5a584f;
   border-radius:14px;
-  padding:clamp(6px,.55vw,10px);
+  padding:clamp(5px,.45vw,8px);
   overflow:hidden;
   box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,.05);
+  height:100%;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
 }
 #board{
   display:grid;
@@ -381,9 +428,11 @@ main{
   grid-template-rows:repeat(11,minmax(0,1fr));
   gap:0;
   width:100%;
-  max-width:none;
+  max-width:100%;
   min-width:0;
   aspect-ratio:28 / 11;
+  align-self:center;
+  flex:0 0 auto;
   position:relative;
   margin:0;
   background:
@@ -481,8 +530,19 @@ main{
   text-align:center;
 }
 .board-legend{
-  display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(10px,1.4vw,20px);
-  margin-top:clamp(6px,.8vh,12px);padding-top:clamp(6px,.8vh,10px);
+  display:flex;
+  flex-wrap:nowrap;
+  justify-content:center;
+  align-items:center;
+  gap:clamp(5px,.75vw,10px);
+  height:28px;
+  min-height:28px;
+  max-height:28px;
+  margin-top:4px;
+  padding-top:4px;
+  flex:0 0 28px;
+  overflow:hidden;
+  white-space:nowrap;
   border-top:1px solid #2c302d;
   font-family:var(--font-mark);color:var(--muted);
   font-size:clamp(.68rem,.66rem + .08vw,.78rem);letter-spacing:.3px;text-transform:uppercase;
@@ -596,7 +656,8 @@ main{
   align-items:center;
   justify-content:center;
   filter:drop-shadow(0 2px 5px rgba(0,0,0,.55)) drop-shadow(0 0 5px rgba(136,214,188,.16));
-  pointer-events:none;
+  pointer-events:auto;
+  cursor:help;
 }
 .creature svg{
   width:100%;
@@ -605,15 +666,49 @@ main{
 }
 @keyframes pulse{to{transform:scale(.84) rotate(18deg);filter:brightness(1.4)}}
 .controls{
-  margin-top:clamp(6px,.7vh,10px);
+  margin-top:5px;
   display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:clamp(4px,.45vw,6px)
+  flex:0 0 90px;
+  height:90px;
+  min-height:90px;
+  max-height:90px;
+  grid-template-columns:repeat(12,minmax(0,1fr));
+  grid-template-rows:repeat(2,42px);
+  gap:6px;
+  overflow:visible;
 }
 .controls button{
-  padding:clamp(6px,.65vh,8px) 6px;
-  font-size:clamp(.68rem,.66rem + .08vw,.78rem)
+  height:42px;
+  min-height:42px;
+  max-height:42px;
+  padding:5px 7px;
+  font-size:clamp(.66rem,.63rem + .08vw,.76rem);
+  line-height:1.08;
+  white-space:normal;
+  overflow:visible;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
 }
+#rollBtn{grid-column:1 / span 4;grid-row:1;font-size:clamp(.76rem,.72rem + .1vw,.9rem)}
+#undoMoveBtn{grid-column:5 / span 2;grid-row:1}
+#suggestBtn{grid-column:7 / span 2;grid-row:1}
+#searchBtn{grid-column:9 / span 2;grid-row:1}
+#endTurnBtn{grid-column:11 / span 2;grid-row:1}
+
+#portalBtn{grid-column:1 / span 2;grid-row:2}
+#shortcutBtn{grid-column:3 / span 2;grid-row:2}
+#sealBtn{grid-column:5 / span 2;grid-row:2}
+#banishBtn{grid-column:7 / span 2;grid-row:2}
+#accuseBtn{grid-column:9 / span 4;grid-row:2;font-size:clamp(.74rem,.7rem + .08vw,.86rem)}
+
+.controls.merge-active #portalBtn{grid-column:1 / span 2}
+.controls.merge-active #shortcutBtn{grid-column:3 / span 2}
+.controls.merge-active #mergeBtn{display:flex!important;grid-column:5 / span 2;grid-row:2}
+.controls.merge-active #sealBtn{grid-column:7 / span 2}
+.controls.merge-active #banishBtn{grid-column:9 / span 2}
+.controls.merge-active #accuseBtn{grid-column:11 / span 2;font-size:clamp(.65rem,.62rem + .06vw,.73rem)}
 .statusline{
   background:linear-gradient(180deg,#171a1b,#111416);border:1px solid #3e423f;border-radius:10px;padding:12px;margin-bottom:10px;min-height:64px;
   font-size:clamp(.98rem,.94rem + .12vw,1.1rem)
@@ -629,23 +724,72 @@ main{
 .resource b{display:block;font-size:clamp(1.1rem,1.4vw,1.5rem);color:var(--gold);font-family:var(--font-display)}
 .resource span{display:block;font-size:clamp(.66rem,.64rem + .08vw,.76rem);color:var(--muted);margin-top:2px;text-transform:none;letter-spacing:normal;font-family:var(--font-body)}
 .panel-lite{
-  margin-top:clamp(6px,.7vh,10px);
+  margin-top:clamp(4px,.5vh,7px);
   background:linear-gradient(180deg,#171a1b,#111416);
   border:1px solid #434743;
   border-radius:12px;
   padding:12px;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.03);
 }
-.map-resources-panel h3{margin:0 0 clamp(5px,.6vh,8px) 0}
+.map-resources-panel{
+  flex:1 1 auto;
+  min-height:184px;
+  height:auto;
+  max-height:none;
+  padding:8px;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+.map-resources-panel h3{margin:0 0 clamp(3px,.4vh,5px) 0;font-size:clamp(.88rem,.84rem + .08vw,.98rem)}
+#mergeBtn.hidden{display:none!important}
+#mergeLegend.hidden{display:none!important}
 .map-resource-grid{
   grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:clamp(5px,.5vw,8px);
-  margin:0 0 clamp(5px,.6vh,8px) 0;
+  gap:6px;
+  height:76px;
+  min-height:76px;
+  max-height:76px;
+  margin:0 0 7px 0;
+  flex:0 0 76px;
+}
+.map-resource-grid .resource{
+  height:76px;
+  min-height:76px;
+  max-height:76px;
+  padding:7px 5px 8px;
+  overflow:hidden;
+  display:grid;
+  grid-template-rows:auto 1fr auto;
+  align-items:center;
+  justify-items:center;
+  text-align:center;
+  row-gap:2px;
+  line-height:1.05;
+}
+.map-resource-grid .resource b{
+  font-size:1.28rem;
+  line-height:1;
+  margin:2px 0;
+  align-self:center;
+}
+.map-resource-grid .resource span{
+  font-size:.68rem;
+  line-height:1.1;
+  margin-top:1px;
+  padding-bottom:1px;
 }
 .compact-status{
-  min-height:clamp(48px,6.1vh,58px);
-  padding:clamp(8px,.75vh,12px);
+  flex:1 1 auto;
+  height:auto;
+  min-height:70px;
+  max-height:none;
+  padding:9px 11px;
   margin-bottom:0;
+  overflow:auto;
+  scrollbar-width:thin;
+  line-height:1.24;
+  font-size:clamp(.84rem,.81rem + .08vw,.96rem);
 }
 
 .tabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
@@ -717,22 +861,36 @@ main{
 }
 .rightcol *{min-width:0}
 .control-tabs{
-  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;
+  display:grid;
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:4px;
+  margin-bottom:8px;
+  flex:0 0 auto;
 }
 .control-tabs .tab{
-  min-width:0;padding:9px 7px;font-size:clamp(.76rem,.73rem + .08vw,.88rem);
+  min-width:0;
+  padding:7px 4px;
+  font-size:clamp(.70rem,.68rem + .06vw,.80rem);
+  line-height:1.05;
   white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
+.control-tabs .tab:nth-child(1),
+.control-tabs .tab:nth-child(2),
+.control-tabs .tab:nth-child(3){grid-column:span 2}
 .control-tabs .tab:nth-child(4),
-.control-tabs .tab:nth-child(5){grid-column:span 1}
+.control-tabs .tab:nth-child(5){grid-column:span 3}
 .tab-count{
   display:inline-flex;align-items:center;justify-content:center;
-  min-width:20px;height:20px;margin-left:3px;padding:0 5px;
+  min-width:18px;height:18px;margin-left:2px;padding:0 4px;
   border-radius:999px;background:#111415;border:1px solid #4a4e49;
   color:var(--gold);font-size:.72em;
 }
 .rightcol .tabpane{
-  max-height:calc(100% - 66px);
+  flex:1 1 auto;
+  min-height:0;
+  max-height:none;
   overflow-y:auto;
   overflow-x:hidden;
   padding-right:7px;
@@ -750,6 +908,18 @@ main{
 }
 .insight-chip b{font-size:1.1em}
 .rail-heading-meta{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+#marketPane .rail-heading{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:6px;
+  align-items:start;
+}
+#marketPane .rail-heading > div:first-child{min-width:0}
+#marketPane .rail-heading h3{white-space:nowrap}
+#marketPane .rail-heading-meta{
+  justify-content:flex-start;
+  flex-wrap:nowrap;
+}
 .supply-chip{
   flex:0 0 auto;border:1px solid #4d5650;background:#111516;color:var(--muted);
   border-radius:999px;padding:5px 9px;font-size:clamp(.72rem,.7rem + .06vw,.84rem);
@@ -758,9 +928,9 @@ main{
 .supply-chip b{color:var(--ink)}
 .action-list{display:flex;flex-direction:column;gap:7px}
 .action-item{
-  display:grid;grid-template-columns:36px minmax(0,1fr) minmax(68px,auto);
-  gap:9px;align-items:center;
-  padding:9px;border:1px solid #454a45;border-radius:10px;
+  display:grid;grid-template-columns:36px minmax(0,1fr) minmax(64px,78px);
+  gap:8px;align-items:center;
+  padding:9px 8px;border:1px solid #454a45;border-radius:10px;
   background:linear-gradient(180deg,#24292b,#191d1e);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.035);
   transition:border-color .15s,background .15s,transform .15s;
@@ -801,8 +971,26 @@ main{
   line-height:1.2;
 }
 .action-button{
-  min-width:68px;max-width:88px;padding:8px 8px;border-radius:8px;white-space:normal;line-height:1.08;
+  min-width:64px;max-width:78px;padding:7px 6px;border-radius:8px;white-space:normal;line-height:1.08;
   font-size:clamp(.76rem,.73rem + .05vw,.84rem);
+}
+.market-turn-chip{
+  display:inline-flex;
+  align-items:center;
+  min-height:30px;
+  padding:4px 9px;
+  border-radius:999px;
+  border:1px solid #65583b;
+  background:linear-gradient(180deg,#2c281d,#171713);
+  color:#d3b66c;
+  font-size:.72rem;
+  white-space:nowrap;
+}
+.market-list.market-used .action-item{
+  grid-template-columns:36px minmax(0,1fr);
+}
+.market-list.market-used .action-item{
+  opacity:.72;
 }
 .market-cost{
   width:34px;height:34px;border-radius:50%;
@@ -812,7 +1000,7 @@ main{
   border:1px solid #8b7342;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
 }
-.market-list .action-item{grid-template-columns:36px minmax(0,1fr) minmax(72px,auto)}
+.market-list .action-item{grid-template-columns:36px minmax(0,1fr) minmax(70px,82px)}
 .empty-action-list{
   padding:18px 10px;border:1px dashed #474b47;border-radius:10px;
   color:var(--muted);text-align:center;
@@ -941,7 +1129,35 @@ main{
 .suggestion-sheet .label{color:var(--gold);text-transform:uppercase;font-size:11px;letter-spacing:1px}
 .suggestion-sheet .value{font-size:16px}
 /* Responsive priority: protect the board before squeezing it between rails. */
-@media(max-width:1180px){
+
+@media (min-width:901px) and (max-width:1200px){
+  .layout{
+    grid-template-columns:
+      minmax(145px,175px)
+      minmax(0,1fr)
+      minmax(300px,330px);
+  }
+  .controls button{font-size:.62rem}
+  #rollBtn{font-size:.73rem}
+  #accuseBtn{font-size:.7rem}
+}
+
+@media (min-width:901px) and (max-height:760px){
+  .board-legend{
+    gap:4px;
+    font-size:.57rem;
+    letter-spacing:0;
+  }
+  .board-legend span{gap:2px}
+  .legend-swatch{width:9px;height:9px}
+  .controls{gap:5px}
+  .controls button{font-size:.60rem}
+  #rollBtn{font-size:.70rem}
+  .resource{font-size:.59rem}
+  .compact-status{font-size:.76rem}
+}
+
+@media(max-width:900px){
   .layout{
     grid-template-columns:minmax(0,1fr) minmax(285px,340px);
     height:auto;
@@ -960,7 +1176,7 @@ main{
   .rightcol .tabpane{max-height:70vh}
 }
 
-@media(max-width:980px){
+@media(max-width:760px){
   .layout{grid-template-columns:1fr}
   .rightcol{grid-column:1;grid-row:auto;position:static}
   .rightcol .tabpane{max-height:none}
@@ -1225,6 +1441,7 @@ main{
           <div class="rail-heading-meta">
             <div class="insight-chip">Insight <b id="marketInsight">0</b></div>
             <div class="supply-chip">Supply <b id="marketSupply">35</b></div>
+            <div id="marketTurnState" class="market-turn-chip hidden">Market used this turn</div>
           </div>
         </div>
         <div id="market" class="action-list market-list"></div>
@@ -1262,7 +1479,7 @@ main{
         <p><b>4. Investigate rooms:</b> each investigator may investigate <b>each room once per game</b>. Investigation grants <b>1 Insight</b>, reveals that room's investigation scene, and does not prevent movement or a Suggestion in the same turn. The <b>Pallid Watcher</b> blocks Investigation until banished.</p>
         <p><b>5. Make at most one Suggestion:</b> a Suggestion is independent of Investigation. You may investigate and suggest in the same room and same turn, in either order. Every creature blocks Suggestions until banished.</p>
         <p><b>6. Resolve actions:</b> sealing a portal or banishing a creature does not consume your Suggestion or Investigation. These may be taken whenever their location and Resolve requirements are met.</p>
-        <p><b>7. Buy at most one Market card:</b> spend Insight equal to its cost. The purchased card enters your hand immediately, so you may play it that turn if you still have a legal card play.</p>
+        <p><b>7. Buy at most one Market card:</b> spend Insight equal to its cost. The purchased card enters your hand immediately. If you still have a legal card play remaining, you may use it that turn. <b>If you had already reached your current card-play limit when you bought it, the new card is locked until your next turn—even if it is Quick.</b> You may still retain it normally.</p>
         <p><b>8. End Turn:</b> the retention screen is only a preview until you press <b>Confirm End Turn</b>. Use <b>Cancel — Keep Playing</b> if you forgot to move, play a card, buy, banish, or seal. On confirmation, retain up to two unplayed cards and discard the rest. Unplayed Madness is retained automatically and uses those slots. If a creature still occupies your room, you gain its listed lingering Exposure (normally 1; Chromatic Miasma causes 2).</p>
 
         <h3>Action Cards</h3>
@@ -1309,7 +1526,7 @@ main{
         <p>Madness cards dilute your Action deck. Once drawn, unplayed Madness is <b>sticky</b>: it is automatically retained at end of turn and occupies retention space. Playing a Madness card clears it to the discard pile, though its printed effect may have a cost.</p>
 
         <h3>Mythos and the Changing University</h3>
-        <p>After all four investigators act, Doom rises and one card is drawn from the case's shuffled Mythos deck. Mythos cards are not repeated until that deck is exhausted and reshuffled. Each case is arranged so that a creature event appears within the first two Mythos phases, ensuring that Nerve, banishment, and creature pressure become part of every investigation. Case I emphasizes occult intrusion, witnesses, portals, creatures, and the gradual failure of Armitage's containment procedure.</p>
+        <p>After all four investigators act, Doom rises and one card is drawn from the case's shuffled Mythos deck. Mythos cards are not repeated until that deck is exhausted and reshuffled. Each case is arranged so that a creature event appears within the first two Mythos phases. In <b>Case I</b>, at least one portal-producing event also appears within the first three Mythos phases, so containment and sealing reliably become part of the investigation without making direct monster events constant. Case I emphasizes occult intrusion, witnesses, portals, creatures, and the gradual failure of Armitage's containment procedure.</p>
         <p><b>Geometry Pulse — Case II:</b> after the ordinary Mythos card resolves, the annex independently tests whether its geometry changes again. At Doom 0–2, a d6 result of <b>4–6</b> causes a distortion (50%). At Doom 3–5, <b>2–6</b> causes one (5/6). At Doom 6+, a distortion happens <b>every Mythos phase</b>; on a second roll of 5–6, a second different distortion occurs as well. The possible pulse effects are a relocated door, a room exchange, a Common Interior, or an Impossible Shortcut. The affected rooms and exact effect remain random.</p>
         <p>Architectural changes are accepted only when every room remains connected to the corridor network, so the university may become impossible without permanently trapping an investigator. Doorways also maintain a clear threshold: if a moving door would place a portal or creature on the door square or immediately in front of it, that portal/creature is automatically displaced to the nearest legal square in the same room. Room exchanges similarly re-seat their spatial markers inside the room's new geometry. <b>If a doorway moves in the room you occupy, gain 1 Exposure. If the room you occupy physically exchanges position with another room, gain 1 Exposure.</b> A ward may absorb this Exposure normally.</p>
         <p><b>Merged rooms — Case II:</b> a Common Interior lasts for the next <b>two full rounds</b>. The paired rooms remain two Evidence identities but function as one physical space. You may cross directly between them for 1 Move without ending ordinary movement, use a portal located in either half, banish a creature in either half, and choose either room identity for a Suggestion. The danger is shared too: a creature in either half blocks the merged space and can cause lingering Exposure from the other half. The two-round duration is used so every investigator gets the same opportunity to exploit or suffer the distortion.</p>
@@ -1432,6 +1649,18 @@ function makeMythosDeck(events){
     if(creatureIndex>=0){
       const earlyIndex=Math.floor(Math.random()*2);
       [deck[earlyIndex],deck[creatureIndex]]=[deck[creatureIndex],deck[earlyIndex]];
+    }
+  }
+
+  // Case I is a breach/containment story. Its direct creature count stays
+  // moderate because open portals already generate monsters, but at least one
+  // portal-producing Mythos event will occur within the first three phases.
+  if(ACTIVE_SCENARIO?.id==="armitageProtocol"
+      && deck.length>=3
+      && !deck.slice(0,3).some(ev=>ev.type==="portal"||ev.type==="surge")){
+    const portalIndex=deck.findIndex((ev,i)=>i>=3 && (ev.type==="portal"||ev.type==="surge"));
+    if(portalIndex>=0){
+      [deck[2],deck[portalIndex]]=[deck[portalIndex],deck[2]];
     }
   }
   return deck;
@@ -2726,7 +2955,7 @@ function newPlayer(charIndex,isHuman=false){
     pos:{x:0,y:0}, room:null, evidence:[], known:new Set(), acknowledged:new Set(), knownSources:{}, exact:{},
     deck:makeStarterDeck(),discard:[],hand:[],played:new Set(),
     move:0,insight:0,resolve:0,exposure:0,bought:false,acted:false,rolled:false,suggestedThisTurn:false,
-    cardPlays:0,cardLimit:2,quickUsed:false,stunnedTurns:0,
+    cardPlays:0,cardLimit:2,quickUsed:false,purchaseLockIndex:null,stunnedTurns:0,
     eliminated:false,manualNotes:{},specials:{},nerve:c.nerve,
     investigatedRooms:new Set(),
     aiTested:{Suspect:new Set(),Relic:new Set(),Entity:new Set()}
@@ -2775,9 +3004,12 @@ function setupGame(){
   };
   document.getElementById("startScreen").classList.add("hidden");
   document.getElementById("game").classList.remove("hidden");
+  document.body.classList.add("game-running");
   document.getElementById("caseHeaderTitle").textContent=ACTIVE_SCENARIO.title;
   document.getElementById("caseHeaderSetting").textContent=`${ACTIVE_SCENARIO.location}, ${ACTIVE_SCENARIO.date}`;
   renderAll();
+  lastBoardWrapSize={w:0,h:0};
+  requestAnimationFrame(()=>requestAnimationFrame(scheduleBoardScale));
   const opening=[
     ...ACTIVE_SCENARIO.opening.slice(0,3),
     characterOpeningScene(players[0]),
@@ -2812,7 +3044,7 @@ function startTurn(){
   }
   p.move=0;p.insight=(p.charIndex===5?1:0);p.resolve=0;p.bought=false;p.acted=false;p.rolled=false;p.suggestedThisTurn=false;
   state.moveUndoStack=[];state.lastHumanAction=null;
-  p.cardPlays=0;p.cardLimit=2;p.quickUsed=false;
+  p.cardPlays=0;p.cardLimit=2;p.quickUsed=false;p.purchaseLockIndex=null;
   p.played=new Set();p.specials={};
   drawCards(p,5);
   state.phase=p.isHuman?"awaitRoll":"ai";
@@ -2982,16 +3214,44 @@ function advanceTurn(){
 }
 
 let boardScaleFrame=null;
+let lastBoardWrapSize={w:0,h:0};
 
 function syncBoardScale(){
   const board=document.getElementById("board");
-  if(!board||board.clientWidth===0)return;
-  const style=getComputedStyle(board);
+  const wrap=document.querySelector(".board-wrap");
+  if(!board||!wrap||wrap.clientWidth===0||wrap.clientHeight===0)return;
+
+  const wrapW=Math.round(wrap.clientWidth);
+  const wrapH=Math.round(wrap.clientHeight);
+  if(wrapW===lastBoardWrapSize.w && wrapH===lastBoardWrapSize.h)return;
+  lastBoardWrapSize={w:wrapW,h:wrapH};
+
+  const wrapStyle=getComputedStyle(wrap);
   const innerWidth=
+    wrap.clientWidth-
+    parseFloat(wrapStyle.paddingLeft)-
+    parseFloat(wrapStyle.paddingRight);
+  const innerHeight=
+    wrap.clientHeight-
+    parseFloat(wrapStyle.paddingTop)-
+    parseFloat(wrapStyle.paddingBottom);
+
+  // Reserve a stable minimum envelope below the board. Any additional
+  // center height belongs to Turn Resources/status, never to the map.
+  const controlsHeight=90;
+  const fixedHeight=28 + 5 + controlsHeight + 5 + 184;
+  const availableBoardHeight=Math.max(80,innerHeight-fixedHeight);
+  const maxWidthFromHeight=availableBoardHeight*(MAP_COLS/MAP_ROWS);
+  const fittedWidth=Math.max(1,Math.min(innerWidth,maxWidthFromHeight));
+
+  board.style.width=`${Math.floor(fittedWidth)}px`;
+
+  const style=getComputedStyle(board);
+  const tileInnerWidth=
     board.clientWidth-
     parseFloat(style.paddingLeft)-
     parseFloat(style.paddingRight);
-  const tile=Math.max(15,innerWidth/MAP_COLS);
+  const tile=Math.max(10,tileInnerWidth/MAP_COLS);
   document.documentElement.style.setProperty("--tile",`${tile.toFixed(2)}px`);
 }
 
@@ -3010,7 +3270,6 @@ function renderAll(){
     chip.style.setProperty("--turn-color",cp.color);
     chip.textContent=cp.isHuman?"Your turn":`${cp.name}'s turn`;
   }
-  scheduleBoardScale();
 }
 function renderBoard(){
   const board=document.getElementById("board");board.innerHTML="";
@@ -3104,8 +3363,14 @@ function renderBoard(){
     const z=document.createElement("div");
     z.className="creature";
     const profile=creatureProfile(cr);
-    z.title=`${cr.name} — ${profile.rule}`;
-    z.setAttribute("aria-label",cr.name);
+    const banishCost=creatureBanishCost(cr);
+    const linger=creatureLingerExposure(cr);
+    z.title=`${cr.name}
+Nerve check: d6 + Resolve + Nerve − Exposure penalty ≥ 5
+Banish: ${banishCost} Resolve · Reward: 2 Insight
+Lingering danger: ${linger} Exposure at end of turn
+${profile.rule}`;
+    z.setAttribute("aria-label",`${cr.name}. ${profile.rule}`);
     z.innerHTML=`
       <svg viewBox="0 0 64 64" role="img" aria-hidden="true">
         <defs>
@@ -3154,16 +3419,16 @@ function renderPlayers(){
   const wrap=document.getElementById("playersPanel");wrap.innerHTML="";
   state.players.forEach((p,i)=>{
     const d=document.createElement("div");d.className="player"+(i===state.current?" active":"");
-    d.innerHTML=`<div><span class="tokenDot" style="background:${p.color}"></span><b>${p.name}</b></div>
-      <div class="small">${CHARACTERS[p.charIndex].role}${p.isHuman?" · Human":" · AI"}</div>
+    d.innerHTML=`<div class="player-name"><span class="tokenDot" style="background:${p.color}"></span><b>${p.name}</b></div>
+      <div class="small player-role">${CHARACTERS[p.charIndex].role}${p.isHuman?" · You":" · Rival"}</div>
       <div class="badges">
-      <span class="badge">Room: ${ROOMS[p.room]||"Corridor"}</span>
-      <span class="badge${p.exposure>=3?" danger":""}">Exposure ${p.exposure} / 5${p.exposure>=3?" · Strained":""}</span>
+      <span class="badge room-badge" title="Current location">${ROOMS[p.room]||"Corridor"}</span>
+      <span class="badge${p.exposure>=3?" danger":""}" title="Exposure">${p.exposure} / 5 Exposure${p.exposure>=3?" · Strained":""}</span>
       <span class="badge" title="Permanent bonus to creature tests: d6 + Resolve + Nerve, minus any Exposure penalty. A total of 5 or more succeeds.">Nerve ${p.nerve}</span>
-      <span class="badge" title="Total Action cards this investigator owns across hand, deck, and discard pile.">Action Cards ${p.deck.length+p.discard.length+p.hand.length}</span>
+      <span class="badge" title="Total Action cards this investigator owns across hand, deck, and discard pile.">Cards ${p.deck.length+p.discard.length+p.hand.length}</span>
       <span class="badge" title="Unique Evidence this investigator knows, including starting cards and privately shown refutations.">Evidence ${p.known.size}</span>
-      ${p.stunnedTurns>0?'<span class="badge danger">Stunned: skips next turn</span>':""}
-      ${p.eliminated?'<span class="badge danger">Cannot accuse</span>':""}
+      ${p.stunnedTurns>0?'<span class="badge danger wide-badge">Stunned · skips next turn</span>':""}
+      ${p.eliminated?'<span class="badge danger wide-badge">Cannot accuse</span>':""}
       </div>`;
     wrap.appendChild(d);
   });
@@ -3207,10 +3472,13 @@ function cardButtonState(p,c,index){
   if(p.played.has(index))return {label:"Used",disabled:true};
   if(state.current!==0)return {label:"Waiting",disabled:true};
   if(!p.rolled)return {label:"Roll first",disabled:true};
+  if(p.purchaseLockIndex===index){
+    return {label:"Next turn",disabled:true};
+  }
   if(c.special==="madness" && !unplayedMadnessInHand(p).length){
     return {label:"Need Madness",disabled:true};
   }
-  if(!canPlayCard(p,c))return {label:c.speed==="Quick"?"Quick used":"No plays",disabled:true};
+  if(!canPlayCard(p,c,index))return {label:c.speed==="Quick"?"Quick used":"No plays",disabled:true};
   return {label:"Play",disabled:false};
 }
 function renderHand(){
@@ -3260,10 +3528,15 @@ function renderMarket(){
   if(!wrap)return;
   wrap.innerHTML="";
   const p=state.players[0];
+
   const insight=document.getElementById("marketInsight");
   if(insight)insight.textContent=String(p.insight);
   const supply=document.getElementById("marketSupply");
   if(supply)supply.textContent=String(state.marketDeck.length);
+
+  const turnState=document.getElementById("marketTurnState");
+  if(turnState)turnState.classList.toggle("hidden",!p.bought);
+  wrap.classList.toggle("market-used",!!p.bought);
 
   state.market.forEach((id,i)=>{
     const c=CARD_DEFS[id];
@@ -3282,16 +3555,24 @@ function renderMarket(){
       <div class="action-title">${c.name}</div>
       <div class="action-effect">${c.text}</div>`;
 
-    const button=document.createElement("button");
-    button.className="action-button";
-    button.textContent=p.bought?"Purchased":(p.insight<c.cost?"Need Insight":"Acquire");
-    button.disabled=!canBuy;
-    button.onclick=()=>buyCard(p,i);
-    if(canBuy)d.onclick=(e)=>{if(e.target!==button)buyCard(p,i)};
+    d.append(cost,copy);
 
-    d.append(cost,copy,button);
+    // Once the investigator has bought a card this turn, the remaining Market
+    // cards are simply unavailable until next turn. They were not "Purchased",
+    // so do not render misleading disabled purchase buttons on every row.
+    if(!p.bought){
+      const button=document.createElement("button");
+      button.className="action-button";
+      button.textContent=p.insight<c.cost?"Need Insight":"Acquire";
+      button.disabled=!canBuy;
+      button.onclick=()=>buyCard(p,i);
+      if(canBuy)d.onclick=(e)=>{if(e.target!==button)buyCard(p,i)};
+      d.appendChild(button);
+    }
+
     wrap.appendChild(d);
   });
+
   if(!state.market.length){
     wrap.innerHTML='<div class="empty-action-list">The shared upgrade supply is exhausted.</div>';
   }
@@ -3520,6 +3801,7 @@ function renderControls(){
   const mergeButton=document.getElementById("mergeBtn");
   const mergeVisible=!!state.roomMerge;
   mergeButton.classList.toggle("hidden",!mergeVisible);
+  document.querySelector(".controls")?.classList.toggle("merge-active",mergeVisible);
   mergeButton.disabled=!humanTurn||!p.rolled||!mergeStatus.available;
   mergeButton.textContent=mergeStatus.available?`Cross to ${ROOMS[mergeStatus.target]}`:"Cross Merged Space";
   mergeButton.title=mergeStatus.reason;
@@ -3555,7 +3837,8 @@ function renderControls(){
   document.getElementById("endTurnBtn").disabled=!humanTurn||!p.rolled;
 }
 
-function canPlayCard(p,c){
+function canPlayCard(p,c,index=null){
+  if(index!==null && p.purchaseLockIndex===index)return false;
   if(c.special==="madness"){
     const hasMadness=p.hand.some((id,i)=>CARD_DEFS[id]?.madness && !p.played.has(i));
     if(!hasMadness)return false;
@@ -3583,6 +3866,10 @@ function discardHandCardNow(p,index){
       .filter(i=>i!==index)
       .map(i=>i>index?i-1:i)
   );
+  if(p.purchaseLockIndex!==null){
+    if(p.purchaseLockIndex===index)p.purchaseLockIndex=null;
+    else if(p.purchaseLockIndex>index)p.purchaseLockIndex--;
+  }
   return id;
 }
 
@@ -3628,7 +3915,7 @@ window.chooseDesperatePursuitMadness=function(index){
 function playCard(p,index){
   if(p.played.has(index))return false;
   const id=p.hand[index],c=CARD_DEFS[id];
-  if(!canPlayCard(p,c))return false;
+  if(!canPlayCard(p,c,index))return false;
   invalidateMoveUndo(p);
   p.played.add(index);
   if(c.speed==="Quick")p.quickUsed=true;
@@ -3686,11 +3973,17 @@ function buyCard(p,index){
   const id=state.market[index],c=CARD_DEFS[id];
   if(p.insight<c.cost)return;
   invalidateMoveUndo(p);
-  // Purchased upgrades enter the current hand immediately. This makes the
-  // acquisition visible before cleanup and lets the player choose the card in
-  // the normal retention step (or play it now if card plays remain).
-  p.insight-=c.cost;p.hand.push(id);p.bought=true;
-  log(`${p.name} acquires ${c.name} into their hand.`);
+  // Purchased upgrades enter the current hand immediately. If the investigator
+  // had already exhausted the current Action-card play limit at the instant of
+  // purchase, that newly acquired card is retained for later and cannot be played
+  // this turn, even if it is Quick.
+  const newHandIndex=p.hand.length;
+  const lockUntilNextTurn=p.cardPlays>=p.cardLimit;
+  p.insight-=c.cost;
+  p.hand.push(id);
+  p.bought=true;
+  p.purchaseLockIndex=lockUntilNextTurn?newHandIndex:null;
+  log(`${p.name} acquires ${c.name} into their hand${lockUntilNextTurn?" for next turn":""}.`);
   state.market.splice(index,1);
   const replacement=state.marketDeck.shift();
   if(replacement)state.market.push(replacement);
@@ -4513,7 +4806,7 @@ function aiPlayCards(p){
   let safety=0;
   while(safety++<12){
     const options=p.hand.map((id,i)=>({id,i,c:CARD_DEFS[id]}))
-      .filter(x=>!p.played.has(x.i)&&canPlayCard(p,x.c))
+      .filter(x=>!p.played.has(x.i)&&canPlayCard(p,x.c,x.i))
       .sort((a,b)=>aiCardScore(p,b.id)-aiCardScore(p,a.id));
     if(!options.length)break;
     const best=options[0];
@@ -5011,12 +5304,10 @@ document.querySelectorAll(".tab").forEach(btn=>btn.onclick=()=>{
   });
 });
 
-window.addEventListener("resize",scheduleBoardScale);
-if("ResizeObserver" in window){
-  const boardResizeObserver=new ResizeObserver(scheduleBoardScale);
-  const boardWrap=document.querySelector(".board-wrap");
-  if(boardWrap)boardResizeObserver.observe(boardWrap);
-}
+window.addEventListener("resize",()=>{
+  lastBoardWrapSize={w:0,h:0};
+  scheduleBoardScale();
+});
 
 function applyScenarioShell(){
   if(selectedScenarioId){
