@@ -680,6 +680,10 @@ main{
   border:3px solid #a57bc4;
   box-shadow:0 0 0 2px rgba(255,255,255,.08), 0 0 12px #bd80dc inset,0 0 14px #8e60ab;
   animation:pulse 1.5s infinite alternate;
+  display:flex;align-items:center;justify-content:center;
+  color:#f2ddff;font:700 clamp(.54rem,calc(var(--tile) * .22),.72rem) var(--font-mark);
+  text-shadow:0 1px 2px #000;
+  pointer-events:none;
 }
 .creature{
   width:clamp(22px,calc(var(--tile) * .72),34px);
@@ -1614,9 +1618,9 @@ main{
         <p><b>Creature traits:</b> Pallid Watcher blocks both Suggestion and Investigation; Knotted Horror costs 3 Resolve to banish; Chromatic Miasma causes 2 Exposure if you end a turn with it; Whisper Leech removes 1 Insight when you fail its creature test. Monster type is public information—hover its meeple or read the encounter scene.</p>
 
         <h3>Portals</h3>
-        <p>A portal joins two distant rooms. Each endpoint occupies a literal square inside its room; investigators cannot step onto or through that square during ordinary movement. Portals are never placed on a doorway or the interior square immediately behind one. You still interact with a portal from anywhere in its physical room-space. Crossing normally requires at least 1 Move, costs 1 Move, and then ends ordinary movement for the turn. Crossing also gives 1 Exposure and normally adds a Madness card. Mae Wren does not gain that portal Madness, and <b>Secret Architecture</b> can waive the movement cost. A creature in the portal room prevents crossing until it is banished.</p>
+        <p>A portal joins two distant rooms, and each endpoint occupies a literal numbered square inside its room. <b>Portal squares are walkable.</b> To choose and use a portal, move your investigator onto that specific endpoint; the <b>Use Portal</b> button then names its destination. The ordinary step onto the endpoint is the portal's movement cost, so clicking Use Portal does <b>not</b> cost a second Move. Portal travel then ends ordinary movement for the turn, gives 1 Exposure, and normally adds a Madness card. Mae Wren does not gain that portal Madness. <b>Secret Architecture</b> makes the step onto a portal endpoint cost 0 Move that turn. If two or more portals occupy the same room, walking onto one is how you choose which connection to use. A creature in the room still prevents portal travel until it is banished.</p>
         <p><b>Open portals are dangerous during every Mythos phase.</b> After the ordinary Mythos event and any Case II Geometry Pulse, <b>each open portal rolls a d6 independently</b>. On 1–4, it holds. On <b>5–6</b>, a creature comes through at one available endpoint. If one endpoint space already contains a creature, the new creature appears at the other. If both endpoint spaces are already occupied, the portal cannot admit another creature and <b>Doom rises by 1 instead</b>. A portal that opens during the current Mythos phase is immediately subject to this check.</p>
-        <p><b>Seal Portal:</b> spend <b>1 Resolve</b> while in its physical room-space. You may seal at any point during your turn whenever you are there and have enough Resolve. Sealing grants 1 Insight, removes the portal from the board, and permanently removes that portal's future Mythos-pressure roll. Abigail Ward gains 1 additional Insight whenever she seals a portal. A portal may still be sealed while a creature is present. An open portal must be sealed before a Final Accusation can be made from that room-space.</p>
+        <p><b>Seal Portal:</b> spend <b>1 Resolve</b> while in its physical room-space. If there is only one portal there, you may seal it from anywhere in the room as before. If there are multiple portals in that room-space, stand on the endpoint you intend to seal so the choice is unambiguous. Sealing grants 1 Insight, removes that portal from the board, and permanently removes its future Mythos-pressure roll. Abigail Ward gains 1 additional Insight whenever she seals a portal. A portal may still be sealed while a creature is present. Every open portal in the room-space must be sealed before a Final Accusation can be made there.</p>
         <p>An <b>Impossible Shortcut</b> is a temporary favorable distortion: it connects two rooms until the next Mythos phase. <b>It can form only between rooms that are completely empty when it appears</b>—no investigator meeple, portal endpoint, or creature may be in either room. The two eligible rooms are chosen randomly, favoring distant pairs when possible. If fewer than two empty rooms exist, no Shortcut forms. Crossing it costs 1 Move, ends ordinary movement, and causes no Exposure or Madness. Gold diamond markers show its two ends.</p>
 
         <h3>Evidence and the Casebook</h3>
@@ -1725,7 +1729,7 @@ const CARD_DEFS = {
  method:{name:"Investigative Method",kind:"Investigation",text:"+2 Insight",insight:2,cost:2},
  sigil:{name:"Sealing Sigil",kind:"Occult",text:"+2 Resolve",resolve:2,cost:3},
  cross:{name:"Cross-Examination",kind:"Influence",text:"+1 Insight. Your next refutation shown this turn grants another Insight.",insight:1,cost:3,special:"cross"},
- map:{name:"Secret Architecture",kind:"Mobility",text:"+2 Move. Portals cost no movement this turn.",move:2,cost:3,special:"map"},
+ map:{name:"Secret Architecture",kind:"Mobility",text:"+2 Move. Stepping onto a portal endpoint costs 0 Move this turn.",move:2,cost:3,special:"map"},
  research:{name:"Obsessive Research",kind:"Occult",text:"+3 Insight and +1 Exposure.",insight:3,cost:3,special:"expose"},
  calm:{name:"Grounding Ritual",kind:"Resolve",text:"+1 Resolve and remove 1 Exposure.",resolve:1,cost:3,special:"calm"},
  lantern:{name:"Ultraviolet Lantern",kind:"Equipment",text:"+1 Insight, +1 Resolve.",insight:1,resolve:1,cost:3},
@@ -2098,7 +2102,7 @@ const SCENARIOS = {
       id:"first-portal",
       kicker:"Impossible Passage",
       title:"Between Two Rooms",
-      body:`<p>A violet opening now exists in two distant rooms. Each opening shows the other room directly, with no corridor between them. Objects and people can cross from one endpoint to the other.</p>
+      body:`<p>A violet opening now exists in two distant rooms. Each opening shows the other room directly, with no corridor between them. An investigator can step onto either endpoint and deliberately cross to the matching one.</p>
         <p>The passage has no visible depth, and crossing it produces intense disorientation and exposure to the force behind the case.</p>
         <div class="story-fact"><b>What this establishes:</b> the disturbance can create real physical shortcuts between rooms. Leaving a portal open also gives whatever is outside another route into the university.</div>`
     },
@@ -2686,7 +2690,22 @@ function hazardAtSquare(x,y,ignore=null){
   return null;
 }
 function playerSquareBlocked(x,y){
-  return !!hazardAtSquare(x,y);
+  const hazard=hazardAtSquare(x,y);
+  return hazard?.type==="creature";
+}
+function portalEndpointAtPosition(pos){
+  if(!pos)return null;
+  return portalEndpointEntries().find(e=>e.pos&&e.pos.x===pos.x&&e.pos.y===pos.y)||null;
+}
+function portalsInSpace(room){
+  if(room===null)return [];
+  const physical=new Set(spaceRoomIds(room));
+  return state.portals.filter(po=>physical.has(po.a)||physical.has(po.b));
+}
+function portalUnderPlayer(p){
+  const endpoint=portalEndpointAtPosition(p?.pos);
+  if(!endpoint)return null;
+  return endpoint;
 }
 function playerNeighbors(p){
   return neighbors(p).filter(q=>!playerSquareBlocked(q.x,q.y));
@@ -2736,7 +2755,7 @@ function chooseObjectTile(rid,preferred=null,ignore=null){
   return {...rand(central)};
 }
 function safePlayerTileInRoom(rid,preferred=null){
-  const candidates=roomTiles(rid).filter(pos=>!playerSquareBlocked(pos.x,pos.y));
+  const candidates=roomTiles(rid).filter(pos=>!hazardAtSquare(pos.x,pos.y));
   if(!candidates.length)return {...centerOfRoom(rid)};
   const pref=preferred||centerOfRoom(rid);
   const min=Math.min(...candidates.map(p=>Math.abs(p.x-pref.x)+Math.abs(p.y-pref.y)));
@@ -3678,7 +3697,8 @@ function renderBoard(){
       const c=portalEndpointPos(po,rid),t=tileAt(c.x,c.y);
       const z=document.createElement("div");z.className="portal";
       const other=po.a===rid?po.b:po.a;
-      z.title=`Portal ${idx+1} to ${ROOMS[other]} — during each Mythos phase this portal rolls a d6; on 5–6 something comes through`;
+      z.textContent=String(idx+1);
+      z.title=`Portal ${idx+1} to ${ROOMS[other]} — step onto this endpoint, then use the Portal button. During each Mythos phase this portal rolls a d6; on 5–6 something comes through.`;
       t.appendChild(z);
     });
   });
@@ -4140,7 +4160,13 @@ function renderControls(){
   const portalStatus=portalUseStatus(p);
   const portalButton=document.getElementById("portalBtn");
   portalButton.disabled=!humanTurn||!p.rolled||!portalStatus.available;
-  portalButton.textContent=portalStatus.creature ? "Portal Blocked" : "Use Portal";
+  portalButton.textContent=portalStatus.creature
+    ? "Portal Blocked"
+    : portalStatus.available
+      ? `Use Portal → ${ROOMS[portalStatus.target]}`
+      : portalStatus.needsPosition
+        ? "Stand on Portal"
+        : "Use Portal";
   portalButton.title=portalStatus.reason;
 
   const shortcutStatus=shortcutUseStatus(p);
@@ -4162,7 +4188,9 @@ function renderControls(){
   const sealStatus=portalSealStatus(p);
   const sealButton=document.getElementById("sealBtn");
   sealButton.disabled=!sealStatus.available;
-  sealButton.textContent=`Seal Portal (${sealStatus.cost} Resolve)`;
+  sealButton.textContent=sealStatus.needsSelection
+    ? "Stand on Portal to Seal"
+    : `Seal Portal (${sealStatus.cost} Resolve)`;
   sealButton.title=sealStatus.reason;
 
   const accusation=accusationStatus(p);
@@ -4368,8 +4396,9 @@ function humanMove(dest){
   if(playerSquareBlocked(dest.x,dest.y))return;
   recordMoveUndo(p);
   const oldRoom=p.room;
+  const portalStep=portalEndpointAtPosition(dest);
   p.pos={...dest};
-  p.move--;
+  if(!(portalStep&&p.specials.map))p.move--;
   p.room=roomAt(dest.x,dest.y);
   const enteredRoom=p.room!==null && p.room!==oldRoom;
   if(enteredRoom)p.move=0;
@@ -4418,41 +4447,78 @@ function encounterCreature(p){
   }
 }
 function portalAtRoom(room){
-  if(room===null)return null;
-  const physical=new Set(spaceRoomIds(room));
-  return state.portals.find(p=>physical.has(p.a)||physical.has(p.b))||null;
+  return portalsInSpace(room)[0]||null;
 }
 function portalSourceRoom(portal,room){
   if(!portal)return null;
   return spaceRoomIds(room).find(r=>portal.a===r||portal.b===r) ?? null;
 }
 function portalUseStatus(p){
-  const portal=portalAtRoom(p.room);
-  if(state.gameOver)return {available:false,portal,reason:"The case has ended."};
-  if(!p.rolled)return {available:false,portal,reason:"Roll movement before taking actions."};
-  if(!portal)return {available:false,portal,reason:"There is no portal in your current physical room space."};
+  const endpoint=portalUnderPlayer(p);
+  const portal=endpoint?.portal||null;
+  const roomPortals=portalsInSpace(p.room);
+  if(state.gameOver)return {available:false,portal,endpoint,reason:"The case has ended."};
+  if(!p.rolled)return {available:false,portal,endpoint,reason:"Roll movement before taking actions."};
+  if(!roomPortals.length){
+    return {available:false,portal:null,endpoint:null,reason:"There is no portal in your current physical room-space."};
+  }
+  if(!endpoint){
+    return {
+      available:false,
+      portal:null,
+      endpoint:null,
+      needsPosition:true,
+      count:roomPortals.length,
+      reason:roomPortals.length>1
+        ? `There are ${roomPortals.length} portals in this room-space. Step onto the endpoint you want to use.`
+        : "Step onto the portal endpoint to use it."
+    };
+  }
   const creature=creatureAtRoom(p.room);
   if(creature){
     return {
       available:false,
       portal,
+      endpoint,
       creature,
-      reason:`${creature.name} controls the portal in ${ROOMS[p.room]}. Spend ${creatureBanishCost(creature)} Resolve to banish it before crossing.`
+      reason:`${creature.name} controls the portal in ${ROOMS[endpoint.rid]}. Spend ${creatureBanishCost(creature)} Resolve to banish it before crossing.`
     };
   }
-  if(p.move<1)return {available:false,portal,reason:"You need at least 1 Move to cross this portal."};
-  return {available:true,portal,reason:"Cross for 1 Move. Portal travel ends ordinary movement for this turn."};
+  const target=portal.a===endpoint.rid?portal.b:portal.a;
+  return {
+    available:true,
+    portal,
+    endpoint,
+    target,
+    reason:`Use this portal to ${ROOMS[target]}. The step onto the portal was its movement cost; crossing now ends ordinary movement for this turn.`
+  };
 }
 function sealPortalCost(p){
   return 1;
 }
 function portalSealStatus(p){
-  const portal=portalAtRoom(p.room);
+  const roomPortals=portalsInSpace(p.room);
+  const standing=portalUnderPlayer(p);
   const cost=sealPortalCost(p);
+  let portal=null;
+
+  if(standing && roomPortals.includes(standing.portal))portal=standing.portal;
+  else if(roomPortals.length===1 || !p.isHuman)portal=roomPortals[0]||null;
+
   if(state.gameOver)return {available:false,portal,cost,reason:"The case has ended."};
   if(state.current!==0)return {available:false,portal,cost,reason:"Wait for your turn."};
   if(p.room===null)return {available:false,portal,cost,reason:"You must be inside a room to seal a portal."};
-  if(!portal)return {available:false,portal,cost,reason:"There is no portal in your current physical room-space."};
+  if(!roomPortals.length)return {available:false,portal:null,cost,reason:"There is no portal in your current physical room-space."};
+  if(!portal){
+    return {
+      available:false,
+      portal:null,
+      cost,
+      needsSelection:true,
+      count:roomPortals.length,
+      reason:`There are ${roomPortals.length} portals here. Step onto the portal you want to seal.`
+    };
+  }
   if(p.resolve<cost){
     return {
       available:false,
@@ -4465,7 +4531,7 @@ function portalSealStatus(p){
     available:true,
     portal,
     cost,
-    reason:`Spend ${cost} Resolve to seal the portal, gain 1 Insight, and remove its future Mythos-pressure roll.`
+    reason:`Spend ${cost} Resolve to seal the selected portal, gain 1 Insight, and remove its future Mythos-pressure roll.`
   };
 }
 function creaturesInSpace(room){
@@ -5001,11 +5067,10 @@ function usePortal(p){
   }
   invalidateMoveUndo(p);
   const po=status.portal;
-  const sourceRoom=portalSourceRoom(po,p.room);
-  const target=po.a===sourceRoom?po.b:po.a;
-  p.pos=safePlayerTileInRoom(target,portalEndpointPos(po,target));
+  const sourceRoom=status.endpoint.rid;
+  const target=status.target;
+  p.pos={...portalEndpointPos(po,target)};
   p.room=target;
-  if(!p.specials.map)p.move=Math.max(0,p.move-1);
   gainExposure(p,1);
   if(p.charIndex!==2)addMadness(p);
   p.move=0;
@@ -5250,7 +5315,11 @@ async function runAITurn(p){
   }else{
     const path=playerRoomPath(p.pos,target);
     for(let i=1;i<path.length&&p.move>0;i++){
-      p.pos={...path[i]};p.move--;p.room=roomAt(p.pos.x,p.pos.y);
+      const step={...path[i]};
+      const portalStep=portalEndpointAtPosition(step);
+      p.pos=step;
+      if(!(portalStep&&p.specials.map))p.move--;
+      p.room=roomAt(p.pos.x,p.pos.y);
       renderAll();await wait(110);
       if(p.room!==null){encounterCreatureAI(p);break}
     }
