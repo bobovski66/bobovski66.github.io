@@ -1602,7 +1602,7 @@ main{
         <p><b>8. End Turn:</b> the retention screen is only a preview until you press <b>Confirm End Turn</b>. Use <b>Cancel — Keep Playing</b> if you forgot to move, play a card, buy, banish, or seal. On confirmation, retain up to two unplayed cards and discard the rest. Unplayed Madness is retained automatically and uses those slots. If a creature still occupies your room, you gain its listed lingering Exposure (normally 1; Chromatic Miasma causes 2).</p>
 
         <h3>Action Cards</h3>
-        <p>Each investigator begins with a 10-card starter deck: four <b>Measured Steps</b>, three <b>Patient Inquiries</b>, two <b>Steady Nerves</b>, and one <b>Desperate Pursuit</b>. The investigator-panel label <b>Action Cards</b> means the total cards you own across hand, deck, and discard pile; it is <em>not</em> the number of actions remaining this turn.</p>
+        <p>Each investigator begins with a 10-card starter deck: four <b>Measured Steps</b>, three <b>Patient Inquiries</b>, two <b>Composure</b>, and one <b>Desperate Pursuit</b>. The investigator-panel label <b>Action Cards</b> means the total cards you own across hand, deck, and discard pile; it is <em>not</em> the number of actions remaining this turn.</p>
         <p>Most Action cards use one of your two normal card plays. <b>Quick</b> cards do not use a normal play, but only one Quick card may be played per turn. <b>Careful Planning</b> raises your normal play limit by one for that turn.</p>
         <p><b>Desperate Pursuit:</b> every investigator begins with one. It always gives <b>+1 Move</b>. If you have an unplayed Madness card in hand, you may discard one to gain <b>+3 additional Move</b>, for <b>+4 Move total</b>. Discarding the Madness this way avoids that Madness card's printed cost.</p>
 
@@ -1724,7 +1724,7 @@ if(SUSPECTS.some(name=>INVESTIGATOR_NAMES.has(name))){
 const CARD_DEFS = {
  step:{name:"Measured Step",kind:"Mobility",text:"+1 Move",move:1},
  inquiry:{name:"Patient Inquiry",kind:"Investigation",text:"+1 Insight",insight:1},
- composure:{name:"Steady Nerves",kind:"Resolve",text:"+1 Resolve",resolve:1},
+ composure:{name:"Composure",kind:"Resolve",text:"+1 Resolve",resolve:1},
  fleet:{name:"Fleet of Foot",kind:"Mobility",text:"+3 Move",move:3,cost:2},
  method:{name:"Investigative Method",kind:"Investigation",text:"+2 Insight",insight:2,cost:2},
  sigil:{name:"Sealing Sigil",kind:"Occult",text:"+2 Resolve",resolve:2,cost:3},
