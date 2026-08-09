@@ -17,8 +17,9 @@
     --p0:#4fd1e0; --p1:#e8563f; --p2:#7ee06a; --p3:#c07af0; --p4:#f0a24f; --p5:#5a7cf0;
   }
   *{box-sizing:border-box}
-  html,body{margin:0;height:100%;background:var(--bg-grad);color:var(--ink);font-family:"DM Mono",ui-monospace,"SF Mono",Menlo,monospace;overflow:hidden;transition:background .4s,color .4s}
-  #app{display:flex;height:100%;width:100%}
+  html,body{margin:0;height:100%;background:var(--bg-grad);color:var(--ink);font-family:"Cascadia Mono","Consolas","Segoe UI Mono",ui-monospace,monospace;overflow:hidden;transition:background .4s,color .4s}
+  #scaleViewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--bg-grad)}
+  #app{display:flex;width:1400px;height:850px;flex:0 0 auto;position:relative;transform:scale(var(--app-scale,1));transform-origin:center center;will-change:transform}
   #stage{flex:1;position:relative}
   canvas{display:block;width:100%;height:100%;cursor:crosshair}
   #side{width:326px;flex-shrink:0;position:relative;background:linear-gradient(180deg,var(--void2),var(--void));border-left:1px solid var(--line);display:flex;flex-direction:column;padding:15px 15px 12px;gap:11px;overflow:hidden;box-shadow:inset 1px 0 0 color-mix(in srgb,#fff 6%,transparent)}
@@ -26,24 +27,72 @@
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E")}
   #side>*{position:relative;z-index:1}
   .brand{display:flex;justify-content:space-between;align-items:flex-start}
-  h1{font-family:"Space Grotesk",system-ui,sans-serif;font-weight:700;font-size:19px;letter-spacing:.24em;margin:0;color:var(--ink)}
+  h1{font-family:"Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;font-weight:700;font-size:19px;letter-spacing:.24em;margin:0;color:var(--ink)}
   h1 span{color:var(--gold)}
   .sub{font-size:9px;letter-spacing:.3em;color:var(--dim);margin-top:-4px;text-transform:uppercase}
+  .brandActions{display:flex;gap:6px;align-items:flex-start}
+  .brandActions button{padding:6px 9px;font-size:9px;letter-spacing:.08em;text-transform:uppercase;border-radius:7px}
 
-  /* turn owner banner — whose turn it is, dominant */
-  .turnbar{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:11px;position:relative;overflow:hidden;
+  #rulesModal,#commanderModal{position:absolute;inset:0;z-index:80;display:none;align-items:center;justify-content:center;padding:32px;background:rgba(4,7,18,.86);backdrop-filter:blur(6px)}
+  #rulesModal.show,#commanderModal.show{display:flex}
+  .rulesCard{width:min(820px,calc(100% - 40px));max-height:760px;overflow:auto;border:1px solid color-mix(in srgb,var(--p0) 55%,var(--line));border-radius:16px;background:linear-gradient(180deg,#131d39,#0b1125);box-shadow:0 22px 70px rgba(0,0,0,.65);padding:22px 24px 20px;text-align:left}
+  .rulesHead{display:flex;align-items:flex-start;gap:14px;border-bottom:1px solid var(--line);padding-bottom:13px;margin-bottom:15px}
+  .rulesHead h2{font-family:"Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;font-size:26px;letter-spacing:.08em;margin:0;color:var(--ink)}
+  .rulesHead .rulesSub{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--p0);margin-top:3px}
+  .rulesHead button{margin-left:auto;padding:8px 11px;font-size:10px}
+  .rulesCard h3{font-family:"Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;font-size:14px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin:18px 0 8px}
+  .rulesCard p,.rulesCard li{font-size:13px;line-height:1.62;color:var(--ink)}
+  .rulesCard p{margin:6px 0 10px}
+  .rulesCard ul,.rulesCard ol{margin:6px 0 10px;padding-left:22px}
+  .rulesGloss{display:grid;grid-template-columns:145px 1fr;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:8px}
+  .rulesGloss dt,.rulesGloss dd{margin:0;padding:8px 10px;border-bottom:1px solid var(--line);font-size:12px;line-height:1.45}
+  .rulesGloss dt{font-weight:700;color:var(--p0);background:color-mix(in srgb,var(--p0) 8%,var(--panel))}
+  .rulesGloss dd{color:var(--ink)}
+  .rulesGloss dt:last-of-type,.rulesGloss dd:last-of-type{border-bottom:none}
+  .rulesCommander{border:1px solid color-mix(in srgb,var(--p0) 35%,var(--line));border-radius:10px;padding:11px 12px;background:color-mix(in srgb,var(--p0) 7%,var(--panel));margin-top:8px}
+  .rulesCommander .rcName{font-family:"Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;font-size:15px;font-weight:700;color:var(--p0)}
+  .rulesCommander .rcPassive{font-size:12px;line-height:1.5;color:var(--ink);margin-top:4px}
+  .rulesCommander .rcCards{font-size:11px;line-height:1.5;color:var(--dim);margin-top:6px}
+  .rulesNote{font-size:11px!important;color:var(--dim)!important}
+
+  .commanderCard{width:min(600px,calc(100% - 40px));max-height:720px;overflow:auto;border:1px solid color-mix(in srgb,var(--p0) 62%,var(--line));border-radius:18px;background:
+    radial-gradient(120% 90% at 50% -10%, rgba(79,209,224,.18) 0%, transparent 45%),
+    linear-gradient(180deg,#152043,#0b1125);box-shadow:0 24px 80px rgba(0,0,0,.7),0 0 0 1px rgba(79,209,224,.12) inset;padding:0;text-align:left;overflow:hidden}
+  .commanderHead{display:flex;align-items:flex-start;gap:14px;padding:20px 22px 16px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(79,209,224,.08),rgba(79,209,224,.02))}
+  .commanderHead .cSym{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;line-height:1;color:var(--p0);background:radial-gradient(circle at 40% 35%, rgba(79,209,224,.25), rgba(79,209,224,.06));border:1px solid color-mix(in srgb,var(--p0) 45%,var(--line));box-shadow:0 0 14px rgba(79,209,224,.2);filter:drop-shadow(0 0 9px var(--p0))}
+  .commanderHead h2{font-family:"Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;font-size:25px;letter-spacing:.04em;margin:0;color:var(--ink)}
+  .commanderHead .cSub{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--p0);margin-top:4px}
+  .commanderHead .cTag{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);margin-top:6px}
+  .commanderHead button{margin-left:auto;padding:8px 11px;font-size:10px}
+  .commanderBody{padding:18px 22px 20px}
+  .commanderPassive{border:1px solid color-mix(in srgb,var(--p0) 35%,var(--line));border-radius:12px;padding:13px 14px;background:linear-gradient(180deg,color-mix(in srgb,var(--p0) 10%,var(--panel)),color-mix(in srgb,var(--p0) 4%,var(--panel)));margin:0 0 16px}
+  .commanderPassive .label{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--p0);margin-bottom:6px}
+  .commanderPassive .text{font-size:13px;line-height:1.6;color:var(--ink)}
+  .commanderCard h3{font-family:"Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin:18px 0 10px}
+  .commanderSig{display:flex;flex-direction:column;gap:10px}
+  .commanderSig .sig{border:1px solid var(--line);border-radius:12px;padding:11px 12px;background:linear-gradient(180deg,color-mix(in srgb,var(--p0) 6%,var(--panel)),var(--panel));box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+  .commanderSig .sigTop{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .commanderSig .sigName{font-size:12px;font-weight:700;color:var(--ink)}
+  .commanderSig .sigType{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+  .commanderSig .sigDesc{font-size:12px;line-height:1.55;color:var(--dim);margin-top:5px}
+  .commanderTip{font-size:11px;line-height:1.6;color:var(--dim);margin-top:14px;padding-top:10px;border-top:1px solid var(--line)}
+
+  /* turn owner banner — one clean integrated row */
+  .turnbar{display:flex;align-items:center;gap:11px;padding:13px 14px;border-radius:11px;position:relative;overflow:hidden;
     background:linear-gradient(100deg, color-mix(in srgb, var(--turncol,#4fd1e0) 22%, var(--panel)) 0%, var(--panel) 60%);
     border:1px solid color-mix(in srgb, var(--turncol,#4fd1e0) 45%, var(--line));
     box-shadow:inset 0 1px 0 color-mix(in srgb,#fff 12%,transparent), 0 2px 8px rgba(0,0,0,.28)}
   .turnbar::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,color-mix(in srgb,#fff 7%,transparent),transparent 40%)}
-  .turnbar .tdot{width:14px;height:14px;border-radius:50%;background:var(--turncol,#4fd1e0);box-shadow:0 0 12px var(--turncol,#4fd1e0);flex-shrink:0}
-  .turnbar .tname{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:15px;letter-spacing:.03em;flex:1;color:var(--ink)}
-  .turnbar .treinf{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:13px;color:var(--gold);white-space:nowrap;font-variant-numeric:tabular-nums}
+  .turnbar .tdot{width:18px;height:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--turncol,#4fd1e0);font-size:17px;line-height:1;filter:drop-shadow(0 0 7px var(--turncol,#4fd1e0));position:relative;z-index:1}
+  .turnbar .tname{font-family:"Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;font-weight:700;font-size:16px;letter-spacing:.02em;flex:1;color:var(--ink);min-width:0;position:relative;z-index:1}
+  .turnbar .treinf{font-family:"Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;font-weight:700;font-size:13px;color:var(--gold);white-space:nowrap;font-variant-numeric:tabular-nums;position:relative;z-index:1}
+  .turnbar.player{cursor:pointer}
+  .turnbar.player:hover{border-color:var(--p0);background:linear-gradient(100deg,color-mix(in srgb,var(--p0) 28%,var(--panel)),var(--panel) 62%)}
   .turnbar.enemy{--turncol:var(--dim)}
 
   /* phase rail — a stepper you progress through */
   .phaserail{display:flex;gap:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:linear-gradient(180deg,color-mix(in srgb,#000 8%,var(--panel)),var(--panel));box-shadow:inset 0 1px 3px rgba(0,0,0,.35),inset 0 1px 0 color-mix(in srgb,#fff 5%,transparent)}
-  .pstep{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 4px;font-family:"Space Grotesk",sans-serif;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);border-right:1px solid var(--line);position:relative;transition:.2s}
+  .pstep{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 4px;font-family:"Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);border-right:1px solid var(--line);position:relative;transition:.2s}
   .pstep:last-child{border-right:none}
   .pstep .pnum{width:16px;height:16px;border-radius:50%;border:1px solid var(--line);display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;transition:.2s}
   .pstep.done{color:var(--dim)}
@@ -54,7 +103,7 @@
 
   .btns{display:flex;gap:7px}
   .btns button{flex:1}
-  button{font-family:"Space Grotesk",sans-serif;font-size:12px;letter-spacing:.12em;text-transform:uppercase;padding:12px 11px;border:1px solid var(--line);border-radius:9px;background:linear-gradient(180deg,color-mix(in srgb,#fff 4%,var(--panel)),var(--panel));color:var(--ink);cursor:pointer;transition:.15s;font-weight:500;box-shadow:inset 0 1px 0 color-mix(in srgb,#fff 7%,transparent),0 1px 3px rgba(0,0,0,.2)}
+  button{font-family:"Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;font-size:12px;letter-spacing:.12em;text-transform:uppercase;padding:12px 11px;border:1px solid var(--line);border-radius:9px;background:linear-gradient(180deg,color-mix(in srgb,#fff 4%,var(--panel)),var(--panel));color:var(--ink);cursor:pointer;transition:.15s;font-weight:500;box-shadow:inset 0 1px 0 color-mix(in srgb,#fff 7%,transparent),0 1px 3px rgba(0,0,0,.2)}
   button:hover:not(:disabled){border-color:var(--gold);background:color-mix(in srgb,var(--gold) 10%,var(--panel));box-shadow:inset 0 1px 0 color-mix(in srgb,#fff 10%,transparent),0 2px 8px rgba(0,0,0,.28)}
   button:active:not(:disabled){transform:translateY(1px);box-shadow:inset 0 1px 3px rgba(0,0,0,.3)}
   button:disabled{opacity:.28;cursor:not-allowed}
@@ -101,7 +150,7 @@
   .card.disabled{opacity:.42;cursor:not-allowed}
   .card.armed{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold),0 0 16px color-mix(in srgb,var(--gold) 40%,transparent)}
   .card .csym{position:absolute;top:5px;left:0;right:0;text-align:center;font-size:19px;color:var(--suitcol,#4fd1e0);filter:drop-shadow(0 0 6px currentColor);line-height:1}
-  .card .cn{font-family:"Space Grotesk",sans-serif;font-size:9.5px;font-weight:600;letter-spacing:.02em;text-align:center;padding:4px 3px 6px;position:relative;z-index:1;line-height:1.15}
+  .card .cn{font-family:"Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;font-size:9.5px;font-weight:600;letter-spacing:.02em;text-align:center;padding:4px 3px 6px;position:relative;z-index:1;line-height:1.15}
   .card .rare{position:absolute;top:4px;right:5px;font-size:8px;color:var(--gold);z-index:2}
   .handempty{font-size:9px;color:var(--dim);padding:4px 2px;line-height:1.5}
   #cardModal{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(7,11,24,.55);backdrop-filter:blur(3px);z-index:30}
@@ -113,7 +162,7 @@
   .cmRare{position:absolute;top:9px;right:12px;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
   .cmTag{position:absolute;top:9px;left:12px;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim)}
   .cmBody{padding:14px 16px 16px}
-  .cmName{font-family:"Space Grotesk",sans-serif;font-size:19px;font-weight:700;letter-spacing:.03em;margin-bottom:4px}
+  .cmName{font-family:"Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;font-size:19px;font-weight:700;letter-spacing:.03em;margin-bottom:4px}
   .cmSuitName{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);margin-bottom:10px}
   .cmDesc{font-size:12px;line-height:1.55;color:var(--ink);margin-bottom:8px}
   .cmNote{font-size:10px;line-height:1.5;color:var(--dim);min-height:14px;margin-bottom:14px}
@@ -121,10 +170,10 @@
   .cmBtns button{flex:1;padding:10px}
   .tip{color:var(--gold)}
   #banner{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;background:rgba(7,11,24,.82);backdrop-filter:blur(4px);z-index:20;gap:18px;text-align:center;padding:24px;overflow-y:auto}
-  #banner h2{font-family:"Space Grotesk",sans-serif;font-size:40px;letter-spacing:.1em;margin:0}
+  #banner h2{font-family:"Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;font-size:40px;letter-spacing:.1em;margin:0}
   #banner p{color:var(--dim);max-width:440px;line-height:1.7;font-size:12px;letter-spacing:.04em}
   #banner.hidden{display:none}
-  .commanderWrap{width:min(820px,92vw);display:flex;flex-direction:column;gap:8px}
+  .commanderWrap{width:820px;max-width:calc(100% - 48px);display:flex;flex-direction:column;gap:8px}
   .commanderLabel{font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--dim)}
   .commanderGrid{display:grid;grid-template-columns:repeat(4,minmax(145px,1fr));gap:9px}
   .commanderPick{position:relative;text-align:left;padding:13px 12px 11px;min-height:142px;text-transform:none;letter-spacing:0;border-radius:12px;overflow:hidden}
@@ -133,42 +182,18 @@
   .commanderPick .cicon{font-size:25px;color:var(--ccol);filter:drop-shadow(0 0 8px var(--ccol));position:relative}
   .commanderPick .cname{font-size:14px;font-weight:700;color:var(--ink);margin:5px 0 1px;position:relative}
   .commanderPick .ctitle{font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--ccol);margin-bottom:7px;position:relative}
-  .commanderPick .cpass{font-family:"DM Mono",monospace;font-size:9px;line-height:1.45;color:var(--dim);position:relative}
-  .commanderPick .ccards{font-family:"DM Mono",monospace;font-size:8px;line-height:1.4;color:var(--gold);margin-top:7px;position:relative}
+  .commanderPick .cpass{font-family:"Cascadia Mono","Consolas","Segoe UI Mono",monospace;font-size:9px;line-height:1.45;color:var(--dim);position:relative}
+  .commanderPick .ccards{font-family:"Cascadia Mono","Consolas","Segoe UI Mono",monospace;font-size:8px;line-height:1.4;color:var(--gold);margin-top:7px;position:relative}
   .prow .cmd{display:block;font-size:7px;letter-spacing:.08em;color:var(--dim);margin-top:1px}
-  @media(max-width:900px){.commanderGrid{grid-template-columns:repeat(2,minmax(145px,1fr))}.commanderPick{min-height:125px}}
+  
   /* --- responsive: tablet keeps sidebar but slimmer; narrow/portrait docks it below the map --- */
-  @media(max-width:1024px){
-    #side{width:288px;padding:13px 13px 11px;gap:9px}
-    .card{height:54px}
-    #log{font-size:10px}
-  }
-  @media(max-width:820px), (max-aspect-ratio:9/10){
-    #app{flex-direction:column}
-    #stage{flex:1 1 auto;min-height:0}
-    #side{width:100%;flex:0 0 auto;max-height:46vh;border-left:none;border-top:1px solid var(--line);
-      display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:min-content;gap:8px 12px;padding:11px 13px;overflow-y:auto}
-    .brand{grid-column:1 / -1}
-    .turnbar{grid-column:1 / -1}
-    .phaserail{grid-column:1 / -1}
-    .btns{grid-column:1 / -1}
-    .hint{grid-column:1 / -1}
-    .roster{grid-column:1}
-    #cards{grid-column:2}
-    .logwrap{grid-column:1 / -1;max-height:120px}
-    #coach{width:min(300px,calc(100vw - 24px))}
-    .commanderGrid{grid-template-columns:1fr 1fr}
-  }
-  @media(max-width:520px){
-    #side{grid-template-columns:1fr;max-height:52vh}
-    .roster,#cards,.logwrap{grid-column:1}
-    #banner h1{font-size:34px !important}
-    .setup{flex-direction:column;align-items:stretch}
-  }
+  
+  
+  
   .setup{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
   .setup label{font-size:11px;letter-spacing:.14em;color:var(--dim);display:flex;flex-direction:column;gap:6px;text-transform:uppercase}
   /* tutorial coach */
-  #coach{position:absolute;z-index:40;width:290px;max-width:calc(100vw - 32px);background:linear-gradient(180deg,color-mix(in srgb,var(--panel) 88%,transparent),color-mix(in srgb,var(--void2) 86%,transparent));backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--gold);border-radius:13px;box-shadow:0 14px 40px rgba(0,0,0,.5);padding:0;display:none;animation:coachpop .22s ease;opacity:.97;transition:opacity .2s}
+  #coach{position:absolute;z-index:40;width:290px;max-width:calc(100% - 32px);background:linear-gradient(180deg,color-mix(in srgb,var(--panel) 88%,transparent),color-mix(in srgb,var(--void2) 86%,transparent));backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--gold);border-radius:13px;box-shadow:0 14px 40px rgba(0,0,0,.5);padding:0;display:none;animation:coachpop .22s ease;opacity:.97;transition:opacity .2s}
   #coach:hover{opacity:1}
   #coach.show{display:block}
   @keyframes coachpop{from{opacity:0}to{opacity:.97}}
@@ -177,12 +202,12 @@
   #coach .chdr .cgrip{color:var(--dim);font-size:12px;letter-spacing:-1px;opacity:.6;margin-left:2px}
   #coach.dragging{transition:none;opacity:1}
   #coach .cav{width:28px;height:28px;border-radius:50%;background:radial-gradient(circle at 40% 35%,var(--gold),color-mix(in srgb,var(--gold) 40%,#000));flex-shrink:0;box-shadow:0 0 12px color-mix(in srgb,var(--gold) 55%,transparent);display:flex;align-items:center;justify-content:center;font-size:15px}
-  #coach .cttl{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:13px;letter-spacing:.03em;color:var(--ink);flex:1}
+  #coach .cttl{font-family:"Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;font-weight:700;font-size:13px;letter-spacing:.03em;color:var(--ink);flex:1}
   #coach .cstep{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim)}
   #coach .cbody{padding:0 14px 12px;font-size:12px;line-height:1.6;color:var(--ink)}
   #coach .cbody b{color:var(--gold);font-weight:600}
   #coach .cbody .drow{display:flex;gap:6px;align-items:center;margin:9px 0;flex-wrap:wrap}
-  #coach .cbody .pd{width:26px;height:26px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:13px;color:#fff}
+  #coach .cbody .pd{width:26px;height:26px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-family:"Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;font-weight:700;font-size:13px;color:#fff}
   #coach .cbody .pd.win{box-shadow:0 0 0 2px #fff, 0 0 10px rgba(255,255,255,.5)}
   #coach .cbtns{display:flex;gap:8px;padding:0 14px 13px}
   #coach .cbtns button{flex:1;padding:9px;font-size:11px}
@@ -199,22 +224,64 @@
   #turnsweep .band{position:absolute;left:0;right:0;height:96px;display:flex;align-items:center;justify-content:center;
     background:linear-gradient(90deg,transparent, color-mix(in srgb,var(--swcol,#4fd1e0) 26%,rgba(7,11,24,.86)) 18%, color-mix(in srgb,var(--swcol,#4fd1e0) 26%,rgba(7,11,24,.86)) 82%, transparent);
     border-top:1px solid color-mix(in srgb,var(--swcol,#4fd1e0) 55%,transparent);border-bottom:1px solid color-mix(in srgb,var(--swcol,#4fd1e0) 55%,transparent);backdrop-filter:blur(2px)}
-  #turnsweep .swname{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:26px;letter-spacing:.14em;text-transform:uppercase;color:#fff;text-shadow:0 0 18px var(--swcol,#4fd1e0),0 2px 6px rgba(0,0,0,.6);display:flex;align-items:center;gap:14px}
-  #turnsweep .swturn{font-family:"DM Mono",monospace;font-size:12px;letter-spacing:.3em;color:color-mix(in srgb,var(--swcol,#4fd1e0) 70%,#fff);opacity:.9}
+  #turnsweep .swname{font-family:"Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;font-weight:700;font-size:26px;letter-spacing:.14em;text-transform:uppercase;color:#fff;text-shadow:0 0 18px var(--swcol,#4fd1e0),0 2px 6px rgba(0,0,0,.6);display:flex;align-items:center;gap:14px}
+  #turnsweep .swturn{font-family:"Cascadia Mono","Consolas","Segoe UI Mono",monospace;font-size:12px;letter-spacing:.3em;color:color-mix(in srgb,var(--swcol,#4fd1e0) 70%,#fff);opacity:.9}
   #turnsweep .swdot{width:15px;height:15px;border-radius:50%;background:var(--swcol,#4fd1e0);box-shadow:0 0 16px var(--swcol,#4fd1e0)}
   @keyframes sweepIn{0%{opacity:0}12%{opacity:1}72%{opacity:1}100%{opacity:0}}
   @keyframes sweepBand{0%{transform:translateX(-30px) scaleY(.2);opacity:0}20%{transform:translateX(0) scaleY(1);opacity:1}78%{transform:translateX(0) scaleY(1);opacity:1}100%{transform:translateX(30px) scaleY(.2);opacity:0}}
   #turnsweep.play .band{animation:sweepBand 1.35s cubic-bezier(.2,.7,.2,1) forwards}
   @media(prefers-reduced-motion:reduce){#turnsweep.play,#turnsweep.play .band{animation-duration:.6s}}
-  select{font-family:"DM Mono",monospace;background:var(--panel);color:var(--ink);border:1px solid var(--line);padding:8px 12px;border-radius:7px;font-size:13px}
+  select{font-family:"Cascadia Mono","Consolas","Segoe UI Mono",monospace;background:var(--panel);color:var(--ink);border:1px solid var(--line);padding:8px 12px;border-radius:7px;font-size:13px}
   #tooltip{position:absolute;pointer-events:none;background:rgba(9,13,30,.95);border:1px solid var(--gold);border-radius:6px;padding:6px 10px;font-size:11px;letter-spacing:.05em;z-index:15;display:none;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.5)}
   .dice{display:flex;gap:5px;align-items:center;font-variant-numeric:tabular-nums}
-  .die{width:20px;height:20px;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:"Space Grotesk",sans-serif}
+  .die{width:20px;height:20px;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:"Segoe UI Variable Display","Segoe UI",system-ui,sans-serif}
   .die.a{background:var(--p1);color:#fff}
   .die.d{background:#243055;color:var(--ink)}
+
+  /* proportional desktop scaling: resizing the native window enlarges or shrinks the entire game */
+  #scaleViewport{contain:layout paint size}
+  #app{isolation:isolate}
+
+  /* accessibility pass: slightly larger text outside the compact sidebar */
+  #banner p{font-size:13.5px;line-height:1.72;max-width:500px}
+  #banner .commanderLabel{font-size:10.5px}
+  #banner .commanderPick{min-height:152px;padding:14px 13px 12px}
+  #banner .commanderPick .cicon{font-size:27px}
+  #banner .commanderPick .cname{font-size:15.5px}
+  #banner .commanderPick .ctitle{font-size:9.5px}
+  #banner .commanderPick .cpass{font-size:10.5px;line-height:1.5}
+  #banner .commanderPick .ccards{font-size:9.25px;line-height:1.45}
+  #banner .setup label{font-size:12px}
+  #banner select{font-size:14.5px;padding:9px 13px}
+  #banner button{font-size:13px}
+
+  #cardModal .cmCard{width:280px}
+  #cardModal .cmTop{height:96px}
+  #cardModal .cmSuit{font-size:48px}
+  #cardModal .cmRare,#cardModal .cmTag{font-size:9px}
+  #cardModal .cmBody{padding:16px 18px 18px}
+  #cardModal .cmName{font-size:21px}
+  #cardModal .cmSuitName{font-size:10.5px}
+  #cardModal .cmDesc{font-size:13.5px;line-height:1.6}
+  #cardModal .cmNote{font-size:11.5px;line-height:1.55}
+  #cardModal button{font-size:12.5px}
+
+  #coach{width:320px}
+  #coach .cttl{font-size:14.5px}
+  #coach .cstep{font-size:9px}
+  #coach .cbody{font-size:13.5px;line-height:1.65}
+  #coach .cbtns button{font-size:12px}
+  #coach .cbtns .skip{font-size:10px}
+
+  #tooltip{font-size:13px;padding:7px 11px}
+  #turnsweep .swname{font-size:29px}
+  #turnsweep .swturn{font-size:13px}
+
+  
 </style>
 </head>
 <body>
+<div id="scaleViewport">
 <div id="app">
   <div id="stage">
     <canvas id="cv"></canvas>
@@ -224,9 +291,9 @@
     <div id="coach"></div>
     <div id="banner">
       <h1 style="font-size:44px;letter-spacing:.3em">STAR<span style="color:var(--gold)">FRONT</span></h1>
-      <p>A galaxy of contested systems drifts in the dark. Choose a commander, claim territory, mass fleets along your borders, and drive every rival faction into extinction. Reinforcements scale with the systems and whole sectors you hold.</p>
+      <p>A galaxy of contested Star Systems drifts in the dark. Choose a commander, secure named Sectors, mass Fleets along your borders, and drive every rival faction from the galaxy. Secured Sectors add bonus Reinforcements each turn.</p>
       <div class="commanderWrap">
-        <div class="commanderLabel">Choose your commander · rival factions use standard command</div>
+        <div class="commanderLabel">Choose your commander · every commander represents your blue faction · rivals use standard command</div>
         <div class="commanderGrid" id="commanderGrid"></div>
       </div>
       <div class="setup">
@@ -241,6 +308,7 @@
         </label>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+        <button id="btnRulesSplash" style="padding:13px 24px">Rules</button>
         <button class="tutorbtn" id="btnTutorial" style="padding:13px 26px">Play Tutorial (1v1)</button>
         <button class="go" id="btnStart" style="padding:13px 40px">Launch Campaign</button>
       </div>
@@ -252,11 +320,12 @@
         <h1>STAR<span>FRONT</span></h1>
         <div class="sub">Galactic Conquest</div>
       </div>
+      <div class="brandActions"><button id="btnRulesInGame" title="Open rules and glossary">Rules</button></div>
     </div>
 
-    <div class="turnbar" id="turnbar">
-      <span class="tdot" id="turnDot"></span>
-      <span class="tname" id="turnName">—</span>
+    <div class="turnbar" id="turnbar" title="View commander">
+      <span class="tdot" id="turnDot">◇</span>
+      <span class="tname" id="turnName">Commander</span>
       <span class="treinf" id="turnReinf"></span>
     </div>
 
@@ -282,23 +351,39 @@
       <div id="log"></div>
     </div>
   </div>
+  <div id="rulesModal" aria-hidden="true"><div class="rulesCard" id="rulesCard"></div></div>
+  <div id="commanderModal" aria-hidden="true"><div class="commanderCard" id="commanderCard"></div></div>
 </div>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+</div>
+<div id="startupError" style="display:none;position:fixed;inset:18px;z-index:9999;padding:18px;overflow:auto;background:#170b12;color:#ffd7dc;border:1px solid #e8563f;border-radius:12px;font:13px/1.5 Consolas,monospace;white-space:pre-wrap"></div>
+<script>
+(function(){
+  const show=function(message){
+    const box=document.getElementById('startupError');
+    if(!box)return;
+    box.style.display='block';
+    box.textContent='STARFRONT could not start.\n\n'+message+'\n\nPress Ctrl+Shift+I to open the WebView console.';
+  };
+  window.addEventListener('error',function(e){show((e.message||'JavaScript error')+'\n'+(e.filename||'')+':'+(e.lineno||0)+':'+(e.colno||0));});
+  window.addEventListener('unhandledrejection',function(e){show('Unhandled promise rejection: '+String(e.reason));});
+  window.__STARFRONT_SHOW_ERROR__=show;
+})();
+</script>
 <script>
 const CV=document.getElementById('cv'),X=CV.getContext('2d');
 const PNAME=['You','Vex Collective','Orrin Dominion','Cygnus Pact','Ashfall Legion','Nyx Swarm'];
 const COMMANDERS={
   kael:{name:'Admiral Kael',title:'Fleet Doctrine',suit:'fleet',sym:'⬢',col:'#4fd1e0',
-    passive:'Your first border deployment each turn gains one additional fleet.',
+    passive:'Your first deployment to a Border System each turn adds 1 extra Fleet.',
     cards:['battleline','coordassault','logistics']},
-  veyra:{name:'Seraph Veyra',title:'Nova Doctrine',suit:'nova',sym:'✦',col:'#f4c15a',
-    passive:'Holding at least half of any sector grants +1 reinforcement each turn.',
+  veyra:{name:'Seraph Veyra',title:'Nova Doctrine',suit:'nova',sym:'✦',col:'#4fd1e0',
+    passive:'Holding at least half the Star Systems in any Sector grants +1 Reinforcement each turn.',
     cards:['stellarforge','solarascension','controlledflare']},
-  orr:{name:'Navigator Orr',title:'Rift Doctrine',suit:'rift',sym:'◈',col:'#c07af0',
-    passive:'Fortification may travel through your entire connected empire.',
+  orr:{name:'Navigator Orr',title:'Rift Doctrine',suit:'rift',sym:'◈',col:'#4fd1e0',
+    passive:'During Fortify, you may move through your entire connected network of friendly Star Systems.',
     cards:['phasewithdrawal','temporalecho','wormhole']},
-  nyx:{name:'Warden Nyx',title:'Disruption Doctrine',suit:'rift',sym:'⛧',col:'#e8563f',
-    passive:'The first system conquered from you each round becomes neutral instead.',
+  nyx:{name:'Warden Nyx',title:'Disruption Doctrine',suit:'rift',sym:'⛧',col:'#4fd1e0',
+    passive:'The first Star System conquered from you each round becomes Neutral instead.',
     cards:['falseorders','signalghost','fracture']}
 };
 let SELECTED_COMMANDER='kael';
@@ -314,9 +399,26 @@ const INK={starA:'rgba(200,220,255,',neutral:'#5a6484',nodeCore:'#0a0f22',edge:'
   label:'rgba(170,190,240,',hull:1,sel:'#ffffff',neb:.5,star:.9};
 function ink(){return INK;}
 
-function resize(){DPR=Math.min(2,window.devicePixelRatio||1);W=CV.clientWidth;H=CV.clientHeight;CV.width=W*DPR;CV.height=H*DPR;X.setTransform(DPR,0,0,DPR,0,0);if(G){buildBackdrop();draw();}}
-window.addEventListener('resize',resize);
-window.addEventListener('orientationchange',()=>setTimeout(resize,120));
+const APP_BASE_W=1400,APP_BASE_H=850;
+let APP_SCALE=1;
+function resize(){
+  // The canvas keeps logical game coordinates while its backing store grows
+  // with the visual scale, keeping map labels and fleet counts crisp.
+  DPR=Math.min(3,(window.devicePixelRatio||1)*Math.max(1,APP_SCALE));
+  W=CV.clientWidth;H=CV.clientHeight;
+  CV.width=Math.round(W*DPR);CV.height=Math.round(H*DPR);
+  X.setTransform(DPR,0,0,DPR,0,0);
+  if(G){buildBackdrop();draw();}
+}
+function fitAppToWindow(){
+  const sx=window.innerWidth/APP_BASE_W,sy=window.innerHeight/APP_BASE_H;
+  APP_SCALE=Math.max(.35,Math.min(3,sx,sy));
+  document.documentElement.style.setProperty('--app-scale',APP_SCALE.toFixed(4));
+  document.documentElement.dataset.appScale=APP_SCALE.toFixed(3);
+  resize();
+}
+window.addEventListener('resize',fitAppToWindow);
+window.addEventListener('orientationchange',()=>setTimeout(fitAppToWindow,120));
 if(window.ResizeObserver){const _ro=new ResizeObserver(()=>resize());_ro.observe(document.getElementById('stage'));}
 
 let G=null; // game state
@@ -532,19 +634,19 @@ const SUITS={fleet:{sym:'⬢',name:'Fleet',col:'#4fd1e0'},nova:{sym:'✦',name:'
 const CARDS=[
   // --- territorial ---
   {id:'annex',name:'Annex',suit:'nova',rare:2,tag:'territory',
-   desc:'Instantly capture an adjacent enemy system that holds exactly 1 fleet.',
+   desc:'Instantly conquer an adjacent enemy Star System that holds exactly 1 Fleet.',
    need:p=>enemyNeighbors(p,n=>n.troops===1).length>0,
    targets:p=>enemyNeighbors(p,n=>n.troops===1),
-   run:(p,t)=>{const was=t.owner;t.owner=p;t.troops=1;t.shield=false;ripple(t);log2(p,`annexes <b>${t.name}</b>.`);checkElim(was);}},
+   run:(p,t)=>{const was=t.owner;t.owner=p;t.troops=1;t.shield=false;ripple(t);log2(p,`annexes <b>${t.name}</b>.`);checkElim(was);announceSectorIfSecured(p,t.sector);}},
   {id:'jump',name:'Jump Drive',suit:'rift',rare:1,tag:'territory',
-   desc:'Relocate all but one fleet from one of your systems to any other system you own.',
+   desc:'Move all but 1 Fleet from one Star System you own to any other Star System you own.',
    need:p=>ownedBy(p).filter(n=>n.troops>1).length>0&&ownedBy(p).length>1,
    two:true,
    srcs:p=>ownedBy(p).filter(n=>n.troops>1),
    dsts:(p,s)=>ownedBy(p).filter(n=>n.id!==s.id),
    run:(p,s,d)=>{const mv=s.troops-1;d.troops+=mv;s.troops=1;ripple(d);log2(p,`jumps <b>${mv}</b> fleets ${s.name}→${d.name}.`);}},
   {id:'terra',name:'Terraform',suit:'nova',rare:1,tag:'territory',
-   desc:'Permanently grant +1 reinforcement from a system you hold. Grants a fleet now, and every turn you hold it.',
+   desc:'Terraform one Star System you control: gain 1 Fleet now and +1 Reinforcement each turn while you still hold it.',
    need:p=>ownedBy(p).some(n=>!(G.players[p].terraforms||[]).includes(n.id)),
    targets:p=>ownedBy(p).filter(n=>!(G.players[p].terraforms||[]).includes(n.id)),
    run:(p,t)=>{G.players[p].terraforms.push(t.id);
@@ -554,12 +656,12 @@ const CARDS=[
      ripple(t);log2(p,`terraforms <b>${t.name}</b> (+1 reinforcement now &amp; each turn).`);}},
   // --- disruption ---
   {id:'sabotage',name:'Sabotage',suit:'rift',rare:1,tag:'disrupt',
-   desc:'Remove up to 2 fleets from any enemy system (leaves at least 1).',
+   desc:'Remove up to 2 Fleets from any enemy Star System (leave at least 1).',
    need:p=>anyEnemy(p).length>0,
    targets:p=>anyEnemy(p),
    run:(p,t)=>{const rem=Math.min(2,t.troops-1);t.troops-=rem;ripple(t);log2(p,`sabotages <b>${t.name}</b> (-${rem}).`);}},
   {id:'defect',name:'Defect',suit:'rift',rare:2,tag:'disrupt',
-   desc:'A 1-fleet enemy system adjacent to you defects to neutral (unowned).',
+   desc:'An adjacent enemy Star System with exactly 1 Fleet becomes Neutral (unowned).',
    need:p=>enemyNeighbors(p,n=>n.troops===1).length>0,
    targets:p=>enemyNeighbors(p,n=>n.troops===1),
    run:(p,t)=>{const was=t.owner;t.owner=-1;t.troops=1;t.shield=false;ripple(t);log2(p,`turns <b>${t.name}</b> neutral.`);checkElim(was);}},
@@ -570,12 +672,12 @@ const CARDS=[
    run:(p,q)=>{G.players[q].blockedNext=true;log2(p,`unleashes an ion storm on <b>${G.players[q].name}</b>.`);}},
   // --- economic / tactical support ---
   {id:'muster',name:'Muster',suit:'fleet',rare:0,tag:'econ',
-   desc:'Add 3 fleets to any one system you own.',
+   desc:'Add 3 Fleets to one Star System you own.',
    need:p=>ownedBy(p).length>0,
    targets:p=>ownedBy(p),
    run:(p,t)=>{t.troops+=3;ripple(t);log2(p,`musters +3 at <b>${t.name}</b>.`);}},
   {id:'deploy',name:'Rapid Deploy',suit:'fleet',rare:0,tag:'econ',
-   desc:'Add 1 fleet to every one of your border systems.',
+   desc:'Add 1 Fleet to every Border System you own.',
    need:p=>borderSystems(p).length>0,
    run:(p)=>{const b=borderSystems(p);b.forEach(n=>{n.troops++;ripple(n);});log2(p,`rapid-deploys +1 to ${b.length} border systems.`);}},
   {id:'wargames',name:'War Games',suit:'fleet',rare:1,tag:'econ',
@@ -583,23 +685,23 @@ const CARDS=[
    need:p=>true,
    run:(p)=>{G.warDice++;log2(p,`runs war games (+1 attack die this turn).`);}},
   {id:'starseed',name:'Starseed',suit:'rift',rare:2,tag:'territory',
-   desc:'Seed a colony onto any enemy system holding 1–2 fleets, anywhere on the map. It becomes yours with 1 fleet.',
+   desc:'Conquer any enemy Star System with 1–2 Fleets anywhere on the map. It becomes yours with 1 Fleet.',
    need:p=>G.nodes.some(n=>n.owner>=0&&n.owner!==p&&n.troops<=2),
    targets:p=>G.nodes.filter(n=>n.owner>=0&&n.owner!==p&&n.troops<=2),
-   run:(p,t)=>{const was=t.owner;t.owner=p;t.troops=1;t.shield=false;ripple(t);stampSigil(t);log2(p,`seeds a colony on <b>${t.name}</b>.`);checkElim(was);}},
+   run:(p,t)=>{const was=t.owner;t.owner=p;t.troops=1;t.shield=false;ripple(t);stampSigil(t);log2(p,`seeds a colony on <b>${t.name}</b>.`);checkElim(was);announceSectorIfSecured(p,t.sector);}},
 
   // --- stabilizing / comeback tools ---
   {id:'aegis',name:'Aegis Array',suit:'fleet',rare:1,tag:'defense',
-   desc:'Add 1 fleet to one of your systems and shield it. The shield prevents its next fleet loss while defending.',
+   desc:'Add 1 Fleet to one Star System you own and give it an Aegis shield. The shield prevents its next Fleet loss while defending.',
    need:p=>ownedBy(p).length>0,
    targets:p=>ownedBy(p),
    run:(p,t)=>{t.troops++;t.shield=true;ripple(t);log2(p,`raises an aegis over <b>${t.name}</b>.`);}},
   {id:'colonysurge',name:'Colony Surge',suit:'nova',rare:0,tag:'econ',
-   desc:'Add 1 fleet to each of your three weakest systems.',
+   desc:'Add 1 Fleet to each of your three weakest Star Systems.',
    need:p=>ownedBy(p).length>0,
    run:(p)=>{const ts=ownedBy(p).slice().sort((a,b)=>a.troops-b.troops||threatOf(b)-threatOf(a)).slice(0,3);ts.forEach(t=>{t.troops++;ripple(t);});log2(p,`surges +1 fleet into ${ts.length} vulnerable systems.`);}},
   {id:'riftnet',name:'Rift Network',suit:'rift',rare:0,tag:'econ',
-   desc:'Choose one of your systems. Up to four systems you hold in that sector gain +1 fleet.',
+   desc:'Choose one Star System you own. Up to four of your Star Systems in that Sector gain +1 Fleet.',
    need:p=>ownedBy(p).length>0,
    targets:p=>ownedBy(p),
    run:(p,t)=>{const ts=G.sectors[t.sector].members.map(id=>G.nodes[id]).filter(n=>n.owner===p)
@@ -608,13 +710,13 @@ const CARDS=[
 
   // --- COMMANDER SIGNATURE SETS ---
   {id:'battleline',name:'Battle Line',suit:'fleet',rare:1,tag:'defense',commander:'kael',drawWeight:2.2,
-   desc:'Choose two adjacent systems you own. Each gains 1 fleet and an Aegis shield.',
+   desc:'Choose two adjacent Star Systems you own. Each gains 1 Fleet and an Aegis shield.',
    need:p=>ownedBy(p).some(a=>a.adj.some(j=>G.nodes[j].owner===p)),two:true,
    srcs:p=>ownedBy(p).filter(a=>a.adj.some(j=>G.nodes[j].owner===p)),
    dsts:(p,a)=>a.adj.map(j=>G.nodes[j]).filter(n=>n.owner===p),
    run:(p,a,b)=>{for(const n of [a,b]){n.troops++;n.shield=true;ripple(n);}log2(p,`forms a shielded battle line at <b>${a.name}</b> and <b>${b.name}</b>.`);}},
   {id:'coordassault',name:'Coordinated Assault',suit:'fleet',rare:1,tag:'disrupt',commander:'kael',drawWeight:2,
-   desc:'Choose an enemy system bordering at least two of yours. Your next two assaults against it gain +1 attack die.',
+   desc:'Choose an enemy Star System linked to at least two of yours. Your next two assaults against it gain +1 attack die.',
    need:p=>G.nodes.some(t=>t.owner!==p&&t.owner>=0&&t.adj.filter(j=>G.nodes[j].owner===p).length>=2),
    targets:p=>G.nodes.filter(t=>t.owner!==p&&t.owner>=0&&t.adj.filter(j=>G.nodes[j].owner===p).length>=2),
    run:(p,t)=>{const pl=G.players[p];pl.coordinatedTarget=t.id;pl.coordinatedCharges=2;log2(p,`coordinates converging assaults on <b>${t.name}</b>.`);}},
@@ -623,20 +725,20 @@ const CARDS=[
    run:p=>{G.players[p].extraFortify++;log2(p,`authorizes an additional fortification.`);}},
 
   {id:'stellarforge',name:'Stellar Forge',suit:'nova',rare:0,tag:'econ',commander:'veyra',drawWeight:2.5,
-   desc:'Choose one of your systems. Your three weakest systems in that sector each gain 1 fleet.',
+   desc:'Choose one Star System you own. Your three weakest Star Systems in that Sector each gain 1 Fleet.',
    need:p=>ownedBy(p).length>0,targets:p=>ownedBy(p),
    run:(p,t)=>{const ts=G.sectors[t.sector].members.map(id=>G.nodes[id]).filter(n=>n.owner===p).sort((a,b)=>a.troops-b.troops).slice(0,3);ts.forEach(n=>{n.troops++;ripple(n);});log2(p,`kindles a stellar forge in <b>${G.sectors[t.sector].name}</b> (+1 to ${ts.length}).`);}},
   {id:'solarascension',name:'Solar Ascension',suit:'nova',rare:1,tag:'econ',commander:'veyra',drawWeight:2,
-   desc:'Gain 2 reinforcements for every complete sector you control.',
+   desc:'Gain 2 Reinforcements for every Sector you have secured (you own every Star System in it).',
    need:p=>G.sectors.some(sec=>sectorOwner(sec)===p)&&(p!==0||G.phase==='reinforce'),
    run:p=>{const n=G.sectors.filter(sec=>sectorOwner(sec)===p).length,amt=2*n;G.reinf+=amt;log2(p,`draws <b>+${amt}</b> fleets from solar ascension.`);}},
   {id:'controlledflare',name:'Controlled Flare',suit:'nova',rare:2,tag:'disrupt',commander:'veyra',drawWeight:1.4,
-   desc:'Choose a sector. Every system there loses 1 fleet, but none falls below 1.',
+   desc:'Choose a Sector. Every Star System in it loses 1 Fleet, but none falls below 1.',
    need:p=>G.nodes.some(n=>n.troops>1),targets:p=>G.nodes.filter(n=>G.sectors[n.sector].members.some(id=>G.nodes[id].troops>1)),
    run:(p,t)=>{const ns=G.sectors[t.sector].members.map(id=>G.nodes[id]);let hit=0;for(const n of ns)if(n.troops>1){n.troops--;ripple(n);hit++;}log2(p,`releases a controlled flare across <b>${G.sectors[t.sector].name}</b> (${hit} systems thinned).`);}},
 
   {id:'phasewithdrawal',name:'Phase Withdrawal',suit:'rift',rare:1,tag:'defense',commander:'orr',drawWeight:2,
-   desc:'Move all but one fleet from a border system to any system you own, then shield the evacuated system.',
+   desc:'Move all but 1 Fleet from a Border System to any Star System you own, then shield the evacuated Border System.',
    need:p=>borderSystems(p).some(n=>n.troops>1)&&ownedBy(p).length>1,two:true,
    srcs:p=>borderSystems(p).filter(n=>n.troops>1),dsts:(p,s)=>ownedBy(p).filter(n=>n.id!==s.id),
    run:(p,s,d)=>{const mv=s.troops-1;s.troops=1;d.troops+=mv;s.shield=true;ripple(s);ripple(d);log2(p,`phases ${mv} fleets from <b>${s.name}</b> to <b>${d.name}</b>.`);}},
@@ -645,7 +747,7 @@ const CARDS=[
    need:p=>{const id=G.players[p].lastPlayedCard,c=id&&cardById(id);return !!c&&c.rare<2&&G.players[p].hand.length<5;},
    run:p=>{const id=G.players[p].lastPlayedCard;G.players[p].hand.push(id);log2(p,`recovers <b>${cardById(id).name}</b> from a temporal echo.`);}},
   {id:'wormhole',name:'Wormhole Lattice',suit:'rift',rare:0,tag:'territory',commander:'orr',drawWeight:2.5,
-   desc:'Choose two systems you own. They count as adjacent until the start of your next turn.',
+   desc:'Choose two Star Systems you own. A temporary Lane links them until the start of your next turn.',
    need:p=>ownedBy(p).length>1,two:true,srcs:p=>ownedBy(p),dsts:(p,s)=>ownedBy(p).filter(n=>n.id!==s.id),
    run:(p,a,b)=>{G.players[p].wormholes.push({a:a.id,b:b.id});log2(p,`opens a wormhole between <b>${a.name}</b> and <b>${b.name}</b>.`);}},
 
@@ -654,11 +756,11 @@ const CARDS=[
    need:p=>G.players.some(q=>q.alive&&q.i!==p),pickPlayer:true,
    run:(p,q)=>{G.players[q].reinfPenaltyNext=(G.players[q].reinfPenaltyNext||0)+2;G.players[p].bonusReinfNext+=2;log2(p,`feeds false orders to <b>${G.players[q].name}</b>.`);}},
   {id:'signalghost',name:'Signal Ghost',suit:'rift',rare:0,tag:'defense',commander:'nyx',drawWeight:2.5,
-   desc:'Choose two systems you own. Rival AI overestimates each by 3 fleets until your next turn.',
+   desc:'Choose two Star Systems you own. Rival AI overestimates each by 3 Fleets until your next turn.',
    need:p=>ownedBy(p).length>1,two:true,srcs:p=>ownedBy(p),dsts:(p,s)=>ownedBy(p).filter(n=>n.id!==s.id),
    run:(p,a,b)=>{a.ghost=true;b.ghost=true;ripple(a);ripple(b);log2(p,`casts signal ghosts over <b>${a.name}</b> and <b>${b.name}</b>.`);}},
   {id:'fracture',name:'Fracture',suit:'rift',rare:2,tag:'disrupt',commander:'nyx',drawWeight:1.4,
-   desc:'Choose a connected lane. It is severed for everyone until the start of your next turn.',
+   desc:'Choose a Lane between two adjacent Star Systems. That Lane is severed for everyone until the start of your next turn.',
    need:p=>G.nodes.some(n=>n.adj.length),two:true,srcs:p=>G.nodes,
    dsts:(p,s)=>s.adj.map(j=>G.nodes[j]).filter(n=>!isFractured(s.id,n.id)),
    run:(p,a,b)=>{G.fractures.push({a:Math.min(a.id,b.id),b:Math.max(a.id,b.id),owner:p});log2(p,`fractures the lane between <b>${a.name}</b> and <b>${b.name}</b>.`);}},
@@ -671,21 +773,28 @@ const CARDS=[
    desc:'Your next assault gains +1 attack die.',
    run:(p)=>{G.players[p].attackBoostNext=1;log2(p,`rallies <b>veteran crews</b> (+1 die on the next assault).`);}},
   {id:'repairs',name:'Emergency Repairs',suit:'rift',rare:1,tag:'instant',instant:true,drawWeight:2.1,
-   desc:'Your two weakest systems each gain 1 fleet immediately.',
+   desc:'Your two weakest Star Systems each gain 1 Fleet immediately.',
    run:(p)=>{const ts=ownedBy(p).slice().sort((a,b)=>a.troops-b.troops).slice(0,2);ts.forEach(t=>{t.troops++;ripple(t);});log2(p,`completes <b>emergency repairs</b> (+1 at ${ts.length} systems).`);}},
 
   // --- rare hazards: lighter weights keep conquest rewards mostly rewarding ---
   {id:'solarflare',name:'Solar Flare',suit:'nova',rare:1,tag:'hazard',instant:true,drawWeight:1.15,
-   desc:'A solar flare scatters your fleets — your largest system loses 2 fleets (min 1).',
+   desc:'A solar flare scatters your Fleets — your largest Star System loses 2 Fleets (minimum 1).',
    run:(p)=>{const big=ownedBy(p).slice().sort((a,b)=>b.troops-a.troops)[0];if(!big)return;const rem=Math.min(2,big.troops-1);big.troops-=rem;ripple(big);log2(p,`is hit by a <b>solar flare</b> — ${big.name} loses ${rem}.`);}},
   {id:'defectors',name:'Defectors',suit:'rift',rare:1,tag:'hazard',instant:true,drawWeight:1.15,
-   desc:'Unrest spreads — one of your border systems loses 1 fleet to desertion (min 1).',
+   desc:'Unrest spreads — one Border System loses 1 Fleet to desertion (minimum 1).',
    run:(p)=>{const b=borderSystems(p).filter(n=>n.troops>1);const t=b.length?b[Math.floor(Math.random()*b.length)]:ownedBy(p).slice().sort((a,b)=>b.troops-a.troops)[0];if(!t||t.troops<2)return;t.troops--;ripple(t);log2(p,`suffers <b>defectors</b> — ${t.name} loses 1.`);}},
   {id:'blockaderun',name:'Supply Blockade',suit:'fleet',rare:1,tag:'hazard',instant:true,drawWeight:1.15,
    desc:'Your supply lines are cut — your next assault rolls 1 fewer attack die.',
    run:(p)=>{G.players[p].attackPenaltyNext=1;log2(p,`hits a <b>supply blockade</b> (−1 die on the next assault).`);}},
 ];
 function cardById(id){return CARDS.find(c=>c.id===id);}
+function announceSectorIfSecured(p,sectorId){
+  const sec=G.sectors[sectorId];
+  if(sec&&sectorOwner(sec)===p){
+    const who=p===0?'You':G.players[p].name;
+    logMsg(`<span class="hit">◆ SECTOR SECURED · <b>${sec.name}</b> · ${who} gains +${sec.bonus} Reinforcement${sec.bonus===1?'':'s'} each turn.</span>`,p===0?'me':'hit');
+  }
+}
 function edgeKey(a,b){return a<b?a+':'+b:b+':'+a;}
 function isFractured(a,b){const k=edgeKey(a,b);return (G.fractures||[]).some(e=>edgeKey(e.a,e.b)===k);}
 function wormholeLinked(a,b,p){return (G.players[p]?.wormholes||[]).some(e=>edgeKey(e.a,e.b)===edgeKey(a.id,b.id));}
@@ -839,7 +948,7 @@ function draw(){
   for(const s of G.sectors){
     const own=sectorOwner(s);
     X.fillStyle=K.label+(own>=0?.7:.42)+')';
-    X.font='700 9.5px "Space Grotesk"';X.textAlign='center';X.letterSpacing='1.5px';
+    X.font='700 11.5px "Segoe UI Variable Display","Segoe UI",system-ui,sans-serif';X.textAlign='center';X.letterSpacing='1.5px';
     X.fillText(s.name.toUpperCase(),s.cx,s.cy-32);
     if(own>=0){X.fillStyle=rgba(PCOL[own],.9);X.fillText('◆ '+G.players[own].name.toUpperCase()+' +'+s.bonus,s.cx,s.cy+40);}
     X.letterSpacing='0px';
@@ -943,7 +1052,7 @@ function draw(){
     }
     if(n.ghost){X.strokeStyle=rgba('#c07af0',.75);X.lineWidth=1.5;X.beginPath();X.arc(n.x,n.y,r+14+2*Math.sin(t*3+n.id),0,7);X.stroke();X.lineWidth=1;}
     // troop count
-    X.fillStyle='#fff';X.font='700 12px "Space Grotesk"';X.textAlign='center';X.textBaseline='middle';
+    X.fillStyle='#fff';X.font='700 14px "Segoe UI Variable Display","Segoe UI",system-ui,sans-serif';X.textAlign='center';X.textBaseline='middle';
     X.fillText(n.troops,n.x,n.y+.5);X.textBaseline='alphabetic';
   }
 
@@ -993,7 +1102,7 @@ function draw(){
       X.fillStyle=winner?'#fff':'rgba(255,255,255,.92)';
       drawPips(x,dy,S,val);
       if(blocked){
-        X.fillStyle='#f4c15a';X.font='700 18px "Space Grotesk"';X.textAlign='center';X.textBaseline='middle';
+        X.fillStyle='#f4c15a';X.font='700 20px "Segoe UI Variable Display","Segoe UI",system-ui,sans-serif';X.textAlign='center';X.textBaseline='middle';
         X.fillText('⛨',x+S-3,dy+4);X.textBaseline='alphabetic';
       }
       X.restore();
@@ -1008,12 +1117,12 @@ function draw(){
     });
     // vs
     X.fillStyle=rgba('#dfe6ff',.6*alpha);
-    X.font='700 15px "Space Grotesk"';X.textAlign='center';X.textBaseline='middle';
+    X.font='700 17px "Segoe UI Variable Display","Segoe UI",system-ui,sans-serif';X.textAlign='center';X.textBaseline='middle';
     X.fillText('VS',x+vsW/2,by+yoff);x+=vsW;
     // defender dice
     ds.d.forEach((v,i)=>{const isWin=i<Math.min(ds.a.length,ds.d.length)&&!(ds.a[i]>v);drawBigDie(v,ds.defCol,isWin,false);});
     // loss readout under the tray
-    X.fillStyle=rgba('#f4c15a',.9*alpha);X.font='600 11px "Space Grotesk"';X.textAlign='center';
+    X.fillStyle=rgba('#f4c15a',.9*alpha);X.font='600 13px "Segoe UI Variable Display","Segoe UI",system-ui,sans-serif';X.textAlign='center';
     const shieldNote=ds.aegisBlocked?'⛨ AEGIS BLOCKED 1   ·   ':'';
     X.fillText(`${shieldNote}attacker −${ds.al}   ·   defender −${ds.dl}`, cx, trayY+trayH+yoff+15);
     X.restore();
@@ -1038,7 +1147,7 @@ CV.addEventListener('mousemove',e=>{
   const m=mouse(e),n=nodeAt(m);const tt=document.getElementById('tooltip');
   if(n){const s=G.sectors[n.sector];tt.style.display='block';tt.style.left=(m.x+16)+'px';tt.style.top=(m.y+12)+'px';
     const shield=n.shield?' · <span style="color:#f4c15a">⛨ Aegis active</span>':'';const ghost=n.ghost?' · <span style="color:#c07af0">◈ Signal ghost</span>':'';
-    tt.innerHTML=`<b style="color:${n.owner>=0?PCOL[n.owner]:'#888'}">${n.name}</b> · ${n.troops}⬢ · <span style="color:#7f8bb8">${s.name}</span>${shield}${ghost}`;
+    tt.innerHTML=`<b style="color:${n.owner>=0?PCOL[n.owner]:'#888'}">Star System: ${n.name}</b> · ${n.troops} Fleet${n.troops===1?'':'s'} · <span style="color:#7f8bb8">Sector: ${s.name}</span>${shield}${ghost}`;
   }else tt.style.display='none';
 });
 CV.addEventListener('mouseleave',()=>document.getElementById('tooltip').style.display='none');
@@ -1047,7 +1156,7 @@ CV.addEventListener('click',e=>{
   const n=nodeAt(mouse(e));if(!n)return;
   onClickNode(n);
 });
-function mouse(e){const r=CV.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};}
+function mouse(e){const r=CV.getBoundingClientRect();return{x:(e.clientX-r.left)*(W/r.width),y:(e.clientY-r.top)*(H/r.height)};}
 function nodeAt(m){for(const n of G.nodes)if(Math.hypot(n.x-m.x,n.y-m.y)<16)return n;return null;}
 
 function onClickNode(n){
@@ -1093,7 +1202,7 @@ function completeConquest(attacker,s,t,move){
   }
   t.owner=attacker;t.shield=false;t.ghost=false;t.troops=move;s.troops-=move;
   logMsg(`<span class="hit">${G.players[attacker].name} seizes ${t.name}!</span>`,attacker===0?'me':'');
-  G.conqueredThisTurn=true;ripple(t);stampSigil(t);checkElim(defender);return true;
+  G.conqueredThisTurn=true;ripple(t);stampSigil(t);checkElim(defender);announceSectorIfSecured(attacker,t.sector);return true;
 }
 // ---------- COMBAT ----------
 function rollDice(atk,def,bonus){
@@ -1202,7 +1311,7 @@ function nextPhase(){
 function endTurn(){
   G.sel=null;
   const wasHuman=G.turn===0;
-  // reward: conquering at least one system this turn earns a command card
+  // reward: conquering at least one Star System this turn earns a command card
   if(G.conqueredThisTurn){drawCard(G.turn);G.conqueredThisTurn=false;}
   if(wasHuman)tutNotify('endturn');
   // advance to next alive player
@@ -1303,7 +1412,7 @@ function armCard(cardId){
   if(c.pickPlayer){promptRivalPick(c,cardId);return;}
   if(!c.targets&&!c.two){playCard(cardId,()=>c.run(0));return;}
   G.cardMode={card:c,cardId,stage:1,src:null};
-  const label=c.two?'Select the first system.':'Select a target for '+c.name+'.';
+  const label=c.two?'Select the first Star System.':'Select a target for '+c.name+'.';
   setHint('<span class="tip">'+c.name+':</span> '+label+' <span style="color:#e8563f;cursor:pointer" id="cancelCard">✕ cancel</span>');
   draw();renderCards();
   setTimeout(()=>{const x=document.getElementById('cancelCard');if(x)x.onclick=cancelCard;},0);
@@ -1320,7 +1429,7 @@ function handleCardTarget(n){
   const valid=validTargets();
   if(!valid.includes(n)){flash('Invalid target.');return;}
   if(c.two){
-    if(cm.stage===1){cm.src=n;cm.stage=2;setHint('<span class="tip">'+c.name+':</span> now select the destination system. <span style="color:#e8563f;cursor:pointer" id="cancelCard">✕ cancel</span>');draw();renderCards();setTimeout(()=>{const x=document.getElementById('cancelCard');if(x)x.onclick=cancelCard;},0);return;}
+    if(cm.stage===1){cm.src=n;cm.stage=2;setHint('<span class="tip">'+c.name+':</span> now select the destination Star System. <span style="color:#e8563f;cursor:pointer" id="cancelCard">✕ cancel</span>');draw();renderCards();setTimeout(()=>{const x=document.getElementById('cancelCard');if(x)x.onclick=cancelCard;},0);return;}
     playCard(cm.cardId,()=>c.run(0,cm.src,n));
   }else{
     playCard(cm.cardId,()=>c.run(0,n));
@@ -1353,7 +1462,7 @@ function tryTradeIn(){
   if(!set){flash('Need three of one suit, or one of each.');return;}
   const amt=tradeInSet(0);
   G.reinf+=amt;
-  logMsg(`You trade a card set for <b>+${amt}</b> reinforcements.`,'me');
+  logMsg(`You trade a card set for <b>+${amt}</b> Reinforcements.`,'me');
   updateUI();draw();
 }
 function renderCards(){
@@ -1418,9 +1527,12 @@ function setHint(html){document.getElementById('hint').innerHTML=html;}
 
 function updateUI(){
   const ph=G.phase,turnP=G.players[G.turn],cmd=G.players[0].commander?COMMANDERS[G.players[0].commander]:null;
-  const tb=document.getElementById('turnbar');tb.style.setProperty('--turncol',turnP.col);tb.classList.toggle('enemy',G.turn!==0);
-  document.getElementById('turnDot').style.background=turnP.col;
-  document.getElementById('turnName').textContent=G.turn===0?('Your Command · '+cmd.name):turnP.name;
+  const tb=document.getElementById('turnbar');
+  tb.style.setProperty('--turncol',turnP.col);tb.classList.toggle('enemy',G.turn!==0);tb.classList.toggle('player',G.turn===0);
+  const td=document.getElementById('turnDot');
+  if(G.turn===0&&cmd){td.textContent=cmd.sym;td.style.color=PCOL[0];td.style.background='transparent';tb.title='View '+cmd.name;}
+  else{td.textContent='●';td.style.color=turnP.col;td.style.background='transparent';tb.title=turnP.name;}
+  document.getElementById('turnName').textContent=G.turn===0&&cmd?cmd.name:turnP.name;
   const tr=document.getElementById('turnReinf');if(G.turn===0&&ph==='reinforce'&&G.reinf>0)tr.textContent='⬢ '+G.reinf+' to deploy';else if(G.turn!==0)tr.textContent='thinking…';else tr.textContent='';
   const stepOrder=['reinforce','attack','fortify'],curIdx=stepOrder.indexOf(ph);document.querySelectorAll('.pstep').forEach(el=>{const i=stepOrder.indexOf(el.dataset.ph);el.classList.toggle('current',G.turn===0&&i===curIdx);el.classList.toggle('done',G.turn===0&&curIdx>=0&&i<curIdx);});
   const pc=document.getElementById('players');pc.innerHTML='';const picking=!!G.rivalPick;
@@ -1434,8 +1546,8 @@ function updateUI(){
   const btn=document.getElementById('btnAction'),undo=document.getElementById('btnUndoReinf'),end=document.getElementById('btnEnd'),hint=document.getElementById('hint');renderCards();
   if(G.turn!==0){btn.disabled=true;undo.disabled=true;end.disabled=true;btn.textContent='Enemy Moving…';btn.className='';hint.innerHTML='';return;}
   end.disabled=false;btn.disabled=false;undo.disabled=ph!=='reinforce'||!G.reinfHistory.length;
-  if(ph==='reinforce'){btn.textContent=G.reinf>0?'Deploy — '+G.reinf+' left':'Begin Attack →';btn.className=G.reinf>0?'':'go';hint.innerHTML=G.reinf>0?'<span class="tip">Click your systems</span> to deploy fleets. '+cmd.passive:'All fleets deployed. Move on to the attack phase.';}
-  else if(ph==='attack'){btn.textContent='Begin Fortify →';btn.className='';hint.innerHTML=G.sel!=null?'<span class="tip">Click a linked enemy system</span> to attack.':'<span class="tip">Click one of your systems</span> (2+ fleets) to stage an assault.';}
+  if(ph==='reinforce'){btn.textContent=G.reinf>0?'Deploy — '+G.reinf+' left':'Begin Attack →';btn.className=G.reinf>0?'':'go';hint.innerHTML=G.reinf>0?'<span class="tip">Click your Star Systems</span> to deploy Fleets. '+cmd.passive:'All fleets deployed. Move on to the attack phase.';}
+  else if(ph==='attack'){btn.textContent='Begin Fortify →';btn.className='';hint.innerHTML=G.sel!=null?'<span class="tip">Click a linked enemy Star System</span> to attack.':'<span class="tip">Click one of your Star Systems</span> (2+ Fleets) to stage an assault.';}
   else if(ph==='fortify'){const left=1+G.players[0].extraFortify-G.fortifyMovesUsed;btn.textContent='End Turn';btn.className='go';hint.innerHTML=G.sel!=null?'<span class="tip">Choose a friendly destination</span>.':`${left} fortification${left===1?'':'s'} remaining. ${cmd.passive}`;}
   end.textContent=ph==='fortify'?'Skip / End':'End Turn';
 }
@@ -1455,32 +1567,32 @@ function endGame(winner){
 let TUT=null; // {step, active}
 const TUT_STEPS=[
   {id:'welcome',pin:'center',title:'Welcome, Commander',
-   body:`This is a quick 1v1 to learn the ropes. You command the <b>teal</b> faction; one rival holds the <b>red</b>. Take every enemy system to win.<br><br>Each turn has three phases: <b>Reinforce</b>, <b>Attack</b>, <b>Fortify</b>. Let's walk through them.`,
+   body:`This is a quick 1v1 to learn the ropes. You command the <b>blue</b> faction; one rival holds the <b>red</b>. Conquer every enemy Star System to win.<br><br>Each turn has three phases: <b>Reinforce</b>, <b>Attack</b>, <b>Fortify</b>. Let's walk through them.`,
    next:'Begin'},
   {id:'reinforce',pin:'side',title:'1 · Reinforce',
-   body:`You start each turn with fresh fleets to place. The count is shown in the <b>turn banner</b> at the top of the right panel.<br><br><b>Click any of your teal systems</b> to drop a fleet there. Pile them where you expect to fight. Deploy them all to continue.`,
+   body:`You start each turn with fresh Fleets to place. The count is shown in the <b>turn banner</b> at the top of the right panel.<br><br><b>Click any of your blue Star Systems</b> to drop a Fleet there. Pile them where you expect to fight. Deploy them all to continue.`,
    await:'deploy'},
   {id:'toattack',pin:'side',title:'Into Battle',
    body:`Good. All fleets deployed. Now press <b>Begin Attack →</b> (or the big action button) to enter the attack phase.`,
    await:'phase-attack'},
   {id:'pickattacker',pin:'bottom',title:'2 · Attack',
-   body:`To attack, <b>click one of your systems</b> that has <b>2 or more fleets</b> and borders an enemy. It will highlight, and the enemy systems you can strike will glow gold.<br><br>Pick an attacker now.`,
+   body:`To attack, <b>click one of your Star Systems</b> that has <b>2 or more Fleets</b> and borders an enemy. It will highlight, and the enemy Star Systems you can strike will glow gold.<br><br>Pick an attacker now.`,
    await:'select'},
   {id:'picktarget',pin:'bottom',title:'Choose a Target',
-   body:`Now <b>click a glowing enemy system</b> to launch the assault. Watch the bottom of the map — the dice will settle there.`,
+   body:`Now <b>click a glowing enemy Star System</b> to launch the assault. Watch the bottom of the map — the dice will settle there.`,
    await:'firstattack'},
   // dice explanation is injected dynamically after the first roll (id:'dice')
   {id:'aftermath',pin:'bottom',title:'Keep Pushing',
-   body:`Each assault removes fleets from one or both sides. Reduce a system to <b>zero</b> and it's yours. Keep attacking while the odds favor you — or stop to preserve your fleets.<br><br>Attack as much as you like, then press <b>Begin Fortify →</b>.`,
+   body:`Each assault removes fleets from one or both sides. Reduce a Star System to <b>zero</b> and you conquer it. Keep attacking while the odds favor you — or stop to preserve your Fleets.<br><br>Attack as much as you like, then press <b>Begin Fortify →</b>.`,
    await:'phase-fortify'},
   {id:'fortify',pin:'side',title:'3 · Fortify',
-   body:`Once per turn you may <b>shift fleets between two connected systems</b> you own — pull them from a safe interior to a threatened border.<br><br>Click a system with 2+ fleets, then a connected friendly one. Or just press <b>End Turn</b> to skip.`,
+   body:`Once per turn you may <b>shift Fleets between two connected Star Systems</b> you own — pull them from a safe interior to a threatened border.<br><br>Click a Star System with 2+ Fleets, then a connected friendly one. Or just press <b>End Turn</b> to skip.`,
    await:'endturn'},
   {id:'cards',pin:'side',title:'Command Cards',
-   body:`Whenever you <b>conquer at least one system in a turn</b>, you draw a <b>command card</b>. Cards do powerful things — reinforce, strike, deceive. Click one to read it, then play it.<br><br>Collect a matching set of three to trade for a wave of fleets.`,
+   body:`Whenever you <b>conquer at least one Star System in a turn</b>, you draw a <b>command card</b>. Cards do powerful things — reinforce, strike, deceive. Click one to read it, then play it.<br><br>Collect a matching set of three to trade for a wave of Reinforcements.`,
    next:'Got it'},
   {id:'done',pin:'center',title:"You're Ready",
-   body:`That's the loop: <b>reinforce, attack, fortify</b> — draw cards, hold whole sectors for bonus fleets, and crush your rival.<br><br>Finish this match for practice, or start a full campaign anytime. Good hunting, Commander.`,
+   body:`That's the loop: <b>reinforce, attack, fortify</b> — draw cards, secure whole Sectors for bonus Reinforcements, and crush your rival.<br><br>Finish this match for practice, or start a full campaign anytime. Good hunting, Commander.`,
    next:'Play On'}
 ];
 
@@ -1573,15 +1685,16 @@ function startCoachDrag(e){
   const coach=document.getElementById('coach');
   const stage=document.getElementById('stage');
   const rect=coach.getBoundingClientRect(), srect=stage.getBoundingClientRect();
-  const offX=e.clientX-rect.left, offY=e.clientY-rect.top;
+  const scale=APP_SCALE||1;
+  const offX=(e.clientX-rect.left)/scale, offY=(e.clientY-rect.top)/scale;
   coach.classList.add('dragging');
   coach.classList.remove('pin-side','pin-center','pin-bottom');
   coach.style.transform='none';coach.style.right='auto';coach.style.bottom='auto';
   const move=(ev)=>{
-    let x=ev.clientX-srect.left-offX, y=ev.clientY-srect.top-offY;
-    // clamp within the stage so it can't be lost off-screen
-    x=Math.max(6,Math.min(srect.width-coach.offsetWidth-6,x));
-    y=Math.max(6,Math.min(srect.height-coach.offsetHeight-6,y));
+    let x=(ev.clientX-srect.left)/scale-offX, y=(ev.clientY-srect.top)/scale-offY;
+    // clamp in logical stage coordinates so dragging remains accurate at every scale
+    x=Math.max(6,Math.min(stage.clientWidth-coach.offsetWidth-6,x));
+    y=Math.max(6,Math.min(stage.clientHeight-coach.offsetHeight-6,y));
     coach.style.left=x+'px';coach.style.top=y+'px';
     if(TUT)TUT.coachPos={x,y};
   };
@@ -1596,6 +1709,69 @@ function startCoachDrag(e){
 }
 
 // buttons
+function openCommander(){
+  if(!G||!G.players||!G.players[0]||!G.players[0].commander)return;
+  const modal=document.getElementById('commanderModal'),box=document.getElementById('commanderCard');
+  const cmd=COMMANDERS[G.players[0].commander],sig=cmd.cards.map(id=>cardById(id));
+  box.innerHTML=`
+    <div class="commanderHead"><span class="cSym">${cmd.sym}</span><div><h2>${cmd.name}</h2><div class="cSub">${cmd.title}</div><div class="cTag">Command Dossier</div></div><button id="btnCloseCommander">Close</button></div>
+    <div class="commanderBody">
+      <div class="commanderPassive"><div class="label">Passive Ability</div><div class="text">${cmd.passive}</div></div>
+      <h3>Signature Cards</h3>
+      <div class="commanderSig">${sig.map(c=>`<div class="sig"><div class="sigTop"><span class="sigName">${c.name}</span><span class="sigType">${SUITS[c.suit]?.name||''}${c.rare!=null?` · ${['Common','Uncommon','Rare'][c.rare]||''}`:''}</span></div><div class="sigDesc">${c.desc}</div></div>`).join('')}</div>
+      <p class="commanderTip">You begin each campaign with one random signature card from this commander. The other signature cards are shuffled into your command deck during play.</p>
+    </div>
+  `;
+  modal.classList.add('show');modal.setAttribute('aria-hidden','false');
+  document.getElementById('btnCloseCommander').onclick=closeCommander;
+}
+function closeCommander(){const m=document.getElementById('commanderModal');m.classList.remove('show');m.setAttribute('aria-hidden','true');}
+document.getElementById('commanderModal').onclick=e=>{if(e.target===document.getElementById('commanderModal'))closeCommander();};
+
+function openRules(){
+  const modal=document.getElementById('rulesModal'),box=document.getElementById('rulesCard');
+  const cid=(G&&G.players&&G.players[0])?G.players[0].commander:SELECTED_COMMANDER;
+  const cmd=COMMANDERS[cid]||COMMANDERS.kael;
+  const sig=cmd.cards.map(id=>cardById(id)).filter(Boolean);
+  box.innerHTML=`
+    <div class="rulesHead"><div><h2>STARFRONT RULES</h2><div class="rulesSub">How to play</div></div><button id="btnCloseRules">Close</button></div>
+    <p><b>Objective.</b> Eliminate every rival faction by conquering all of its <b>Star Systems</b>. You win when your faction is the only one left on the map.</p>
+
+    <h3>Map language</h3>
+    <dl class="rulesGloss">
+      <dt>Star System</dt><dd>One circular node on the map. The number inside is the number of Fleets stationed there.</dd>
+      <dt>Fleet</dt><dd>One unit of military strength. Fleets reinforce, attack from, defend, and fortify Star Systems.</dd>
+      <dt>Lane</dt><dd>A line connecting two Star Systems. Normally you may attack or fortify only across an unbroken Lane.</dd>
+      <dt>Sector</dt><dd>A named constellation-like group of Star Systems, such as Perseus Reach or Kestrel Verge.</dd>
+      <dt>Secure a Sector</dt><dd>Control every Star System in that Sector. A secured Sector pays its displayed bonus Reinforcements at the start of your turns.</dd>
+      <dt>Border System</dt><dd>One of your Star Systems connected by a Lane to a Star System you do not control.</dd>
+      <dt>Neutral</dt><dd>An unowned Star System. It belongs to no faction until conquered.</dd>
+    </dl>
+
+    <h3>Your turn</h3>
+    <ol>
+      <li><b>Reinforce.</b> Place all available Reinforcements on Star Systems you own. Your base income is at least 3, increases with the number of Star Systems you control, and also includes secured-Sector, Terraform, and commander bonuses. <b>Undo Fleet</b> reverses your most recent normal placement during this phase.</li>
+      <li><b>Attack.</b> Select one of your Star Systems with at least 2 Fleets, then a linked enemy Star System. The attacker rolls up to 3 dice; the defender up to 2. Highest compares with highest, second-highest with second-highest, and <b>the defender wins ties</b>. Each lost comparison removes 1 Fleet. Reduce the defender to zero to conquer the Star System.</li>
+      <li><b>Fortify.</b> Normally once per turn, select a friendly Star System with 2+ Fleets and then a linked friendly destination. All but 1 Fleet move to the destination. Commander and card powers may alter this.</li>
+    </ol>
+
+    <h3>Command cards</h3>
+    <p>Conquer at least one Star System during your turn and you draw one Command Card when the turn ends. A hand holds up to 5 cards. Cards have a <b>Fleet</b>, <b>Nova</b>, or <b>Rift</b> suit as well as their printed effect. During Reinforce, trade either <b>three of one suit</b> or <b>one of each suit</b> for a reinforcement wave; the trade value escalates as sets are cashed in.</p>
+    <p class="rulesNote">Some card effects break the normal movement rules. When a card tells you to create, sever, or ignore a Lane, or move Fleets in an unusual way, follow the card text.</p>
+
+    <h3>Your commander</h3>
+    <div class="rulesCommander"><div class="rcName">${cmd.sym} ${cmd.name} · ${cmd.title}</div><div class="rcPassive"><b>Passive:</b> ${cmd.passive}</div><div class="rcCards"><b>Signature cards:</b> ${sig.map(c=>c.name).join(' · ')}<br>You begin each campaign with one random signature card. Your other signature cards are shuffled into your command deck.<br>${sig.map(c=>`<b>${c.name}:</b> ${c.desc}`).join('<br>')}</div></div>
+  `;
+  modal.classList.add('show');modal.setAttribute('aria-hidden','false');
+  document.getElementById('btnCloseRules').onclick=closeRules;
+}
+function closeRules(){const m=document.getElementById('rulesModal');m.classList.remove('show');m.setAttribute('aria-hidden','true');}
+document.getElementById('rulesModal').onclick=e=>{if(e.target===document.getElementById('rulesModal'))closeRules();};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(document.getElementById('rulesModal').classList.contains('show'))closeRules();if(document.getElementById('commanderModal').classList.contains('show'))closeCommander();}});
+document.getElementById('btnRulesSplash').onclick=openRules;
+document.getElementById('btnRulesInGame').onclick=openRules;
+document.getElementById('turnbar').onclick=()=>{if(G&&G.turn===0)openCommander();};
+
 document.getElementById('btnAction').onclick=()=>{
   if(G.turn!==0)return;
   if(G.phase==='reinforce'&&G.reinf>0)return;
@@ -1622,14 +1798,16 @@ document.getElementById('btnTutorial').onclick=()=>startTutorial();
 function renderCommanderChoices(){
   const g=document.getElementById('commanderGrid');g.innerHTML='';
   for(const [id,c] of Object.entries(COMMANDERS)){
-    const b=document.createElement('button');b.className='commanderPick'+(id===SELECTED_COMMANDER?' selected':'');b.style.setProperty('--ccol',c.col);
+    const b=document.createElement('button');b.className='commanderPick'+(id===SELECTED_COMMANDER?' selected':'');b.style.setProperty('--ccol',PCOL[0]||'#4fd1e0');
     b.innerHTML=`<div class="cicon">${c.sym}</div><div class="cname">${c.name}</div><div class="ctitle">${c.title}</div><div class="cpass">${c.passive}</div><div class="ccards">${c.cards.map(x=>cardById(x)?.name||x).join(' · ')}</div>`;
     b.onclick=()=>{SELECTED_COMMANDER=id;renderCommanderChoices();};g.appendChild(b);
   }
 }
 renderCommanderChoices();
 readPalette();
-resize();
+fitAppToWindow();
+document.documentElement.dataset.starfrontLoaded='true';
+console.info('STARFRONT frontend loaded successfully · integrated commander bar build 1.0.7');
 </script>
 </body>
 </html>
