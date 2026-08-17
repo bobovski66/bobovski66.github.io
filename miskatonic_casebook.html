@@ -1396,6 +1396,16 @@ main{
   justify-content:flex-end;
   gap:8px;
   margin-left:auto;
+  flex-wrap:wrap;
+}
+.story-skip{
+  color:var(--muted);
+  border-color:#4b4f49;
+  background:linear-gradient(180deg,#282c2d,#191c1d);
+}
+.story-skip:hover:not(:disabled){
+  color:var(--ink);
+  border-color:#777264;
 }
 .log-entry.story{
   border:1px solid #45483f;
@@ -1458,13 +1468,14 @@ main{
       <div id="doomLimitChoices" class="doom-limit-options">
         <button class="doom-option selected" data-doom-limit="10" type="button">
           <b>Doom 10</b>
-          <span>Standard pressure. Less time to finish the case.</span>
+          <span>Standard pressure. Reaching 10 begins the final round; Doom above 10 ends the case.</span>
         </button>
         <button class="doom-option" data-doom-limit="15" type="button">
           <b>Doom 15</b>
-          <span>Extended investigation. More time, but hazards have longer to accumulate.</span>
+          <span>Extended investigation. Reaching 15 begins the final round; Doom above 15 ends the case.</span>
         </button>
       </div>
+
     </section>
     <button id="startButton" disabled>Begin Investigation</button>
   </div>
@@ -1520,7 +1531,7 @@ main{
         <section class="panel-lite map-resources-panel">
           <h3>Turn Resources</h3>
           <div class="resources map-resource-grid">
-            <div class="resource" title="Movement points: spend 1 per square. Entering a room ends normal movement.">Move<b id="moveRes">0</b><span>board steps</span></div>
+            <div class="resource" title="Movement points: spend 1 per square. Entering a room for the first time ends normal movement; returning to a room you have already visited does not.">Move<b id="moveRes">0</b><span>board steps</span></div>
             <div class="resource" title="Insight is temporary currency earned through cards and investigation. Most investigators lose unspent Insight between turns. Eliza may retain up to 1; Nathaniel begins each turn with 1. Market cards cost 2–4.">Insight<b id="insightRes">0</b><span>buy cards</span></div>
             <div class="resource" title="Resolve is temporary. It adds to creature tests and can be spent to seal portals or banish creatures.">Resolve<b id="resolveRes">0</b><span>resist & seal</span></div>
             <div class="resource" title="You may normally play two Action cards per turn. Quick cards do not use an Action play.">Cards<b id="playsRes">0 / 2</b><span>plays used</span></div>
@@ -1586,7 +1597,7 @@ main{
       <div id="rulesPane" class="tabpane hidden">
         <h3>Goal</h3>
         <p>Each case has its own suspects, relics, rooms, story, floor plan, and Mythos events. The investigator cast and core rules persist from case to case.</p>
-        <p>Find the one hidden <b>Suspect</b>, <b>Relic</b>, <b>Room</b>, and <b>Entity</b> before a rival investigator does, or before Doom reaches the limit chosen at setup. The available limits are <b>10</b> and <b>15</b>. Every non-solution Evidence card is held by one of the four investigators.</p>
+        <p>Find the one hidden <b>Suspect</b>, <b>Relic</b>, <b>Room</b>, and <b>Entity</b> before a rival investigator does, or before Doom goes <b>above</b> the limit chosen at setup. The available limits are <b>10</b> and <b>15</b>. Reaching the limit does not end the case: it begins one final full investigator round. Every non-solution Evidence card is held by one of the four investigators.</p>
 
         <div class="rules-callout"><b>Keep these actions separate:</b> Move, Action-card plays, your once-per-turn Suggestion, once-per-room Investigation, and Resolve actions are different things. Using one normally does not spend the others.</div>
 
@@ -1594,7 +1605,7 @@ main{
         <p><b>Start of turn:</b> draw Action cards until you have at least five in hand. Move and Resolve reset to 0. Most investigators lose any unspent Insight between turns. <b>Inspector Eliza Graves may carry up to 1 unspent Insight into her next turn; Nathaniel Orne begins each turn with 1 Insight.</b> You normally have two Action-card plays.</p>
         <p><b>1. Roll Movement:</b> roll one die. The result becomes your Move for the turn.</p>
         <p><b>2. Act in any useful order:</b> after rolling, you may interleave movement, card plays, Investigation, your Suggestion, Resolve actions, and Market purchase as their requirements allow.</p>
-        <p><b>3. Move:</b> click an adjacent legal square to spend 1 Move. Movement is orthogonal through corridors and doorways. <b>Portal and creature squares are occupied spaces:</b> investigator meeples may not enter or pass through those squares and must route around them. Door thresholds are kept clear of portals and creatures. <b>Undo Move</b> rewinds ordinary movement <b>one step at a time</b>, restoring both your previous square and the Move you had at that point; press it repeatedly to walk your route backward as far as the stored movement history allows. The history is cleared when movement reveals a new room scene, triggers a creature encounter, or you take another consequential action. Portals, Impossible Shortcuts, and Common Interior crossings are not part of the undo history. Entering a new room ends ordinary movement for the turn. If you <em>begin</em> your turn in a room, you may use that room first and then leave with your remaining Move. A Suggestion or Investigation does not itself erase unused Move.</p>
+        <p><b>3. Move:</b> click an adjacent legal square to spend 1 Move. Movement is orthogonal through corridors and doorways. <b>Portal and creature squares are occupied spaces:</b> investigator meeples may not enter or pass through those squares and must route around them. Door thresholds are kept clear of portals and creatures. <b>Undo Move</b> rewinds ordinary movement <b>one step at a time</b>, restoring both your previous square and the Move you had at that point; press it repeatedly to walk your route backward as far as the stored movement history allows. The history is cleared when movement reveals a new room scene, triggers a creature encounter, or you take another consequential action. Portals, Impossible Shortcuts, and Common Interior crossings are not part of the undo history. Entering a room you have <b>never visited before</b> ends ordinary movement for the turn. Returning to a room your investigator has already occupied does <b>not</b> end movement, so you may continue spending any Move you have left. Your starting room counts as already visited. If you <em>begin</em> your turn in a room, you may use that room first and then leave with your remaining Move. A Suggestion or Investigation does not itself erase unused Move.</p>
         <p><b>4. Investigate rooms:</b> each investigator may investigate <b>each room once per game</b>. Investigation grants <b>1 Insight</b>, reveals that room's investigation scene, and does not prevent movement or a Suggestion in the same turn. The <b>Pallid Watcher</b> blocks Investigation until banished.</p>
         <p><b>5. Make at most one Suggestion:</b> a Suggestion is independent of Investigation. You may investigate and suggest in the same room and same turn, in either order. Every creature blocks Suggestions until banished.</p>
         <p><b>6. Resolve actions:</b> sealing a portal or banishing a creature does not consume your Suggestion or Investigation. These may be taken whenever their location and Resolve requirements are met.</p>
@@ -1638,7 +1649,7 @@ main{
         <h3>Final Accusation</h3>
         <p>A Final Accusation must name <b>the Room you physically occupy</b>. You cannot accuse a distant room: travel there first. In Case II, an active <b>Common Interior</b> counts as one shared physical space, so either joined Room identity may be named while you occupy either half. The accusation must also be made from a <b>stable room-space</b>: not a corridor, and with no open portal or creature remaining there. Seal and/or banish first if necessary.</p>
         <p>You may accuse during your own turn, including before rolling, but <b>not in the same turn in which you made a Suggestion</b>. A clean unrefuted Suggestion is preserved and pre-fills the accusation on your next turn. Sealing and banishing are free-form Resolve actions and do not consume the accusation.</p>
-        <p>A correct Final Accusation wins immediately. A wrong human accusation ends the game. An AI investigator who accuses incorrectly can no longer win. Reaching the <b>Doom limit selected before the case</b> defeats everyone.</p>
+        <p>A correct Final Accusation wins immediately. A wrong human accusation ends the game. An AI investigator who accuses incorrectly can no longer win. When Doom first reaches the <b>limit selected before the case</b>, all four investigators receive one final full round. Any later Doom increase that would take the track above that limit defeats everyone.</p>
 
         <h3>Exposure and Madness</h3>
         <p><b>Exposure 0–2:</b> no direct penalty. <b>Exposure 3–4:</b> −1 on creature tests. <b>Exposure 5:</b> suffer an Occult Breakdown: add Panic, reset Exposure to 2, and skip your next full turn.</p>
@@ -1935,31 +1946,22 @@ const SCENARIOS = {
         kicker:"Miskatonic University · 17 October 1931",
         title:"Eleven Minutes Past Midnight",
         body:`<p>At 11:11 p.m. the university's clocks stop. The observatory telescope turns below the horizon. A locked drawer in the Faculty Archive opens from the inside. Every candle in the abandoned chapel lights at once. In the Physics Laboratory, an unpowered galvanometer begins recording a signal. Beneath the Great Hall, a bell sounds from the sealed crypt.</p>
-          <p>Armitage compares the five witness statements and finds the same structure in every account. Each incident points to <b>one person, one object, one room, and one nonhuman presence</b>. His conclusion is direct: someone at Miskatonic used, carried, or activated a particular relic in a particular room, and something answered.</p>
-          <div class="story-fact"><b>The problem:</b> identify the true person–relic–room–entity chain before the contact spreads beyond the original incident.</div>`
+          <p>Armitage lays the five witness statements side by side and finds the same shape underneath all of them: one person, one object, one room, one presence that answered. Someone at Miskatonic touched something they should not have, in a room that should not have been listening, and now the four of them are bound together—though which four, out of everyone and everything at the university, he cannot yet say. He means to find out before a sixth incident finishes what the first five only began.</p>`
       },
       {
         id:"opening-armitage",
         kicker:"Armitage's Study",
         title:"The Armitage Protocol",
         body:`<div class="story-quotation">"The dangerous thing about a complete occult pattern," Dr. Henry Armitage says, "is that knowing it may be another way of performing it."</div>
-          <p>Armitage's solution is procedural rather than mystical. He removes the four true cards—one Suspect, one Relic, one Room, and one Entity—and seals them in the black Case File. Every remaining Evidence card is divided among the investigators.</p>
-          <p>This means any card in an investigator's hand is definitely innocent of the final chain. By exchanging refutations and ruling possibilities out, the team can reconstruct the four sealed cards without anyone beginning the night with the complete invocation in front of them.</p>
-          <div class="story-fact"><b>The Armitage Protocol:</b> solve the case by elimination while the university's wards buy you time.</div>`
+          <p>His solution is procedural rather than mystical. He takes the four true cards—one Suspect, one Relic, one Room, one Entity—and seals them, unread, in the black Case File under an iron clasp. No one, not even Armitage, learns what they are. Everything else he divides among the investigators as evidence, so that whatever sits in your hand tonight is, by definition, innocent of the pattern that opened the night's first breach.</p>
+          <p>It is a slow way to work. But it is the only one that does not require anyone to already know the shape of the thing they are chasing, and it means the four of you can close in on the truth by trading what you rule out rather than by guessing at what you fear—while, past the sealed gate, whatever answered the university keeps better time than the stopped clocks would suggest.</p>`
       },
       {
         id:"opening-casefile",
         kicker:"Known Facts",
         title:"The Sealed Case File",
-        body:`<p>Four cards are sealed beneath the iron clasp:</p>
-          <div class="story-facts">
-            <div class="story-fact"><b>Suspect:</b> one of five persons of interest initiated, exploited, or completed the working.</div>
-            <div class="story-fact"><b>Relic:</b> one object supplied the means.</div>
-            <div class="story-fact"><b>Room:</b> one university room is the actual center of the incident.</div>
-            <div class="story-fact"><b>Entity:</b> one presence answered the invitation.</div>
-          </div>
-          <p>The persons of interest are <b>Professor Ambrose Waite</b>, <b>Dr. Miriam Bell</b>, <b>Dean Horace Halsey</b>, <b>Archivist Lydia Crane</b>, and <b>Groundskeeper Elias Pike</b>. They are the subjects of the investigation, not members of the investigator team.</p>
-          <p>Every other Evidence card has been distributed among the four investigators. Anything in an investigator's Evidence, therefore, is certainly <em>not</em> part of the sealed chain.</p>`
+        body:`<p>Armitage sets down what the four sealed cards must be, one to a category: one person who began, exploited, or completed the working; one object that supplied the means; one room that was the incident's true center, whatever the witnesses believed at the time; and one presence that answered when it was called.</p>
+          <p>The persons of interest are <b>Professor Ambrose Waite</b>, <b>Dr. Miriam Bell</b>, <b>Dean Horace Halsey</b>, <b>Archivist Lydia Crane</b>, and <b>Groundskeeper Elias Pike</b>—five names under suspicion, none of them at this table. Everything else has already gone out into the investigators' own hands, which is the one comfort Armitage can offer: whatever evidence you personally hold, you already know is not part of the chain.</p>`
       },
       {
         id:"opening-doors",
@@ -1980,26 +1982,15 @@ const SCENARIOS = {
       "Nathaniel Orne":`The Orne name appears twice in the preliminary notes and once in a margin that no one remembers writing. You decide not to mention the margin yet.`
     },
     roomIntroductions:{
-      "Orne Library":`The library fills the whole west wing, shelving raised for books taller than any now catalogued. Two doors serve a room this size, and tonight both feel like an oversight. Several gaps between the spines are warm to the touch, as though the missing volumes were only just carried out.`,
-      "Old Observatory":`A single stair, tight and iron-runged, climbs to the dome alone — the university built no second way up. Clouds cover the sky outside, yet the telescope is aimed below the horizon, its brass setting circles engraved with coordinates that describe no position above the earth.`,
-      "Chapel":`Two doors open onto the nave, east and west, as though the architect could not decide which congregation deserved the shorter walk. No service has been held here in years, yet every candle is freshly trimmed, and the altar cloth carries a damp impression like a hand with one joint too many.`,
-      "Conservatory":`Only the north door admits visitors; the glass walls admit everything else. Moonlight collects on the panes without ever reaching the floor, and the plants along the east wall lean, every one of them, toward a patch of air that holds nothing at all.`,
-      "Great Hall":`Every corridor in the building agrees to meet here. Three doors, three directions, and a staircase besides — the Hall was plainly built first, with the rest of the university added around it at odd, apologetic angles. One dean's portrait has turned its face from the room, leaving a pale oval where the varnish should be.`,
-      "Physics Laboratory":`A single south-facing door keeps the laboratory apart from the Hall's noise. Galvanometers twitch behind locked glass. Chalked across the main bench is a diagram of nine rooms linked by lines that do not match the corridors just outside this one.`,
-      "Faculty Archive":`The archive's one door opens onto the spine corridor, as if the room preferred to be found by accident rather than by intention. It smells of paste, dust, and cold iron. A drawer marked 1908 stands open, though its key remains sealed in wax.`,
-      "Crypt":`The stair down begins directly beneath the Great Hall and descends farther than the building's foundations ought to allow. One door, and no others — whoever built this room did not want a second way out. Names on the oldest stones have been chiseled away and replaced with astronomical symbols.`,
-      "Armitage's Study":`Tucked at the far end of the east wing, past the last lit window, the study has become the investigation's fixed point: maps pinned under glass, warding marks renewed in chalk, a black telephone whose cord has been cut. It rings anyway.`
-    },
-    roomMeaning:{
-      "Orne Library":"Several occult volumes connected to the persons of interest have recently been removed or reshelved. The library may reveal who had access to the relevant knowledge.",
-      "Old Observatory":"One of the first impossible events occurred here, and the telescope was deliberately aimed at coordinates that should not exist. Someone may have used the observatory as part of the contact.",
-      "Chapel":"The simultaneous candle lighting and disturbed altar make this one of the original incident sites. It may contain evidence of preparation or ritual use.",
-      "Conservatory":"The plants and light are reacting to an invisible point in the room. The disturbance is affecting living matter here, not just records and machinery.",
-      "Great Hall":"The crypt bell sounded beneath this room at 11:11. Because most corridors meet here, activity in the Great Hall can connect several otherwise separate witness accounts.",
-      "Physics Laboratory":"The unpowered galvanometer recorded the event as a physical signal. Its instruments may provide the clearest evidence that the phenomenon was measurable rather than imagined.",
-      "Faculty Archive":"A locked historical file opened by itself at 11:11. The Archive may connect the present incident to earlier faculty activity and older uses of the relics.",
-      "Crypt":"The bell sounded here despite the crypt being sealed. Altered grave markers and older warding practices suggest the university has encountered related phenomena before.",
-      "Armitage's Study":"This is the investigation's control room. Armitage's notes compare the witness accounts and contain the practical methods used to contain portals and other intrusions."
+      "Orne Library":`The library fills the whole west wing, shelving raised for books taller than any now catalogued. Two doors serve a room this size, and tonight both feel like an oversight. Several gaps between the spines are warm to the touch, as though the missing volumes were only just carried out—and someone in this case knew exactly which ones to take.`,
+      "Old Observatory":`A single stair, tight and iron-runged, climbs to the dome alone — the university built no second way up. Clouds cover the sky outside, yet the telescope is aimed below the horizon, its brass setting circles engraved with coordinates that describe no position above the earth: one of the first impossible sights of the night, and someone stood exactly here to aim it.`,
+      "Chapel":`Two doors open onto the nave, east and west, as though the architect could not decide which congregation deserved the shorter walk. No service has been held here in years, yet every candle is freshly trimmed, and the altar cloth carries a damp impression like a hand with one joint too many—prepared, not disturbed, and prepared by somebody who knew what they were doing.`,
+      "Conservatory":`Only the north door admits visitors; the glass walls admit everything else. Moonlight collects on the panes without ever reaching the floor, and the plants along the east wall lean, every one of them, toward a patch of air that holds nothing at all. Whatever is happening tonight is not confined to instruments and old paper; it is reaching living things too.`,
+      "Great Hall":`Every corridor in the building agrees to meet here. Three doors, three directions, and a staircase besides — the Hall was plainly built first, with the rest of the university added around it at odd, apologetic angles. One dean's portrait has turned its face from the room, leaving a pale oval where the varnish should be, and the crypt bell rang from directly beneath these floorboards at 11:11.`,
+      "Physics Laboratory":`A single south-facing door keeps the laboratory apart from the Hall's noise. Galvanometers twitch behind locked glass, still recording a signal no one switched them on to catch. Chalked across the main bench is a diagram of nine rooms linked by lines that do not match the corridors just outside this one—proof, if anyone still needed it, that tonight can be measured as well as witnessed.`,
+      "Faculty Archive":`The archive's one door opens onto the spine corridor, as if the room preferred to be found by accident rather than by intention. It smells of paste, dust, and cold iron. A drawer marked 1908 stands open, though its key remains sealed in wax, and whatever it once held reaches back further into the university's history than tonight alone.`,
+      "Crypt":`The stair down begins directly beneath the Great Hall and descends farther than the building's foundations ought to allow. One door, and no others — whoever built this room did not want a second way out. Names on the oldest stones have been chiseled away and replaced with astronomical symbols, and the bell rang from down here despite the crypt having been sealed for years.`,
+      "Armitage's Study":`Tucked at the far end of the east wing, past the last lit window, the study has become the investigation's fixed point: maps pinned under glass, warding marks renewed in chalk, a black telephone whose cord has been cut. It rings anyway. This is where the five statements get compared line by line, and where whatever method exists for shutting a door like tonight's is kept.`
     },
     investigations:{
       "Orne Library":{
@@ -2078,24 +2069,21 @@ const SCENARIOS = {
         title:"The Witnesses Begin to Agree",
         body:`<p>Armitage lays the five original witness statements side by side. Three have changed since the investigation began. Each now contains the same new sentence in the witness's own handwriting:</p>
           <p><em>I did not invite it. I only completed what was already begun.</em></p>
-          <p>No witness has had access to the locked statements. The presence behind the case can therefore influence records—and possibly memories—inside the sealed university.</p>
-          <div class="story-fact"><b>Escalation:</b> the threat is no longer confined to the original room or relic. It is interacting with the investigation itself.</div>`
+          <p>No witness has had access to the locked statements, which means whatever answered the university that night can reach records now, and possibly memories—the threat is no longer sitting quietly in one room with one object, waiting to be found. It is starting to lean back.</p>`
       },
       6:{
         id:"doom-6",
         kicker:"Doom 6",
         title:"The Invitation Widens",
         body:`<p>The chalk and iron wards around the university flare, then visibly dim. A telephone rings in three rooms at once; every receiver carries the same slow breathing.</p>
-          <p>Armitage concludes that the original contact is widening. The entity is no longer merely answering whatever happened at 11:11—it is using the weakened wards to establish additional points of entry.</p>
-          <div class="story-fact"><b>Escalation:</b> containment is failing. Portals, creatures, and psychological effects are now symptoms of the same expanding contact.</div>`
+          <p>Armitage concludes that the original contact is widening: not merely answering whatever happened at 11:11 anymore, but using the weakened wards to open further ways in. Containment is failing, and the portals, creatures, and half-remembered dreams the investigators have been logging separately are turning out to be one thing, seen from four directions.</p>`
       },
       8:{
         id:"doom-8",
         kicker:"Doom 8",
         title:"The Case File Knows It Is Being Read",
         body:`<p>The black Case File begins vibrating against its iron clasp. Four card-shaped impressions rise through the cover exactly where the hidden Suspect, Relic, Room, and Entity are sealed.</p>
-          <p>Armitage realizes the four hidden facts are not merely evidence; together they describe the same pattern that initiated the contact. The entity is beginning to resonate with that complete pattern even while the file remains closed.</p>
-          <div class="story-fact"><b>Escalation:</b> there is little time left. The investigators must identify the exact chain and confront it in the correct room before the pattern completes itself.</div>`
+          <p>Armitage realizes the four hidden facts were never merely evidence; together they describe the same pattern that opened the night, and the entity behind it is beginning to resonate with that pattern even with the file still closed. There is very little time left to name the chain correctly and stand in the right room before it completes itself without anyone's help.</p>`
       }
     },
     portal:{
@@ -2103,8 +2091,7 @@ const SCENARIOS = {
       kicker:"Impossible Passage",
       title:"Between Two Rooms",
       body:`<p>A violet opening now exists in two distant rooms. Each opening shows the other room directly, with no corridor between them. An investigator can step onto either endpoint and deliberately cross to the matching one.</p>
-        <p>The passage has no visible depth, and crossing it produces intense disorientation and exposure to the force behind the case.</p>
-        <div class="story-fact"><b>What this establishes:</b> the disturbance can create real physical shortcuts between rooms. Leaving a portal open also gives whatever is outside another route into the university.</div>`
+        <p>The passage has no visible depth, and crossing it produces intense disorientation and exposure to the force behind the case—proof that the disturbance can cut real shortcuts through the building, and a warning too: leaving one of these open gives whatever is outside it another way in.</p>`
     },
     creatureNames:{
       "Hound of Tindalos":["Angular Hound","Blue-Limbed Tracker","The Hound at the Corner"],
@@ -2190,37 +2177,28 @@ const SCENARIOS = {
         kicker:"Miskatonic University · 4 March 1932",
         title:"The Geometry Below",
         body:`<p>The renovation crew found an undocumented staircase beneath the Mathematics Annex at 8:40 in the morning. At 8:55 the foreman counted twelve steps. At 9:10 Professor Calder counted thirteen. By noon, the stair had acquired a landing that opened directly into a solid wall.</p>
-          <p>Over the next three days the contradictions spread. Surveyors obtained different distances between the same fixed walls. Doors appeared on the wrong sides of rooms. A graduate student vanished after writing one sentence on the department blackboard: <em>the rooms are not moving through space; space is moving through the rooms.</em></p>
-          <div class="story-fact"><b>The problem:</b> the annex is undergoing a real spatial distortion, and someone appears to have started or exploited it.</div>`
+          <p>Over the next three days the contradictions spread. Surveyors obtained different distances between the same fixed walls. Doors appeared on the wrong sides of rooms. A graduate student vanished after writing one sentence on the department blackboard: <em>the rooms are not moving through space; space is moving through the rooms.</em> By the time Armitage is called in, no one can say anymore whether the annex is malfunctioning on its own or whether someone found a way to make it do this, and start deciding which is worse.</p>`
       },
       {
         id:"geometry-armitage",
         kicker:"Armitage's Temporary Office",
         title:"A Second Case File",
         body:`<div class="story-quotation">"Last autumn we dealt with an intrusion that damaged the building," Armitage says. "This time the geometry itself may be the instrument."</div>
-          <p>The annex is closed under the pretense of a structural survey. Armitage believes the disturbance again has four linked parts: a person, a mathematical or surveying object, a room where the distortion is anchored, and a presence using that distortion from outside ordinary space.</p>
-          <p>Nine rooms remain accessible, but their positions and doorways are no longer reliable. The investigation must identify the four-part cause while the floor plan is still usable enough to navigate.</p>`
+          <p>He closes the annex under the pretense of a structural survey and lays out what he suspects: a person behind it, a mathematical or surveying object that gave them the means, a room where the distortion is anchored, and something outside ordinary space using that anchor to reach in. Find those four and the rest, he believes, should come apart on its own.</p>
+          <p>Nine rooms remain reachable tonight, though their positions and doorways are no longer anything you can trust from one visit to the next. The floor plan is still usable—for now, and only if you keep moving.</p>`
       },
       {
         id:"geometry-casefile",
         kicker:"Known Facts",
         title:"The Geometric Chain",
-        body:`<p>Four facts have been removed from the evidence and sealed together:</p>
-          <div class="story-facts">
-            <div class="story-fact">One person initiated or exploited the disturbance.</div>
-            <div class="story-fact">One mathematical or surveying relic supplied the means.</div>
-            <div class="story-fact">One room is the true geometric center.</div>
-            <div class="story-fact">One presence is using the distortion from outside ordinary space.</div>
-          </div>
-          <p>Every other Evidence card is distributed among the four investigators. As before, anything you hold cannot be part of the hidden chain.</p>`
+        body:`<p>Four facts have been pulled out of the evidence and sealed together, unread: the person who started or exploited the disturbance, the mathematical or surveying object that supplied the means, the room that is its true geometric center, and the presence reaching in from outside ordinary space to use it. Everything else has gone out into the investigators' hands—so once again, whatever you personally hold cannot be part of the hidden chain.</p>`
       },
       {
         id:"geometry-enter",
         kicker:"The Annex",
         title:"The First Measurement",
         body:`<p>The official floor plan is simple: three rooms above, three at grade, three below, joined by straight corridors. Armitage lays the blueprint beside three recent surveys. All four documents disagree.</p>
-          <p>“Use the plan in front of you,” he says. “When a door moves or two rooms exchange places, trust what you can physically reach now—not what the blueprint says should be there.”</p>
-          <div class="story-fact"><b>Your task:</b> identify the person, relic, room, and entity responsible before the annex becomes too unstable to investigate.</div>`,
+          <p>“Use the plan in front of you,” he says. “When a door moves or two rooms exchange places, trust what you can physically reach now—not what the blueprint says should be there. Find who is doing this, and with what, and where, and for whom—before the annex is too unstable to hold still long enough to be investigated at all.”</p>`,
         button:"Enter the Annex"
       }
     ],
@@ -2233,26 +2211,15 @@ const SCENARIOS = {
       "Nathaniel Orne":`A penciled Orne family monogram appears in the margin of an 1879 foundation plan. You have never seen the document before.`
     },
     roomIntroductions:{
-      "Mathematics Annex":`Blackboards cover three walls from floor to ceiling. Someone has erased every equation except the equality signs, leaving rows of pale parallel marks that seem to connect things no longer written.`,
-      "Surveying Room":`Tripods, chains, transits, and levels stand exactly where the inventory says they should. Every plumb line, however, leans three degrees toward the sealed stairwell.`,
-      "East Lecture Theatre":`The benches descend toward a slate board scarred by decades of proofs. One piece of chalk rolls uphill whenever no one is touching the desk.`,
-      "Stairwell 3B":`The stair is too narrow for the building and too deep for its foundations. Counting downward and counting upward never gives the same number.`,
-      "Central Rotunda":`Four corridors meet beneath a tiled dome marked with a compass rose. The north arrow has been rotated repeatedly; the scratches beneath it form a complete circle.`,
-      "Machine Shop":`Lathes and milling tools sit under canvas. A machinist's square placed against the main bench shows a clean right angle until viewed from the other side.`,
-      "Sub-Basement Records":`Foundation drawings fill metal drawers. Several plans show rooms that exist only after 1932, while others omit rooms you crossed to get here.`,
-      "Sealed Seminar Room":`The door bears three separate locks. Inside, twelve chairs face one another in a ring around a table whose top has been cut into a perfect Möbius strip.`,
-      "Foundation Chamber":`Rough stone footings emerge from the floor. Between them is a smooth concrete rectangle with no structural purpose and dimensions that change by exactly one inch each time they are measured.`
-    },
-    roomMeaning:{
-      "Mathematics Annex":"The surviving equations may show which mathematical idea was used to formalize the distortion and who was working on it.",
-      "Surveying Room":"Every surveying instrument points toward the anomaly. Logs here can identify where the spatial error converges and who measured it first.",
-      "East Lecture Theatre":"The impossible chalk movement and repeated signatures connect the distortion to teaching activity and to people who had regular access to the annex.",
-      "Stairwell 3B":"This undocumented staircase was the first physical contradiction discovered. Its changing number of steps makes it a likely route by which the distortion entered the building.",
-      "Central Rotunda":"Because four corridors meet here, changes in adjacency can be compared directly. The scratched compass rose acts as a record of earlier shifts.",
-      "Machine Shop":"Several strange instruments and relic-like objects were fabricated or repaired here. Work orders can connect a specific person to a specific object.",
-      "Sub-Basement Records":"Successive blueprints show how the annex changed over time. They can distinguish the original structure from rooms added to conceal or contain the anomaly.",
-      "Sealed Seminar Room":"A private group studied topology here before the disturbance began. Its notes may connect a suspect, a relic, and the theory behind the spatial changes.",
-      "Foundation Chamber":"The changing slab sits at the physical base of the annex and may be the anchor point from which the distortion propagates upward."
+      "Mathematics Annex":`Blackboards cover three walls from floor to ceiling. Someone has erased every equation except the equality signs, leaving rows of pale parallel marks that seem to connect things no longer written—whatever idea survived the erasing was worth someone's trouble to keep.`,
+      "Surveying Room":`Tripods, chains, transits, and levels stand exactly where the inventory says they should. Every plumb line, however, leans three degrees toward the sealed stairwell, and every log in the room agrees on the direction if nothing else.`,
+      "East Lecture Theatre":`The benches descend toward a slate board scarred by decades of proofs. One piece of chalk rolls uphill whenever no one is touching the desk, and the same unexplained signature turns up in four unrelated attendance sheets, all from people who had every reason to be in this annex regularly.`,
+      "Stairwell 3B":`The stair is too narrow for the building and too deep for its foundations. Counting downward and counting upward never gives the same number—this was the first contradiction anyone found, and the changing count looks less like an error the longer you stand on it.`,
+      "Central Rotunda":`Four corridors meet beneath a tiled dome marked with a compass rose. The north arrow has been rotated repeatedly; the scratches beneath it form a complete circle, a record of every shift the annex has already made, kept by nobody in particular.`,
+      "Machine Shop":`Lathes and milling tools sit under canvas. A machinist's square placed against the main bench shows a clean right angle until viewed from the other side, and a ledger nearby records a custom job whose dimensions match nothing anyone would build for teaching purposes.`,
+      "Sub-Basement Records":`Foundation drawings fill metal drawers. Several plans show rooms that exist only after 1932, while others omit rooms you crossed to get here—read in sequence, they are less a record of what the annex is than of what it has been quietly becoming.`,
+      "Sealed Seminar Room":`The door bears three separate locks. Inside, twelve chairs face one another in a ring around a table whose top has been cut into a perfect Möbius strip. A study group met here before any of this started, and their notes did not stop at the strip.`,
+      "Foundation Chamber":`Rough stone footings emerge from the floor. Between them is a smooth concrete rectangle with no structural purpose and dimensions that change by exactly one inch each time they are measured—the lowest point in the annex, and increasingly hard not to think of as the source.`
     },
     investigations:{
       "Mathematics Annex":{
@@ -2329,25 +2296,21 @@ const SCENARIOS = {
         id:"geometry-doom-3",
         kicker:"Doom 3",
         title:"The First Theorem Breaks",
-        body:`<p>Armitage draws the current floor plan and compares it with the plan recorded one hour earlier. Every room in both plans has sensible local dimensions, but the rooms are connected differently.</p>
-          <p>This rules out simple measurement error. The annex is being changed by a consistent spatial operation: doors relocate, rooms exchange positions, and new adjacencies appear while individual rooms remain recognizable.</p>
-          <div class="story-fact"><b>Escalation:</b> the building is not randomly collapsing. Something is systematically transforming its geometry.</div>`
+        body:`<p>Armitage draws the current floor plan and compares it with the plan recorded one hour earlier. Every room in both plans has sensible local dimensions, but the rooms are connected differently—which rules out simple measurement error. The annex is being changed by a consistent spatial operation, not a collapsing one: doors relocate, rooms exchange positions, new adjacencies appear, and each individual room stays recognizable throughout. Something is transforming this geometry on purpose.</p>`
       },
       6:{
         id:"geometry-doom-6",
         kicker:"Doom 6",
         title:"Local Geometry Fails",
         body:`<p>A room moves to the opposite side of the annex while everything inside it remains undisturbed. A cup on a desk does not slide; the entire room, including the cup's local sense of level and direction, arrives intact in its new position.</p>
-          <p>The investigators now understand that room identity and room location have separated. The anomaly preserves each local interior while rewriting how those interiors are assembled into one building.</p>
-          <div class="story-fact"><b>Escalation:</b> navigation is becoming unreliable because the annex can rearrange whole regions without warning.</div>`
+          <p>Room identity and room location have come apart from each other. The anomaly is preserving every local interior while it rewrites how those interiors get assembled into one building, and it means navigation is no longer something anyone can rely on—whole regions can rearrange without warning, floor plan or no floor plan.</p>`
       },
       8:{
         id:"geometry-doom-8",
         kicker:"Doom 8",
         title:"The Diagram Looks Back",
         body:`<p>The sealed Case File develops four sharp creases even though no one touches it. When Armitage unfolds the cover, the creases cannot be reproduced in ordinary three-dimensional space.</p>
-          <p>At the same moment, chalk begins writing beneath the Foundation Chamber floor. The distortion is no longer restricted to the annex; it is acting on objects that merely describe the hidden four-part chain.</p>
-          <div class="story-fact"><b>Escalation:</b> the external presence is close to imposing its geometry on the entire case. The correct room and complete chain must be identified soon.</div>`
+          <p>At the same moment, chalk begins writing beneath the Foundation Chamber floor. The distortion has stopped confining itself to the annex; it is reaching for the objects that merely describe the hidden four-part chain, which means the presence behind all of this is close to imposing its geometry on the case itself. There is very little time left to name the correct room and the complete chain.</p>`
       }
     },
     portal:{
@@ -2355,8 +2318,7 @@ const SCENARIOS = {
       kicker:"Impossible Adjacency",
       title:"Two Rooms Share an Edge",
       body:`<p>A doorway-sized opening appears between two rooms that are not adjacent on the current floor plan. Looking through it shows the other room directly, and people can cross in a single step.</p>
-        <p>The opening has no wall thickness and causes severe spatial disorientation when crossed.</p>
-        <div class="story-fact"><b>What this establishes:</b> the annex can create adjacency without moving either endpoint. An open breach can also become an entry route for creatures produced by the distortion.</div>`
+        <p>The opening has no wall thickness and causes severe spatial disorientation when crossed—the annex, it turns out, can manufacture adjacency without moving either room, and left open, a breach like this becomes just as much an entry route for whatever the distortion produces as for the investigators.</p>`
     },
     endings:{
       solved:`The accusation identifies the person who initiated or exploited the distortion, the relic used to impose it, the room where the geometry is anchored, and the external presence using that opening. With those four facts fixed, Armitage can brace the correct room and interrupt the transformation at its source. The annex does not instantly return to normal, but its doors stop moving and the room positions begin to agree with the plan again.`,
@@ -2502,6 +2464,12 @@ function resumeLastCase(){
     p.acknowledged ||= new Set();
     p.played ||= new Set();
     p.investigatedRooms ||= new Set();
+    if(!p.visitedRooms){
+      p.visitedRooms=p.isHuman
+        ? new Set(state.storySeen?.rooms||[])
+        : new Set(p.room!==null?[p.room]:[]);
+    }
+    if(p.room!==null)p.visitedRooms.add(p.room);
     p.aiTested ||= {Suspect:new Set(),Relic:new Set(),Entity:new Set()};
     for(const cat of ["Suspect","Relic","Entity"])p.aiTested[cat] ||= new Set();
   });
@@ -3000,6 +2968,12 @@ function renderStoryScene(){
   logStory(scene);
   const first=index===0;
   const last=index===scenes.length-1;
+  const customSkip=Number.isInteger(activeStorySequence.skipTargetIndex)
+    ? activeStorySequence.skipTargetIndex
+    : null;
+  const canSkip=customSkip!==null
+    ? index<customSkip
+    : !last;
   const nextLabel=last?(scene.button||activeStorySequence.finishLabel||"Continue"):(scene.next||"Continue");
   showModal(`<article class="story-scene">
       <div class="story-kicker">${storyTokenText(scene.kicker||ACTIVE_SCENARIO.title)}</div>
@@ -3009,25 +2983,40 @@ function renderStoryScene(){
         <span class="story-progress">${index+1} / ${scenes.length}</span>
         <div class="story-actions-right">
           ${!first?'<button onclick="storyBack()">Back</button>':""}
+          ${canSkip?'<button class="story-skip" onclick="storySkipToEnd()">Skip to End</button>':""}
           <button onclick="storyNext()">${nextLabel}</button>
         </div>
       </div>
     </article>`);
 }
 
-function beginStorySequence(scenes,onComplete=null,finishLabel=null){
+function beginStorySequence(scenes,onComplete=null,finishLabel=null,skipTargetIndex=null){
   const usable=(scenes||[]).filter(Boolean);
   if(!usable.length){
     if(onComplete)onComplete();
     return;
   }
-  activeStorySequence={scenes:usable,index:0,onComplete,finishLabel};
+  const boundedSkip=Number.isInteger(skipTargetIndex)
+    ? Math.max(0,Math.min(skipTargetIndex,usable.length-1))
+    : null;
+  activeStorySequence={scenes:usable,index:0,onComplete,finishLabel,skipTargetIndex:boundedSkip};
   renderStoryScene();
 }
 
 window.storyBack=function(){
   if(!activeStorySequence||activeStorySequence.index===0)return;
   activeStorySequence.index--;
+  renderStoryScene();
+};
+
+window.storySkipToEnd=function(){
+  if(!activeStorySequence)return;
+  const lastIndex=activeStorySequence.scenes.length-1;
+  const target=Number.isInteger(activeStorySequence.skipTargetIndex)
+    ? activeStorySequence.skipTargetIndex
+    : lastIndex;
+  if(activeStorySequence.index>=target)return;
+  activeStorySequence.index=target;
   renderStoryScene();
 };
 
@@ -3055,13 +3044,11 @@ function characterOpeningScene(player){
 
 function roomStoryScene(roomId){
   const room=ROOMS[roomId];
-  const meaning=ACTIVE_SCENARIO.roomMeaning?.[room];
   return {
     id:`room-introduction-${roomId}`,
     kicker:"First Visit",
     title:room,
-    body:`<p>${ACTIVE_SCENARIO.roomIntroductions[room]}</p>
-      ${meaning?`<div class="story-fact"><b>Why this room matters:</b> ${meaning}</div>`:""}`
+    body:`<p>${ACTIVE_SCENARIO.roomIntroductions[room]}</p>`
   };
 }
 
@@ -3083,18 +3070,12 @@ function investigationStoryScene(roomId,type){
     forbidden:"A Dangerous Discovery",
     whisper:"Something Speaks"
   };
-  const meanings={
-    insight:"The detail is useful because it connects this room to the larger case rather than standing as an isolated haunting.",
-    resolve:"You have found something that can be used immediately to resist or contain the intrusion.",
-    forbidden:"The discovery confirms that the impossible phenomenon is physically real, but understanding it comes at a psychological cost.",
-    whisper:"The voice is responding to the investigation itself. Whatever is present is aware that people are searching for the cause."
-  };
   return {
     id:`investigation-${state.round}-${roomId}-${type}-${state.log.length}`,
     recordKey:null,
     kicker:`Investigation · ${room}`,
     title:titles[type],
-    body:`<p>${text}</p><div class="story-fact"><b>What you conclude:</b> ${meanings[type]}</div>`
+    body:`<p>${text}</p>`
   };
 }
 
@@ -3125,31 +3106,36 @@ function mythosInterpretation(ev){
 }
 
 function mythosStoryScene(ev){
-  const architecture=ev.effectText
-    ? `<div class="story-fact"><b>The building:</b> ${ev.effectText}</div>`
-    : "";
-  const pulse=ev.pulseText
-    ? `<div class="story-fact"><b>The annex answers:</b> ${ev.pulseText}</div>`
-    : "";
+  // Every event in the deck has hand-written scene prose in mythosStories;
+  // the generic mythosInterpretation() line is a fallback for the rare case
+  // where it doesn't, so it's only appended then, rather than as a redundant
+  // second explanation stacked under prose that already carries the meaning.
+  const customStory=ACTIVE_SCENARIO.mythosStories[ev.title];
+  const mainText=customStory||`${ev.text} ${mythosInterpretation(ev)}`;
+  const architecture=ev.effectText ? `<p>${ev.effectText}</p>` : "";
+  const pulse=ev.pulseText ? `<p>${ev.pulseText}</p>` : "";
   const creatureMovement=ev.creatureMovement?.length
-    ? `<div class="story-fact"><b>Elsewhere in the rooms:</b><br>${ev.creatureMovement.map(x=>`• ${x}`).join("<br>")}</div>`
+    ? `<p>${ev.creatureMovement.join(" ")}</p>`
     : "";
   const portalPressure=ev.portalPressure&&ev.portalPressure.checked
-    ? `<div class="story-fact"><b>At the open thresholds:</b><br>${ev.portalPressure.lines.map(x=>`• ${x}`).join("<br>")}</div>`
+    ? `<p>${ev.portalPressure.lines.join(" ")}</p>`
     : "";
   const doomGain=ev.totalDoomGain ?? ev.doom;
+  const finalRound=ev.finalRoundReached
+    ? `<div class="story-fact"><b>Final round:</b> Doom has reached ${state.doomLimit||10}. The investigators now receive one final full round. The next Doom increase ends the case.</div>`
+    : "";
   return {
     id:`mythos-${state.round}-${ev.title}`,
     recordKey:null,
     kicker:`The Mythos Stirs · Doom +${doomGain}`,
     title:ev.title,
-    body:`<p>${ACTIVE_SCENARIO.mythosStories[ev.title]||ev.text}</p>
-      <div class="story-fact"><b>What the investigators understand:</b> ${mythosInterpretation(ev)}</div>
+    body:`<p>${mainText}</p>
       ${architecture}
       ${pulse}
       ${creatureMovement}
       ${portalPressure}
-      <p class="danger">The situation is worsening. Doom: ${state.doom} / ${state.doomLimit||10}.</p>`
+      ${finalRound}
+      <p class="danger">${ev.finalRoundReached?"The final round begins.":"The situation is worsening."} Doom: ${state.doom} / ${state.doomLimit||10}.</p>`
   };
 }
 
@@ -3162,7 +3148,7 @@ function doomThresholdScenes(before,after){
       if(threshold===3 && state.doomArchitectureText){
         scenes.push({
           ...base,
-          body:`${base.body}<div class="story-fact"><b>Floor plan change:</b> ${state.doomArchitectureText}</div>`
+          body:`${base.body}<p>${state.doomArchitectureText}</p>`
         });
       }else scenes.push(base);
     }
@@ -3296,6 +3282,7 @@ function buildScenarioChoices(){
       document.getElementById("selectedCaseSummary").classList.remove("hidden");
       document.getElementById("selectedCaseSummary").innerHTML=
         `<b>${s.location}</b> · ${s.date}<br><span class="small">${s.style}. ${s.difficulty} case.</span>`;
+
       refreshStartButton();
     };
     wrap.appendChild(div);
@@ -3333,6 +3320,7 @@ function newPlayer(charIndex,isHuman=false){
     cardPlays:0,cardLimit:2,quickUsed:false,purchaseLockIndex:null,stunnedTurns:0,
     eliminated:false,manualNotes:{},specials:{},nerve:c.nerve,
     investigatedRooms:new Set(),
+    visitedRooms:new Set(),
     aiTested:{Suspect:new Set(),Relic:new Set(),Entity:new Set()}
   };
 }
@@ -3361,7 +3349,11 @@ function setupGame(){
   // Every investigation begins from a fresh spatial arrangement. Starting rooms
   // are unique so nobody begins stacked on another investigator.
   const starts=shuffled(ROOMS.map((_,i)=>i)).slice(0,players.length);
-  players.forEach((p,i)=>{p.pos={...centerOfRoom(starts[i])};p.room=starts[i]});
+  players.forEach((p,i)=>{
+    p.pos={...centerOfRoom(starts[i])};
+    p.room=starts[i];
+    p.visitedRooms.add(starts[i]);
+  });
 
   const marketSupply=makeMarketSupply();
   const initialMarket=marketSupply.splice(0,MARKET_FACEUP);
@@ -3382,16 +3374,15 @@ function setupGame(){
   lastBoardPixelWidth=0;
   requestAnimationFrame(()=>requestAnimationFrame(scheduleBoardScale));
   const opening=[
-    ...ACTIVE_SCENARIO.opening.slice(0,3),
+    ...ACTIVE_SCENARIO.opening,
     characterOpeningScene(players[0]),
-    roomStoryScene(starts[0]),
-    ...ACTIVE_SCENARIO.opening.slice(3)
+    roomStoryScene(starts[0])
   ];
   beginStorySequence(opening,()=>{
     log(`You are ${players[0].name}. Your ${players[0].evidence.length} evidence cards are private.`,true);
     log(`The investigation begins in ${ROOMS[players[0].room]}.`,true);
     startTurn();
-  });
+  },null,ACTIVE_SCENARIO.opening.length);
 }
 
 function currentPlayer(){return state.players[state.current]}
@@ -3624,7 +3615,8 @@ if("ResizeObserver" in window){
 function renderAll(){
   renderBoard();renderPlayers();renderResources();renderHand();renderMarket();renderCasebook();renderEvidence();renderLog();renderControls();
   const doomLimit=state.doomLimit||10;
-  document.getElementById("doomText").textContent=`${state.doom} / ${doomLimit}`;
+  document.getElementById("doomText").textContent=
+    state.doom===doomLimit ? `${state.doom} / ${doomLimit} · FINAL ROUND` : `${state.doom} / ${doomLimit}`;
   document.getElementById("doomBar").style.width=`${Math.min(100,(state.doom/doomLimit)*100)}%`;
   const cp=currentPlayer(),chip=document.getElementById("turnChip");
   if(chip&&cp){
@@ -4401,7 +4393,12 @@ function humanMove(dest){
   if(!(portalStep&&p.specials.map))p.move--;
   p.room=roomAt(dest.x,dest.y);
   const enteredRoom=p.room!==null && p.room!==oldRoom;
-  if(enteredRoom)p.move=0;
+  const firstVisit=enteredRoom && !p.visitedRooms.has(p.room);
+
+  // Only a room this investigator has never physically occupied before ends
+  // ordinary movement. Returning to a familiar room preserves unused Move.
+  if(firstVisit)p.move=0;
+  if(enteredRoom)p.visitedRooms.add(p.room);
 
   // A move is safely undoable only until it produces new information or
   // another mechanical consequence. Familiar empty-room entry remains undoable.
@@ -4434,7 +4431,7 @@ function encounterCreature(p){
       recordKey:null,
       kicker:`Creature Encounter · ${ROOMS[p.room]}`,
       title:cr.name,
-      body:`<p>${story.fail}</p><div class="story-fact"><b>What follows:</b> ${story.rule}</div><p class="danger">Your nerve gives way. Panic enters your deck; Exposure rises${story.failInsight?`, and ${story.failInsight} Insight slips away`:""}.</p>`
+      body:`<p>${story.fail}</p><p>${story.rule}</p><p class="danger">Your nerve gives way. Panic enters your deck; Exposure rises${story.failInsight?`, and ${story.failInsight} Insight slips away`:""}.</p>`
     }]);
   }else{
     beginStorySequence([{
@@ -4442,7 +4439,7 @@ function encounterCreature(p){
       recordKey:null,
       kicker:`Creature Encounter · ${ROOMS[p.room]}`,
       title:cr.name,
-      body:`<p>${story.pass}</p><div class="story-fact"><b>Its nature:</b> ${story.rule}</div><p>You do not look away. The creature remains in the room, but for the moment it does not master you.</p>`
+      body:`<p>${story.pass}</p><p>${story.rule}</p><p>You do not look away. The creature remains in the room, but for the moment it does not master you.</p>`
     }]);
   }
 }
@@ -4837,7 +4834,7 @@ function suggestionModal(){
     showModal(`<div class="subtitle">Suggestion</div>
       <h2>${status.creature ? "Clear the Room First" : "Travel to the Room First"}</h2>
       <p>${status.reason}</p>
-      <p class="small">${status.creature ? `Spend ${status.banishCost||creatureBanishCost(status.creature)} Resolve on Banish Creature; after the creature is gone you may still investigate the room and make your one Suggestion.` : "Move through the corridors and enter the room you want to test. Entering a room ends ordinary movement."}</p>
+      <p class="small">${status.creature ? `Spend ${status.banishCost||creatureBanishCost(status.creature)} Resolve on Banish Creature; after the creature is gone you may still investigate the room and make your one Suggestion.` : "Move through the corridors and enter the room you want to test. A first visit to a room ends ordinary movement; returning to a familiar room does not."}</p>
       <div class="modal-actions"><button onclick="closeModal()">Continue</button></div>`);
     return;
   }
@@ -5071,6 +5068,7 @@ function usePortal(p){
   const target=status.target;
   p.pos={...portalEndpointPos(po,target)};
   p.room=target;
+  p.visitedRooms?.add(target);
   gainExposure(p,1);
   if(p.charIndex!==2)addMadness(p);
   p.move=0;
@@ -5109,6 +5107,7 @@ function useMergedRoom(p){
   p.move=Math.max(0,p.move-1);
   p.room=status.target;
   p.pos=safePlayerTileInRoom(status.target,centerOfRoom(status.target));
+  p.visitedRooms?.add(status.target);
   log(`${p.name} crosses the Common Interior directly into ${ROOMS[status.target]}.`);
   renderAll();
   if(p.isHuman)revealRoomStory(status.target);
@@ -5131,6 +5130,7 @@ function useShortcut(p){
   p.move=Math.max(0,p.move-1);
   p.room=status.target;
   p.pos=safePlayerTileInRoom(status.target,centerOfRoom(status.target));
+  p.visitedRooms?.add(status.target);
   p.move=0;
   log(`${p.name} uses the impossible shortcut into ${ROOMS[status.target]}.`);
   renderAll();
@@ -5320,6 +5320,7 @@ async function runAITurn(p){
       p.pos=step;
       if(!(portalStep&&p.specials.map))p.move--;
       p.room=roomAt(p.pos.x,p.pos.y);
+      if(p.room!==null)p.visitedRooms?.add(p.room);
       renderAll();await wait(110);
       if(p.room!==null){encounterCreatureAI(p);break}
     }
@@ -5749,12 +5750,33 @@ function mythosPhase(onComplete){
   // A portal created by this phase is already open, so it participates immediately.
   const portalPressure=resolvePortalPressure();
   ev.portalPressure=portalPressure;
+
+  const doomLimit=state.doomLimit||10;
+  const rawAfter=state.doom;
+  const rawGain=rawAfter-before;
+
+  // The limit itself is playable. A Mythos phase that reaches or overshoots
+  // the limit from below stops exactly on the limit and grants the next full
+  // investigator round. Only a later increase from the limit causes defeat.
+  ev.finalRoundReached=before<doomLimit && rawAfter>=doomLimit;
+  if(ev.finalRoundReached){
+    state.doom=doomLimit;
+    if(rawAfter>doomLimit){
+      log(`DOOM — The pressure would rise to ${rawAfter}, but the clock stops at the final threshold: ${doomLimit}. One final round remains.`);
+    }else{
+      log(`DOOM — The clock reaches ${doomLimit}. One final round remains.`);
+    }
+  }else if(before>=doomLimit && rawAfter>doomLimit){
+    state.doom=doomLimit+1;
+  }
+
+  ev.rawDoomGain=rawGain;
   ev.totalDoomGain=state.doom-before;
 
   renderAll();
   const scenes=[mythosStoryScene(ev),...doomThresholdScenes(before,state.doom)];
 
-  if(state.doom>=(state.doomLimit||10)){
+  if(state.doom>doomLimit){
     state.gameOver=true;
     clearAutosave();
     scenes.push(endingScene("doom"));
