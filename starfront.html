@@ -357,7 +357,7 @@
           <select id="selMap"><option value="26">Compact · 26</option><option value="34" selected>Standard · 34</option><option value="44">Sprawling · 44</option></select>
         </label>
         <label>Difficulty
-          <select id="selDifficulty"><option value="normal" selected>Normal</option><option value="easy">Easier · +1 Reinforcement</option></select>
+          <select id="selDifficulty"><option value="easy">Easier · You +1 Reinforcement</option><option value="normal" selected>Normal</option><option value="hard">Hard · Rivals +1 Reinforcement</option></select>
         </label>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
@@ -647,7 +647,7 @@ function newGame(nAI,mapN,difficulty,commanderId){
       candidates[Math.floor(Math.random()*Math.min(3,candidates.length))].troops++;
     }
   }
-  G={nodes,sectors,nP,difficulty:difficulty==='easy'?'easy':'normal',turn:0,phase:'reinforce',reinf:0,sel:null,log:[],
+  G={nodes,sectors,nP,difficulty:['easy','hard'].includes(difficulty)?difficulty:'normal',turn:0,phase:'reinforce',reinf:0,sel:null,log:[],
      players:Array.from({length:nP},(_,i)=>({i,name:PNAME[i],col:PCOL[i],alive:true,human:i===0,commander:i===0?commanderId:null,personality:i===0?null:aiPersonality(i).id})),
      moved:false,conqueredThisTurn:false,anim:[],stars:[],nebulae:[],t:0,
      setBonusLevel:0,pendingCard:null,warDice:0,ripples:[],stamps:[],diceShow:null,
@@ -689,7 +689,7 @@ function sectorOwner(s){const m=s.members;if(!m.length)return -1;const o=G.nodes
 function reinforcementBreakdown(p){
   const pl=G.players[p],terr=ownedBy(p).length;
   const base=Math.max(3,Math.floor(terr/3));
-  const difficultyBonus=(p===0&&G.difficulty==='easy')?1:0;
+  const difficultyBonus=((p===0&&G.difficulty==='easy')||(p!==0&&G.difficulty==='hard'))?1:0;
   const sectors=G.sectors.filter(sec=>sectorOwner(sec)===p);
   const sectorBonus=sectors.reduce((s,sec)=>s+sec.bonus,0);
   const terraform=ownedBy(p).filter(n=>n.terraformed).length;
@@ -702,7 +702,7 @@ function reinforcementBreakdown(p){
 function computeReinf(){
   const p=G.turn,pl=G.players[p],b=reinforcementBreakdown(p);
   const bonusTxt=b.sectors.map(sec=>sec.name+' +'+sec.bonus);
-  if(b.difficultyBonus>0)bonusTxt.push('Easier +'+b.difficultyBonus);
+  if(b.difficultyBonus>0)bonusTxt.push((p===0?'Easier':'Hard')+' +'+b.difficultyBonus);
   if(b.terraform>0)bonusTxt.push('Terraform +'+b.terraform);
   if(b.commander>0)bonusTxt.push('Veyra foothold +'+b.commander);
   if(b.commandBonus>0)bonusTxt.push('Command bonus +'+b.commandBonus);
@@ -2001,7 +2001,7 @@ function openRules(){
     </ol>
 
     <h3>Difficulty & Rival Personalities</h3>
-    <p><b>Normal</b> uses the standard reinforcement rules. <b>Easier</b> gives you +1 additional Reinforcement every turn; rival behavior is unchanged.</p>
+    <p><b>Easier</b> gives you +1 additional Reinforcement every turn. <b>Normal</b> uses the standard reinforcement rules. <b>Hard</b> gives every rival AI +1 additional Reinforcement on each of its turns. Difficulty changes only reinforcement income; rival personalities, cards, combat rules, and dice are unchanged.</p>
     <p>Rival factions use the same game rules and shared Command deck, but each has a different strategic personality:</p>
     <ul>${Object.entries(AI_PERSONALITIES).map(([i,p])=>`<li><b>${PNAME[+i]} · ${p.name}.</b> ${p.desc}</li>`).join('')}</ul>
 
@@ -2074,7 +2074,7 @@ refreshResumeButton();
 readPalette();
 fitAppToWindow();
 document.documentElement.dataset.starfrontLoaded='true';
-console.info('STARFRONT frontend loaded successfully · official v2 build 2.0.0');
+console.info('STARFRONT frontend loaded successfully · official v2 final build 2.0.0');
 </script>
 </body>
 </html>
