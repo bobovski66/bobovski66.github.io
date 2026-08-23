@@ -176,6 +176,68 @@ body.case-geometry .story-quotation{
 body.case-geometry .rules-callout{border-color:#38605b;background:#0c1d1e}
 body.case-geometry .log-entry.story{border-color:#315751;background:linear-gradient(180deg,#102324,#091819)}
 body.case-geometry .meter>div{background:linear-gradient(90deg,#517f78,#8e7560 64%,#b25b58)}
+
+body.case-innsmouth{
+  --ink:#e6e2cf; --muted:#9caeaa; --panel:#10191a; --panel2:#172224;
+  --line:#3c5b5c; --gold:#b6a56a; --gold-dim:#70663f; --red:#a9605b;
+  --green:#648579; --blue:#567e87; --violet:#6e728d; --paper:#d5cfad;
+  background:
+    radial-gradient(ellipse 90% 55% at 50% -8%,rgba(68,116,113,.20),transparent 58%),
+    linear-gradient(180deg,#172426 0,#0c1517 55%,#060b0c 100%);
+}
+body.case-innsmouth .start-card,
+body.case-innsmouth .topbar,
+body.case-innsmouth .panel,
+body.case-innsmouth .panel-lite{
+  background:linear-gradient(180deg,rgba(20,33,34,.98),rgba(9,17,18,.99));
+  border-color:#426466;
+}
+body.case-innsmouth .title{
+  background:linear-gradient(180deg,#eee4bb,#b9a668 55%,#6f7f6f);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+body.case-innsmouth .case-title{color:#d8cfaa}
+body.case-innsmouth button{
+  background:linear-gradient(180deg,#294143,#17292a);border-color:#526e68;
+}
+body.case-innsmouth button:hover:not(:disabled){
+  border-color:#b6a56a;background:linear-gradient(180deg,#355052,#1c3334);
+}
+body.case-innsmouth #board{
+  background:
+    radial-gradient(ellipse at 70% 90%,rgba(64,130,133,.18),transparent 42%),
+    linear-gradient(180deg,#101718,#081011);
+  border-color:#4a6968;
+}
+body.case-innsmouth .tile.wall{background:#071011}
+body.case-innsmouth .tile.corridor{background:linear-gradient(135deg,#4d5e59,#33433f)}
+body.case-innsmouth .tile.room{background:linear-gradient(135deg,#746f58,#565743)}
+body.case-innsmouth .tile.room.flooded-room{
+  background:
+    repeating-linear-gradient(0deg,rgba(145,205,202,.12) 0 2px,transparent 2px 8px),
+    linear-gradient(135deg,#476c68,#35514f);
+  box-shadow:inset 0 0 0 1px rgba(160,218,212,.20),inset 0 -10px 18px rgba(23,76,78,.28);
+}
+body.case-innsmouth .roomLabel.flooded-label{
+  border-color:#75a8a4;color:#d9f1ec;background:rgba(8,33,34,.82);
+  box-shadow:0 0 10px rgba(83,151,149,.30);
+}
+body.case-innsmouth .story-fact{border-left-color:#6d9791;background:#102021}
+body.case-innsmouth .story-quotation{border-color:#496764;background:linear-gradient(180deg,#142728,#0b191a)}
+.scenario-card.innsmouth-case-card{
+  background:
+    radial-gradient(circle at 80% 110%,rgba(77,139,137,.16),transparent 45%),
+    linear-gradient(180deg,#213234,#111d1e);
+  border-color:#496b69;
+}
+.scenario-card.innsmouth-case-card .case-code{color:#c6b77b}
+.legend-flood{
+  background:repeating-linear-gradient(0deg,#6ea5a1 0 2px,#365c5a 2px 5px);
+  border:1px solid #8eb8b4;
+}
+.creature.deep-one{
+  filter:drop-shadow(0 2px 5px rgba(0,0,0,.6)) drop-shadow(0 0 7px rgba(90,165,158,.28));
+}
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
 }
@@ -224,7 +286,7 @@ body.case-geometry .meter>div{background:linear-gradient(90deg,#517f78,#8e7560 6
   font-family:var(--font-mark);text-transform:uppercase;letter-spacing:1.5px;
   color:var(--gold);font-size:.78rem;margin:22px 0 9px;
 }
-.scenarios{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:10px 0 18px}
+.scenarios{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin:10px 0 18px}
 .scenario-card{
   padding:18px;border:1px solid #595442;background:linear-gradient(180deg,#24292b,#171b1c);
   border-radius:12px;cursor:pointer;position:relative;box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.05);
@@ -1489,7 +1551,8 @@ main{
     </div>
     <div class="track">
       <span id="turnChip" class="turn-chip"></span>
-      <span title="After each Mythos event: roll d10 + 1 per open portal. Natural 1 = no Doom; modified 7–9 = +1; 10+ = +2.">Doom <b id="doomText">0 / 10</b></span>
+      <span title="After each Mythos event: roll d10 + 1 per open portal. Natural 1 = no Doom; modified 1–7 = no Doom, 8–10 = +1, 11+ = +2.">Doom <b id="doomText">0 / 10</b></span>
+      <span id="tideTrack" class="hidden" title="Case III only. Tide events flood increasingly inland rooms. Ending a turn in a flooded room gives 1 Exposure.">Tide <b id="tideText">0 / 3</b></span>
       <div class="meter"><div id="doomBar" style="width:0%"></div></div>
     </div>
     <button id="restartBtn">New Mystery</button>
@@ -1512,6 +1575,7 @@ main{
           <span><i class="legend-swatch legend-portal"></i>Portal</span>
           <span><i class="legend-swatch legend-shortcut"></i>Impossible shortcut</span>
           <span id="mergeLegend" class="hidden"><i class="legend-swatch legend-merge"></i>Merged rooms</span>
+          <span id="floodLegend" class="hidden"><i class="legend-swatch legend-flood"></i>Flooded room</span>
           <span><i class="legend-swatch legend-creature"></i>Creature</span>
         </div>
         <div class="controls">
@@ -1644,7 +1708,7 @@ main{
         <p>You may make <b>one Suggestion per turn</b>. You must be physically inside the room you are suggesting about. Choose a Suspect, Relic, and Entity; normally the Room is automatically the room you occupy. Investigation is separate, so you may investigate the room and make a Suggestion there in the same turn. In <b>The Geometry Below</b>, two temporarily merged rooms count as one shared interior, so while standing in either half you may test <b>either room identity</b> in your Suggestion.</p>
         <p>Starting with the next investigator clockwise, rivals check their Evidence. The first investigator who can refute must privately reveal exactly one matching card. If they hold more than one match, they choose which one to reveal.</p>
         <p>If nobody else can refute, the game compares the suggestion with Evidence you already know. If even one named card is known Evidence, the theory is disproved. If none is known Evidence, the theory is logically complete: every non-solution card is held by an investigator, so those four unrefuted unknown cards must be the solution.</p>
-        <p><b>Rival deductions are public information.</b> The Chronicle records every AI investigator's full Suggestion and the identity of the investigator who refuted it, if any. The actual card shown remains private. Rival investigators also follow different habits: Graves systematically tests suspects, Vale and Wren emphasize entities, Ward and Peabody emphasize relics, Wren seeks portals, Peabody seeks creatures, Ward responds to portals and creatures, and Orne favors the shortest useful route.</p>
+        <p><b>Rival deductions are public information.</b> The Chronicle records every AI investigator's full Suggestion and the identity of the investigator who refuted it, if any. The actual card shown remains private. Rival investigators also follow different habits: Graves systematically tests suspects, Vale and Wren emphasize entities, Ward and Peabody emphasize relics, Wren seeks portals, Peabody seeks creatures, and Ward responds to portals and creatures. <b>Nathaniel Orne favors the shortest useful route, but he now moves on after testing a room, cycles through untested unknown possibilities, and will not make a Suggestion whose Room he already knows is Evidence.</b></p>
 
         <h3>Final Accusation</h3>
         <p>A Final Accusation must name <b>the Room you physically occupy</b>. You cannot accuse a distant room: travel there first. In Case II, an active <b>Common Interior</b> counts as one shared physical space, so either joined Room identity may be named while you occupy either half. The accusation must also be made from a <b>stable room-space</b>: not a corridor, and with no open portal or creature remaining there. Seal and/or banish first if necessary.</p>
@@ -1656,10 +1720,13 @@ main{
         <p>Madness cards dilute your Action deck. Once drawn, unplayed Madness is <b>sticky</b>: it is automatically retained at end of turn and occupies retention space. You now have three ways to live with one: leave it in hand and let it clog retention, <b>play it for a dangerous benefit</b>, or discard it through <b>Desperate Pursuit</b>. <b>Panic</b> gives +3 Move and +1 Exposure. <b>Fractured Memory</b> gives +2 Resolve, then costs 1 Insight; if you have none to lose, it gives +1 Exposure instead. <b>Whispers Between Pages</b> gives +2 Insight and +1 Exposure. Generic Madness effects and portal crossings may add any of the three; failed creature tests still specifically add Panic.</p>
 
         <h3>Mythos and the Changing University</h3>
-        <p>After all four investigators act, one card is drawn from the case's shuffled Mythos deck and its event resolves. Mythos cards are not repeated until that deck is exhausted and reshuffled. <b>The card itself does not automatically add Doom.</b> After the event, portal pressure, and any Case II Geometry Pulse resolve, make one Doom check: roll a <b>d10</b> and add <b>+1 for each open portal</b>. A natural 1 always means no Doom. A modified result of <b>7–9 adds 1 Doom</b>; <b>10 or more adds 2 Doom</b>; anything lower adds none. Thus sealing portals directly buys the investigators time. Each case is arranged so that a creature event appears within the first two Mythos phases. In <b>Case I</b>, at least one portal-producing event also appears within the first three Mythos phases.</p>
+        <p>After all four investigators act, one card is drawn from the case's shuffled Mythos deck and its event resolves. Mythos cards are not repeated until that deck is exhausted and reshuffled. <b>The card itself does not automatically add Doom.</b> After the event, portal pressure, and any Case II Geometry Pulse resolve, make one Doom check: roll a <b>d10</b> and add <b>+1 for each open portal</b>. A natural 1 always means no Doom. A modified result of <b>1–7 adds no Doom</b>; <b>8–10 adds 1 Doom</b>; <b>11 or more adds 2 Doom</b>. With no open portals, Doom therefore advances on only 3 rolls out of 10 and can never jump by 2. Sealing portals directly buys the investigators time. Each case is arranged so that a creature event appears within the first two Mythos phases. In <b>Case I</b>, at least one portal-producing event also appears within the first three Mythos phases.</p>
         <p><b>Geometry Pulse — Case II:</b> after the ordinary Mythos card resolves, the annex independently tests whether its geometry changes again. At Doom 0–2, a d6 result of <b>4–6</b> causes a distortion (50%). At Doom 3–5, <b>2–6</b> causes one (5/6). At Doom 6+, a distortion happens <b>every Mythos phase</b>; on a second roll of 5–6, a second different distortion occurs as well. The possible pulse effects are a relocated door, a room exchange, a Common Interior, or an Impossible Shortcut. The affected rooms and exact effect remain random.</p>
         <p>Architectural changes are accepted only when every room remains connected to the corridor network, so the university may become impossible without permanently trapping an investigator. Doorways also maintain a clear threshold: if a moving door would place a portal or creature on the door square or immediately in front of it, that portal/creature is automatically displaced to the nearest legal square in the same room. Room exchanges similarly re-seat their spatial markers inside the room's new geometry. <b>If a doorway moves in the room you occupy, gain 1 Exposure. If the room you occupy physically exchanges position with another room, gain 1 Exposure.</b> A ward may absorb this Exposure normally.</p>
         <p><b>Merged rooms — Case II:</b> a Common Interior lasts for the next <b>two full rounds</b>. The paired rooms remain two Evidence identities but function as one physical space. You may cross directly between them for 1 Move without ending ordinary movement, use a portal located in either half, banish a creature in either half, and choose either room identity for a Suggestion. The danger is shared too: a creature in either half blocks the merged space and can cause lingering Exposure from the other half. The two-round duration is used so every investigator gets the same opportunity to exploit or suffer the distortion.</p>
+        <h3>Case III — The Innsmouth Tide</h3>
+        <p>Innsmouth adds a separate <b>Tide</b> track from 0 to 3. Certain Mythos cards raise the tide; one can make it recede. Each level floods another band of rooms, shown directly on the board. <b>Ending a turn in a flooded room gives 1 Exposure</b>, in addition to any lingering Exposure from a creature there.</p>
+        <p>Deep Ones and their allies replace the generic creature roster in this case. When a Mythos creature has a choice of where to appear, it <b>prefers a flooded room</b>. Tide 1 floods the waterfront and refinery, Tide 2 reaches the central streets and Order of Dagon, and Tide 3 reaches the upper town. Sealing portals still slows the Doom check, while moving inland can buy safety from the water.</p>
 
         <h3>Chronicle</h3>
         <p>Opening scenes, room discoveries, Mythos events, architectural changes, and major Doom developments are saved in the Chronicle so you can review what has happened during the case.</p>
@@ -1706,7 +1773,15 @@ const CREATURE_TYPES = [
    fail:"A thought you were about to have is suddenly spoken from behind you. By the time you turn, the thought is gone.",
    pass:"You stop answering the voice in your head. Starved of response, it curls back into the dark."}
 ];
-function creatureProfile(cr){return CREATURE_TYPES.find(t=>t.id===cr?.type)||CREATURE_TYPES[0]}
+function scenarioCreatureRoster(){
+  return ACTIVE_SCENARIO?.creatureRoster?.length ? ACTIVE_SCENARIO.creatureRoster : CREATURE_TYPES;
+}
+function creatureProfile(cr){
+  return scenarioCreatureRoster().find(t=>t.id===cr?.type)
+    || CREATURE_TYPES.find(t=>t.id===cr?.type)
+    || scenarioCreatureRoster()[0]
+    || CREATURE_TYPES[0];
+}
 function creatureBanishCost(cr){return creatureProfile(cr).banishCost||CREATURE_BANISH_COST}
 function creatureLingerExposure(cr){return creatureProfile(cr).lingerExposure||1}
 
@@ -1791,6 +1866,14 @@ function makeMythosDeck(events){
     const portalIndex=deck.findIndex((ev,i)=>i>=3 && (ev.type==="portal"||ev.type==="surge"));
     if(portalIndex>=0){
       [deck[2],deck[portalIndex]]=[deck[portalIndex],deck[2]];
+    }
+  }
+  if(ACTIVE_SCENARIO?.id==="innsmouthTide"
+      && deck.length>=3
+      && !deck.slice(0,3).some(ev=>ev.type==="tide")){
+    const tideIndex=deck.findIndex((ev,i)=>i>=3 && ev.type==="tide");
+    if(tideIndex>=0){
+      [deck[2],deck[tideIndex]]=[deck[tideIndex],deck[2]];
     }
   }
   return deck;
@@ -1914,6 +1997,51 @@ const GEOMETRY_BELOW_CORRIDORS = (()=>{
   });
   return [...s];
 })();
+
+
+const INNSMOUTH_ROOMS = [
+  "Gilman House","Town Hall","Esoteric Order of Dagon","First National Grocery","Market Square",
+  "Marsh Refinery","Old Churchyard","Water Street Warehouse","Manuxet Wharf"
+];
+const INNSMOUTH_RECTS = [
+  {id:0,x1:0, y1:0,x2:6, y2:2},
+  {id:1,x1:10,y1:0,x2:17,y2:2},
+  {id:2,x1:21,y1:0,x2:27,y2:2},
+  {id:3,x1:0, y1:4,x2:7, y2:6},
+  {id:4,x1:10,y1:4,x2:17,y2:6},
+  {id:5,x1:20,y1:4,x2:27,y2:6},
+  {id:6,x1:0, y1:8,x2:7, y2:10},
+  {id:7,x1:10,y1:8,x2:17,y2:10},
+  {id:8,x1:20,y1:8,x2:27,y2:10}
+];
+const INNSMOUTH_DOORS = {
+  0:[{x:3,y:2},{x:6,y:1}],
+  1:[{x:13,y:2},{x:10,y:1}],
+  2:[{x:24,y:2},{x:21,y:1}],
+  3:[{x:4,y:4},{x:7,y:5}],
+  4:[{x:13,y:4},{x:13,y:6},{x:10,y:5},{x:17,y:5}],
+  5:[{x:23,y:4},{x:20,y:5},{x:23,y:6}],
+  6:[{x:4,y:8},{x:7,y:9}],
+  7:[{x:13,y:8},{x:17,y:9}],
+  8:[{x:23,y:8},{x:20,y:9}]
+};
+const INNSMOUTH_CORRIDORS = (()=>{
+  const s=new Set();
+  const add=(x,y)=>s.add(`${x},${y}`);
+  for(let x=0;x<28;x++){add(x,3);add(x,7);}
+  for(let y=0;y<11;y++){add(8,y);add(19,y);}
+  add(9,1);add(18,1);add(8,5);add(9,5);add(18,5);add(19,5);
+  add(8,9);add(9,9);add(18,9);add(19,9);
+  INNSMOUTH_RECTS.forEach(r=>{
+    for(let x=r.x1;x<=r.x2;x++)for(let y=r.y1;y<=r.y2;y++)s.delete(`${x},${y}`);
+  });
+  return [...s];
+})();
+const INNSMOUTH_TIDE_TIER = {
+  8:1,7:1,5:1,
+  4:2,3:2,2:2,
+  0:3,1:3,6:3
+};
 
 const SCENARIOS = {
   armitageProtocol:{
@@ -2326,7 +2454,206 @@ const SCENARIOS = {
       doom:`The distortion reaches the entire annex before the true chain is identified. Room identity and room location separate completely; every room remains locally ordinary while the building as a whole can no longer be embedded in one consistent space. The investigators lose any reliable route back to the outside.`
     }
 
+  },
+  innsmouthTide:{
+    id:"innsmouthTide",
+    code:"Case III",
+    title:"The Innsmouth Tide",
+    date:"22 August 1932",
+    location:"Innsmouth, Massachusetts",
+    difficulty:"Hostile",
+    style:"Town horror · Rising tide · Deep Ones",
+    skin:"innsmouth",
+    pitch:"A waterlogged Miskatonic field report draws the investigators to a half-abandoned seaport where the streets flood from below and the remaining townsfolk are waiting for nightfall.",
+    rules:{
+      rooms:INNSMOUTH_ROOMS,
+      suspects:[
+        "Captain Elias Marsh","Hotelier Asa Gilman","Dr. Ruth Eliot",
+        "Constable Caleb Sargent","Refinery Foreman Gideon Waite"
+      ],
+      relics:[
+        "Dagon Medallion","Black Reef Idol","Pearl of Y'ha-nthlei",
+        "Marsh Family Ledger","Conch of the Deep Choir"
+      ],
+      entities:[
+        "Father Dagon","Mother Hydra","The Voice of Y'ha-nthlei",
+        "The Sleeper Beneath Devil Reef","The Deep Father"
+      ]
+    },
+    floorPlan:{
+      rows:11,columns:28,rooms:INNSMOUTH_RECTS,doors:INNSMOUTH_DOORS,corridors:INNSMOUTH_CORRIDORS
+    },
+    creatureRoster:[
+      {id:"deepone",name:"Deep One Raider",banishCost:2,lingerExposure:1,blocksInvestigation:false,
+       rule:"A gilled humanoid from the water. It blocks Suggestions and portal travel like any creature.",
+       fail:"The thing comes upright out of the water with a man's shoulders, a fish's eyes, and hands ending in dark webbing. It is faster on two legs than it has any right to be.",
+       pass:"You keep it at warding distance. It circles with a wet, patient shuffle, blinking without eyelids."},
+      {id:"dagonite",name:"Dagon Acolyte",banishCost:2,lingerExposure:1,blocksInvestigation:true,
+       rule:"Its chanting makes careful investigation impossible. Investigate Room is blocked until it is banished.",
+       fail:"The robed figure turns. Beneath the hood, the face has almost finished becoming something built for water.",
+       pass:"You interrupt the chant before the words settle into rhythm. The acolyte recoils, hissing through gill-slits."},
+      {id:"reefbrute",name:"Reef Brute",banishCost:3,lingerExposure:1,blocksInvestigation:false,
+       rule:"Its armor-like scales make it unusually difficult to banish: 3 Resolve.",
+       fail:"A scaled shoulder hits the doorway first, then the rest of the creature forces through after it. The smell is brine, old blood, and the underside of a pier.",
+       pass:"Your ward catches against its barnacled hide. The brute cannot cross the line, though it keeps leaning into it."},
+      {id:"elderdeep",name:"Barnacled Elder",banishCost:2,lingerExposure:2,blocksInvestigation:false,
+       rule:"Its presence is especially corrupting. Ending a turn in its room causes 2 Exposure.",
+       fail:"The elder does not lunge. It only speaks your family name in a voice full of seawater, and for one terrible second you understand why that should matter.",
+       pass:"You refuse to answer when it names you. The old thing's throat pulses once, and it waits."}
+    ],
+    mythos:[
+      {title:"The Harbor Bell",text:"A bell sounds from the water and the tide climbs another street.",type:"tide"},
+      {title:"Footprints at Low Water",text:"Webbed tracks leave the harbor and continue inland.",type:"creature"},
+      {title:"The Order Opens Its Doors",text:"The Esoteric Order empties into the streets after dark.",type:"creature"},
+      {title:"Tide Under the Doors",text:"Seawater rises through drains and cellar stairs instead of coming from the harbor.",type:"tide"},
+      {title:"The Bus Does Not Come",text:"The road to Arkham is empty long after the last scheduled bus.",type:"quiet"},
+      {title:"Voices Beneath the Gilman House",text:"Every investigator remembers breathing comfortably underwater.",type:"madness"},
+      {title:"The Tunnel to Devil Reef",text:"A wet stone passage joins two places that should be separated by half the town.",type:"portal"},
+      {title:"A Procession on Water Street",text:"Lanterns move toward the harbor around figures whose gait is only approximately human.",type:"creature"},
+      {title:"The Sea Withdraws Too Far",text:"The harbor empties for several minutes, leaving black mud and old stone steps exposed.",type:"ebb"},
+      {title:"The Nets Come Up Full",text:"Fishermen drag something ashore that recognizes the investigators before it is uncovered.",type:"madness"},
+      {title:"Lights Beyond the Reef",text:"An impossible wet route opens toward the sound of surf beneath the streets.",type:"portal"},
+      {title:"Black Tide",text:"The water rises without wind, rain, or moon enough to explain it.",type:"tide"}
+    ],
+    opening:[
+      {
+        id:"innsmouth-opening-1",
+        kicker:"Innsmouth, Massachusetts · 22 August 1932",
+        title:"The Report That Came Back Wet",
+        body:`<p>Miskatonic receives a field report from Innsmouth in an envelope soaked through with salt water. The paper inside is dry. Its author, graduate researcher Daniel Mercer, was cataloguing objects removed from abandoned waterfront properties. His last coherent entry names four things he believed were connected: <b>a local person, an object, a place in town, and something living beyond Devil Reef</b>.</p>
+          <p>Mercer never returned to Arkham. Two days later his suitcase arrived by bus without him. Inside was a scrap of hotel stationery bearing one sentence: <em>They know which one I found.</em></p>`
+      },
+      {
+        id:"innsmouth-opening-2",
+        kicker:"The Road into Innsmouth",
+        title:"A Town That Is Not Empty",
+        body:`<p>Innsmouth is officially diminished, half-abandoned, and watched from a distance. It is not empty. Curtains move in houses with boarded doors. Men on the sidewalks stop speaking when the investigators pass. At the fish market, a woman with a scarf drawn high around her neck watches without blinking.</p>
+          <p>Near the harbor, you see the first thing no report prepared you for: a broad-shouldered figure climbs from the water onto the pilings, stands upright, and walks into a warehouse on webbed feet. Whatever Mercer found, the old stories about the town's people are no longer rumors.</p>`
+      },
+      {
+        id:"innsmouth-opening-3",
+        kicker:"Known Facts",
+        title:"The Innsmouth Case File",
+        body:`<p>Mercer's notes are incomplete but specific enough to use the Casebook method. One local person knowingly handled one of five recovered objects. One location in Innsmouth was used as the center of the act. One deep presence answered through the town's old relationship with the sea.</p>
+          <p>The persons of interest are <b>Captain Elias Marsh</b>, <b>Hotelier Asa Gilman</b>, <b>Dr. Ruth Eliot</b>, <b>Constable Caleb Sargent</b>, and <b>Refinery Foreman Gideon Waite</b>. As before, the four true facts are sealed away and every other possibility is distributed as Evidence.</p>`
+      },
+      {
+        id:"innsmouth-opening-4",
+        kicker:"After Sunset",
+        title:"The Tide Comes from Below",
+        body:`<p>At sunset the harbor does not rise first. Water bubbles up through storm drains in Market Square, seeps beneath the doors of the Marsh Refinery, and fills footprints in streets well above the normal tide line.</p>
+          <p>Then the church bell rings once. Shapes begin moving in the water between the wharf pilings. The investigators have until the town and the sea become the same place to determine <b>who used what, where, and what answered</b>.</p>`,
+        button:"Enter Innsmouth"
+      }
+    ],
+    characterOpenings:{
+      "Inspector Eliza Graves":`You begin with the town directory, Mercer's notes, and a list of names recurring in both. Too many surnames repeat across too many generations. In Innsmouth, a family tree may be evidence in more than one sense.`,
+      "Dr. Eleanor Vale":`The townspeople do not behave like a crowd concealing one secret. They behave like a population trained from childhood never to acknowledge something everyone can see.`,
+      "Mae Wren":`The harbor feels crowded long before anything surfaces. The presences here are not trying to cross into the world from somewhere else. They already know the shoreline.`,
+      "Abigail Ward":`Salt has been packed into window frames throughout the Gilman House—but always on the outside. Whatever those wards were meant to keep away, the people inside expected it to come from the street.`,
+      "Dr. Silas Peabody":`You take samples from a puddle in Market Square. Its salinity matches the harbor exactly, though the nearest pipe carries fresh water and the sea is three streets downhill.`,
+      "Nathaniel Orne":`A Marsh family shipping ledger includes the Orne name in a column headed simply RETURNED. You decide that may be genealogy, cargo, or a threat.`
+    },
+    roomIntroductions:{
+      "Gilman House":`The hotel lobby smells of mildew, boiled fish, and old carpet. The desk clerk insists only three guests are registered, though at night you can hear footsteps on every floor. A locked room upstairs contains Mercer's handwriting on the wallpaper.`,
+      "Town Hall":`Tax rolls, birth records, marriage certificates, and death notices fill cabinets that have been repeatedly reorganized. Some families appear to gain descendants without recording births. Others stop recording deaths at all.`,
+      "Esoteric Order of Dagon":`The former meeting hall has been stripped of ordinary religious symbols. Benches face a stone basin crusted white with salt. Wet footprints cross the floor even when the doors have been locked for hours.`,
+      "First National Grocery":`It is one of the few businesses that still looks almost ordinary. Behind the counter, delivery invoices from Arkham sit beside local orders written in a second ledger using weights that do not match any commercial measure.`,
+      "Market Square":`The square is the town's crossroads and its best place to watch who goes where. Drain covers tremble whenever the harbor bell sounds. At high tide, seawater appears here from below before it reaches the streets from the shore.`,
+      "Marsh Refinery":`The refinery is mostly silent, but one furnace remains warm. Shipping manifests list gold, chemicals, and sealed barrels transferred between the Marsh company and vessels that never appear in harbor records.`,
+      "Old Churchyard":`The stones are weathered nearly blank. Family names repeat in clusters, then vanish from the cemetery while continuing in the town records. Several graves have drainage channels cut toward the sea.`,
+      "Water Street Warehouse":`Fish scales cling to the floorboards beside footprints too broad to belong to boots. Crates marked for foreign ports contain no cargo, only wet straw and heavy iron chains bolted to the walls.`,
+      "Manuxet Wharf":`The pilings descend into black water that seems deeper than the harbor should allow. Ropes creak against empty berths. Beyond the breakwater, Devil Reef shows as a dark line whenever the waves pull back.`
+    },
+    investigations:{
+      "Gilman House":{
+        insight:`Mercer's room register has been altered, but pressure marks on the sheet beneath preserve the original entry beside one suspect's name.`,
+        resolve:`A former guest packed iron nails and powdered chalk into the window sash. The improvised ward still has one use left.`,
+        forbidden:`The bathtub drain exhales warm salt air. For a moment you hear voices speaking from far below the building.`,
+        whisper:`Someone in the room above repeats your last sentence word for word, though the room is listed as vacant.`
+      },
+      "Town Hall":{
+        insight:`A marriage ledger links one suspect's family to repeated transfers of the same relic under different descriptions.`,
+        resolve:`An old federal evidence seal has been reinforced with iron staples. The pattern is crude but effective.`,
+        forbidden:`A century of photographs shows one face changing less than everyone around it.`,
+        whisper:`A filing cabinet opens by itself to a record bearing tomorrow's date.`
+      },
+      "Esoteric Order of Dagon":{
+        insight:`Membership dues were paid not in money but in deliveries routed through one specific room in town.`,
+        resolve:`The salt basin is ringed by iron beneath the stone. Reversing three marks turns it into a usable ward.`,
+        forbidden:`The water in the basin reflects a ceiling of green light and moving bodies far overhead.`,
+        whisper:`The empty benches answer a call-and-response in voices too deep for human throats.`
+      },
+      "First National Grocery":{
+        insight:`The second ledger converts ordinary groceries into quantities matching provisions loaded onto an unregistered vessel.`,
+        resolve:`The proprietor keeps a flare pistol and a tin of magnesium powder beneath the till. Both are carefully maintained.`,
+        forbidden:`A wrapped fish on the counter opens one human-looking eye, then closes it before anyone else turns.`,
+        whisper:`The icebox hum resolves into Mercer's voice giving the name of a room.`
+      },
+      "Market Square":{
+        insight:`Comparing muddy footprints before and after the harbor bell reconstructs which suspect crossed the square toward the waterfront.`,
+        resolve:`A cast-iron storm grate bears an old protective knot under layers of rust. Cleaning it restores the pattern.`,
+        forbidden:`Water in the gutter flows uphill toward a dry drain, carrying tiny translucent eggs.`,
+        whisper:`A voice below the grate asks whether the tide has reached your room yet.`
+      },
+      "Marsh Refinery":{
+        insight:`A shipping manifest records one relic as industrial scrap and assigns it to a private transfer signed by a suspect.`,
+        resolve:`Heavy copper grounding straps around the furnace can be cut free and used as a temporary ward.`,
+        forbidden:`One sealed vat contains seawater under pressure. Something inside knocks back when you touch the metal.`,
+        whisper:`The dead furnace answers with three wet impacts from inside its firebox.`
+      },
+      "Old Churchyard":{
+        insight:`The erased inscriptions are still readable by rubbing. Several missing deaths correspond to names in Mercer's suspect notes.`,
+        resolve:`Iron coffin nails have been driven into the roots of an old yew in a deliberate circle.`,
+        forbidden:`One grave is full of seawater despite lying well above the harbor. Something large turns beneath the surface.`,
+        whisper:`A voice under the stones recites a genealogy that ends with one of the investigators.`
+      },
+      "Water Street Warehouse":{
+        insight:`Crate numbers connect one recovered relic to a particular suspect and a midnight delivery route.`,
+        resolve:`A length of tarred iron chain has been marked at regular intervals with warding cuts.`,
+        forbidden:`A trapdoor opens onto steps descending into seawater. The steps continue downward after the light stops reaching them.`,
+        whisper:`Something beneath the floor mimics the scrape of your shoes, always one step late.`
+      },
+      "Manuxet Wharf":{
+        insight:`Harbor logs show one vessel returning repeatedly from Devil Reef without ever recording departure.`,
+        resolve:`A rusted mooring ring has been hammered with symbols meant to bind rather than secure a ship.`,
+        forbidden:`When the water clears, you see stone roofs far below the harbor where no town should exist.`,
+        whisper:`A voice from beneath the pilings says Mercer's name, then yours.`
+      }
+    },
+    mythosStories:{
+      "The Harbor Bell":`The harbor bell rings once with no hand on its rope. Seawater immediately rises through drains and cellar floors. This is not an ordinary tide coming inland from the shore; the town is filling from below.`,
+      "Footprints at Low Water":`Webbed footprints appear in black mud beside the harbor and continue onto the street. A Deep One follows them inland, moving upright once it reaches dry ground.`,
+      "The Order Opens Its Doors":`The doors of the Esoteric Order of Dagon open together. A robed procession steps into the street, and one figure throws back its hood to reveal gills working along its neck.`,
+      "Tide Under the Doors":`Water pushes beneath doors several streets from the harbor. Rooms that were dry minutes ago become ankle-deep in cold seawater, bringing the smell of the reef with it.`,
+      "The Bus Does Not Come":`The scheduled bus to Arkham never appears. The road out of town remains empty, and every telephone line produces only the sound of distant surf. Nothing attacks, but Innsmouth has become much harder to leave.`,
+      "Voices Beneath the Gilman House":`For several waking seconds, every investigator remembers swimming through a city of stone under green water. The memory includes streets, doors, and a home none of them has ever seen.`,
+      "The Tunnel to Devil Reef":`A wet stone opening appears where a cellar wall should be. At its far end is another room in town, joined by a passage that smells of the open sea and extends through more earth than the distance allows.`,
+      "A Procession on Water Street":`Lanterns move down Water Street around figures wearing coats buttoned high over their throats. One turns toward the investigators. Its eyes are round, lidless, and reflective.`,
+      "The Sea Withdraws Too Far":`The harbor drains away from the wharf as though the ocean has inhaled. Streets near the water begin to dry, but black steps are exposed beyond the pilings, descending toward Devil Reef.`,
+      "The Nets Come Up Full":`Fishermen haul a net onto the wharf. Whatever is inside speaks before the canvas is removed, using the voice of someone each investigator trusts.`,
+      "Lights Beyond the Reef":`Green lights ignite beneath the water beyond Devil Reef. A second wet passage opens elsewhere in town. The routes do not lead out of Innsmouth; they lead deeper into its hidden geography.`,
+      "Black Tide":`The sea rises without wind, rain, or moon enough to explain it. Water pours uphill through the streets. In the flooded districts, shapes begin moving with purpose between the buildings.`
+    },
+    doomScenes:{
+      3:{id:"innsmouth-doom-3",kicker:"Doom 3",title:"The Town Knows You Are Here",
+        body:`<p>The investigators compare notes and realize the same faces have appeared near three different locations, always at a distance and always after someone found useful evidence.</p><p>Innsmouth is not merely inhabited by Deep Ones and their human relatives. The town is organized. Someone is reporting the investigators' movements, and the search is now being watched from both the streets and the water.</p>`},
+      6:{id:"innsmouth-doom-6",kicker:"Doom 6",title:"The Harbor Answers",
+        body:`<p>The bells at the Order, the wharf, and the abandoned church ring in sequence. Deep Ones begin appearing openly in flooded streets rather than hiding beneath coats or moving only after dark.</p><p>The tide is part of the same operation as Mercer's four-part chain. The town is not waiting for the sea to rise; it is calling the sea inland.</p>`},
+      8:{id:"innsmouth-doom-8",kicker:"Doom 8",title:"Devil Reef Comes Closer",
+        body:`<p>Devil Reef should lie far beyond the breakwater. Through the fog it now appears at the end of Water Street, close enough that stone structures can be seen between the waves.</p><p>The distance between Innsmouth and whatever lies beneath the reef is collapsing. If the investigators cannot identify the exact person, relic, room, and deep presence soon, there may no longer be a meaningful boundary between the town and the city under the water.</p>`}
+    },
+    portal:{
+      id:"innsmouth-first-portal",kicker:"Sea Tunnel",title:"A Road Under the Water",
+      body:`<p>A wet stone opening connects two distant rooms in Innsmouth. The passage between them is short, dark, and lined with shells despite running through ground that should contain streets and foundations.</p><p>It can be crossed like the other impossible portals, but this one feels less like a hole torn into space than a piece of an older road briefly exposed. Leaving it open gives the Deep Ones another route into town.</p>`
+    },
+    endings:{
+      solved:`The accusation identifies the local conspirator, the object used to renew the compact, the room where the act was centered, and the deep presence that answered. Once the four facts are fixed, the investigators break the working at the correct site. The bells stop. The unnatural tide drains toward the harbor, and the Deep Ones retreat with it—not defeated forever, but cut off from this night's invitation.`,
+      wrong:`The accusation names the wrong chain. The investigators strike at the wrong person and place while the real compact remains intact. Bells begin ringing from the harbor. Doors open all along Water Street, and the town no longer bothers pretending its inhabitants are human.`,
+      doom:`The final safe interval passes without a solution. Water reaches the upper streets, Devil Reef appears through the fog as though it has moved inland, and Deep Ones emerge openly from houses as well as the sea. By dawn, there is no longer a clear line between Innsmouth and what lives beneath it.`
+    }
   }
+
 };
 
 let ACTIVE_SCENARIO = SCENARIOS.armitageProtocol;
@@ -2457,6 +2784,7 @@ function resumeLastCase(){
   // Defensive defaults allow saves from this version to survive minor future UI
   // additions without turning missing optional fields into errors.
   state.moveUndoStack ||= [];
+  state.tideLevel ||= 0;
   state.storyRecorded ||= new Set();
   state.storySeen ||= {rooms:new Set(),doom:new Set(),portal:false};
   state.players.forEach(p=>{
@@ -2470,8 +2798,8 @@ function resumeLastCase(){
         : new Set(p.room!==null?[p.room]:[]);
     }
     if(p.room!==null)p.visitedRooms.add(p.room);
-    p.aiTested ||= {Suspect:new Set(),Relic:new Set(),Entity:new Set()};
-    for(const cat of ["Suspect","Relic","Entity"])p.aiTested[cat] ||= new Set();
+    p.aiTested ||= {Suspect:new Set(),Relic:new Set(),Room:new Set(),Entity:new Set()};
+    for(const cat of ["Suspect","Relic","Room","Entity"])p.aiTested[cat] ||= new Set();
   });
 
   activeStorySequence=null;
@@ -3098,6 +3426,8 @@ function mythosInterpretation(ev){
     roomSwap:"Two rooms have exchanged locations while keeping their contents and identities. The current map, not the original blueprint, now determines how they connect to corridors.",
     shortcut:"A temporary ordinary passage has appeared through space that should be solid. It is useful, but it confirms that the building's geometry is still changing.",
     roomMerge:"Two neighboring rooms now share one continuous physical interior. They remain different Evidence identities, but for movement and danger they temporarily occupy the same space.",
+    tide:"The seawater is moving inland through Innsmouth itself. Newly flooded rooms become hazardous places to end a turn, and Deep Ones favor the flooded districts.",
+    ebb:"The water withdraws from one band of streets, temporarily making those rooms safer to occupy.",
     quiet:geometry
       ?"No new visible distortion occurs, but the anomaly remains active and the Doom clock must still be checked."
       :"Nothing new manifests this time, but the wards remain under pressure and the Doom clock must still be checked."
@@ -3237,14 +3567,52 @@ function doomCheck(){
   const portals=state.portals.length;
   const naturalOne=die===1;
   const modified=naturalOne?1:die+portals;
-  const gain=naturalOne?0:(modified>=10?2:(modified>=7?1:0));
+  // A sealed board should give the investigators time to investigate:
+  // 1–7 holds, 8–10 advances by 1, and only portal pressure can normally
+  // push the modified result to 11+ for a 2-Doom jump.
+  const gain=naturalOne?0:(modified>=11?2:(modified>=8?1:0));
   return {die,portals,naturalOne,modified,gain};
+}
+function isInnsmouth(){return ACTIVE_SCENARIO?.id==="innsmouthTide"}
+function isFloodedRoom(rid){
+  if(!isInnsmouth()||rid===null||rid===undefined)return false;
+  const tier=INNSMOUTH_TIDE_TIER[rid];
+  return Number.isInteger(tier) && (state.tideLevel||0)>=tier;
+}
+function changeInnsmouthTide(delta){
+  if(!isInnsmouth())return "";
+  const before=state.tideLevel||0;
+  const after=Math.max(0,Math.min(3,before+delta));
+  state.tideLevel=after;
+
+  if(after===before){
+    const msg=delta>0
+      ?"The black tide is already at its highest mark. Water continues pressing against the upper streets, but it can climb no farther."
+      :"The harbor is already at its lowest unnatural mark. The exposed mud glistens, but the water withdraws no farther.";
+    log(`THE TIDE — ${msg}`);
+    return msg;
+  }
+
+  const changedTier=delta>0?after:before;
+  const changed=ROOMS.map((name,rid)=>({name,rid}))
+    .filter(x=>INNSMOUTH_TIDE_TIER[x.rid]===changedTier)
+    .map(x=>x.name);
+
+  if(delta>0){
+    const msg=`The tide rises to ${after}/3.${changed.length?` ${changed.join(", ")} ${changed.length===1?"floods":"flood"}.`:""} Ending a turn in any flooded room causes 1 Exposure.`;
+    log(`THE TIDE — ${msg}`);
+    return msg;
+  }
+  const msg=`The tide falls to ${after}/3.${changed.length?` ${changed.join(", ")} ${changed.length===1?"dries":"dry"} enough to become safe from the flood penalty.`:""}`;
+  log(`THE TIDE — ${msg}`);
+  return msg;
 }
 
 function installScenario(scenario){
   ACTIVE_SCENARIO=scenario;
   document.body.classList.toggle("case-geometry",scenario.skin==="geometry");
-  document.body.classList.toggle("case-armitage",scenario.skin!=="geometry");
+  document.body.classList.toggle("case-innsmouth",scenario.skin==="innsmouth");
+  document.body.classList.toggle("case-armitage",scenario.skin==="casefile");
   ROOMS=[...scenario.rules.rooms];
   SUSPECTS=[...scenario.rules.suspects];
   RELICS=[...scenario.rules.relics];
@@ -3288,7 +3656,7 @@ function buildScenarioChoices(){
   wrap.innerHTML="";
   Object.values(SCENARIOS).forEach(s=>{
     const div=document.createElement("article");
-    div.className=`scenario-card ${s.skin==="geometry"?"geometry-case-card":""}`;
+    div.className=`scenario-card ${s.skin==="geometry"?"geometry-case-card":s.skin==="innsmouth"?"innsmouth-case-card":""}`;
     div.innerHTML=`<div class="case-code">${s.code}</div>
       <h2>${s.title}</h2>
       <p>${s.pitch}</p>
@@ -3350,7 +3718,7 @@ function newPlayer(charIndex,isHuman=false){
     eliminated:false,manualNotes:{},specials:{},nerve:c.nerve,
     investigatedRooms:new Set(),
     visitedRooms:new Set(),
-    aiTested:{Suspect:new Set(),Relic:new Set(),Entity:new Set()}
+    aiTested:{Suspect:new Set(),Relic:new Set(),Room:new Set(),Entity:new Set()}
   };
 }
 function setupGame(){
@@ -3390,7 +3758,7 @@ function setupGame(){
   state={
     players,solution,current:0,round:1,doom:0,doomLimit:selectedDoomLimit,phase:"briefing",
     scenarioId:ACTIVE_SCENARIO.id,
-    portals:[],creatures:[],creaturesSpawned:0,shortcut:null,roomMerge:null,market:initialMarket,
+    portals:[],creatures:[],creaturesSpawned:0,shortcut:null,roomMerge:null,tideLevel:0,market:initialMarket,
     marketDeck:marketSupply,mythosDeck:makeMythosDeck(MYTHOS),log:[],lastMythos:null,moveUndoStack:[],lastHumanAction:null,
     selectedEvidence:null,
     confirmedTheory:null,
@@ -3461,6 +3829,10 @@ function drawCards(p,n){
 }
 function finishTurn(p,keepIndices=[]){
   const endCreature=creatureAtRoom(p.room);
+  if(isFloodedRoom(p.room)){
+    log(`${p.name} ends the turn in flooded ${ROOMS[p.room]} and gains 1 Exposure from the black seawater and the shapes moving beneath it.`);
+    gainExposure(p,1);
+  }
   if(endCreature){
     const linger=creatureLingerExposure(endCreature);
     log(`${p.name} ends the turn in ${ROOMS[p.room]} under the presence of ${endCreature.name}${endCreature.room!==p.room?` across the merged interior in ${ROOMS[endCreature.room]}`:""} and gains ${linger} Exposure.`);
@@ -3512,6 +3884,9 @@ function requestHumanEndTurn(){
   const creatureWarning=endCreature
     ? `<p class="danger"><b>Lingering danger:</b> ending your turn in ${ROOMS[p.room]} while ${endCreature.name} remains ${endCreature.room===p.room?"there":`in merged ${ROOMS[endCreature.room]}`} will add ${creatureLingerExposure(endCreature)} Exposure.</p>`
     : "";
+  const floodWarning=isFloodedRoom(p.room)
+    ? `<p class="danger"><b>Flooded room:</b> ending your turn in ${ROOMS[p.room]} will add 1 Exposure from the Innsmouth tide.</p>`
+    : "";
 
   const madnessHtml=madness.length
     ? `<div class="retain-list">${madness.map(x=>
@@ -3544,6 +3919,7 @@ function requestHumanEndTurn(){
     <h2>Retain Cards</h2>
     <p>${madnessSummary}</p>
     ${creatureWarning}
+    ${floodWarning}
     ${madnessHtml}
     ${optionalHtml}
     <p id="retainCount" class="small">${state.retainSelection.length} of ${normalLimit} optional selected</p>
@@ -3647,6 +4023,12 @@ function renderAll(){
   document.getElementById("doomText").textContent=
     state.doom===doomLimit ? `${state.doom} / ${doomLimit} · FINAL ROUND` : `${state.doom} / ${doomLimit}`;
   document.getElementById("doomBar").style.width=`${Math.min(100,(state.doom/doomLimit)*100)}%`;
+  const tideTrack=document.getElementById("tideTrack");
+  const floodLegend=document.getElementById("floodLegend");
+  if(tideTrack)tideTrack.classList.toggle("hidden",!isInnsmouth());
+  if(floodLegend)floodLegend.classList.toggle("hidden",!isInnsmouth());
+  const tideText=document.getElementById("tideText");
+  if(tideText)tideText.textContent=`${state.tideLevel||0} / 3`;
   const cp=currentPlayer(),chip=document.getElementById("turnChip");
   if(chip&&cp){
     chip.style.setProperty("--turn-color",cp.color);
@@ -3683,7 +4065,8 @@ function renderBoard(){
     d.style.gridRow=String(y+1);
     if(rid!==null){
       if(state.roomMerge && (rid===state.roomMerge.a||rid===state.roomMerge.b))d.classList.add("merged-room");
-      d.title=`Room: ${ROOMS[rid]}${mergedRoomOther(rid)!==null?` — merged with ${ROOMS[mergedRoomOther(rid)]}`:""}`;
+      if(isFloodedRoom(rid))d.classList.add("flooded-room");
+      d.title=`Room: ${ROOMS[rid]}${mergedRoomOther(rid)!==null?` — merged with ${ROOMS[mergedRoomOther(rid)]}`:""}${isFloodedRoom(rid)?" — FLOODED: ending a turn here causes 1 Exposure":""}`;
       d.setAttribute("aria-label",ROOMS[rid]);
     }
     board.appendChild(d);
@@ -3696,6 +4079,10 @@ function renderBoard(){
     if(state.roomMerge && (r.id===state.roomMerge.a||r.id===state.roomMerge.b)){
       label.classList.add("merged-label");
       label.title=`Temporarily shares one interior with ${ROOMS[mergedRoomOther(r.id)]}`;
+    }
+    if(isFloodedRoom(r.id)){
+      label.classList.add("flooded-label");
+      label.title=`Flooded by the Innsmouth tide — ending a turn here causes 1 Exposure`;
     }
     label.setAttribute("aria-hidden","true");
     label.style.gridColumn=`${r.x1+1} / ${r.x2+2}`;
@@ -3745,7 +4132,7 @@ function renderBoard(){
   state.creatures.forEach(cr=>{
     const c=creaturePos(cr),t=tileAt(c.x,c.y);
     const z=document.createElement("div");
-    z.className="creature";
+    z.className="creature"+(ACTIVE_SCENARIO.id==="innsmouthTide"?" deep-one":"");
     const profile=creatureProfile(cr);
     const banishCost=creatureBanishCost(cr);
     const linger=creatureLingerExposure(cr);
@@ -3755,7 +4142,23 @@ Banish: ${banishCost} Resolve · Reward: 2 Insight
 Lingering danger: ${linger} Exposure at end of turn
 ${profile.rule}`;
     z.setAttribute("aria-label",`${cr.name}. ${profile.rule}`);
-    z.innerHTML=`
+    z.innerHTML=ACTIVE_SCENARIO.id==="innsmouthTide"
+      ? `
+      <svg viewBox="0 0 64 64" role="img" aria-hidden="true">
+        <path d="M20 23 C20 12 27 7 32 7 C39 7 45 13 44 24 L41 36 C39 45 35 51 32 54 C28 50 23 45 21 36 Z"
+          fill="#567d73" stroke="#132a27" stroke-width="2"/>
+        <path d="M20 25 L10 18 L13 31 L8 38 L22 36" fill="#42675f" stroke="#132a27" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M44 25 L54 18 L51 31 L56 38 L42 36" fill="#42675f" stroke="#132a27" stroke-width="2" stroke-linejoin="round"/>
+        <ellipse cx="26" cy="22" rx="4" ry="5" fill="#d9dd9a"/>
+        <ellipse cx="38" cy="22" rx="4" ry="5" fill="#d9dd9a"/>
+        <circle cx="26" cy="23" r="1.5" fill="#18231f"/>
+        <circle cx="38" cy="23" r="1.5" fill="#18231f"/>
+        <path d="M27 31 Q32 35 37 31" fill="none" stroke="#1a2e29" stroke-width="2"/>
+        <path d="M19 29 l-7 4 M45 29 l7 4 M19 33 l-7 7 M45 33 l7 7" stroke="#a2c1b7" stroke-width="2" stroke-linecap="round"/>
+        <path d="M25 46 L20 58 M39 46 L44 58" stroke="#132a27" stroke-width="4" stroke-linecap="round"/>
+        <path d="M17 58 Q22 54 26 59 M38 59 Q43 54 47 58" fill="none" stroke="#476b64" stroke-width="3" stroke-linecap="round"/>
+      </svg>`
+      : `
       <svg viewBox="0 0 64 64" role="img" aria-hidden="true">
         <defs>
           <linearGradient id="cthBody" x1="0" x2="0" y1="0" y2="1">
@@ -4670,6 +5073,7 @@ async function makeSuggestion(player,choices){
     Room:chosenRoom,
     Entity:choices.Entity
   };
+  if(!player.isHuman)player.aiTested?.Room?.add(chosenRoom);
   player.suggestedThisTurn=true;
 
   log(`${player.name} suggests ${suggestion.Suspect}, with the ${suggestion.Relic}, in ${suggestion.Room}, involving ${suggestion.Entity}.`);
@@ -5251,7 +5655,21 @@ function chooseAITarget(p){
     if(urgent.length)return nearestRoomFrom(p,urgent);
   }
   if(p.ai==="occultist" && portalRooms.length)return nearestRoomFrom(p,portalRooms);
-  if(p.ai==="opportunist" && unknownRooms.length)return nearestRoomFrom(p,unknownRooms);
+
+  if(p.ai==="opportunist" && unknownRooms.length){
+    // Orne is opportunistic, not stationary. Prefer the nearest unknown Room
+    // he has not already used in a Suggestion, and prefer leaving his current
+    // room when another useful destination exists.
+    const fresh=unknownRooms.filter(rid=>!p.aiTested.Room.has(ROOMS[rid]));
+    const freshElsewhere=fresh.filter(rid=>rid!==p.room);
+    if(freshElsewhere.length)return nearestRoomFrom(p,freshElsewhere);
+    if(fresh.length)return nearestRoomFrom(p,fresh);
+
+    const elsewhere=unknownRooms.filter(rid=>rid!==p.room);
+    if(elsewhere.length)return nearestRoomFrom(p,elsewhere);
+    return nearestRoomFrom(p,unknownRooms);
+  }
+
   if(unknownRooms.length)return rand(unknownRooms);
   return Math.floor(Math.random()*ROOMS.length);
 }
@@ -5268,8 +5686,12 @@ function chooseAISuggestion(p){
       return choice;
     }
     if(p.ai==="opportunist"){
-      // Orne follows whichever possibility is currently most constrained.
-      return rand(unknown);
+      // Orne never deliberately retests a possibility while another unknown
+      // option in that category remains untried.
+      const untested=unknown.filter(v=>!p.aiTested[cat].has(v));
+      const choice=rand(untested.length?untested:unknown);
+      p.aiTested[cat].add(choice);
+      return choice;
     }
     return rand(unknown);
   };
@@ -5345,13 +5767,32 @@ async function runAITurn(p){
     const path=playerRoomPath(p.pos,target);
     for(let i=1;i<path.length&&p.move>0;i++){
       const step={...path[i]};
+      const oldRoom=p.room;
       const portalStep=portalEndpointAtPosition(step);
+      const nextRoom=roomAt(step.x,step.y);
+      const enteredRoom=nextRoom!==null && nextRoom!==oldRoom;
+      const firstVisit=enteredRoom && !p.visitedRooms.has(nextRoom);
+
       p.pos=step;
       if(!(portalStep&&p.specials.map))p.move--;
-      p.room=roomAt(p.pos.x,p.pos.y);
-      if(p.room!==null)p.visitedRooms?.add(p.room);
+      p.room=nextRoom;
+      if(enteredRoom)p.visitedRooms.add(nextRoom);
+
       renderAll();await wait(110);
-      if(p.room!==null){encounterCreatureAI(p);break}
+
+      if(enteredRoom){
+        encounterCreatureAI(p);
+
+        // Match the human movement rule: the first physical visit to a room
+        // ends ordinary movement. A familiar room can be crossed with unused
+        // Move, and merely taking another square inside the room never ends
+        // the AI's movement.
+        if(firstVisit)p.move=0;
+
+        // The path is complete once the intended room is reached. If a first
+        // visit forced movement to end in an intervening room, stop there too.
+        if(nextRoom===target || firstVisit)break;
+      }
     }
   }
   // A creature blocks deductions in its room. AI investigators must clear it
@@ -5385,8 +5826,20 @@ async function runAITurn(p){
     await wait(120);
   }
   if(!acc && p.room!==null&&!creatureAtRoom(p.room)&&!p.acted){
-    const completed=await makeSuggestion(p,chooseAISuggestion(p));
-    if(completed)p.acted=true;
+    const sStatus=suggestionStatus(p);
+    const usefulRooms=(sStatus.roomOptions||[]).filter(roomName=>!p.known.has(roomName));
+
+    if(usefulRooms.length){
+      const choices=chooseAISuggestion(p);
+      // For a Common Interior, explicitly prefer the unknown half.
+      if(usefulRooms.length>1 || !usefulRooms.includes(sStatus.roomName)){
+        choices.Room=usefulRooms[0];
+      }
+      const completed=await makeSuggestion(p,choices);
+      if(completed)p.acted=true;
+    }else{
+      log(`${p.name} does not make a Suggestion from ${ROOMS[p.room]} because their own Evidence already rules out every Room identity available there.`);
+    }
   }else if(!acc && creatureAtRoom(p.room)){
     log(`${p.name} cannot form a suggestion while ${creatureAtRoom(p.room).name} occupies ${ROOMS[p.room]}.`);
   }
@@ -5448,6 +5901,10 @@ function spawnCreature(room=null,options={}){
     // creatureAtRoom() is merge-aware, so this also avoids spawning a second
     // creature into the other half of an active Common Interior.
     candidates=ROOMS.map((_,i)=>i).filter(rid=>!creatureAtRoom(rid));
+    if(ACTIVE_SCENARIO.id==="innsmouthTide"){
+      const wet=candidates.filter(isFloodedRoom);
+      if(wet.length)candidates=wet;
+    }
   }
   if(!candidates.length){
     log("SOMETHING APPROACHES — The sound of claws and breath travels through the walls, but nothing finds room to emerge.");
@@ -5463,7 +5920,7 @@ function spawnCreature(room=null,options={}){
     const pos=chooseObjectTile(rid,preferred);
     if(!pos)continue;
 
-    const profile=rand(CREATURE_TYPES);
+    const profile=rand(scenarioCreatureRoster());
     const cr={
       room:rid,
       name:profile.name,
@@ -5760,6 +6217,8 @@ function mythosPhase(onComplete){
   if(ev.type==="roomSwap")ev.effectText=swapRandomRooms();
   if(ev.type==="shortcut")ev.effectText=openImpossibleShortcut();
   if(ev.type==="roomMerge")ev.effectText=openCommonInterior();
+  if(ev.type==="tide")ev.effectText=changeInnsmouthTide(1);
+  if(ev.type==="ebb")ev.effectText=changeInnsmouthTide(-1);
 
   // Case II has an independent geometry pulse after every ordinary Mythos
   // event. Its probability uses the Doom level at the start of this Mythos phase.
