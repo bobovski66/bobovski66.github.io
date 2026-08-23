@@ -1468,11 +1468,11 @@ main{
       <div id="doomLimitChoices" class="doom-limit-options">
         <button class="doom-option selected" data-doom-limit="10" type="button">
           <b>Doom 10</b>
-          <span>Standard pressure. Reaching 10 begins the final round; Doom above 10 ends the case.</span>
+          <span>Standard pressure. Reaching 10 begins one final full round.</span>
         </button>
         <button class="doom-option" data-doom-limit="15" type="button">
           <b>Doom 15</b>
-          <span>Extended investigation. Reaching 15 begins the final round; Doom above 15 ends the case.</span>
+          <span>Extended investigation. Reaching 15 begins one final full round.</span>
         </button>
       </div>
 
@@ -1489,7 +1489,7 @@ main{
     </div>
     <div class="track">
       <span id="turnChip" class="turn-chip"></span>
-      <span>Doom <b id="doomText">0 / 10</b></span>
+      <span title="After each Mythos event: roll d10 + 1 per open portal. Natural 1 = no Doom; modified 7–9 = +1; 10+ = +2.">Doom <b id="doomText">0 / 10</b></span>
       <div class="meter"><div id="doomBar" style="width:0%"></div></div>
     </div>
     <button id="restartBtn">New Mystery</button>
@@ -1597,7 +1597,7 @@ main{
       <div id="rulesPane" class="tabpane hidden">
         <h3>Goal</h3>
         <p>Each case has its own suspects, relics, rooms, story, floor plan, and Mythos events. The investigator cast and core rules persist from case to case.</p>
-        <p>Find the one hidden <b>Suspect</b>, <b>Relic</b>, <b>Room</b>, and <b>Entity</b> before a rival investigator does, or before Doom goes <b>above</b> the limit chosen at setup. The available limits are <b>10</b> and <b>15</b>. Reaching the limit does not end the case: it begins one final full investigator round. Every non-solution Evidence card is held by one of the four investigators.</p>
+        <p>Find the one hidden <b>Suspect</b>, <b>Relic</b>, <b>Room</b>, and <b>Entity</b> before a rival investigator does, or before the Doom clock expires. The available limits are <b>10</b> and <b>15</b>. Reaching the limit does not end the case immediately: it begins <b>one final full investigator round</b>. Every non-solution Evidence card is held by one of the four investigators.</p>
 
         <div class="rules-callout"><b>Keep these actions separate:</b> Move, Action-card plays, your once-per-turn Suggestion, once-per-room Investigation, and Resolve actions are different things. Using one normally does not spend the others.</div>
 
@@ -1630,7 +1630,7 @@ main{
 
         <h3>Portals</h3>
         <p>A portal joins two distant rooms, and each endpoint occupies a literal numbered square inside its room. <b>Portal squares are walkable.</b> To choose and use a portal, move your investigator onto that specific endpoint; the <b>Use Portal</b> button then names its destination. The ordinary step onto the endpoint is the portal's movement cost, so clicking Use Portal does <b>not</b> cost a second Move. Portal travel then ends ordinary movement for the turn, gives 1 Exposure, and normally adds a Madness card. Mae Wren does not gain that portal Madness. <b>Secret Architecture</b> makes the step onto a portal endpoint cost 0 Move that turn. If two or more portals occupy the same room, walking onto one is how you choose which connection to use. A creature in the room still prevents portal travel until it is banished.</p>
-        <p><b>Open portals are dangerous during every Mythos phase.</b> After the ordinary Mythos event and any Case II Geometry Pulse, <b>each open portal rolls a d6 independently</b>. On 1–4, it holds. On <b>5–6</b>, a creature comes through at one available endpoint. If one endpoint space already contains a creature, the new creature appears at the other. If both endpoint spaces are already occupied, the portal cannot admit another creature and <b>Doom rises by 1 instead</b>. A portal that opens during the current Mythos phase is immediately subject to this check.</p>
+        <p><b>Open portals are dangerous during every Mythos phase.</b> After the ordinary Mythos event and any Case II Geometry Pulse, <b>each open portal rolls a d6 independently</b>. On 1–4, it holds. On <b>5–6</b>, a creature comes through at one available endpoint. If one endpoint space already contains a creature, the new creature appears at the other. If both endpoint spaces are occupied, the breach convulses but cannot admit another creature. A portal that opens during the current Mythos phase is immediately subject to this check. Open portals no longer add Doom separately here; instead, <b>every open portal makes the single Doom check more dangerous</b>.</p>
         <p><b>Seal Portal:</b> spend <b>1 Resolve</b> while in its physical room-space. If there is only one portal there, you may seal it from anywhere in the room as before. If there are multiple portals in that room-space, stand on the endpoint you intend to seal so the choice is unambiguous. Sealing grants 1 Insight, removes that portal from the board, and permanently removes its future Mythos-pressure roll. Abigail Ward gains 1 additional Insight whenever she seals a portal. A portal may still be sealed while a creature is present. Every open portal in the room-space must be sealed before a Final Accusation can be made there.</p>
         <p>An <b>Impossible Shortcut</b> is a temporary favorable distortion: it connects two rooms until the next Mythos phase. <b>It can form only between rooms that are completely empty when it appears</b>—no investigator meeple, portal endpoint, or creature may be in either room. The two eligible rooms are chosen randomly, favoring distant pairs when possible. If fewer than two empty rooms exist, no Shortcut forms. Crossing it costs 1 Move, ends ordinary movement, and causes no Exposure or Madness. Gold diamond markers show its two ends.</p>
 
@@ -1649,14 +1649,14 @@ main{
         <h3>Final Accusation</h3>
         <p>A Final Accusation must name <b>the Room you physically occupy</b>. You cannot accuse a distant room: travel there first. In Case II, an active <b>Common Interior</b> counts as one shared physical space, so either joined Room identity may be named while you occupy either half. The accusation must also be made from a <b>stable room-space</b>: not a corridor, and with no open portal or creature remaining there. Seal and/or banish first if necessary.</p>
         <p>You may accuse during your own turn, including before rolling, but <b>not in the same turn in which you made a Suggestion</b>. A clean unrefuted Suggestion is preserved and pre-fills the accusation on your next turn. Sealing and banishing are free-form Resolve actions and do not consume the accusation.</p>
-        <p>A correct Final Accusation wins immediately. A wrong human accusation ends the game. An AI investigator who accuses incorrectly can no longer win. When Doom first reaches the <b>limit selected before the case</b>, all four investigators receive one final full round. Any later Doom increase that would take the track above that limit defeats everyone.</p>
+        <p>A correct Final Accusation wins immediately. A wrong human accusation ends the game. An AI investigator who accuses incorrectly can no longer win. When Doom first reaches the <b>limit selected before the case</b>, all four investigators receive one final full round. When that round ends, the clock expires and everyone loses unless somebody has solved the case.</p>
 
         <h3>Exposure and Madness</h3>
         <p><b>Exposure 0–2:</b> no direct penalty. <b>Exposure 3–4:</b> −1 on creature tests. <b>Exposure 5:</b> suffer an Occult Breakdown: add Panic, reset Exposure to 2, and skip your next full turn.</p>
         <p>Madness cards dilute your Action deck. Once drawn, unplayed Madness is <b>sticky</b>: it is automatically retained at end of turn and occupies retention space. You now have three ways to live with one: leave it in hand and let it clog retention, <b>play it for a dangerous benefit</b>, or discard it through <b>Desperate Pursuit</b>. <b>Panic</b> gives +3 Move and +1 Exposure. <b>Fractured Memory</b> gives +2 Resolve, then costs 1 Insight; if you have none to lose, it gives +1 Exposure instead. <b>Whispers Between Pages</b> gives +2 Insight and +1 Exposure. Generic Madness effects and portal crossings may add any of the three; failed creature tests still specifically add Panic.</p>
 
         <h3>Mythos and the Changing University</h3>
-        <p>After all four investigators act, Doom rises and one card is drawn from the case's shuffled Mythos deck. Mythos cards are not repeated until that deck is exhausted and reshuffled. Each case is arranged so that a creature event appears within the first two Mythos phases. In <b>Case I</b>, at least one portal-producing event also appears within the first three Mythos phases, so containment and sealing reliably become part of the investigation without making direct monster events constant. Case I emphasizes occult intrusion, witnesses, portals, creatures, and the gradual failure of Armitage's containment procedure.</p>
+        <p>After all four investigators act, one card is drawn from the case's shuffled Mythos deck and its event resolves. Mythos cards are not repeated until that deck is exhausted and reshuffled. <b>The card itself does not automatically add Doom.</b> After the event, portal pressure, and any Case II Geometry Pulse resolve, make one Doom check: roll a <b>d10</b> and add <b>+1 for each open portal</b>. A natural 1 always means no Doom. A modified result of <b>7–9 adds 1 Doom</b>; <b>10 or more adds 2 Doom</b>; anything lower adds none. Thus sealing portals directly buys the investigators time. Each case is arranged so that a creature event appears within the first two Mythos phases. In <b>Case I</b>, at least one portal-producing event also appears within the first three Mythos phases.</p>
         <p><b>Geometry Pulse — Case II:</b> after the ordinary Mythos card resolves, the annex independently tests whether its geometry changes again. At Doom 0–2, a d6 result of <b>4–6</b> causes a distortion (50%). At Doom 3–5, <b>2–6</b> causes one (5/6). At Doom 6+, a distortion happens <b>every Mythos phase</b>; on a second roll of 5–6, a second different distortion occurs as well. The possible pulse effects are a relocated door, a room exchange, a Common Interior, or an Impossible Shortcut. The affected rooms and exact effect remain random.</p>
         <p>Architectural changes are accepted only when every room remains connected to the corridor network, so the university may become impossible without permanently trapping an investigator. Doorways also maintain a clear threshold: if a moving door would place a portal or creature on the door square or immediately in front of it, that portal/creature is automatically displaced to the nearest legal square in the same room. Room exchanges similarly re-seat their spatial markers inside the room's new geometry. <b>If a doorway moves in the room you occupy, gain 1 Exposure. If the room you occupy physically exchanges position with another room, gain 1 Exposure.</b> A ward may absorb this Exposure normally.</p>
         <p><b>Merged rooms — Case II:</b> a Common Interior lasts for the next <b>two full rounds</b>. The paired rooms remain two Evidence identities but function as one physical space. You may cross directly between them for 1 Move without ending ordinary movement, use a portal located in either half, banish a creature in either half, and choose either room identity for a Suggestion. The danger is shared too: a creature in either half blocks the merged space and can cause lingering Exposure from the other half. The two-round duration is used so every investigator gets the same opportunity to exploit or suffer the distortion.</p>
@@ -1803,18 +1803,18 @@ function drawMythosEvent(){
 }
 
 let MYTHOS = [
- {title:"Angles Without Distance",text:"A violet aperture joins two distant rooms.",type:"portal",doom:1},
- {title:"The Hound at the Threshold",text:"Something lean and angular enters the university.",type:"creature",doom:1},
- {title:"Whispers in the Stacks",text:"Every investigator adds a Madness card to their discard pile.",type:"madness",doom:1},
- {title:"The Stars Wheel Wrong",text:"Two portals open and every investigator gains Exposure.",type:"surge",doom:2},
- {title:"A Merciful Silence",text:"Nothing enters. The silence is somehow worse.",type:"quiet",doom:1},
- {title:"The House Remembers",text:"A familiar doorway is suddenly somewhere else along the room's wall.",type:"doorShift",doom:1},
- {title:"A Door Where the Wall Was",text:"One threshold vanishes and reappears in a wall that never held it.",type:"doorShift",doom:1},
- {title:"The Plan Folds Over Itself",text:"Two rooms exchange their places without moving the outer walls.",type:"roomSwap",doom:1},
- {title:"The Corridor That Helps",text:"For once, the university's impossible geometry produces a useful passage.",type:"shortcut",doom:1},
- {title:"The Uninvited Guest",text:"A shape that was not counted among the living crosses the threshold and takes up residence.",type:"creature",doom:1},
- {title:"The Clock That Runs Backward",text:"Every investigator's most recent memory rearranges itself into something less comfortable to hold.",type:"madness",doom:1},
- {title:"The Building Holds Its Breath",text:"No footsteps, no draft, no settling timber. The university is listening rather than resting.",type:"quiet",doom:1}
+ {title:"Angles Without Distance",text:"A violet aperture joins two distant rooms.",type:"portal"},
+ {title:"The Hound at the Threshold",text:"Something lean and angular enters the university.",type:"creature"},
+ {title:"Whispers in the Stacks",text:"Every investigator adds a Madness card to their discard pile.",type:"madness"},
+ {title:"The Stars Wheel Wrong",text:"Two portals open and every investigator gains Exposure.",type:"surge"},
+ {title:"A Merciful Silence",text:"Nothing enters. The silence is somehow worse.",type:"quiet"},
+ {title:"The House Remembers",text:"A familiar doorway is suddenly somewhere else along the room's wall.",type:"doorShift"},
+ {title:"A Door Where the Wall Was",text:"One threshold vanishes and reappears in a wall that never held it.",type:"doorShift"},
+ {title:"The Plan Folds Over Itself",text:"Two rooms exchange their places without moving the outer walls.",type:"roomSwap"},
+ {title:"The Corridor That Helps",text:"For once, the university's impossible geometry produces a useful passage.",type:"shortcut"},
+ {title:"The Uninvited Guest",text:"A shape that was not counted among the living crosses the threshold and takes up residence.",type:"creature"},
+ {title:"The Clock That Runs Backward",text:"Every investigator's most recent memory rearranges itself into something less comfortable to hold.",type:"madness"},
+ {title:"The Building Holds Its Breath",text:"No footsteps, no draft, no settling timber. The university is listening rather than resting.",type:"quiet"}
 ];
 
 let MAP_ROWS = 11, MAP_COLS = 28;
@@ -2158,18 +2158,18 @@ const SCENARIOS = {
       corridors:GEOMETRY_BELOW_CORRIDORS
     },
     mythos:[
-      {title:"Parallel Corridors Meet",text:"Two separated rooms acquire a passage neither architect drew.",type:"portal",doom:1},
-      {title:"Axiom Failure",text:"A doorway migrates along its wall while the surrounding measurements remain unchanged.",type:"doorShift",doom:1},
-      {title:"Rooms in the Wrong Order",text:"Two rooms exchange positions while the corridors refuse to move with them.",type:"roomSwap",doom:1},
-      {title:"The Shortest Path",text:"For one round, the impossible route is also the most useful one.",type:"shortcut",doom:1},
-      {title:"The Plumb Line Points Sideways",text:"Direction loses meaning long enough for the entire party to feel it.",type:"surge",doom:2},
-      {title:"Lecture in an Empty Room",text:"Every investigator remembers attending a lecture that has not happened.",type:"madness",doom:1},
-      {title:"Something Uses the Stair",text:"A weight descends Stairwell 3B without ever passing a landing.",type:"creature",doom:1},
-      {title:"Lower Floor, Higher Ceiling",text:"One threshold appears on the wrong wall and insists the room was built that way.",type:"doorShift",doom:1},
-      {title:"The Diagram Completes a Face",text:"A shape on the chalkboard acquires an occupant elsewhere in the building.",type:"creature",doom:1},
-      {title:"A Useful Contradiction",text:"Two rooms become adjacent in precisely the way the investigators need.",type:"shortcut",doom:1},
-      {title:"The Foundation Moves First",text:"The lowest rooms slide beneath the building like pieces on a drafting table.",type:"roomSwap",doom:1},
-      {title:"Common Interior",text:"Two neighboring rooms become one continuous interior for the next two rounds.",type:"roomMerge",doom:1}
+      {title:"Parallel Corridors Meet",text:"Two separated rooms acquire a passage neither architect drew.",type:"portal"},
+      {title:"Axiom Failure",text:"A doorway migrates along its wall while the surrounding measurements remain unchanged.",type:"doorShift"},
+      {title:"Rooms in the Wrong Order",text:"Two rooms exchange positions while the corridors refuse to move with them.",type:"roomSwap"},
+      {title:"The Shortest Path",text:"For one round, the impossible route is also the most useful one.",type:"shortcut"},
+      {title:"The Plumb Line Points Sideways",text:"Direction loses meaning long enough for the entire party to feel it.",type:"surge"},
+      {title:"Lecture in an Empty Room",text:"Every investigator remembers attending a lecture that has not happened.",type:"madness"},
+      {title:"Something Uses the Stair",text:"A weight descends Stairwell 3B without ever passing a landing.",type:"creature"},
+      {title:"Lower Floor, Higher Ceiling",text:"One threshold appears on the wrong wall and insists the room was built that way.",type:"doorShift"},
+      {title:"The Diagram Completes a Face",text:"A shape on the chalkboard acquires an occupant elsewhere in the building.",type:"creature"},
+      {title:"A Useful Contradiction",text:"Two rooms become adjacent in precisely the way the investigators need.",type:"shortcut"},
+      {title:"The Foundation Moves First",text:"The lowest rooms slide beneath the building like pieces on a drafting table.",type:"roomSwap"},
+      {title:"Common Interior",text:"Two neighboring rooms become one continuous interior for the next two rounds.",type:"roomMerge"}
     ],
     opening:[
       {
@@ -3099,8 +3099,8 @@ function mythosInterpretation(ev){
     shortcut:"A temporary ordinary passage has appeared through space that should be solid. It is useful, but it confirms that the building's geometry is still changing.",
     roomMerge:"Two neighboring rooms now share one continuous physical interior. They remain different Evidence identities, but for movement and danger they temporarily occupy the same space.",
     quiet:geometry
-      ?"No new visible distortion occurs, but the anomaly remains active and Doom still advances."
-      :"Nothing new manifests this time, but the wards continue to weaken and Doom still advances."
+      ?"No new visible distortion occurs, but the anomaly remains active and the Doom clock must still be checked."
+      :"Nothing new manifests this time, but the wards remain under pressure and the Doom clock must still be checked."
   };
   return common[ev.type]||"The event is another sign that the original incident is spreading beyond its first location.";
 }
@@ -3120,22 +3120,42 @@ function mythosStoryScene(ev){
   const portalPressure=ev.portalPressure&&ev.portalPressure.checked
     ? `<p>${ev.portalPressure.lines.join(" ")}</p>`
     : "";
-  const doomGain=ev.totalDoomGain ?? ev.doom;
+  const doomGain=ev.totalDoomGain ?? 0;
+  const dc=ev.doomCheck;
+  const portalWord=dc?.portals===1?"portal":"portals";
+  const doomCheckText=ev.finalRoundExpired
+    ? `<div class="story-fact"><b>Doom clock:</b> The investigators' final round is over. The last safe interval collapses and Doom passes ${state.doomLimit||10}.</div>`
+    : dc
+      ? `<div class="story-fact"><b>Doom check:</b> d10 = ${dc.die}${dc.naturalOne
+          ? `. A natural 1 always holds the clock, regardless of the ${dc.portals} open ${portalWord}.`
+          : ` + ${dc.portals} open ${portalWord} = ${dc.modified}. ${
+              dc.gain===0?"Doom does not advance.":`This would add ${dc.gain} Doom.`
+            }`}${ev.finalRoundReached&&dc.gain>ev.totalDoomGain
+              ? ` The track stops at ${state.doomLimit||10} so the investigators receive their final round.`
+              : ""}</div>`
+      : "";
   const finalRound=ev.finalRoundReached
-    ? `<div class="story-fact"><b>Final round:</b> Doom has reached ${state.doomLimit||10}. The investigators now receive one final full round. The next Doom increase ends the case.</div>`
+    ? `<div class="story-fact"><b>Final round:</b> Doom has reached ${state.doomLimit||10}. Every investigator now receives one final full turn. When that round ends, the case ends if it has not been solved.</div>`
     : "";
   return {
     id:`mythos-${state.round}-${ev.title}`,
     recordKey:null,
-    kicker:`The Mythos Stirs · Doom +${doomGain}`,
+    kicker:`The Mythos Stirs · ${ev.finalRoundExpired?"Final Round Ends":doomGain?`Doom +${doomGain}`:"Doom Holds"}`,
     title:ev.title,
     body:`<p>${mainText}</p>
       ${architecture}
       ${pulse}
       ${creatureMovement}
       ${portalPressure}
+      ${doomCheckText}
       ${finalRound}
-      <p class="danger">${ev.finalRoundReached?"The final round begins.":"The situation is worsening."} Doom: ${state.doom} / ${state.doomLimit||10}.</p>`
+      <p class="danger">${ev.finalRoundExpired
+        ?"The Doom clock has expired."
+        : ev.finalRoundReached
+          ?"The final round begins."
+          : doomGain
+            ?"The Doom clock advances."
+            :"The Doom clock holds."} Doom: ${state.doom} / ${state.doomLimit||10}.</p>`
   };
 }
 
@@ -3211,6 +3231,15 @@ function logDeduction(msg){
   renderLog();
 }
 function rollDie(){return 1+Math.floor(Math.random()*6)}
+function rollD10(){return 1+Math.floor(Math.random()*10)}
+function doomCheck(){
+  const die=rollD10();
+  const portals=state.portals.length;
+  const naturalOne=die===1;
+  const modified=naturalOne?1:die+portals;
+  const gain=naturalOne?0:(modified>=10?2:(modified>=7?1:0));
+  return {die,portals,naturalOne,modified,gain};
+}
 
 function installScenario(scenario){
   ACTIVE_SCENARIO=scenario;
@@ -5645,7 +5674,6 @@ function resolvePortalPressure(){
     return {
       checked:0,
       triggered:0,
-      doomAdded:0,
       lines:[],
       text:"Every known breach is closed."
     };
@@ -5653,7 +5681,6 @@ function resolvePortalPressure(){
 
   const lines=[];
   let triggered=0;
-  let doomAdded=0;
 
   // Snapshot the portals so consequences cannot alter the set being checked
   // midway through this Mythos phase.
@@ -5674,10 +5701,8 @@ function resolvePortalPressure(){
     const bOccupied=!!creatureAtRoom(po.b);
 
     if(aOccupied && bOccupied){
-      state.doom+=1;
-      doomAdded+=1;
-      lines.push(`The breach between ${label} convulses. Something presses through from both sides, but the rooms are already occupied. The pressure turns inward. Doom +1.`);
-      log(`OPEN THRESHOLD — The breach between ${label} cannot discharge what is behind it. Doom rises by 1.`);
+      lines.push(`The breach between ${label} convulses, but both endpoint spaces are already occupied. Nothing else can force its way through.`);
+      log(`OPEN THRESHOLD — The breach between ${label} strains against occupied rooms but admits nothing.`);
       return;
     }
 
@@ -5692,20 +5717,16 @@ function resolvePortalPressure(){
       lines.push(`The breach between ${label} opens wide enough for ${cr.name} to force its way into ${ROOMS[target]}.`);
       log(`OPEN THRESHOLD — ${cr.name} comes through into ${ROOMS[target]}.`);
     }else{
-      // This should be rare because target was checked first, but retain a
-      // deterministic penalty if the board state changes unexpectedly.
-      state.doom+=1;
-      doomAdded+=1;
-      lines.push(`The breach between ${label} darkens without admitting anything. The room fills with the pressure of an arrival that cannot complete. Doom +1.`);
-      log(`OPEN THRESHOLD — The breach between ${label} deepens. Doom rises by 1.`);
+      lines.push(`The breach between ${label} opens, but nothing completes the passage. The threshold remains dangerously active.`);
+      log(`OPEN THRESHOLD — The breach between ${label} opens without admitting a creature.`);
     }
   });
 
   const text=triggered
-    ? `The open thresholds answer the Mythos.${doomAdded?` Their pressure adds ${doomAdded} Doom.`:""}`
+    ? `The open thresholds answer the Mythos.`
     : `The open thresholds tremble, but remain quiet.`;
 
-  return {checked:portals.length,triggered,doomAdded,lines,text};
+  return {checked:portals.length,triggered,lines,text};
 }
 
 function mythosPhase(onComplete){
@@ -5715,12 +5736,15 @@ function mythosPhase(onComplete){
     log(`THE BUILDING — The borrowed corridor between ${ROOMS[state.shortcut.a]} and ${ROOMS[state.shortcut.b]} narrows to a crack and disappears.`);
     state.shortcut=null;
   }
+
   const ev=drawMythosEvent();
   const before=state.doom;
+  const doomLimit=state.doomLimit||10;
   state.lastMythos=ev;
   ev.creatureMovement=creatureMovement;
-  state.doom+=ev.doom;
   ev.effectText="";
+  ev.finalRoundReached=false;
+  ev.finalRoundExpired=false;
   state.doomArchitectureText="";
   log(`MYTHOS — ${ev.title}.`);
 
@@ -5738,45 +5762,59 @@ function mythosPhase(onComplete){
   if(ev.type==="roomMerge")ev.effectText=openCommonInterior();
 
   // Case II has an independent geometry pulse after every ordinary Mythos
-  // event. The chance accelerates with Doom, but the actual distortion remains
-  // random rather than scripted.
+  // event. Its probability uses the Doom level at the start of this Mythos phase.
   const pulse=geometryPulse();
   ev.pulseText=pulse.text;
+
+  // Every portal that remains open is independently dangerous as an entry point
+  // for creatures. Newly opened portals participate immediately.
+  const portalPressure=resolvePortalPressure();
+  ev.portalPressure=portalPressure;
+
+  if(before>=doomLimit){
+    // Doom at the limit represents the one guaranteed final investigator round.
+    // Once all four investigators have acted in that round, the clock expires.
+    state.doom=doomLimit+1;
+    ev.finalRoundExpired=true;
+    ev.doomCheck=null;
+    ev.totalDoomGain=1;
+    log(`DOOM — The final round is over. The clock passes ${doomLimit}; the case is lost.`);
+  }else{
+    const check=doomCheck();
+    ev.doomCheck=check;
+    const rawAfter=before+check.gain;
+
+    if(check.naturalOne){
+      log(`DOOM CHECK — d10 1. A natural 1 holds the clock despite ${check.portals} open portal${check.portals===1?"":"s"}.`);
+    }else{
+      log(`DOOM CHECK — d10 ${check.die} + ${check.portals} open portal${check.portals===1?"":"s"} = ${check.modified}; Doom +${check.gain}.`);
+    }
+
+    ev.finalRoundReached=rawAfter>=doomLimit && check.gain>0;
+    if(ev.finalRoundReached){
+      state.doom=doomLimit;
+      if(rawAfter>doomLimit){
+        log(`DOOM — The check would reach ${rawAfter}, but the track stops at ${doomLimit}. One final full round remains.`);
+      }else{
+        log(`DOOM — The clock reaches ${doomLimit}. One final full round remains.`);
+      }
+    }else{
+      state.doom=rawAfter;
+    }
+
+    ev.totalDoomGain=state.doom-before;
+  }
+
+  // If the Doom check crossed the first narrative threshold while Case II also
+  // distorted this phase, include that distortion in the Doom-3 story.
   if(before<3 && state.doom>=3 && pulse.triggered){
     state.doomArchitectureText=pulse.text;
   }
 
-  // Every portal that remains open now becomes an independent Mythos hazard.
-  // A portal created by this phase is already open, so it participates immediately.
-  const portalPressure=resolvePortalPressure();
-  ev.portalPressure=portalPressure;
-
-  const doomLimit=state.doomLimit||10;
-  const rawAfter=state.doom;
-  const rawGain=rawAfter-before;
-
-  // The limit itself is playable. A Mythos phase that reaches or overshoots
-  // the limit from below stops exactly on the limit and grants the next full
-  // investigator round. Only a later increase from the limit causes defeat.
-  ev.finalRoundReached=before<doomLimit && rawAfter>=doomLimit;
-  if(ev.finalRoundReached){
-    state.doom=doomLimit;
-    if(rawAfter>doomLimit){
-      log(`DOOM — The pressure would rise to ${rawAfter}, but the clock stops at the final threshold: ${doomLimit}. One final round remains.`);
-    }else{
-      log(`DOOM — The clock reaches ${doomLimit}. One final round remains.`);
-    }
-  }else if(before>=doomLimit && rawAfter>doomLimit){
-    state.doom=doomLimit+1;
-  }
-
-  ev.rawDoomGain=rawGain;
-  ev.totalDoomGain=state.doom-before;
-
   renderAll();
   const scenes=[mythosStoryScene(ev),...doomThresholdScenes(before,state.doom)];
 
-  if(state.doom>doomLimit){
+  if(ev.finalRoundExpired){
     state.gameOver=true;
     clearAutosave();
     scenes.push(endingScene("doom"));
