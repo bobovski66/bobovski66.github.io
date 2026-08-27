@@ -306,8 +306,8 @@ aside.sidebar{border-left:1px solid #4e5b4b;background:linear-gradient(160deg,#1
 
           <h3>Gear</h3>
           <ul>
-            <li>Each investigator carries up to <b>3 gear cards</b>. Click a gear chip on a Party card to see its use. The field deck contains <b>multiple copies</b> of practical equipment rather than one copy of every card.</li>
-            <li>Repel gear is deliberately common: Bear Spray and Rock Salt have multiple copies. Rare breakout cards such as <b>Salt Bomb</b> and <b>Flash Charge</b> can decisively clear a contested room.</li>
+            <li>Each investigator carries up to <b>3 gear cards</b>. Click a gear chip on a Party card to see its use. Some field gear now carries <b>multiple charges</b>, shown directly on the card.</li>
+            <li>Repel gear is deliberately common: Bear Spray and Rock Salt have multiple copies, and repel-oriented equipment uses <b>3 charges</b> before it is exhausted. Rare breakout cards such as <b>Salt Bomb</b> and <b>Flash Charge</b> can decisively clear a contested room.</li>
             <li><b>Field cache:</b> choose which field-team investigator receives the card. <b>Manifestation drop:</b> the investigator who defeated it picks the card up immediately.</li>
             <li>AI investigators use their powers, consumables, and passive gear when their conditions are useful.</li>
           </ul>
@@ -379,14 +379,14 @@ const GEAR_CATALOG = [
   {name:'Trauma Kit',copies:1,type:'consumable',text:'Use: restore 3 Health to the holder or an ally on the holder’s tile.',use:'heal3',utility:'A stronger emergency heal. Target an investigator in your room. Costs 1 action.'},
   {name:'Smelling Salts',copies:2,type:'consumable',text:'Use: restore 2 Nerve to the holder or an ally on the holder’s tile.',use:'nerve2',utility:'Target an investigator in your room. Costs 1 action.'},
   {name:'Caffeine Tablets',copies:1,type:'consumable',text:'Use: restore 3 Nerve to the holder or an ally on the holder’s tile.',use:'nerve3',utility:'A stronger composure boost. Target an investigator in your room. Costs 1 action.'},
-  {name:'Flare Gun',copies:2,type:'consumable',text:'Use: deal 2 damage to one hostile entity on the holder’s tile.',use:'flare',utility:'Select a HOSTILE manifestation in your room. Costs 1 action.'},
-  {name:'Bear Spray',copies:3,type:'consumable',text:'Use: repel any manifestation on the holder’s tile without dealing damage.',use:'repel',utility:'Select any manifestation in your room. Especially useful for escaping a hostile lock. Costs 1 action.'},
-  {name:'Salt Bomb',copies:2,type:'consumable',text:'Use: deal 1 damage to one hostile and repel it if it survives.',use:'saltBomb',utility:'Select a HOSTILE manifestation in your room. Guaranteed damage plus room-clearing tempo. Costs 1 action.'},
-  {name:'Flash Charge',copies:1,type:'consumable',text:'Use: repel every manifestation in the holder’s room at once.',use:'flashCharge',utility:'A rare breakout card. Repels the entire room; anything with no legal adjacent room flickers out. Costs 1 action.'},
-  {name:'Ritual Chalk',copies:2,type:'consumable',text:'Use: gain +2 on the holder’s next Stabilize attempt this turn.',use:'chalk',utility:'Select an open, unblocked portal in your room. Costs 1 action.'},
+  {name:'Flare Gun',copies:2,type:'consumable',charges:3,text:'Use: deal 2 damage to one hostile entity on the holder’s tile.',use:'flare',utility:'Select a HOSTILE manifestation in your room. Costs 1 action.'},
+  {name:'Bear Spray',copies:3,type:'consumable',charges:3,text:'Use: repel any manifestation on the holder’s tile without dealing damage.',use:'repel',utility:'Select any manifestation in your room. Especially useful for escaping a hostile lock. Costs 1 action.'},
+  {name:'Salt Bomb',copies:2,type:'consumable',charges:3,text:'Use: deal 1 damage to one hostile and repel it if it survives.',use:'saltBomb',utility:'Select a HOSTILE manifestation in your room. Guaranteed damage plus room-clearing tempo. Costs 1 action.'},
+  {name:'Flash Charge',copies:1,type:'consumable',charges:3,text:'Use: repel every manifestation in the holder’s room at once.',use:'flashCharge',utility:'A rare breakout card. Repels the entire room; anything with no legal adjacent room flickers out. Costs 1 action.'},
+  {name:'Ritual Chalk',copies:2,type:'consumable',charges:3,text:'Use: gain +2 on the holder’s next Stabilize attempt this turn.',use:'chalk',utility:'Select an open, unblocked portal in your room. Costs 1 action.'},
   {name:'Signal Jammer',copies:1,type:'consumable',text:'Use: reduce Doom by 1.',use:'doom1',utility:'A self action. Costs 1 action.'},
-  {name:'Rock Salt',copies:3,type:'consumable',text:'Use: the holder’s next Attack this turn gains +1 and repels on hit.',use:'salt',utility:'Select a HOSTILE manifestation; the next normal Attack gets +1 and repels on hit. Costs 1 action.'},
-  {name:'High-Lumen Strobe',copies:2,type:'consumable',text:'Use: the holder’s next Attack this turn gains +2.',use:'attack2',utility:'Select any manifestation; prepare +2 on the next normal Attack this turn. Costs 1 action.'},
+  {name:'Rock Salt',copies:3,type:'consumable',charges:3,text:'Use: the holder’s next Attack this turn gains +1 and repels on hit.',use:'salt',utility:'Select a HOSTILE manifestation; the next normal Attack gets +1 and repels on hit. Costs 1 action.'},
+  {name:'High-Lumen Strobe',copies:2,type:'consumable',charges:3,text:'Use: the holder’s next Attack this turn gains +2.',use:'attack2',utility:'Select any manifestation; prepare +2 on the next normal Attack this turn. Costs 1 action.'},
   {name:'Spare Batteries',copies:1,type:'consumable',text:'Use: refresh the holder’s investigator power after it has been used this round.',use:'refreshPower',utility:'A self action available after your power is spent. Does not cost an action.'},
   {name:'UV Torch',copies:1,type:'passive',text:'+1 Combat for the holder.',passive:{combat:1},utility:'Always active. Included automatically in Attack rolls.'},
   {name:'Iron Charm',copies:1,type:'passive',text:'+1 Defense for the holder.',passive:{defense:1},utility:'Always active. Included automatically when manifestations attack the holder.'},
@@ -398,7 +398,7 @@ const GEAR_CATALOG = [
   {name:'Portal Snare',copies:1,type:'passive',text:'Reduce each portal’s manifestation-spawn chance by 4 percentage points.',passive:{portalDampen:.04},utility:'Always active for the whole party while carried.'},
   {name:'Protective Mask',copies:1,type:'passive',text:'35% chance to ignore a non-hostile CONTACT effect.',passive:{contactResist:.35},utility:'Always active. Rolled whenever a non-hostile manifestation makes contact with the holder.'}
 ];
-const GEAR_DECK = GEAR_CATALOG.flatMap(card=>Array.from({length:card.copies||1},()=>{const copy={...card};delete copy.copies;return copy;}));
+const GEAR_DECK = GEAR_CATALOG.flatMap(card=>Array.from({length:card.copies||1},()=>{const copy={...card}; if(Number.isFinite(copy.charges)) copy.chargesLeft=copy.charges; delete copy.copies; return copy;}));
 let state = null;
 let storyStep = 0;
 let moveMode = false;
@@ -711,7 +711,7 @@ function useGearOnTarget(gid,kind,id){ if(!isHumanTurn()) return; const hero=hum
   else if(gear.use==='chalk'&&kind==='portal'){ const tile=state.tiles[id]; if(!tile||!tile.portal||tile.key!==hero.tile)return; state.stabilizeAttemptsBonus+=2; addLog('RITUAL CHALK',`${leadFirst()} prepares the portal pattern: +2 on the next Stabilize attempt this turn.`,'good',hero.tile,leadLabel(),true); setPlayerResult('RITUAL CHALK',`+2 prepared for the next Stabilize roll this turn.`,'weird'); used=true; }
   else if(gear.use==='attack2'&&kind==='entity'){ const target=state.entities.find(e=>e.id===id&&e.tile===hero.tile); if(!target)return; state.attackBuff+=2; addLog('HIGH-LUMEN STROBE',`${leadFirst()} floods ${target.name} with light: +2 on the next Attack this turn.`,'good',hero.tile,leadLabel(),true); setPlayerResult('HIGH-LUMEN STROBE',`+2 prepared against ${target.name} for the next Attack.`,'weird'); used=true; }
   else if(gear.use==='salt'&&kind==='entity'){ const target=state.entities.find(e=>e.id===id&&e.tile===hero.tile&&e.hostile); if(!target)return; state.attackBuff+=1; state.attackRepelOnHit=true; addLog('ROCK SALT',`${leadFirst()} loads Rock Salt against ${target.name}: +1 on the next Attack and repel on hit.`,'good',hero.tile,leadLabel(),true); setPlayerResult('ROCK SALT',`+1 prepared against ${target.name}; a hit will repel it.`,'weird'); used=true; }
-  if(!used)return; hero.gear=hero.gear.filter(g=>g.gid!==gid); spendAction(1); renderAll();
+  if(!used)return; spendGearUse(hero,gear); spendAction(1); renderAll();
 }
 function entityRenderGroups(entities){
   const groups=new Map();
@@ -816,14 +816,31 @@ function renderBoard(){
 function entityIntentText(e){ const target=nearestTarget(e.tile); if(!target) return e.name+' lingers'; return `${e.name} · ${e.hostile?'HUNT':'FOLLOW'} ${target.name.split(' ')[0]}`; }
 function renderSidebar(){ renderEvidence(); renderInvestigators(); renderLog(); }
 function gearUtilityText(g){return g.utility||g.text||'Field equipment.'}
+function gearChargeCount(g){return Number.isFinite(g?.chargesLeft)?g.chargesLeft:(Number.isFinite(g?.charges)?g.charges:null)}
+function gearChargeLabel(g){ const left=gearChargeCount(g); return left==null?'':`${left} charge${left===1?'':'s'}`; }
+function gearDisplayName(g){ const label=gearChargeLabel(g); return label?`${g.name} · ${label}`:g.name; }
+function gearDetailText(g){ const label=gearChargeLabel(g); return label?`${g.text} (${label} remaining.)`:g.text; }
+function spendGearUse(hero,gear){
+  const idx=hero.gear.findIndex(g=>g.gid===gear.gid);
+  if(idx<0) return false;
+  const held=hero.gear[idx];
+  if(Number.isFinite(held.chargesLeft)){
+    held.chargesLeft=Math.max(0,held.chargesLeft-1);
+    if(held.chargesLeft<=0){ hero.gear.splice(idx,1); if(state?.selectedGearHud?.gid===gear.gid) state.selectedGearHud=null; return 'exhausted'; }
+    return 'used';
+  }
+  hero.gear.splice(idx,1);
+  if(state?.selectedGearHud?.gid===gear.gid) state.selectedGearHud=null;
+  return 'exhausted';
+}
 function toggleGearHud(heroId,gid){const same=state.selectedGearHud?.heroId===heroId&&state.selectedGearHud?.gid===gid;state.selectedGearHud=same?null:{heroId,gid};renderInvestigators();}
 function renderInvestigators(){
   const wrap=$('#investigatorCards'); wrap.innerHTML='';
   state.heroes.forEach(h=>{
     const d=document.createElement('div'); d.className='investigatorCard';
     const selected=state.selectedGearHud?.heroId===h.id?h.gear.find(g=>g.gid===state.selectedGearHud.gid):null;
-    const gearHTML=h.gear.length?h.gear.map(g=>`<button class="cardGearChip ${g.type==='consumable'?'consumable':''} ${selected?.gid===g.gid?'selected':''}" data-gid="${g.gid}" title="Click for card utility">${g.name}</button>`).join(''):'<span class="cardGearEmpty">No gear carried</span>';
-    const hud=selected?`<div class="gearHud"><div class="gearHudHead"><b>${selected.name}</b><span class="gearHudType">${selected.type}</span></div><div class="gearHudText">${selected.text}</div><div class="gearHudUtility">${gearUtilityText(selected)}</div></div>`:'';
+    const gearHTML=h.gear.length?h.gear.map(g=>`<button class="cardGearChip ${g.type==='consumable'?'consumable':''} ${selected?.gid===g.gid?'selected':''}" data-gid="${g.gid}" title="Click for card utility">${gearDisplayName(g)}</button>`).join(''):'<span class="cardGearEmpty">No gear carried</span>';
+    const hud=selected?`<div class="gearHud"><div class="gearHudHead"><b>${gearDisplayName(selected)}</b><span class="gearHudType">${selected.type}</span></div><div class="gearHudText">${gearDetailText(selected)}</div><div class="gearHudUtility">${gearUtilityText(selected)}</div></div>`:'';
     d.innerHTML=`<div class="investigatorHead"><div class="token meeple ${heroMeepleClass(h)}${isStunned(h)?' stunned':''}">${heroMeepleGlyph(h)}</div><div class="investigatorHeadText"><h4>${h.name}${h.you?' · YOU':''}</h4><div class="roleLine">${h.role}</div></div></div><div class="statsRow"><span>Health ${h.health}/${heroHealthCap(h)}</span><span>Nerve ${h.nerve}/${h.maxNerve}</span><span>Exposure ${h.exposure}/6</span></div><div class="statsRow"><span>Combat ${heroCombat(h)}</span><span>Defense ${heroDefense(h)}</span><span class="statusText">${isStunned(h)?`STUNNED · ${Math.max(1,h.stunnedRounds-1)}R`:'Ready'}</span></div><div class="powerBlock"><b>${h.power}</b> — ${h.powerText}</div><div class="powerBlock"><b>Primary phenomenon:</b> ${h.specialty}</div><div class="powerBlock"><b>${h.instinct}</b> — ${h.instinctText}</div><div class="cardGear"><div class="cardGearHead"><span>Gear</span><span>${h.gear.length}/3</span></div><div class="cardGearList">${gearHTML}</div>${hud}</div>`;
     d.querySelectorAll('[data-gid]').forEach(btn=>btn.onclick=(ev)=>{ev.stopPropagation();toggleGearHud(h.id,btn.dataset.gid)});
     wrap.appendChild(d);
@@ -951,14 +968,14 @@ function resolveFlashCharge(hero){
   if(state.selectedTarget?.kind==='entity'&&!state.entities.some(e=>e.id===state.selectedTarget.id)) state.selectedTarget=null;
   return {count:here.length,repelled,flickered};
 }
-function useGear(gid){ if(!isHumanTurn()) return; const hero=humanHero(); const gear=hero.gear.find(g=>g.gid===gid); if(!gear) return; if(gear.use==='refreshPower'){ if(!hero.powerUsed)return; hero.powerUsed=false; hero.gear=hero.gear.filter(g=>g.gid!==gid); addLog('SPARE BATTERIES',`${leadFirst()} refreshes ${hero.power}.`,'good',hero.tile,leadLabel(),true); setPlayerResult('SPARE BATTERIES',`${hero.power} is ready again · no action spent.`,'good'); renderAll(); return; } if(gear.use==='flashCharge'){ const result=resolveFlashCharge(hero); if(!result)return; addLog('FLASH CHARGE',`${leadFirst()} detonates a Flash Charge: ${result.repelled} manifestation${result.repelled===1?'':'s'} repelled${result.flickered?`, ${result.flickered} flickers out`:''}.`,'good',hero.tile,leadLabel(),true); setPlayerResult('FLASH CHARGE',`${result.count} manifestation${result.count===1?'':'s'} cleared from the room.`,'good'); }
+function useGear(gid){ if(!isHumanTurn()) return; const hero=humanHero(); const gear=hero.gear.find(g=>g.gid===gid); if(!gear) return; if(gear.use==='refreshPower'){ if(!hero.powerUsed)return; hero.powerUsed=false; spendGearUse(hero,gear); addLog('SPARE BATTERIES',`${leadFirst()} refreshes ${hero.power}.`,'good',hero.tile,leadLabel(),true); setPlayerResult('SPARE BATTERIES',`${hero.power} is ready again · no action spent.`,'good'); renderAll(); return; } if(gear.use==='flashCharge'){ const result=resolveFlashCharge(hero); if(!result)return; addLog('FLASH CHARGE',`${leadFirst()} detonates a Flash Charge: ${result.repelled} manifestation${result.repelled===1?'':'s'} repelled${result.flickered?`, ${result.flickered} flickers out`:''}.`,'good',hero.tile,leadLabel(),true); setPlayerResult('FLASH CHARGE',`${result.count} manifestation${result.count===1?'':'s'} cleared from the room.`,'good'); }
   else if(gear.use==='heal2'){ const target=state.heroes.find(h=>h.tile===hero.tile && h.health<heroHealthCap(h)) || hero; const cap=heroHealthCap(target), before=target.health; target.maxHealth=cap; target.health=Math.min(cap,target.health+2); addLog('FIRST AID', `${target.name.split(' ')[0]} recovers 2 Health.`, 'good', hero.tile, leadLabel(), true); setPlayerResult('FIRST AID',`${target.name.split(' ')[0]} · Health ${before}→${target.health}.`,'good'); }
   else if(gear.use==='nerve2'){ const target=state.heroes.find(h=>h.tile===hero.tile && h.nerve<h.maxNerve) || hero; const before=target.nerve; target.nerve=Math.min(target.maxNerve,target.nerve+2); addLog('SMELLING SALTS', `${target.name.split(' ')[0]} recovers 2 Nerve.`, 'good', hero.tile, leadLabel(), true); setPlayerResult('SMELLING SALTS',`${target.name.split(' ')[0]} · Nerve ${before}→${target.nerve}.`,'good'); }
   else if(gear.use==='flare'){ const target=entitiesOnTile(hero.tile).find(e=>e.hostile); if(!target){ addLog('NO TARGET', 'Flare Gun needs a hostile entity on your tile.', 'weird', hero.tile, leadLabel(), true); return; } target.hp -= 2; const vanquished=target.hp<=0; addLog('FLARE GUN', `${leadFirst()} fires the Flare Gun into ${target.name} for 2 damage.`, 'good', hero.tile, leadLabel(), true); setPlayerResult('FLARE GUN',`${target.name} takes 2 damage${vanquished?' · VANQUISHED':''}.`,'good'); if(vanquished) defeatEntity(target,hero); }
   else if(gear.use==='chalk'){ state.stabilizeAttemptsBonus += 2; addLog('RITUAL CHALK', `${leadFirst()} prepares a stronger stabilizing pattern: +2 on the next Stabilize attempt this turn.`, 'good', hero.tile, leadLabel(), true); setPlayerResult('RITUAL CHALK','+2 prepared for the next Stabilize roll this turn.','weird'); }
   else if(gear.use==='doom1'){ const amount=1; const before=state.doom; changeDoom(-amount); addLog('SIGNAL JAMMER', 'The jammer disrupts the field. Doom decreases by 1.', 'good', hero.tile, leadLabel(), true); setPlayerResult('SIGNAL JAMMER',`Doom ${before} → ${state.doom}.`,'good'); }
   else if(gear.use==='salt'){ state.attackBuff += 1; state.attackRepelOnHit=true; addLog('ROCK SALT', `${leadFirst()} loads Rock Salt: +1 on the next Attack this turn, and a hit repels the target.`, 'good', hero.tile, leadLabel(), true); setPlayerResult('ROCK SALT','+1 prepared for the next Attack; a hit will repel the target.','weird'); }
-  hero.gear = hero.gear.filter(g=>g.gid!==gid); spendAction(1); renderAll(); }
+  spendGearUse(hero,gear); spendAction(1); renderAll(); }
 function finishCurrentTurn(){ if(!state || state.gameOver || state.uiPaused) return; moveMode=false; state.selectedTarget=null; state.actionDrawerOpen=false; const hero=currentHero(); hero.acted=true; nextActor(); }
 function nextActor(){
   if(!state || state.gameOver || state.uiPaused) return;
@@ -1005,7 +1022,7 @@ function takeAIResolution(fallbackTitle='AI ACTION',fallbackDetail='Action resol
 function aiGear(hero,use){ return hero.gear.find(g=>g.use===use); }
 function aiConsumeGear(hero,gear,title,text,tone='good'){
   if(!gear) return false;
-  hero.gear=hero.gear.filter(g=>g.gid!==gear.gid);
+  spendGearUse(hero,gear);
   addLog(title,text,tone,hero.tile,hero.name.toUpperCase());
   markAIResolution(title,text,tone);
   return true;
@@ -1181,7 +1198,7 @@ function spawnEntity(tileKey){ const phen=state.phenomenon.name; const hostileCh
   }; const picked=weightedPick(manifestationWeightTable(phen))||'Winged Cryptid'; const base=bases[picked]||bases['Winged Cryptid']; const e={id:'e'+Date.now()+Math.random(),tile:tileKey,hostile,name:base.name,symbol:base.symbol,hp:base.hp,maxHp:base.hp,defense:base.defense,attack:base.attack}; state.entities.push(e); addLog(hostile?'HOSTILE MANIFESTATION':'MANIFESTATION', `${e.name} appears in ${state.tiles[tileKey].name}.${hostile?' It is aggressive.':' It has not become directly hostile.'}`, hostile?'bad':'weird', tileKey, 'PHENOMENON', tileKey===humanHero().tile); renderAll(); }
 function repelEntity(e){ const opts=connectedNeighborKeys(e.tile).filter(k=>!e.hostile||!hostileRoomFull(k)); if(opts.length) e.tile=opts[rng(opts.length)]; }
 function defeatEntity(e,hero){ if(state.selectedTarget?.kind==='entity'&&state.selectedTarget.id===e.id) state.selectedTarget=null; const idx=state.entities.findIndex(x=>x.id===e.id); if(idx>=0) state.entities.splice(idx,1); addLog('ENTITY DRIVEN OFF', `${e.name} is driven away.`, 'good', hero.tile, hero.you?leadLabel():hero.name.toUpperCase(), hero.you); if(Math.random()<0.55) drawGearFor(hero,'defeat'); }
-function finishGearGain(hero,gear,source){ hero.gear.push(gear); addLog('EQUIPMENT FOUND', `${hero.name.split(' ')[0]} gains ${gear.name}. Pack ${hero.gear.length}/3.`, 'good', hero.tile, hero.you?leadLabel():hero.name.toUpperCase(), hero.you); renderAll(); }
+function finishGearGain(hero,gear,source){ hero.gear.push(gear); addLog('EQUIPMENT FOUND', `${hero.name.split(' ')[0]} gains ${gearDisplayName(gear)}. Pack ${hero.gear.length}/3.`, 'good', hero.tile, hero.you?leadLabel():hero.name.toUpperCase(), hero.you); renderAll(); }
 function resumePausedFlow(){
   if(!state || state.gameOver || state.uiPaused) return;
   if(state.phase!=='investigator') return;
@@ -1203,7 +1220,7 @@ function showGearOverflow(hero,gear,source,onDone=null,manualChoice=true){
   }
   state.uiPaused=true;
   const root=$('#modalRoot');
-  root.innerHTML=`<div class="modalOverlay"><div class="modalPanel"><div class="caseEyebrow">Pack Limit · 3 Cards</div><h2>${hero.name.split(' ')[0]}'s pack is full</h2><div class="newGearBox"><h3>New: ${gear.name}</h3><p>${gear.text}</p></div><p>Choose a carried card to leave behind, or leave the new card. The investigation is paused until you decide.</p><div class="gearOverflowList">${hero.gear.map(g=>`<div class="gearOverflowChoice"><div><b>${g.name}</b><br><span>${g.text}</span></div><button data-drop="${g.gid}">Drop</button></div>`).join('')}</div><div style="display:flex;justify-content:flex-end"><button id="leaveNewGear">Leave ${gear.name}</button></div></div></div>`;
+  root.innerHTML=`<div class="modalOverlay"><div class="modalPanel"><div class="caseEyebrow">Pack Limit · 3 Cards</div><h2>${hero.name.split(' ')[0]}'s pack is full</h2><div class="newGearBox"><h3>New: ${gearDisplayName(gear)}</h3><p>${gearDetailText(gear)}</p></div><p>Choose a carried card to leave behind, or leave the new card. The investigation is paused until you decide.</p><div class="gearOverflowList">${hero.gear.map(g=>`<div class="gearOverflowChoice"><div><b>${gearDisplayName(g)}</b><br><span>${gearDetailText(g)}</span></div><button data-drop="${g.gid}">Drop</button></div>`).join('')}</div><div style="display:flex;justify-content:flex-end"><button id="leaveNewGear">Leave ${gear.name}</button></div></div></div>`;
   root.querySelectorAll('[data-drop]').forEach(btn=>btn.onclick=()=>{
     const old=hero.gear.find(g=>g.gid===btn.dataset.drop); hero.gear=hero.gear.filter(g=>g.gid!==btn.dataset.drop);
     addLog('GEAR DROPPED', `${hero.name.split(' ')[0]} leaves ${old.name} behind to make room.`, 'weird', hero.tile, hero.you?leadLabel():hero.name.toUpperCase(), hero.you);
@@ -1219,13 +1236,13 @@ function assignGearToHero(hero,gear,source,onDone=null,manualChoice=false){
   showGearOverflow(hero,gear,source,onDone,manualChoice||hero.you);
 }
 function gearRecipientHTML(h){
-  const gearText=h.gear.length?h.gear.map(g=>g.name).join(' · '):'No gear';
+  const gearText=h.gear.length?h.gear.map(g=>gearDisplayName(g)).join(' · '):'No gear';
   return `<div class="gearRecipientInfo"><div><b>${h.name}${h.you?' · YOU':''}</b><div class="gearRecipientRole">${h.role}</div></div><div class="gearRecipientStats"><span>Health ${h.health}/${heroHealthCap(h)}</span><span>Nerve ${h.nerve}/${h.maxNerve}</span><span>Exposure ${h.exposure}/6</span><span>Combat ${heroCombat(h)>=0?'+':''}${heroCombat(h)}</span><span>Defense ${heroDefense(h)}</span></div><div class="gearRecipientPower"><b>${h.power}</b> · ${h.powerText}</div><div class="gearRecipientInventory"><b>Gear ${h.gear.length}/3:</b> ${gearText}</div></div>`;
 }
 function showCacheGearAssignment(finder,gear,source,onDone=null){
   state.uiPaused=true;
   const root=$('#modalRoot');
-  root.innerHTML=`<div class="modalOverlay"><div class="modalPanel"><div class="caseEyebrow">Field Cache</div><h2>${gear.name}</h2><div class="newGearBox"><h3>Assign equipment</h3><p>${gear.text}</p></div><p>${finder.name.split(' ')[0]} found this card. Compare the field team before assigning it. The investigation is paused while you decide.</p><div class="gearOverflowList">${state.heroes.map(h=>`<div class="gearOverflowChoice">${gearRecipientHTML(h)}<button data-recipient="${h.id}">${h.gear.length>=3?'Choose / Discard':'Give'}</button></div>`).join('')}</div></div></div>`;
+  root.innerHTML=`<div class="modalOverlay"><div class="modalPanel"><div class="caseEyebrow">Field Cache</div><h2>${gearDisplayName(gear)}</h2><div class="newGearBox"><h3>Assign equipment</h3><p>${gearDetailText(gear)}</p></div><p>${finder.name.split(' ')[0]} found this card. Compare the field team before assigning it. The investigation is paused while you decide.</p><div class="gearOverflowList">${state.heroes.map(h=>`<div class="gearOverflowChoice">${gearRecipientHTML(h)}<button data-recipient="${h.id}">${h.gear.length>=3?'Choose / Discard':'Give'}</button></div>`).join('')}</div></div></div>`;
   root.querySelectorAll('[data-recipient]').forEach(btn=>btn.onclick=()=>{
     const recipient=state.heroes.find(h=>h.id===btn.dataset.recipient); if(!recipient) return;
     root.innerHTML='';
