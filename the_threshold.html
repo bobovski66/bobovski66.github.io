@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>The Threshold v1.6.17</title>
+<title>The Threshold v1.6.19</title>
 <style>
 :root{
   --bg:#0f1511;--panel:#1a221c;--panel2:#202921;--line:#5a6657;--text:#ecf1ea;--muted:#c4ccc2;
@@ -171,7 +171,7 @@ aside.sidebar{border-left:1px solid #4e5b4b;background:linear-gradient(160deg,#1
 <div id="setupScreen">
   <div class="setupWrap">
     <div class="setupHeroBanner">
-      <div class="caseEyebrow">The Threshold · v1.6.17</div>
+      <div class="caseEyebrow">The Threshold · v1.6.19</div>
       <h1>The Pine Barrens</h1>
       <p>Impossible lights, animal cries, missing hikers, and a geography that doesn’t stay put have pulled your investigators into a spreading paranormal zone. Build your field team, enter the Barrens, figure out what’s here, and shut the Threshold down before Doom outruns you.</p>
     </div>
@@ -194,7 +194,7 @@ aside.sidebar{border-left:1px solid #4e5b4b;background:linear-gradient(160deg,#1
           <div class="flowNode"><b>Paranormal</b>entities act</div>
           <div class="flowNode"><b>Doom</b>pressure check</div>
         </div>
-        <p style="margin:0;color:#d6ddd3;font-size:15px;line-height:1.45">Hostiles fight and lock rooms. Contacts stalk investigators and cause phenomenon-specific effects. Health 0 stuns for 2 rounds; Nerve 0 or Exposure 6 stuns for 1.</p>
+        <p style="margin:0;color:#d6ddd3;font-size:15px;line-height:1.45">Hostiles fight and lock rooms. Contacts stalk investigators; resist their effects with d6 + current Nerve vs 9. Health 0 stuns for 2 rounds; Nerve 0 or Exposure 6 stuns for 1.</p>
       </div>
     </div>
 
@@ -243,7 +243,7 @@ aside.sidebar{border-left:1px solid #4e5b4b;background:linear-gradient(160deg,#1
 
 <div id="gameScreen" class="hidden">
   <header class="appHeader">
-    <div class="brand"><h1>THE THRESHOLD</h1><small>Pine Barrens · v1.6.17</small></div>
+    <div class="brand"><h1>THE THRESHOLD</h1><small>Pine Barrens · v1.6.19</small></div>
     <div class="headerTurn"><div id="sceneTitle" class="headerTurnTitle">Choose your actions.</div><div class="headerTurnMeta"><span id="sceneActor">CASE 01</span><span id="sceneRound">Round 1</span></div><div id="sceneText" class="headerTurnText"></div></div><button id="actionDrawerTab" class="actionDrawerTab" aria-expanded="false">ACTIONS <span>▼</span></button><div id="actionDrawer" class="actionDrawer"><div class="actionDrawerInner"><div class="drawerSection selfSection"><div class="drawerLabel">Self Actions</div><div id="selfActions" class="selfActions"></div></div><div class="drawerSection"><div class="drawerLabel">Target Actions</div><div id="contextActions" class="contextActions"></div></div></div></div>
     <div class="headerstats">
       <span class="chip">Round <strong id="roundStat">1</strong></span>
@@ -289,10 +289,11 @@ aside.sidebar{border-left:1px solid #4e5b4b;background:linear-gradient(160deg,#1
 
           <h3>Manifestations & Combat</h3>
           <ul>
-            <li><b>CONTACTS</b> follow investigators and cause phenomenon-specific Nerve/Exposure effects. At high Doom, a contact that catches its target has a small chance to become HOSTILE.</li>
+            <li><b>CONTACTS</b> follow investigators and attempt phenomenon-specific Nerve/Exposure effects. Unless Protective Mask blocks the effect first, make a <b>Contact Check: d6 + current Nerve vs 9</b>. A total of 9 or more resists the effect. At high Doom, a contact that catches its target has a small chance to become HOSTILE.</li>
+            <li><b>Contact limit:</b> during one paranormal phase, an investigator can lose at most <b>1 Nerve</b> and gain at most <b>1 Exposure</b> from CONTACTS. Additional contacts may still follow, convert to HOSTILE, or attempt an effect that has not yet reached its cap.</li>
             <li><b>HOSTILES</b> attack, lock exits, and block portal stabilization. Basic Attack may target any manifestation; powers and gear obey their own target restrictions.</li><li><b>Hostile cap:</b> no room can contain more than <b>3 HOSTILES</b>. At 3, portal spawns in that room can only create CONTACTS, existing CONTACTS cannot turn HOSTILE, and additional HOSTILES cannot enter until the count drops below 3.</li>
             <li>Attack with <b>d6 + Combat vs Defense</b>. If the total exceeds Defense, damage equals the margin: <b>Attack total − Defense</b>. A tie deals no damage. <b>Defend</b> costs 1 action for +2 Defense until your next turn. <b>Regroup</b> costs 1 action once per round for +1 Nerve.</li>
-            <li>Health 0 stuns an investigator for <b>2 rounds</b>. Nerve 0 or Exposure 6 stuns them for <b>1 round</b>. After recovery they return at at least 3 Health, at least 3 Nerve, and at most 2 Exposure.</li>
+            <li>Health 0 stuns an investigator for <b>2 rounds</b>. Nerve 0 or Exposure 6 stuns them for <b>1 round</b>. After the required rounds are missed, the <b>stat that caused the stun fully recovers</b>: Health returns to full, Nerve returns to full, or Exposure resets to 0.</li>
             <li>Identical manifestations with the same target/state may display as one <b>×N</b> group; they remain separate creatures mechanically.</li>
           </ul>
 
@@ -396,7 +397,7 @@ const GEAR_CATALOG = [
   {name:'Survey Tape',copies:1,type:'passive',text:'Spatial weirdness will not move, erase, or remove the room currently occupied by the holder.',passive:{weirdShield:1},utility:'Always active. The holder’s current room is protected from Doom-driven spatial rearrangement.'},
   {name:'Faraday Pouch',copies:1,type:'passive',text:'Reduce the party’s Doom pressure-check chance by 4 percentage points.',passive:{doomDampen:.04},utility:'Always active for the whole party while carried.'},
   {name:'Portal Snare',copies:1,type:'passive',text:'Reduce each portal’s manifestation-spawn chance by 4 percentage points.',passive:{portalDampen:.04},utility:'Always active for the whole party while carried.'},
-  {name:'Protective Mask',copies:1,type:'passive',text:'35% chance to ignore a non-hostile CONTACT effect.',passive:{contactResist:.35},utility:'Always active. Rolled whenever a non-hostile manifestation makes contact with the holder.'}
+  {name:'Protective Mask',copies:1,type:'passive',text:'35% chance to ignore a non-hostile CONTACT effect before making a Contact Check.',passive:{contactResist:.35},utility:'Always active. Roll the mask first; if it does not block the contact, roll d6 + current Nerve vs 9.'}
 ];
 const GEAR_DECK = GEAR_CATALOG.flatMap(card=>Array.from({length:card.copies||1},()=>{const copy={...card}; if(Number.isFinite(copy.charges)) copy.chargesLeft=copy.charges; delete copy.copies; return copy;}));
 let state = null;
@@ -1267,7 +1268,7 @@ function changeDoom(delta){
   return false;
 }
 function checkStun(hero){ if(state.gameOver) return; let reason=''; if(hero.health<=0) reason='Health'; else if(hero.nerve<=0) reason='Nerve'; else if(hero.exposure>=6) reason='Exposure'; if(reason && !isStunned(hero)){ hero.stunned=true; const missedRounds=reason==='Health'?2:1; hero.stunnedRounds=missedRounds+1; hero.stunReason=reason; hero.health=Math.max(0,hero.health); hero.nerve=Math.max(0,hero.nerve); hero.exposure=Math.min(6,hero.exposure); const shortName=hero.name.split(' ')[0]; const duration=missedRounds===1?'1 round':'2 rounds'; addLog('STUNNED', `${shortName} is overwhelmed by ${reason.toLowerCase()} and will miss ${missedRounds===1?'the next round':`${missedRounds} full rounds`}.`, 'bad', hero.tile, hero.you?leadLabel():hero.name.toUpperCase(), hero.you); if(phenomenonFlow?.summary){ addPhaseEvent(phenomenonFlow.summary,`${shortName} STUNNED · ${reason} ${reason==='Exposure'?'6':'0'} · misses ${duration}.`,'bad',hero.you); } } }
-function recoverStunnedHeroes(){ state.heroes.forEach(h=>{ if(h.stunnedRounds>0){ h.stunnedRounds--; if(h.stunnedRounds===0){ h.health=Math.max(3,h.health); h.nerve=Math.max(3,h.nerve); h.exposure=Math.min(2,h.exposure); h.stunned=false; h.stunReason=''; addLog('RECOVERY', `${h.name.split(' ')[0]} returns to the case at Health ${h.health}, Nerve ${h.nerve}, Exposure ${h.exposure}.`, 'good', h.tile, h.you?leadLabel():h.name.toUpperCase(), h.you); } } }); }
+function recoverStunnedHeroes(){ state.heroes.forEach(h=>{ if(h.stunnedRounds>0){ h.stunnedRounds--; if(h.stunnedRounds===0){ const reason=h.stunReason; if(reason==='Health'){ h.maxHealth=heroHealthCap(h); h.health=h.maxHealth; } else if(reason==='Nerve'){ h.maxNerve=heroNerveCap(h); h.nerve=h.maxNerve; } else if(reason==='Exposure'){ h.exposure=0; } h.stunned=false; h.stunReason=''; const recovered=reason==='Health'?`Health fully restored to ${h.health}`:reason==='Nerve'?`Nerve fully restored to ${h.nerve}`:reason==='Exposure'?'Exposure reset to 0':'recovered'; addLog('FULL RECOVERY', `${h.name.split(' ')[0]} returns to the case — ${recovered}. Current stats: Health ${h.health}, Nerve ${h.nerve}, Exposure ${h.exposure}.`, 'good', h.tile, h.you?leadLabel():h.name.toUpperCase(), h.you); } } }); }
 function protectedCaseKeys(){
   const keys=new Set((state.heroes||[]).map(h=>h.tile));
   (state.portals||[]).forEach(k=>{if(state.tiles[k]?.portal)keys.add(k)});
@@ -1357,7 +1358,7 @@ function phenomenonBeat(title,detail,tone,next){
 function runPhenomenonPhase(){
   if(state.gameOver || state.uiPaused) return;
   clearPlayerResult(); renderAll();
-  phenomenonFlow={summary:{doomBefore:state.doom,entitiesBefore:state.entities.length,portalsBefore:state.portals.length,events:[]},entityIds:state.entities.map(e=>e.id),entityIndex:0,portalKeys:state.portals.slice(),portalIndex:0};
+  phenomenonFlow={summary:{doomBefore:state.doom,entitiesBefore:state.entities.length,portalsBefore:state.portals.length,events:[]},entityIds:state.entities.map(e=>e.id),entityIndex:0,portalKeys:state.portals.slice(),portalIndex:0,contactCaps:{}};
   runNextPhenomenonEntity();
 }
 function runNextPhenomenonEntity(){
@@ -1373,6 +1374,17 @@ function runNextPhenomenonEntity(){
   }
   resolveHere();
 }
+function contactEffectSpec(){
+  const name=state.phenomenon.name;
+  if(name==='Grey Visitors') return {nerve:0,exposure:1};
+  if(name==='Threshold Predator') return {nerve:1,exposure:1};
+  if(name==='Time Slip') return {nerve:0,exposure:1};
+  return {nerve:1,exposure:0};
+}
+function contactPhaseCap(hero){
+  if(!phenomenonFlow.contactCaps) phenomenonFlow.contactCaps={};
+  return phenomenonFlow.contactCaps[hero.id]||(phenomenonFlow.contactCaps[hero.id]={nerve:false,exposure:false});
+}
 function resolvePhenomenonContact(e,target){
   if(!state||state.gameOver||!state.entities.some(x=>x.id===e.id))return runNextPhenomenonEntity();
   const summary=phenomenonFlow.summary;
@@ -1383,18 +1395,48 @@ function resolvePhenomenonContact(e,target){
     checkStun(target);
     return phenomenonBeat(`${e.name} ATTACKS`,rollHudHTML(die,[e.attack],total,`DEF ${def}`,outcome),tone,runNextPhenomenonEntity);
   }
-  const resist=Math.min(.75,sumPassive(target,'contactResist'));let detail='',tone='weird';
-  if(resist>0&&Math.random()<resist){detail=`${target.name.split(' ')[0]}'s protective gear blocks the contact effect.`;tone='good';}
-  else if(state.phenomenon.name==='Grey Visitors'){target.exposure=Math.min(6,target.exposure+1);detail=`${target.name.split(' ')[0]} gains 1 Exposure.`;addPhaseEvent(summary,`${target.name.split(' ')[0]} loses time and gains 1 Exposure.`,'weird',target.you);}
-  else if(state.phenomenon.name==='Threshold Predator'){target.nerve=Math.max(0,target.nerve-1);target.exposure=Math.min(6,target.exposure+1);detail=`${target.name.split(' ')[0]} loses 1 Nerve · gains 1 Exposure.`;addPhaseEvent(summary,`${target.name.split(' ')[0]} loses 1 Nerve and gains 1 Exposure.`,'weird',target.you);}
-  else if(state.phenomenon.name==='Time Slip'){target.exposure=Math.min(6,target.exposure+1);detail=`${target.name.split(' ')[0]} gains 1 Exposure.`;addPhaseEvent(summary,`${target.name.split(' ')[0]} slips out of sequence and gains 1 Exposure.`,'weird',target.you);}
-  else if(state.phenomenon.name==='Hollow Choir'){target.nerve=Math.max(0,target.nerve-1);detail=`${target.name.split(' ')[0]} loses 1 Nerve.`;addPhaseEvent(summary,`${target.name.split(' ')[0]} loses 1 Nerve to a voice that knows too much.`,'weird',target.you);}
-  else if(state.phenomenon.name==='Mimic Lights'){target.nerve=Math.max(0,target.nerve-1);detail=`${target.name.split(' ')[0]} loses 1 Nerve.`;addPhaseEvent(summary,`${target.name.split(' ')[0]} loses 1 Nerve following a familiar voice in the lights.`,'weird',target.you);}
-  else{target.nerve=Math.max(0,target.nerve-1);detail=`${target.name.split(' ')[0]} loses 1 Nerve.`;addPhaseEvent(summary,`${target.name.split(' ')[0]} loses 1 Nerve from a close cryptid encounter.`,'weird',target.you);}
-  if(!e.hostile&&!hostileRoomFull(e.tile)&&Math.random()<contactHostilityChance()){e.hostile=true;detail+=` · ${e.name} TURNS HOSTILE`;tone='bad';addPhaseEvent(summary,`${e.name} changes posture around ${target.name.split(' ')[0]} — it has turned HOSTILE.`,'bad',target.you);addLog('CONTACT TURNS HOSTILE',`${e.name} becomes aggressive in ${state.tiles[e.tile]?.name||'the room'} as Doom intensifies.`,'bad',e.tile,'PHENOMENON',target.you);}
+
+  const short=target.name.split(' ')[0], spec=contactEffectSpec(), cap=contactPhaseCap(target);
+  const canNerve=!!spec.nerve&&!cap.nerve, canExposure=!!spec.exposure&&!cap.exposure;
+  let detail='',tone='weird',rollDetail=null;
+  const maskResist=Math.min(.75,sumPassive(target,'contactResist'));
+
+  if(!canNerve&&!canExposure){
+    detail=`${short} has already absorbed the maximum CONTACT Nerve/Exposure effect this phase.`;
+    tone='good';
+  } else if(maskResist>0&&Math.random()<maskResist){
+    detail=`${short}'s Protective Mask blocks the contact effect before a Contact Check.`;
+    tone='good';
+  } else {
+    const nerveMod=Math.max(0,target.nerve),die=rng(6)+1,total=die+nerveMod,resisted=total>=9;
+    if(resisted){
+      rollDetail=rollHudHTML(die,[nerveMod],total,'9','RESISTED');
+      tone='good';
+    } else {
+      const applied=[];
+      if(canNerve){target.nerve=Math.max(0,target.nerve-1);cap.nerve=true;applied.push('−1 NERVE');}
+      if(canExposure){target.exposure=Math.min(6,target.exposure+1);cap.exposure=true;applied.push('+1 EXPOSURE');}
+      const effectText=applied.join(' · ');
+      rollDetail=rollHudHTML(die,[nerveMod],total,'9',effectText||'NO FURTHER EFFECT');
+      if(applied.length){
+        const prose=applied.length===2?'loses 1 Nerve and gains 1 Exposure':applied[0].includes('NERVE')?'loses 1 Nerve':'gains 1 Exposure';
+        addPhaseEvent(summary,`${short}${target.you?' (YOU)':''} fails a Contact Check and ${prose}.`,'weird',target.you);
+      }
+    }
+  }
+
+  let turnedHostile=false;
+  if(!e.hostile&&!hostileRoomFull(e.tile)&&Math.random()<contactHostilityChance()){
+    e.hostile=true;turnedHostile=true;tone='bad';
+    addPhaseEvent(summary,`${e.name} changes posture around ${short} — it has turned HOSTILE.`,'bad',target.you);
+    addLog('CONTACT TURNS HOSTILE',`${e.name} becomes aggressive in ${state.tiles[e.tile]?.name||'the room'} as Doom intensifies.`,'bad',e.tile,'PHENOMENON',target.you);
+  }
+  if(rollDetail) detail=`${rollDetail}${turnedHostile?' · TURNS HOSTILE':''}`;
+  else if(turnedHostile) detail+=` · ${e.name} TURNS HOSTILE`;
   checkStun(target);
-  return phenomenonBeat('CONTACT',`${e.name} → ${target.name.split(' ')[0]} · ${detail}`,tone,runNextPhenomenonEntity);
+  return phenomenonBeat('CONTACT',`${e.name} → ${short} · ${detail}`,tone,runNextPhenomenonEntity);
 }
+
 function runNextPortalSpawn(){
   if(!state||state.gameOver||!phenomenonFlow)return;
   if(phenomenonFlow.portalIndex>=phenomenonFlow.portalKeys.length)return runDoomPressureBeat();
