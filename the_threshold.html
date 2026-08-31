@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>The Threshold v1.6.19</title>
+<title>The Threshold v1.7.1</title>
 <style>
 :root{
   --bg:#0f1511;--panel:#1a221c;--panel2:#202921;--line:#5a6657;--text:#ecf1ea;--muted:#c4ccc2;
@@ -104,6 +104,11 @@ main.appMain{display:grid;grid-template-columns:minmax(0,1fr) 390px;min-height:0
 .token.creature.hostile{background:linear-gradient(180deg,#b44339,#651f20)!important;border-color:#ff8b7b!important;color:#fff7f4;box-shadow:0 0 0 2px rgba(255,102,86,.5),0 0 16px rgba(201,52,45,.55),0 2px 8px rgba(0,0,0,.35);filter:saturate(1.25) contrast(1.08);animation:hostilePulse 1.6s ease-in-out infinite alternate}
 .token.creature.hostile .pursuitTag{background:#4a1616;border-color:#e06e61;color:#ffe5df}
 @keyframes hostilePulse{from{box-shadow:0 0 0 2px rgba(255,102,86,.42),0 0 10px rgba(201,52,45,.38),0 2px 8px rgba(0,0,0,.35)}to{box-shadow:0 0 0 3px rgba(255,119,101,.72),0 0 20px rgba(222,57,49,.7),0 2px 8px rgba(0,0,0,.35)}}
+.token.creature.boss{width:48px;height:48px;border-width:2px;z-index:16;box-shadow:0 0 0 3px rgba(215,194,103,.34),0 0 20px rgba(205,173,71,.32),0 3px 10px rgba(0,0,0,.5)}
+.token.creature.boss::after{content:'BOSS';position:absolute;left:50%;top:-13px;transform:translateX(-50%);padding:2px 5px;border-radius:999px;background:#17140d;border:1px solid #d1b958;color:#fff0a6;font-size:8px;font-weight:950;letter-spacing:.08em;line-height:1;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.45)}
+.token.creature.boss .pursuitTag{right:-12px;bottom:-9px}
+.bossHpTag{position:absolute;left:-9px;bottom:-8px;z-index:15;min-width:28px;padding:2px 4px;border-radius:999px;background:#15120d;border:1px solid #d0b85a;color:#fff0a8;font-size:9px;font-weight:950;line-height:1;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.45)}
+.bossStatus{margin-top:10px;padding:10px 11px;border:1px solid #877641;border-radius:11px;background:linear-gradient(160deg,#292719,#171a13)}.bossStatusHead{display:flex;justify-content:space-between;gap:8px;align-items:center}.bossStatusHead b{color:#fff0a8;font-size:17px}.bossStatusState{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#e3cf78}.bossStatusStats{font-size:12px;color:#dce4d8;margin-top:5px}.bossStatusAbility{font-size:12px;line-height:1.4;color:#e9dfb0;margin-top:6px}.bossRevealName{font-size:34px;line-height:1.05;color:#fff0a8;margin:5px 0 8px}.bossRevealAbility{border:1px solid #75663a;background:#242316;border-radius:11px;padding:10px 12px;margin:12px 0;color:#e8dfb0;line-height:1.45}
 .token.stunned{filter:saturate(.7);outline:2px solid var(--yellow)}.token.stunned::after{content:'✦';position:absolute;right:-6px;top:-7px;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:#2d2412;border:1px solid var(--yellow);color:#ffe88a;font-size:11px}
 .objectToken{width:31px;height:31px;border-radius:9px;font-size:16px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.26)}
 .objectToken.clueObj{background:linear-gradient(180deg,#52683f,#36482f);border-color:#8ba36e;transform:rotate(45deg)}
@@ -171,7 +176,7 @@ aside.sidebar{border-left:1px solid #4e5b4b;background:linear-gradient(160deg,#1
 <div id="setupScreen">
   <div class="setupWrap">
     <div class="setupHeroBanner">
-      <div class="caseEyebrow">The Threshold · v1.6.19</div>
+      <div class="caseEyebrow">The Threshold · v1.7.1</div>
       <h1>The Pine Barrens</h1>
       <p>Impossible lights, animal cries, missing hikers, and a geography that doesn’t stay put have pulled your investigators into a spreading paranormal zone. Build your field team, enter the Barrens, figure out what’s here, and shut the Threshold down before Doom outruns you.</p>
     </div>
@@ -204,8 +209,8 @@ aside.sidebar{border-left:1px solid #4e5b4b;background:linear-gradient(160deg,#1
       <div class="setupControls">
         <div class="pickerBox">
           <div class="title">Selected Team</div>
-          <div id="partyCount">1–3 investigators</div>
-          <div id="partyNote">Choose 1–3 investigators: one to control, plus up to two AI companions.</div>
+          <div id="partyCount">1–4 investigators</div>
+          <div id="partyNote">Choose 1–4 investigators: one to control, plus up to three AI companions.</div>
         </div>
         <label class="selectLabel">Case Pressure
           <select id="difficultySelect">
@@ -231,8 +236,8 @@ aside.sidebar{border-left:1px solid #4e5b4b;background:linear-gradient(160deg,#1
     </div>
     <div class="storyCard">
       <h2>Your assignment</h2>
-      <div class="storyLead">Enter the zone, gather evidence, identify the pattern, and stabilize the portals before local reality gives up.</div>
-      <p>Not every manifestation should be fought. Some things only stalk, unsettle, or draw Exposure. Keep your team alive and sane, collect six evidence, and then close every portal you can find.</p>
+      <div class="storyLead">Enter the zone, gather evidence, identify the pattern, and force the source of the case back across the Threshold.</div>
+      <p>Not every manifestation should be fought. Some things only stalk, unsettle, or draw Exposure. Evidence 5 identifies the phenomenon; evidence 6 forces its main entity into the open. Fight or repel it to create space, then close every portal before it can overwhelm the team.</p>
     </div>
     <div class="storyFooter">
       <div class="storyDots"><div class="storyDot active"></div><div class="storyDot"></div></div>
@@ -243,7 +248,7 @@ aside.sidebar{border-left:1px solid #4e5b4b;background:linear-gradient(160deg,#1
 
 <div id="gameScreen" class="hidden">
   <header class="appHeader">
-    <div class="brand"><h1>THE THRESHOLD</h1><small>Pine Barrens · v1.6.19</small></div>
+    <div class="brand"><h1>THE THRESHOLD</h1><small>Pine Barrens · v1.7.1</small></div>
     <div class="headerTurn"><div id="sceneTitle" class="headerTurnTitle">Choose your actions.</div><div class="headerTurnMeta"><span id="sceneActor">CASE 01</span><span id="sceneRound">Round 1</span></div><div id="sceneText" class="headerTurnText"></div></div><button id="actionDrawerTab" class="actionDrawerTab" aria-expanded="false">ACTIONS <span>▼</span></button><div id="actionDrawer" class="actionDrawer"><div class="actionDrawerInner"><div class="drawerSection selfSection"><div class="drawerLabel">Self Actions</div><div id="selfActions" class="selfActions"></div></div><div class="drawerSection"><div class="drawerLabel">Target Actions</div><div id="contextActions" class="contextActions"></div></div></div></div>
     <div class="headerstats">
       <span class="chip">Round <strong id="roundStat">1</strong></span>
@@ -273,12 +278,12 @@ aside.sidebar{border-left:1px solid #4e5b4b;background:linear-gradient(160deg,#1
       <div id="rulesTab" class="tabpane">
         <div class="section rules">
           <div class="objectiveBig">Core Loop</div>
-          <p>Collect <b>6 evidence</b>, identify the phenomenon, then stabilize <b>every open portal</b> before Doom reaches 15.</p>
+          <p>Collect <b>6 evidence</b>, identify the phenomenon, survive its named BOSS, then stabilize <b>every open portal</b> before Doom reaches 15.</p>
 
           <h3>Turn</h3>
           <ul>
-            <li>Each active investigator gets <b>2 actions</b>. You act first; AI teammates follow. Then the paranormal side moves, attacks, spawns, checks Doom, and resolves weirdness before showing its summary.</li>
-            <li>Click rooms, doors, clues, caches, portals, investigators, or manifestations directly. The ACTIONS drawer shows only legal actions for the selected target.</li>
+            <li>Build a team of <b>1–4 investigators</b>: one human-controlled lead plus up to three AI companions. Each active investigator gets <b>2 actions</b>. You act first; AI teammates follow. Then the paranormal side moves, attacks, spawns, checks Doom, and resolves weirdness before showing its summary.</li>
+            <li>Click rooms, doors, clues, caches, portals, investigators, or manifestations directly. The ACTIONS drawer shows only legal actions for the selected target. During the paranormal phase, movement and non-roll events resolve directly on the board; the top action display is reserved for <b>attack, Contact Check, and boss contest rolls</b>.</li>
           </ul>
 
           <h3>Rooms & Movement</h3>
@@ -291,7 +296,7 @@ aside.sidebar{border-left:1px solid #4e5b4b;background:linear-gradient(160deg,#1
           <ul>
             <li><b>CONTACTS</b> follow investigators and attempt phenomenon-specific Nerve/Exposure effects. Unless Protective Mask blocks the effect first, make a <b>Contact Check: d6 + current Nerve vs 9</b>. A total of 9 or more resists the effect. At high Doom, a contact that catches its target has a small chance to become HOSTILE.</li>
             <li><b>Contact limit:</b> during one paranormal phase, an investigator can lose at most <b>1 Nerve</b> and gain at most <b>1 Exposure</b> from CONTACTS. Additional contacts may still follow, convert to HOSTILE, or attempt an effect that has not yet reached its cap.</li>
-            <li><b>HOSTILES</b> attack, lock exits, and block portal stabilization. Basic Attack may target any manifestation; powers and gear obey their own target restrictions.</li><li><b>Hostile cap:</b> no room can contain more than <b>3 HOSTILES</b>. At 3, portal spawns in that room can only create CONTACTS, existing CONTACTS cannot turn HOSTILE, and additional HOSTILES cannot enter until the count drops below 3.</li>
+            <li><b>HOSTILES</b> attack, lock exits, and block portal stabilization. Basic Attack may target any manifestation; powers and gear obey their own target restrictions.</li><li><b>Hostile cap:</b> no room can contain more than <b>3 HOSTILES</b>. At 3, portal spawns in that room can only create CONTACTS, existing CONTACTS cannot turn HOSTILE, and additional HOSTILES cannot enter until the count drops below 3.</li><li><b>Final Act:</b> evidence 6 reveals the case's named BOSS at an open portal. A boss counts as a HOSTILE and gets exactly <b>one boss activation</b> each paranormal phase; it does not also take an ordinary manifestation turn.</li><li>Bosses can be attacked and <b>repelled normally</b>. Reducing a boss to 0 HP <b>STAGGERS</b> it beyond the Threshold for two full paranormal phases. If any portal remains open, it then returns at full HP. Stabilizing the <b>final portal</b> permanently banishes the boss and wins the case.</li>
             <li>Attack with <b>d6 + Combat vs Defense</b>. If the total exceeds Defense, damage equals the margin: <b>Attack total − Defense</b>. A tie deals no damage. <b>Defend</b> costs 1 action for +2 Defense until your next turn. <b>Regroup</b> costs 1 action once per round for +1 Nerve.</li>
             <li>Health 0 stuns an investigator for <b>2 rounds</b>. Nerve 0 or Exposure 6 stuns them for <b>1 round</b>. After the required rounds are missed, the <b>stat that caused the stun fully recovers</b>: Health returns to full, Nerve returns to full, or Exposure resets to 0.</li>
             <li>Identical manifestations with the same target/state may display as one <b>×N</b> group; they remain separate creatures mechanically.</li>
@@ -299,7 +304,7 @@ aside.sidebar{border-left:1px solid #4e5b4b;background:linear-gradient(160deg,#1
 
           <h3>Evidence & Portals</h3>
           <ul>
-            <li>Evidence 1–4 updates the hypotheses. Evidence 5 identifies the phenomenon. Evidence 6 completes the case evidence and triggers <b>The Threshold Reacts</b>: one open portal immediately produces a manifestation.</li>
+            <li>Evidence 1–4 updates the hypotheses. Evidence 5 identifies the phenomenon. Evidence 6 completes the case evidence and begins the <b>Final Act</b>: the phenomenon's named BOSS manifests at an open portal and portal stabilization unlocks.</li>
             <li>Evidence frequency depends on Case Pressure: <b>Story 50%</b>, <b>Standard 40%</b>, <b>Severe 30%</b> per newly explored room. To prevent long dry spells, a clue is forced after 3, 4, or 5 consecutive clue-less rooms respectively.</li>
             <li><b>AI evidence priority:</b> if an AI investigator is in a room with accessible evidence, it investigates before taking any other action. It will never leave usable evidence behind. A HOSTILE contesting the room is the only exception.</li>
             <li>Every case begins with one portal and guarantees another during the first three explorations. After that, a newly explored room opens a portal with probability <b>8% Story</b>, <b>13% Standard</b>, or <b>18% Severe</b>. After 6 evidence, click a portal to Stabilize it. A contested room must be cleared first.</li>
@@ -317,7 +322,7 @@ aside.sidebar{border-left:1px solid #4e5b4b;background:linear-gradient(160deg,#1
           <ul>
             <li>Doom can only <b>increase during the paranormal phase</b>. The base pressure-check chance is <b>30% Story</b>, <b>55% Standard</b>, or <b>80% Severe</b>; party size and Faraday Pouch modify it. Gear may reduce Doom during investigator turns. At higher Doom, spatial weirdness and contact escalation become more likely.</li>
             <li>During each paranormal phase, every open portal has a base <b>16% Story</b>, <b>24% Standard</b>, or <b>38% Severe</b> chance to produce a manifestation. Party size and Portal Snare modify that chance.</li><li><b>Story:</b> accessible evidence and fewer portals. <b>Standard:</b> spread-out evidence and moderate portal pressure. <b>Severe:</b> sparse evidence with frequent portals and much higher hostile/Doom pressure.</li>
-            <li>Party size also scales pressure: solo receives reduced pressure and +1 Stabilize; duo receives lightly reduced pressure; trio receives increased pressure. Enemy Health and Defense do not scale.</li>
+            <li>Party size also scales pressure: solo receives reduced pressure and +1 Stabilize; duo receives lightly reduced pressure; teams of <b>3–4 investigators</b> receive the same elevated-pressure modifier. Enemy Health and Defense do not scale.</li>
           </ul>
         </div>
       </div>
@@ -374,7 +379,16 @@ const PHENOMENA = [
   {name:'Threshold Predator',specialist:'samir',desc:'Something native to the rift itself is crossing through and learning how the team moves.',evidenceWeights:{Biological:.16,Physical:.18,Energetic:.20,Observational:.16,Spatial:.30},identifiedBonus:'Samir specialty — Cover & Extract restores 3 Health and also removes 1 Exposure.',knownRules:['Spatial evidence is strongest, with energetic and physical traces also common.','Close contact drains Nerve and adds Exposure.','Rift Hounds are difficult to hit and aggressively pursue investigators.','Samir is the field specialist for this phenomenon.']},
   {name:'Time Slip',specialist:'priya',desc:'Local time is folding back on itself: repeated tracks, displaced objects, and minutes that occur twice.',evidenceWeights:{Biological:.12,Physical:.24,Energetic:.23,Observational:.15,Spatial:.26},identifiedBonus:'Priya specialty — +1 on all Stabilize rolls; Anchor Field prepares +3 instead of +2.',knownRules:['Spatial, physical, and energetic evidence overlap heavily in this case.','Chronal Echo contact adds Exposure as investigators lose pieces of time.','Hostile echoes block portal work and room exits.','Priya is the field specialist for this phenomenon.']},
   {name:'Mimic Lights',specialist:'tessa',desc:'Intelligent lights imitate voices, silhouettes, and familiar movement to lure investigators off route.',evidenceWeights:{Biological:.14,Physical:.13,Energetic:.30,Observational:.27,Spatial:.16},identifiedBonus:'Tessa specialty — Flash Burn deals 2 damage instead of 1 before repelling the target.',knownRules:['Energetic and observational evidence are strongest, but the signature overlaps Grey cases.','Contact primarily drains Nerve by imitating familiar people and voices.','Lure Lights can turn hostile and pin investigators in a room.','Tessa is the field specialist for this phenomenon.']}
+
 ];
+const BOSS_CATALOG={
+  'Jersey Devil':{name:'The Leeds Devil',symbol:'▲',family:'cryptid',hp:7,defense:5,attack:2,move:2,abilityName:'Winged Pursuit',ability:'Moves up to 2 discovered rooms toward its target during its single boss activation.'},
+  'Grey Visitors':{name:'The Surveyor',symbol:'◉',family:'grey',hp:6,defense:4,attack:1,move:1,abilityName:'Survey Mark',ability:'Instead of a normal attack, forces a Contact Check (d6 + Nerve vs 9); failure adds 1 Exposure, subject to the normal CONTACT Exposure cap.'},
+  'Hollow Choir':{name:'The Cantor',symbol:'∿',family:'wraith',hp:6,defense:4,attack:1,move:1,abilityName:'Resonant Field',ability:'While active, ordinary Contact Checks in its room and adjacent rooms are against 10 instead of 9.'},
+  'Threshold Predator':{name:'The Rift Alpha',symbol:'✦',family:'predator',hp:9,defense:5,attack:2,move:1,abilityName:'Rending Strike',ability:'A successful boss attack deals 2 Health instead of 1.'},
+  'Time Slip':{name:'The Repeater',symbol:'⌛',family:'chronal',hp:6,defense:4,attack:1,move:1,abilityName:'Echo Step',ability:'When it reaches and attacks an investigator after moving, it snaps back to the room where that activation began.'},
+  'Mimic Lights':{name:'The False Beacon',symbol:'✧',family:'mimic',hp:5,defense:4,attack:1,move:1,abilityName:'Lure',ability:'Instead of a normal attack, forces a Contact Check; failure pulls the investigator one legal room toward the nearest open portal.'}
+};
 const GEAR_CATALOG = [
   {name:'First Aid Kit',copies:2,type:'consumable',text:'Use: restore 2 Health to the holder or an ally on the holder’s tile.',use:'heal2',utility:'Target an investigator in your room. Costs 1 action.'},
   {name:'Trauma Kit',copies:1,type:'consumable',text:'Use: restore 3 Health to the holder or an ally on the holder’s tile.',use:'heal3',utility:'A stronger emergency heal. Target an investigator in your room. Costs 1 action.'},
@@ -490,7 +504,8 @@ function partyPressureProfile(){
   const n=state?.heroes?.length||1;
   if(n<=1) return {doom:-0.25,portal:-0.12,stabilize:1,label:'solo · strongly reduced pressure · +1 Stabilize'};
   if(n===2) return {doom:-0.03,portal:-0.02,stabilize:0,label:'two investigators · lightly reduced pressure'};
-  return {doom:0.18,portal:0.10,stabilize:0,label:'three investigators · elevated pressure'};
+  if(n===3) return {doom:0.18,portal:0.10,stabilize:0,label:'three investigators · elevated pressure'};
+  return {doom:0.18,portal:0.10,stabilize:0,label:'four investigators · elevated pressure'};
 }
 function doomPressureBonus(){ return partyPressureProfile().doom - partyPassive('doomDampen'); }
 function portalSpawnBonus(){ return partyPressureProfile().portal - partyPassive('portalDampen'); }
@@ -504,14 +519,14 @@ function switchTab(id){ $$('.tabbtn').forEach(b=>b.classList.toggle('active',b.d
 function updatePartyCount(){
   const lead=HERO_TEMPLATES.find(h=>h.id===setupLeadId); const ai=[...setupSelected].map(id=>HERO_TEMPLATES.find(h=>h.id===id)).filter(Boolean);
   const total=1+ai.length;
-  $('#partyCount').textContent = `${total}/3 · ${lead.name} · YOU${ai.length?' + '+ai.map(h=>h.name.split(' ')[0]+' · AI').join(' + '):''}`;
-  $('#partyNote').textContent = total===1?'Solo · reduced pressure · +1 Stabilize.':total===2?'Duo · moderate pressure.':'Trio · elevated pressure.';
+  $('#partyCount').textContent = `${total}/4 · ${lead.name} · YOU${ai.length?' + '+ai.map(h=>h.name.split(' ')[0]+' · AI').join(' + '):''}`;
+  $('#partyNote').textContent = total===1?'Solo · reduced pressure · +1 Stabilize.':total===2?'Duo · moderate pressure.':total===3?'Trio · elevated pressure.':'Four-person team · elevated pressure.';
   const diff=$('#difficultySelect')?.value||'standard'; const dn=$('#difficultyNote'); if(dn) dn.textContent=(DIFFICULTY_PROFILES[diff]||DIFFICULTY_PROFILES.standard).note;
-  const start=$('#startBtn'); if(start){ start.disabled=false; start.title='Begin with 1–3 investigators.'; }
+  const start=$('#startBtn'); if(start){ start.disabled=false; start.title='Begin with 1–4 investigators.'; }
 }
 function renderSetup(){
   setupSelected.delete(setupLeadId);
-  while(setupSelected.size>2) setupSelected.delete([...setupSelected].pop());
+  while(setupSelected.size>3) setupSelected.delete([...setupSelected].pop());
   const grid=$('#setupHeroGrid'); grid.innerHTML='';
   HERO_TEMPLATES.forEach(h=>{
     const isLead=h.id===setupLeadId, isAI=setupSelected.has(h.id), sel=isLead||isAI;
@@ -519,12 +534,12 @@ function renderSetup(){
     const div=document.createElement('div');
     div.className='setupHero'+(isLead?' you':'')+(sel?' selected':'');
     div.dataset.hero=h.id;
-    const teamFull=setupSelected.size>=2 && !isAI;
+    const teamFull=setupSelected.size>=3 && !isAI;
     div.innerHTML=`<span class="setupSeat">${seat}</span><div class="setupAvatar">${h.abbr}</div><h4>${h.name}</h4><div class="setupRole">${h.role} · Move ${h.move||1}, Combat ${h.combat>=0?'+':''}${h.combat}, Defense ${h.defense}</div><div class="setupPower"><b>${h.power}</b><br>${h.powerText}</div><div class="setupSpecialty"><b>Primary phenomenon:</b> ${h.specialty}</div><div class="setupPersonality"><b>${h.instinct}</b> AI instinct — ${h.instinctText}</div><div class="setupChoiceRow"><button class="leadPick ${isLead?'active':''}" ${isLead?'disabled':''}>${isLead?'Playing':'Play as'}</button><button class="aiPick ${isAI?'active':''}" ${(isLead||teamFull)?'disabled':''}>${isLead?'Lead Role':isAI?'Remove AI':teamFull?'Team Full':'Add AI'}</button></div>`;
     const leadBtn=div.querySelector('.leadPick'), aiBtn=div.querySelector('.aiPick');
     if(!isLead){
-      leadBtn.onclick=(ev)=>{ev.stopPropagation(); const oldLead=setupLeadId; const newWasAI=setupSelected.has(h.id); setupSelected.delete(h.id); setupLeadId=h.id; if(newWasAI) setupSelected.add(oldLead); while(setupSelected.size>2) setupSelected.delete([...setupSelected].pop()); renderSetup();};
-      if(!teamFull || isAI) aiBtn.onclick=(ev)=>{ev.stopPropagation(); if(setupSelected.has(h.id)) setupSelected.delete(h.id); else if(setupSelected.size<2) setupSelected.add(h.id); renderSetup();};
+      leadBtn.onclick=(ev)=>{ev.stopPropagation(); const oldLead=setupLeadId; const newWasAI=setupSelected.has(h.id); setupSelected.delete(h.id); setupLeadId=h.id; if(newWasAI) setupSelected.add(oldLead); while(setupSelected.size>3) setupSelected.delete([...setupSelected].pop()); renderSetup();};
+      if(!teamFull || isAI) aiBtn.onclick=(ev)=>{ev.stopPropagation(); if(setupSelected.has(h.id)) setupSelected.delete(h.id); else if(setupSelected.size<3) setupSelected.add(h.id); renderSetup();};
     }
     grid.appendChild(div);
   });
@@ -548,7 +563,7 @@ function buildInitialState(){
     id:h.id,name:h.name,abbr:h.abbr,role:h.role,health:h.health,maxHealth:h.health,nerve:h.nerve,maxNerve:h.nerve,exposure:0,combat:h.combat,defense:h.defense,move:h.move||1,fieldPackUsed:false,power:h.power,powerText:h.powerText,instinct:h.instinct,instinctText:h.instinctText,specialty:h.specialty,you:i===0,ai:i!==0,tile:key(0,0),acted:false,defending:false,guard:false,powerUsed:false,regroupUsed:false,gear:[],stunned:false,stunnedRounds:0,stunReason:''
   }));
   const deck = shuffle(GEAR_DECK).map((g,i)=>({...clone(g),gid:'g'+i+Date.now()+Math.random()}));
-  const st={difficulty:$('#difficultySelect').value,round:1,doom:0,evidence:[],heroes,activeIndex:0,actionsLeft:2,phase:'investigator',turnQueue:heroes.map((_,i)=>i),identified:false,phenomenon:clone(PHENOMENA[rng(PHENOMENA.length)]),tiles:{},entities:[],portals:[],log:[],boardEvents:[],roomCounter:1,gameOver:false,phenomenonSummary:null,gearDeck:deck,stabilizeAttemptsBonus:0,attackBuff:0,attackRepelOnHit:false,exploresDone:0,guaranteedPortalExplore:1+rng(3),selectedTarget:null,selectedGearHud:null,mobilityMode:null,lastPlayerResult:null,sixthEvidenceTriggered:false,lastEvidenceSurge:null,uiPaused:false,weirdnessCount:0,roomsSinceClue:0,actionDrawerOpen:false,mapLayout:{originLeft:440,originTop:368,minX:0,maxX:0,minY:0,maxY:0}};
+  const st={difficulty:$('#difficultySelect').value,round:1,doom:0,evidence:[],heroes,activeIndex:0,actionsLeft:2,phase:'investigator',turnQueue:heroes.map((_,i)=>i),identified:false,phenomenon:clone(PHENOMENA[rng(PHENOMENA.length)]),tiles:{},entities:[],portals:[],log:[],boardEvents:[],roomCounter:1,gameOver:false,phenomenonSummary:null,gearDeck:deck,stabilizeAttemptsBonus:0,attackBuff:0,attackRepelOnHit:false,exploresDone:0,guaranteedPortalExplore:1+rng(3),selectedTarget:null,selectedGearHud:null,mobilityMode:null,lastPlayerResult:null,sixthEvidenceTriggered:false,lastEvidenceSurge:null,boss:{revealed:false,active:false,entityId:null,staggeredRemaining:null,banished:false},pendingBossReveal:false,bossRevealShown:false,uiPaused:false,weirdnessCount:0,roomsSinceClue:0,actionDrawerOpen:false,mapLayout:{originLeft:440,originTop:368,minX:0,maxX:0,minY:0,maxY:0}};
   addTile(st,0,0,{name:'Forest Access Road',clue:false,cache:false,portal:true,doorCount:3});
   return st;
 }
@@ -636,8 +651,8 @@ function roomTooltip(tile, heroesHere, entitiesHere){ const lines=[]; const stat
 function roomDescription(tile){ return ROOM_DESCRIPTIONS[tile.name] || 'An unmarked patch of the Barrens with no reliable description.'; }
 function heroMeepleClass(h){ return h.id==='mara'?'mara':h.id==='elias'?'elias':h.id==='june'?'june':h.id==='samir'?'samir':h.id==='priya'?'priya':'tessa'; }
 function heroMeepleGlyph(h){ return h.id==='mara'?'🜃':h.id==='elias'?'⌁':h.id==='june'?'✶':h.id==='samir'?'✚':h.id==='priya'?'⌖':'◈'; }
-function entityMeepleClass(e){ if(e.name.includes('Winged'))return 'cryptid'; if(e.name.includes('Observer'))return 'grey'; if(e.name.includes('Wraith'))return 'wraith'; if(e.name.includes('Chronal'))return 'chronal'; if(e.name.includes('Light'))return 'mimic'; return 'predator'; }
-function entityMeepleGlyph(e){ if(e.name.includes('Winged'))return '🦇'; if(e.name.includes('Observer'))return '👁'; if(e.name.includes('Wraith'))return '∿'; if(e.name.includes('Chronal'))return '⌛'; if(e.name.includes('Light'))return '✧'; return '✦'; }
+function entityMeepleClass(e){ if(e?.boss&&e.family)return e.family; if(e.name.includes('Winged'))return 'cryptid'; if(e.name.includes('Observer'))return 'grey'; if(e.name.includes('Wraith'))return 'wraith'; if(e.name.includes('Chronal'))return 'chronal'; if(e.name.includes('Light'))return 'mimic'; return 'predator'; }
+function entityMeepleGlyph(e){ if(e?.boss)return e.symbol||'◆'; if(e.name.includes('Winged'))return '🦇'; if(e.name.includes('Observer'))return '👁'; if(e.name.includes('Wraith'))return '∿'; if(e.name.includes('Chronal'))return '⌛'; if(e.name.includes('Light'))return '✧'; return '✦'; }
 function weightedEvidenceType(){
   const weights=state.phenomenon.evidenceWeights; let r=Math.random(), acc=0;
   for(const type of EVIDENCE_TYPES){ acc += weights[type]||0; if(r<=acc) return type; }
@@ -727,7 +742,7 @@ function renderContextActions(){ const root=$('#contextActions'); if(!root) retu
 function renderSelfActions(){ const root=$('#selfActions'); if(!root) return; root.innerHTML=''; if(!isHumanTurn()||state.actionsLeft<=0) return; const hero=humanHero(); const gps=findGear('gps'); if(gps&&!roomContested(hero.tile)) addContextButton(root,state.mobilityMode?.kind==='gps'?'Trail GPS armed · cancel':`Trail GPS · +1 Move (${gearChargeCount(gps)})`,()=>armTrailGps(gps.gid),'targetPower'); const beacon=findGear('beacon'); if(beacon&&!roomContested(hero.tile)) state.heroes.filter(h=>h.id!==hero.id&&h.tile!==hero.tile).forEach(h=>addContextButton(root,`Emergency Beacon → ${h.name.split(' ')[0]} (${gearChargeCount(beacon)})`,()=>useEmergencyBeacon(beacon.gid,h.id),'targetPower')); const flash=findGear('flashCharge'); if(flash&&entitiesOnTile(hero.tile).length) addContextButton(root,'Flash Charge · repel room',()=>useGear(flash.gid),'targetPower'); const jammer=findGear('doom1'); if(jammer) addContextButton(root,'Jammer · Doom −1',()=>useGear(jammer.gid)); const batteries=findGear('refreshPower'); if(batteries&&hero.powerUsed) addContextButton(root,'Spare Batteries · refresh power',()=>useGear(batteries.gid)); addContextButton(root,'Defend · +2 DEF',()=>defendCurrent(),'',!!hero.defending,'Already defending'); addContextButton(root,'Regroup · +1 Nerve',()=>regroupCurrent(),'',!!hero.regroupUsed||hero.nerve>=hero.maxNerve,hero.regroupUsed?'Already regrouped this round':'Nerve already full'); addContextButton(root,'End Turn',()=>finishCurrentTurn()); }
 function usePowerOnTarget(kind,id){ if(!isHumanTurn()) return; const hero=humanHero(); if(hero.powerUsed) return;
   if(hero.id==='mara'){
-    const target=kind==='entity'?state.entities.find(e=>e.id===id&&e.tile===hero.tile&&e.hostile):null; if(!target) return; const dmg=identifiedIs('Jersey Devil')?3:2; target.hp-=dmg; const vanquished=target.hp<=0; addLog('TRANQ SHOT',`${hero.name.split(' ')[0]} hits ${target.name} for ${dmg} damage.`,'good',hero.tile,leadLabel(),true); setPlayerResult('TRANQ SHOT',`${target.name} takes ${dmg} damage${vanquished?' · VANQUISHED':''}.`,'good'); if(vanquished) defeatEntity(target,hero);
+    const target=kind==='entity'?state.entities.find(e=>e.id===id&&e.tile===hero.tile&&e.hostile):null; if(!target) return; const dmg=identifiedIs('Jersey Devil')?3:2; target.hp-=dmg; const vanquished=target.hp<=0; addLog('TRANQ SHOT',`${hero.name.split(' ')[0]} hits ${target.name} for ${dmg} damage.`,'good',hero.tile,leadLabel(),true); setPlayerResult('TRANQ SHOT',`${target.name} takes ${dmg} damage${vanquished?(target.boss?' · STAGGERED':' · VANQUISHED'):''}.`,'good'); if(vanquished) defeatEntity(target,hero);
   } else if(hero.id==='elias'){
     const target=kind==='entity'?state.entities.find(e=>e.id===id&&e.tile===hero.tile):null; if(!target) return; const targets=entitiesOnTile(hero.tile); const emDmg=identifiedIs('Grey Visitors')?2:1; const count=targets.length, hostileCount=targets.filter(e=>e.hostile).length; [...targets].forEach(e=>{repelEntity(e); if(e.hostile){e.hp-=emDmg;if(e.hp<=0) defeatEntity(e,hero);}}); addLog('EM PULSE',`${hero.name.split(' ')[0]} repels every manifestation here; hostiles take ${emDmg} damage.`,'good',hero.tile,leadLabel(),true); setPlayerResult('EM PULSE',`${count} manifestation${count===1?'':'s'} repelled · ${hostileCount} hostile${hostileCount===1?'':'s'} take ${emDmg} damage.`,'good');
   } else if(hero.id==='june'){
@@ -737,7 +752,7 @@ function usePowerOnTarget(kind,id){ if(!isHumanTurn()) return; const hero=humanH
   } else if(hero.id==='priya'){
     const tile=kind==='portal'?state.tiles[id]:null; if(!tile||!tile.portal||tile.key!==hero.tile||state.evidence.length<6||entitiesOnTile(hero.tile).some(e=>e.hostile)) return; const bonus=identifiedIs('Time Slip')?3:2; state.stabilizeAttemptsBonus+=bonus; addLog('ANCHOR FIELD',`${hero.name.split(' ')[0]} anchors local geometry: +${bonus} on the next Stabilize roll this turn.`,'good',hero.tile,leadLabel(),true); setPlayerResult('ANCHOR FIELD',`+${bonus} prepared for the next Stabilize roll this turn.`,'weird');
   } else if(hero.id==='tessa'){
-    const target=kind==='entity'?state.entities.find(e=>e.id===id&&e.tile===hero.tile):null; if(!target) return; const dmg=identifiedIs('Mimic Lights')?2:1; target.hp-=dmg; const vanquished=target.hp<=0; if(!vanquished) repelEntity(target); addLog('FLASH BURN',`${hero.name.split(' ')[0]} burns ${target.name} for ${dmg} damage${vanquished?'':' and drives it back'}.`,'good',hero.tile,leadLabel(),true); setPlayerResult('FLASH BURN',`${target.name} takes ${dmg} damage${vanquished?' · VANQUISHED':' · REPELLED'}.`,'good'); if(vanquished) defeatEntity(target,hero);
+    const target=kind==='entity'?state.entities.find(e=>e.id===id&&e.tile===hero.tile):null; if(!target) return; const dmg=identifiedIs('Mimic Lights')?2:1; target.hp-=dmg; const vanquished=target.hp<=0; if(!vanquished) repelEntity(target); addLog('FLASH BURN',`${hero.name.split(' ')[0]} burns ${target.name} for ${dmg} damage${vanquished?'':' and drives it back'}.`,'good',hero.tile,leadLabel(),true); setPlayerResult('FLASH BURN',`${target.name} takes ${dmg} damage${vanquished?(target.boss?' · STAGGERED':' · VANQUISHED'):' · REPELLED'}.`,'good'); if(vanquished) defeatEntity(target,hero);
   } else return;
   hero.powerUsed=true; spendAction(1); renderAll();
 }
@@ -747,8 +762,8 @@ function useGearOnTarget(gid,kind,id){ if(!isHumanTurn()) return; const hero=hum
   else if(gear.use==='nerve3'&&kind==='hero'){ const target=state.heroes.find(h=>h.id===id&&h.tile===hero.tile); if(!target||target.nerve>=target.maxNerve)return; const before=target.nerve; target.nerve=Math.min(target.maxNerve,target.nerve+3); addLog('CAFFEINE TABLETS',`${target.name.split(' ')[0]} recovers 3 Nerve.`,'good',hero.tile,leadLabel(),true); setPlayerResult('CAFFEINE TABLETS',`${target.name.split(' ')[0]} · Nerve ${before}→${target.nerve}.`,'good'); used=true; }
   else if(gear.use==='nerve2'&&kind==='hero'){ const target=state.heroes.find(h=>h.id===id&&h.tile===hero.tile); if(!target||target.nerve>=target.maxNerve)return; const before=target.nerve; target.nerve=Math.min(target.maxNerve,target.nerve+2); addLog('SMELLING SALTS',`${target.name.split(' ')[0]} recovers 2 Nerve.`,'good',hero.tile,leadLabel(),true); setPlayerResult('SMELLING SALTS',`${target.name.split(' ')[0]} · Nerve ${before}→${target.nerve}.`,'good'); used=true; }
   else if(gear.use==='repel'&&kind==='entity'){ const target=state.entities.find(e=>e.id===id&&e.tile===hero.tile); if(!target)return; repelEntity(target); addLog('BEAR SPRAY',`${leadFirst()} drives ${target.name} out of the room.`,'good',hero.tile,leadLabel(),true); setPlayerResult('BEAR SPRAY',`${target.name} · REPELLED.`,'good'); used=true; }
-  else if(gear.use==='saltBomb'&&kind==='entity'){ const target=state.entities.find(e=>e.id===id&&e.tile===hero.tile&&e.hostile); if(!target)return; target.hp-=1; const vanquished=target.hp<=0; if(vanquished) defeatEntity(target,hero); else repelEntity(target); addLog('SALT BOMB',`${leadFirst()} bursts a Salt Bomb against ${target.name}: 1 damage${vanquished?' and it is driven off':' and it is repelled'}.`,'good',hero.tile,leadLabel(),true); setPlayerResult('SALT BOMB',`${target.name} · 1 DAMAGE · ${vanquished?'VANQUISHED':'REPELLED'}.`,'good'); used=true; }
-  else if(gear.use==='flare'&&kind==='entity'){ const target=state.entities.find(e=>e.id===id&&e.tile===hero.tile&&e.hostile); if(!target)return; target.hp-=2; const vanquished=target.hp<=0; addLog('FLARE GUN',`${leadFirst()} fires the Flare Gun into ${target.name} for 2 damage.`,'good',hero.tile,leadLabel(),true); setPlayerResult('FLARE GUN',`${target.name} takes 2 damage${vanquished?' · VANQUISHED':''}.`,'good'); if(vanquished) defeatEntity(target,hero); used=true; }
+  else if(gear.use==='saltBomb'&&kind==='entity'){ const target=state.entities.find(e=>e.id===id&&e.tile===hero.tile&&e.hostile); if(!target)return; target.hp-=1; const vanquished=target.hp<=0; if(vanquished) defeatEntity(target,hero); else repelEntity(target); addLog('SALT BOMB',`${leadFirst()} bursts a Salt Bomb against ${target.name}: 1 damage${vanquished?' and it is driven off':' and it is repelled'}.`,'good',hero.tile,leadLabel(),true); setPlayerResult('SALT BOMB',`${target.name} · 1 DAMAGE · ${vanquished?(target.boss?'STAGGERED':'VANQUISHED'):'REPELLED'}.`,'good'); used=true; }
+  else if(gear.use==='flare'&&kind==='entity'){ const target=state.entities.find(e=>e.id===id&&e.tile===hero.tile&&e.hostile); if(!target)return; target.hp-=2; const vanquished=target.hp<=0; addLog('FLARE GUN',`${leadFirst()} fires the Flare Gun into ${target.name} for 2 damage.`,'good',hero.tile,leadLabel(),true); setPlayerResult('FLARE GUN',`${target.name} takes 2 damage${vanquished?(target.boss?' · STAGGERED':' · VANQUISHED'):''}.`,'good'); if(vanquished) defeatEntity(target,hero); used=true; }
   else if(gear.use==='chalk'&&kind==='portal'){ const tile=state.tiles[id]; if(!tile||!tile.portal||tile.key!==hero.tile)return; state.stabilizeAttemptsBonus+=2; addLog('RITUAL CHALK',`${leadFirst()} prepares the portal pattern: +2 on the next Stabilize attempt this turn.`,'good',hero.tile,leadLabel(),true); setPlayerResult('RITUAL CHALK',`+2 prepared for the next Stabilize roll this turn.`,'weird'); used=true; }
   else if(gear.use==='attack2'&&kind==='entity'){ const target=state.entities.find(e=>e.id===id&&e.tile===hero.tile); if(!target)return; state.attackBuff+=2; addLog('HIGH-LUMEN STROBE',`${leadFirst()} floods ${target.name} with light: +2 on the next Attack this turn.`,'good',hero.tile,leadLabel(),true); setPlayerResult('HIGH-LUMEN STROBE',`+2 prepared against ${target.name} for the next Attack.`,'weird'); used=true; }
   else if(gear.use==='salt'&&kind==='entity'){ const target=state.entities.find(e=>e.id===id&&e.tile===hero.tile&&e.hostile); if(!target)return; state.attackBuff+=1; state.attackRepelOnHit=true; addLog('ROCK SALT',`${leadFirst()} loads Rock Salt against ${target.name}: +1 on the next Attack and repel on hit.`,'good',hero.tile,leadLabel(),true); setPlayerResult('ROCK SALT',`+1 prepared against ${target.name}; a hit will repel it.`,'weird'); used=true; }
@@ -840,7 +855,7 @@ function renderBoard(){
     const heroTok=div.querySelector('.heroTokens');
     heroesHere.forEach(h=>{ const selectable=tile.key===humanHero().tile&&isHumanTurn(); const selected=state.selectedTarget?.kind==='hero'&&state.selectedTarget.id===h.id; const t=document.createElement('div'); t.className='token meeple '+heroMeepleClass(h)+(isStunned(h)?' stunned':'')+(selectable?' actionable':'')+(selected?' selectedTarget':''); t.title=`${h.name} — Health ${h.health}/${heroHealthCap(h)} · Nerve ${h.nerve}/${h.maxNerve} · Exposure ${h.exposure}/6${selectable?' — click for applicable support effects':''}`; t.textContent=heroMeepleGlyph(h); if(selectable){ t.onclick=(ev)=>{ev.stopPropagation();selectBoardTarget({kind:'hero',id:h.id});}; } heroTok.appendChild(t); });
     const entityTok=div.querySelector('.entityTokens');
-    entityRenderGroups(entitiesHere).forEach(group=>{ const e=group.representative, target=group.target, count=group.members.length; const actionable=tile.key===humanHero().tile&&isHumanTurn(); const selected=group.members.some(m=>state.selectedTarget?.kind==='entity'&&state.selectedTarget.id===m.id); const hpText=count>1?group.members.map(m=>m.hp).sort((a,b)=>a-b).join(', '):`${e.hp}/${e.maxHp}`; const t=document.createElement('div'); t.className='token creature '+entityMeepleClass(e)+(e.hostile?' hostile':'')+(actionable?' actionable':'')+(selected?' selectedTarget':''); t.title=`${count>1?count+' × ':''}${e.name} — ${e.hostile?'HOSTILE: attacks and contests this room — no exit, evidence, cache search, or portal stabilization until cleared':'CONTACT: follows and causes Nerve/Exposure effects'} — ${count>1?'HP in group '+hpText:`HP ${hpText}`}${target?' — '+(e.hostile?'hunting ':'following ')+target.name:''}${actionable?' — click to target one manifestation (lowest HP first)':''}`; const s=document.createElement('span'); s.className='glyph'; s.textContent=entityMeepleGlyph(e); t.appendChild(s); if(count>1){ const c=document.createElement('span'); c.className='entityCount'; c.textContent='×'+count; c.title=`${count} ${e.name}${count===1?'':'s'} grouped for display`; t.appendChild(c); } if(actionable){ t.onclick=(ev)=>{ev.stopPropagation();selectBoardTarget({kind:'entity',id:e.id});}; } if(target){ const p=document.createElement('span'); const same=e.tile===target.tile; p.className='pursuitTag'+(!e.hostile?' contact':''); p.textContent=target.abbr; p.title=e.hostile?(same?`Attacking ${target.name}`:`Hunting ${target.name}`):(same?`In contact with ${target.name}`:`Following ${target.name}`); t.appendChild(p); } entityTok.appendChild(t);});
+    entityRenderGroups(entitiesHere).forEach(group=>{ const e=group.representative, target=group.target, count=group.members.length; const actionable=tile.key===humanHero().tile&&isHumanTurn(); const selected=group.members.some(m=>state.selectedTarget?.kind==='entity'&&state.selectedTarget.id===m.id); const hpText=count>1?group.members.map(m=>m.hp).sort((a,b)=>a-b).join(', '):`${e.hp}/${e.maxHp}`; const t=document.createElement('div'); t.className='token creature '+entityMeepleClass(e)+(e.hostile?' hostile':'')+(e.boss?' boss':'')+(actionable?' actionable':'')+(selected?' selectedTarget':''); const bossDef=e.boss?BOSS_CATALOG[e.bossKey]:null; t.title=`${e.boss?'BOSS · ':''}${count>1?count+' × ':''}${e.name} — ${e.hostile?'HOSTILE: attacks and contests this room — no exit, evidence, cache search, or portal stabilization until cleared':'CONTACT: follows and causes Nerve/Exposure effects'} — ${count>1?'HP in group '+hpText:`HP ${hpText}`}${bossDef?` — ${bossDef.abilityName}: ${bossDef.ability}`:''}${target?' — '+(e.hostile?'hunting ':'following ')+target.name:''}${actionable?' — click to target one manifestation (lowest HP first)':''}`; const s=document.createElement('span'); s.className='glyph'; s.textContent=entityMeepleGlyph(e); t.appendChild(s); if(e.boss){const hp=document.createElement('span');hp.className='bossHpTag';hp.textContent=`HP ${Math.max(0,e.hp)}`;t.appendChild(hp);} if(count>1){ const c=document.createElement('span'); c.className='entityCount'; c.textContent='×'+count; c.title=`${count} ${e.name}${count===1?'':'s'} grouped for display`; t.appendChild(c); } if(actionable){ t.onclick=(ev)=>{ev.stopPropagation();selectBoardTarget({kind:'entity',id:e.id});}; } if(target){ const p=document.createElement('span'); const same=e.tile===target.tile; p.className='pursuitTag'+(!e.hostile?' contact':''); p.textContent=target.abbr; p.title=e.hostile?(same?`Attacking ${target.name}`:`Hunting ${target.name}`):(same?`In contact with ${target.name}`:`Following ${target.name}`); t.appendChild(p); } entityTok.appendChild(t);});
     if(isHumanTurn() && tile.key!==humanHero().tile){ const path=humanKnownMovePath(tile.key),blockedByHostile=hostileLockFor(humanHero()).length>0; if(path){const steps=path.length-1;div.classList.add('adjacentMove');if(steps>1){div.classList.add('longMoveTarget');const mb=document.createElement('button');mb.className='rangeMoveBtn';mb.textContent=`MOVE ${steps}`;mb.title=`Spend 1 action to move ${steps} rooms to ${tile.name}`;mb.onclick=(ev)=>{ev.stopPropagation();handleMoveOrExplore(tile.x,tile.y);};div.appendChild(mb);}div.title=`Move ${steps} room${steps===1?'':'s'} to ${tile.name} · 1 action`;div.onclick=(ev)=>{if(ev.target.closest('.roomInfo,.token,.edgeBtn,.rangeMoveBtn'))return;handleMoveOrExplore(tile.x,tile.y);};} else if(blockedByHostile&&hasDoorBetween(tile.key,humanHero().tile)){div.title='HOSTILE LOCK — vanquish every red hostile before leaving';} }
     if(state.phase==='investigator' && currentHero().tile===tile.key && state.actionsLeft>0){
       const doors=ensureTileDoors(tile);
@@ -888,6 +903,18 @@ function renderInvestigators(){
   });
 }
 function renderLog(){ const wrap=$('#log'); wrap.innerHTML=''; state.log.forEach(entry=>{ const d=document.createElement('div'); d.className='logEntry '+(entry.player?'player':''); d.innerHTML=`<div class="meta">${entry.actor} · ${entry.title}</div><div class="text">${entry.text}</div>`; wrap.appendChild(d); }); }
+function bossDefinition(){return state?BOSS_CATALOG[state.phenomenon?.name]:null}
+function bossEntity(){return state?.boss?.entityId?state.entities.find(e=>e.id===state.boss.entityId&&e.boss):null}
+function bossStatusHTML(){
+  if(!state?.boss?.revealed)return '';
+  const def=bossDefinition(),e=bossEntity(); if(!def)return '';
+  let status='BEYOND THE THRESHOLD',stats=`HP ${def.hp} · DEF ${def.defense} · MOVE ${def.move}`;
+  if(state.boss.banished)status='BANISHED';
+  else if(e)status=`ACTIVE · HP ${Math.max(0,e.hp)}/${e.maxHp}`;
+  else if((state.boss.staggeredRemaining??0)>0)status=`STAGGERED · ${state.boss.staggeredRemaining} PHASE${state.boss.staggeredRemaining===1?'':'S'} REMAIN`;
+  else if(state.boss.staggeredRemaining===0)status='RETURN IMMINENT';
+  return `<div class="bossStatus"><div class="bossStatusHead"><b>${def.name}</b><span class="bossStatusState">${status}</span></div><div class="bossStatusStats">${stats}</div><div class="bossStatusAbility"><b>${def.abilityName}</b> — ${def.ability}</div></div>`;
+}
 function renderEvidence(){
   const box=$('#partyEvidence'), title=$('#caseEvidenceTitle'); if(!box||!title) return;
   const probs=hypothesisProbabilities();
@@ -898,8 +925,8 @@ function renderEvidence(){
   }
   const p=state.phenomenon, specialist=HERO_TEMPLATES.find(h=>h.id===p.specialist), specialistPresent=state.heroes.some(h=>h.id===p.specialist);
   const remaining=Math.max(0,6-state.evidence.length);
-  const progressNote=remaining>0?`Phenomenon identified. ${remaining} more evidence ${remaining===1?'piece':'pieces'} needed. Evidence 6 will provoke a Threshold reaction, then portal stabilization unlocks.`:'Phenomenon identified and evidence requirement met — the Threshold has reacted, and portals may now be stabilized when no hostile blocks the room.';
-  box.innerHTML=evidenceHTML()+`<div class="evidenceStatusNote">${progressNote}</div><div class="evidencePhenDivider"></div><div class="evidenceCaseLead">Phenomenon confirmed by evidence 5</div><div class="evidenceCaseName">${p.name}</div><div class="evidenceCaseDesc">${p.desc}</div><div class="evidenceStatusNote">Primary specialist: <b>${specialist?.name||'Unknown'}</b> · ${specialistPresent?'ON FIELD TEAM':'NOT ON FIELD TEAM'}</div><div class="identifiedBonus">${specialistPresent?'SPECIALTY ACTIVE':'SPECIALTY UNAVAILABLE'} · ${p.identifiedBonus}</div><div class="phenomenonRules">${(p.knownRules||[]).map(r=>`<div class="phenomenonRule">• ${r}</div>`).join('')}</div>`;
+  const progressNote=remaining>0?`Phenomenon identified. ${remaining} more evidence ${remaining===1?'piece':'pieces'} needed. Evidence 6 will reveal the case's main entity, then portal stabilization unlocks.`:'Phenomenon identified and evidence requirement met — the Final Act is underway, and portals may now be stabilized when no hostile blocks the room.';
+  box.innerHTML=evidenceHTML()+`<div class="evidenceStatusNote">${progressNote}</div><div class="evidencePhenDivider"></div><div class="evidenceCaseLead">Phenomenon confirmed by evidence 5</div><div class="evidenceCaseName">${p.name}</div><div class="evidenceCaseDesc">${p.desc}</div><div class="evidenceStatusNote">Primary specialist: <b>${specialist?.name||'Unknown'}</b> · ${specialistPresent?'ON FIELD TEAM':'NOT ON FIELD TEAM'}</div><div class="identifiedBonus">${specialistPresent?'SPECIALTY ACTIVE':'SPECIALTY UNAVAILABLE'} · ${p.identifiedBonus}</div><div class="phenomenonRules">${(p.knownRules||[]).map(r=>`<div class="phenomenonRule">• ${r}</div>`).join('')}</div>${bossStatusHTML()}`;
 }
 function centerOnOrigin(){ const w=$('#boardwrap'); setTimeout(()=>{ const layout=state.mapLayout; const left=layout.originLeft*boardZoom, top=layout.originTop*boardZoom; w.scrollLeft=Math.max(0,left-w.clientWidth/2+92*boardZoom); w.scrollTop=Math.max(0,top-w.clientHeight/2+74*boardZoom); },30); }
 function evidenceHTML(){ const counts={}; EVIDENCE_TYPES.forEach(t=>counts[t]=0); state.evidence.forEach(e=>counts[e.type]++); return `<div class="evidenceBig">${state.evidence.length} / 6 evidence</div><div class="evidenceSlots">${Array.from({length:6},(_,i)=>`<div class="slot ${i<state.evidence.length?'filled':''}">${i<state.evidence.length?'✓':''}</div>`).join('')}</div><div class="evidenceTypes">${EVIDENCE_TYPES.map(t=>`${t}: <b>${counts[t]}</b>`).join(' · ')}</div>`; }
@@ -960,39 +987,61 @@ function collectGearCacheCurrent(tile){
     spendAction(1); renderAll();
   });
 }
+function bossSpawnPortalKey(){
+  const open=shuffle(state.portals.filter(k=>state.tiles[k]?.portal));
+  if(!open.length)return null;
+  open.sort((a,b)=>hostileCountOnTile(a)-hostileCountOnTile(b));
+  return open[0];
+}
+function makeRoomForBoss(tileKey){
+  if(!hostileRoomFull(tileKey))return;
+  const ordinary=entitiesOnTile(tileKey).find(e=>e.hostile&&!e.boss);
+  if(ordinary){ordinary.hostile=false;addLog('BOSS PRESENCE',`${ordinary.name}'s aggression collapses as something much larger crosses the Threshold.`,'weird',tileKey,'PHENOMENON',tileKey===humanHero().tile);}
+}
+function spawnBoss(tileKey,{returning=false}={}){
+  const def=bossDefinition(); if(!def||!tileKey||!state.tiles[tileKey]?.portal)return null;
+  makeRoomForBoss(tileKey);
+  const e={id:'boss'+Date.now()+Math.random(),tile:tileKey,hostile:true,boss:true,bossKey:state.phenomenon.name,family:def.family,name:def.name,symbol:def.symbol,hp:def.hp,maxHp:def.hp,defense:def.defense,attack:def.attack,move:def.move};
+  state.entities.push(e);state.boss.revealed=true;state.boss.active=true;state.boss.entityId=e.id;state.boss.staggeredRemaining=null;
+  addLog(returning?'BOSS RETURNS':'BOSS MANIFESTS',`${def.name} ${returning?'forces its way back through':'emerges from'} the portal in ${state.tiles[tileKey].name}.`,'bad',tileKey,'PHENOMENON',tileKey===humanHero().tile);
+  return e;
+}
 function triggerSixthEvidenceSurge(hero){
   if(state.sixthEvidenceTriggered || state.evidence.length<6) return null;
   state.sixthEvidenceTriggered=true;
-  const open=state.portals.filter(k=>state.tiles[k]?.portal);
-  if(!open.length) return null;
-  const portalKey=open[rng(open.length)];
-  const before=state.entities.length;
-  spawnEntity(portalKey);
-  const spawned=state.entities.length>before?state.entities[state.entities.length-1]:null;
-  const tile=state.tiles[portalKey];
-  const detail=spawned?`${spawned.name} emerges from ${tile.name}.`:`The portal in ${tile.name} surges.`;
-  state.lastEvidenceSurge={portalKey,tileName:tile.name,entityName:spawned?.name||'Manifestation'};
-  addLog('THE THRESHOLD REACTS', `The sixth evidence sample completes the pattern. ${detail} Portal stabilization is now unlocked.`, 'bad', portalKey, 'PHENOMENON', portalKey===humanHero().tile);
+  Object.values(state.tiles).forEach(t=>t.clue=false);
+  const portalKey=bossSpawnPortalKey(); if(!portalKey)return null;
+  const spawned=spawnBoss(portalKey),tile=state.tiles[portalKey],def=bossDefinition();
+  state.lastEvidenceSurge={portalKey,tileName:tile.name,entityName:spawned?.name||def?.name||'Boss'};
+  state.pendingBossReveal=true;
+  addLog('THE THRESHOLD OPENS',`The sixth evidence sample completes the pattern. ${state.lastEvidenceSurge.entityName} emerges from ${tile.name}. Portal stabilization is now unlocked.`,'bad',portalKey,'PHENOMENON',portalKey===humanHero().tile);
   return state.lastEvidenceSurge;
+}
+function showBossRevealModal(onContinue=null){
+  if(!state?.pendingBossReveal||state.gameOver)return onContinue?.();
+  state.pendingBossReveal=false;state.bossRevealShown=true;state.uiPaused=true;
+  const def=bossDefinition(),e=bossEntity(),tile=e?state.tiles[e.tile]:null,root=$('#modalRoot');
+  root.innerHTML=`<div class="modalOverlay"><div class="modalPanel"><div class="caseEyebrow">Final Act · ${state.phenomenon.name}</div><div class="bossRevealName">${def.name}</div><p>The sixth evidence sample completes the pattern. The source of the case is no longer hiding: it has crossed through ${tile?.name||'an open portal'}.</p><div class="summaryStats"><div><b>Health</b><span>${def.hp}</span></div><div><b>Defense</b><span>${def.defense}</span></div><div><b>Move</b><span>${def.move}</span></div><div><b>Status</b><span>HOSTILE BOSS</span></div></div><div class="bossRevealAbility"><b>${def.abilityName}</b><br>${def.ability}</div><p><b>Containment wins the case.</b> Attack or repel ${def.name} to make room. At 0 HP it is STAGGERED for two full paranormal phases, but it will return at full strength while a portal remains open. Seal the final portal to banish it permanently.</p><div style="display:flex;justify-content:flex-end;margin-top:16px"><button id="bossRevealContinue" class="primary">Face ${def.name}</button></div></div></div>`;
+  $('#bossRevealContinue').onclick=()=>{root.innerHTML='';state.uiPaused=false;renderAll();if(onContinue)onContinue();else resumePausedFlow();};
 }
 function investigateCurrent(){ if(!isHumanTurn()) return; const hero=humanHero(); const tile=state.tiles[hero.tile]; const blockers=hostileLockFor(hero); if(blockers.length){ addLog('ROOM CONTESTED', `Clear every hostile in ${tile.name} before collecting evidence.`, 'bad', hero.tile, leadLabel(), true); setPlayerResult('ROOM CONTESTED','Evidence unavailable until every HOSTILE here is cleared.','bad'); renderAll(); return; } if(!tile.clue){ addLog('NO CLUE', `There is no evidence to collect in ${tile.name}.`, 'weird', hero.tile, leadLabel(), true); setPlayerResult('NO CLUE',`${tile.name} has no evidence left to collect.`,'weird'); renderAll(); return; }
   state.lastEvidenceSurge=null;
-  const wasIdentified=state.identified; const type=collectEvidence(hero); tile.clue=false; let extraType=null; if(cameraChance(hero)>0 && Math.random()<cameraChance(hero)){ extraType=collectEvidence(hero,true); addLog('FIELD CAMERA', 'The camera picks up an extra usable clue fragment.', 'good', hero.tile, leadLabel(), true); }
-  const top=hypothesisProbabilities()[0]; const statusBits=[`${type} evidence${extraType?` + ${extraType}`:''}`,`${state.evidence.length}/6`]; if(!wasIdentified&&state.identified) statusBits.push(`identified ${state.phenomenon.name}`); else if(top) statusBits.push(`lead ${top.name} ${Math.round(top.prob*100)}%`); if(state.lastEvidenceSurge) statusBits.push('threshold reacts'); setPlayerResult('INVESTIGATE',statusBits.join(' · '),'good');
-  spendAction(1);
+  const wasIdentified=state.identified; const type=collectEvidence(hero); tile.clue=false; let extraType=null; if(state.evidence.length<6 && cameraChance(hero)>0 && Math.random()<cameraChance(hero)){ extraType=collectEvidence(hero,true); addLog('FIELD CAMERA', 'The camera picks up an extra usable clue fragment.', 'good', hero.tile, leadLabel(), true); }
+  const top=hypothesisProbabilities()[0]; const statusBits=[`${type} evidence${extraType?` + ${extraType}`:''}`,`${state.evidence.length}/6`]; if(!wasIdentified&&state.identified) statusBits.push(`identified ${state.phenomenon.name}`); else if(top) statusBits.push(`lead ${top.name} ${Math.round(top.prob*100)}%`); if(state.lastEvidenceSurge) statusBits.push(`boss revealed ${state.lastEvidenceSurge.entityName}`); setPlayerResult('INVESTIGATE',statusBits.join(' · '),'good');
+  spendAction(1); if(state.pendingBossReveal)setTimeout(()=>showBossRevealModal(),150);
 }
-function collectEvidence(hero,extra=false){ const type=weightedEvidenceType(); state.evidence.push({type}); const top=hypothesisProbabilities()[0]; addLog(extra?'EXTRA EVIDENCE':'EVIDENCE COLLECTED', `${hero.name.split(' ')[0]} collects ${type} evidence. Current lead: ${top.name} ${Math.round(top.prob*100)}%. Total evidence: ${state.evidence.length}/6.`, 'good', hero.tile, hero.you?leadLabel():hero.name.toUpperCase(), hero.you); maybeIdentifyPhenomenon(hero); triggerSixthEvidenceSurge(hero); renderAll(); return type; }
+function collectEvidence(hero,extra=false){ if(state.evidence.length>=6)return null; const type=weightedEvidenceType(); state.evidence.push({type}); const top=hypothesisProbabilities()[0]; addLog(extra?'EXTRA EVIDENCE':'EVIDENCE COLLECTED', `${hero.name.split(' ')[0]} collects ${type} evidence. Current lead: ${top.name} ${Math.round(top.prob*100)}%. Total evidence: ${state.evidence.length}/6.`, 'good', hero.tile, hero.you?leadLabel():hero.name.toUpperCase(), hero.you); maybeIdentifyPhenomenon(hero); triggerSixthEvidenceSurge(hero); renderAll(); return type; }
 function entitiesOnTile(tile){ return state.entities.filter(e=>e.tile===tile); }
 function hostileCountOnTile(tile){ return entitiesOnTile(tile).filter(e=>e.hostile).length; }
 function hostileRoomFull(tile){ return hostileCountOnTile(tile)>=3; }
 function hostileLockFor(hero){ return entitiesOnTile(hero.tile).filter(e=>e.hostile); }
 function attackSpecificEntity(entityId){ if(!isHumanTurn()) return; const hero=humanHero(); const e=state.entities.find(x=>x.id===entityId&&x.tile===hero.tile); if(!e){ addLog('NO TARGET','That manifestation is no longer on your investigator’s tile.','weird',hero.tile,leadLabel(),true); return; } resolveAttack(hero,e); }
 function attackCurrent(){ if(!isHumanTurn()) return; const hero=humanHero(); const e=entitiesOnTile(hero.tile)[0]; if(!e){ addLog('NO TARGET','No manifestation is on your investigator’s tile.','weird',hero.tile,leadLabel(),true); return; } resolveAttack(hero,e); }
-function resolveAttack(hero,e){ const die=rng(6)+1; const combat=heroCombat(hero), buff=state.attackBuff||0, repelOnHit=!!state.attackRepelOnHit, defense=e.defense; const total=die + combat + buff; const dmg=Math.max(0,total-defense); const hit=dmg>0; if(hit){ e.hp -= dmg; const vanquished=e.hp<=0; addLog('ATTACK', `${leadFirst()} rolls ${die} + ${combat}${buff?` + ${buff}`:''} = ${total} against ${e.name} (Defense ${defense}) and deals ${dmg} damage from the ${dmg}-point margin.`, 'good', hero.tile, leadLabel(), true); if(repelOnHit&&!vanquished){ repelEntity(e); addLog('ROCK SALT', `${e.name} is blasted backward by the shot.`, 'good', e.tile, leadLabel(), true); } setPlayerResult('ATTACK',rollHudHTML(die,[combat,buff],total,`DEF ${defense}`,`${dmg} DAMAGE${vanquished?' · VANQUISHED':repelOnHit?' · REPELLED':''}`),'good'); if(vanquished){ defeatEntity(e,hero); } } else { const tied=total===defense; addLog(tied?'ATTACK BLOCKED':'ATTACK MISSES', `${leadFirst()} rolls ${die} + ${combat}${buff?` + ${buff}`:''} = ${total}; ${e.name}${tied?' absorbs the strike at Defense '+defense:' evades the strike'}.`, 'bad', hero.tile, leadLabel(), true); setPlayerResult('ATTACK',rollHudHTML(die,[combat,buff],total,`DEF ${defense}`,tied?'NO DAMAGE':'MISS'),'bad'); } state.attackBuff=0; state.attackRepelOnHit=false; spendAction(1); renderAll(); }
+function resolveAttack(hero,e){ const die=rng(6)+1; const combat=heroCombat(hero), buff=state.attackBuff||0, repelOnHit=!!state.attackRepelOnHit, defense=e.defense; const total=die + combat + buff; const dmg=Math.max(0,total-defense); const hit=dmg>0; if(hit){ e.hp -= dmg; const vanquished=e.hp<=0; addLog('ATTACK', `${leadFirst()} rolls ${die} + ${combat}${buff?` + ${buff}`:''} = ${total} against ${e.name} (Defense ${defense}) and deals ${dmg} damage from the ${dmg}-point margin.`, 'good', hero.tile, leadLabel(), true); if(repelOnHit&&!vanquished){ repelEntity(e); addLog('ROCK SALT', `${e.name} is blasted backward by the shot.`, 'good', e.tile, leadLabel(), true); } setPlayerResult('ATTACK',rollHudHTML(die,[combat,buff],total,`DEF ${defense}`,`${dmg} DAMAGE${vanquished?(e.boss?' · STAGGERED':' · VANQUISHED'):repelOnHit?' · REPELLED':''}`),'good'); if(vanquished){ defeatEntity(e,hero); } } else { const tied=total===defense; addLog(tied?'ATTACK BLOCKED':'ATTACK MISSES', `${leadFirst()} rolls ${die} + ${combat}${buff?` + ${buff}`:''} = ${total}; ${e.name}${tied?' absorbs the strike at Defense '+defense:' evades the strike'}.`, 'bad', hero.tile, leadLabel(), true); setPlayerResult('ATTACK',rollHudHTML(die,[combat,buff],total,`DEF ${defense}`,tied?'NO DAMAGE':'MISS'),'bad'); } state.attackBuff=0; state.attackRepelOnHit=false; spendAction(1); renderAll(); }
 function defendCurrent(){ if(!isHumanTurn()) return; const hero=humanHero(); if(hero.defending) return; hero.defending=true; addLog('DEFEND', `${leadFirst()} braces for the paranormal turn and gains +2 Defense through the upcoming paranormal phase.`, 'good', hero.tile, leadLabel(), true); setPlayerResult('DEFEND',`Defense ${heroDefense(hero)-2} → ${heroDefense(hero)} through the paranormal phase.`,'good'); spendAction(1); }
 function regroupCurrent(){ if(!isHumanTurn()) return; const hero=humanHero(); if(hero.regroupUsed||hero.nerve>=hero.maxNerve) return; const before=hero.nerve; hero.nerve=Math.min(hero.maxNerve,hero.nerve+1); hero.regroupUsed=true; addLog('REGROUP', `${leadFirst()} regains composure: +1 Nerve. Regroup can be used once per round.`, 'good', hero.tile, leadLabel(), true); setPlayerResult('REGROUP',`Nerve ${before} → ${hero.nerve} · once per round.`,'good'); spendAction(1); }
 function stabilizeCurrent(){ if(!isHumanTurn()) return; const hero=humanHero(); const tile=state.tiles[hero.tile]; if(state.evidence.length<6){ addLog('CANNOT STABILIZE', 'You need 6 evidence before portals can be sealed.', 'weird', hero.tile, leadLabel(), true); return; } if(!tile.portal){ addLog('NO PORTAL', `There is no portal on ${tile.name}.`, 'weird', hero.tile, leadLabel(), true); return; } const blockers=entitiesOnTile(hero.tile).filter(e=>e.hostile); if(blockers.length){ addLog('ROOM CONTESTED', `${blockers[0].name} is contesting the room. Clear every hostile here before stabilizing the portal.`, 'bad', hero.tile, leadLabel(), true); setPlayerResult('ROOM CONTESTED','Portal stabilization unavailable until every HOSTILE here is cleared.','bad'); renderAll(); return; }
-  const die=rng(6)+1; const bonus=heroStabilize(hero) + state.stabilizeAttemptsBonus; const total=die + bonus; const target=5; if(total>=target){ state.selectedTarget=null; tile.portal=false; state.portals=state.portals.filter(p=>p!==tile.key); addLog('PORTAL SEALED', `${leadFirst()} rolls ${die} + bonuses = ${total} and seals the portal in ${tile.name}.`, 'good', hero.tile, leadLabel(), true); setPlayerResult('STABILIZE',rollHudHTML(die,[bonus],total,'5','SEALED'),'good'); if(state.evidence.length>=6 && state.portals.length===0) return winCase(); } else { addLog('STABILIZE FAILS', `${leadFirst()} rolls ${die} + bonuses = ${total}. The portal resists and stays open.`, 'bad', hero.tile, leadLabel(), true); setPlayerResult('STABILIZE',rollHudHTML(die,[bonus],total,'5','FAILED'),'bad'); } state.stabilizeAttemptsBonus=0; spendAction(1); renderAll(); }
+  const die=rng(6)+1; const bonus=heroStabilize(hero) + state.stabilizeAttemptsBonus; const total=die + bonus; const target=5; if(total>=target){ state.selectedTarget=null; tile.portal=false; state.portals=state.portals.filter(p=>p!==tile.key); addLog('PORTAL SEALED', `${leadFirst()} rolls ${die} + bonuses = ${total} and seals the portal in ${tile.name}.`, 'good', hero.tile, leadLabel(), true); setPlayerResult('STABILIZE',rollHudHTML(die,[bonus],total,'5','SEALED'),'good'); if(state.evidence.length>=6 && state.portals.length===0){banishBoss();return winCase();} } else { addLog('STABILIZE FAILS', `${leadFirst()} rolls ${die} + bonuses = ${total}. The portal resists and stays open.`, 'bad', hero.tile, leadLabel(), true); setPlayerResult('STABILIZE',rollHudHTML(die,[bonus],total,'5','FAILED'),'bad'); } state.stabilizeAttemptsBonus=0; spendAction(1); renderAll(); }
 function usePowerCurrent(){ if(!isHumanTurn()) return; const hero=humanHero(); if(hero.powerUsed){ addLog('POWER USED', `${hero.power} has already been used this round.`, 'weird', hero.tile, leadLabel(), true); return; }
   const sameTile = state.heroes.filter(h=>h.tile===hero.tile);
   if(hero.id==='mara'){
@@ -1009,15 +1058,15 @@ function usePowerCurrent(){ if(!isHumanTurn()) return; const hero=humanHero(); i
   hero.powerUsed=true; spendAction(1); renderAll(); }
 function resolveFlashCharge(hero){
   const here=entitiesOnTile(hero.tile).slice(); if(!here.length) return null;
-  let repelled=0,flickered=0;
-  here.forEach(e=>{ const opts=connectedNeighborKeys(e.tile).filter(k=>!e.hostile||!hostileRoomFull(k)); if(opts.length){e.tile=opts[rng(opts.length)];repelled++;}else{const idx=state.entities.findIndex(x=>x.id===e.id);if(idx>=0)state.entities.splice(idx,1);flickered++;} });
+  let repelled=0,flickered=0,resisted=0;
+  here.forEach(e=>{ const opts=connectedNeighborKeys(e.tile).filter(k=>!e.hostile||!hostileRoomFull(k)); if(opts.length){e.tile=opts[rng(opts.length)];repelled++;}else if(!e.boss){const idx=state.entities.findIndex(x=>x.id===e.id);if(idx>=0)state.entities.splice(idx,1);flickered++;}else resisted++; });
   if(state.selectedTarget?.kind==='entity'&&!state.entities.some(e=>e.id===state.selectedTarget.id)) state.selectedTarget=null;
-  return {count:here.length,repelled,flickered};
+  return {count:here.length,repelled,flickered,resisted};
 }
-function useGear(gid){ if(!isHumanTurn()) return; const hero=humanHero(); const gear=hero.gear.find(g=>g.gid===gid); if(!gear) return; if(gear.use==='refreshPower'){ if(!hero.powerUsed)return; hero.powerUsed=false; spendGearUse(hero,gear); addLog('SPARE BATTERIES',`${leadFirst()} refreshes ${hero.power}.`,'good',hero.tile,leadLabel(),true); setPlayerResult('SPARE BATTERIES',`${hero.power} is ready again · no action spent.`,'good'); renderAll(); return; } if(gear.use==='flashCharge'){ const result=resolveFlashCharge(hero); if(!result)return; addLog('FLASH CHARGE',`${leadFirst()} detonates a Flash Charge: ${result.repelled} manifestation${result.repelled===1?'':'s'} repelled${result.flickered?`, ${result.flickered} flickers out`:''}.`,'good',hero.tile,leadLabel(),true); setPlayerResult('FLASH CHARGE',`${result.count} manifestation${result.count===1?'':'s'} cleared from the room.`,'good'); }
+function useGear(gid){ if(!isHumanTurn()) return; const hero=humanHero(); const gear=hero.gear.find(g=>g.gid===gid); if(!gear) return; if(gear.use==='refreshPower'){ if(!hero.powerUsed)return; hero.powerUsed=false; spendGearUse(hero,gear); addLog('SPARE BATTERIES',`${leadFirst()} refreshes ${hero.power}.`,'good',hero.tile,leadLabel(),true); setPlayerResult('SPARE BATTERIES',`${hero.power} is ready again · no action spent.`,'good'); renderAll(); return; } if(gear.use==='flashCharge'){ const result=resolveFlashCharge(hero); if(!result)return; addLog('FLASH CHARGE',`${leadFirst()} detonates a Flash Charge: ${result.repelled} manifestation${result.repelled===1?'':'s'} repelled${result.flickered?`, ${result.flickered} flickers out`:''}${result.resisted?`, ${result.resisted} boss holds position`:''}.`,'good',hero.tile,leadLabel(),true); setPlayerResult('FLASH CHARGE',result.resisted?`${result.repelled+result.flickered}/${result.count} manifestations cleared · boss holds position.`:`${result.count} manifestation${result.count===1?'':'s'} cleared from the room.`,'good'); }
   else if(gear.use==='heal2'){ const target=state.heroes.find(h=>h.tile===hero.tile && h.health<heroHealthCap(h)) || hero; const cap=heroHealthCap(target), before=target.health; target.maxHealth=cap; target.health=Math.min(cap,target.health+2); addLog('FIRST AID', `${target.name.split(' ')[0]} recovers 2 Health.`, 'good', hero.tile, leadLabel(), true); setPlayerResult('FIRST AID',`${target.name.split(' ')[0]} · Health ${before}→${target.health}.`,'good'); }
   else if(gear.use==='nerve2'){ const target=state.heroes.find(h=>h.tile===hero.tile && h.nerve<h.maxNerve) || hero; const before=target.nerve; target.nerve=Math.min(target.maxNerve,target.nerve+2); addLog('SMELLING SALTS', `${target.name.split(' ')[0]} recovers 2 Nerve.`, 'good', hero.tile, leadLabel(), true); setPlayerResult('SMELLING SALTS',`${target.name.split(' ')[0]} · Nerve ${before}→${target.nerve}.`,'good'); }
-  else if(gear.use==='flare'){ const target=entitiesOnTile(hero.tile).find(e=>e.hostile); if(!target){ addLog('NO TARGET', 'Flare Gun needs a hostile entity on your tile.', 'weird', hero.tile, leadLabel(), true); return; } target.hp -= 2; const vanquished=target.hp<=0; addLog('FLARE GUN', `${leadFirst()} fires the Flare Gun into ${target.name} for 2 damage.`, 'good', hero.tile, leadLabel(), true); setPlayerResult('FLARE GUN',`${target.name} takes 2 damage${vanquished?' · VANQUISHED':''}.`,'good'); if(vanquished) defeatEntity(target,hero); }
+  else if(gear.use==='flare'){ const target=entitiesOnTile(hero.tile).find(e=>e.hostile); if(!target){ addLog('NO TARGET', 'Flare Gun needs a hostile entity on your tile.', 'weird', hero.tile, leadLabel(), true); return; } target.hp -= 2; const vanquished=target.hp<=0; addLog('FLARE GUN', `${leadFirst()} fires the Flare Gun into ${target.name} for 2 damage.`, 'good', hero.tile, leadLabel(), true); setPlayerResult('FLARE GUN',`${target.name} takes 2 damage${vanquished?(target.boss?' · STAGGERED':' · VANQUISHED'):''}.`,'good'); if(vanquished) defeatEntity(target,hero); }
   else if(gear.use==='chalk'){ state.stabilizeAttemptsBonus += 2; addLog('RITUAL CHALK', `${leadFirst()} prepares a stronger stabilizing pattern: +2 on the next Stabilize attempt this turn.`, 'good', hero.tile, leadLabel(), true); setPlayerResult('RITUAL CHALK','+2 prepared for the next Stabilize roll this turn.','weird'); }
   else if(gear.use==='doom1'){ const amount=1; const before=state.doom; changeDoom(-amount); addLog('SIGNAL JAMMER', 'The jammer disrupts the field. Doom decreases by 1.', 'good', hero.tile, leadLabel(), true); setPlayerResult('SIGNAL JAMMER',`Doom ${before} → ${state.doom}.`,'good'); }
   else if(gear.use==='salt'){ state.attackBuff += 1; state.attackRepelOnHit=true; addLog('ROCK SALT', `${leadFirst()} loads Rock Salt: +1 on the next Attack this turn, and a hit repels the target.`, 'good', hero.tile, leadLabel(), true); setPlayerResult('ROCK SALT','+1 prepared for the next Attack; a hit will repel the target.','weird'); }
@@ -1121,7 +1170,7 @@ function aiUseFlashCharge(hero){
   const local=entitiesOnTile(hero.tile),hostiles=local.filter(e=>e.hostile).length;
   if(!local.length || !(hostiles>=2 || (hostiles>=1&&hero.health<=2)))return false;
   const result=resolveFlashCharge(hero); if(!result)return false;
-  aiConsumeGear(hero,flash,'AI FLASH CHARGE',`${hero.name.split(' ')[0]} clears the room: ${result.repelled} repelled${result.flickered?`, ${result.flickered} flickers out`:''}.`); return true;
+  aiConsumeGear(hero,flash,'AI FLASH CHARGE',`${hero.name.split(' ')[0]} clears the room: ${result.repelled} repelled${result.flickered?`, ${result.flickered} flickers out`:''}${result.resisted?`, boss holds position`:''}.`); return true;
 }
 function aiRefreshPower(hero){
   const batteries=aiGear(hero,'refreshPower'); if(!batteries||!hero.powerUsed)return false;
@@ -1157,7 +1206,7 @@ function commitAIAction(nextActed,title,detail,tone='good',freeAction=false){
   setTimeout(()=>{
     if(!state||state.gameOver||state.uiPaused||state.phase!=='investigator'||currentHero()?.id!==heroId)return;
     setActionResult(title,detail,tone); renderAll();
-    setTimeout(()=>{ if(state&&!state.gameOver&&!state.uiPaused&&state.phase==='investigator'&&currentHero()?.id===heroId) runAITurn(nextActed); },AI_HUD_BEAT);
+    setTimeout(()=>{ if(!state||state.gameOver||state.phase!=='investigator'||currentHero()?.id!==heroId)return; if(state.pendingBossReveal)return showBossRevealModal(()=>runAITurn(nextActed)); if(!state.uiPaused)runAITurn(nextActed); },AI_HUD_BEAT);
   },AI_BOARD_BEAT);
 }
 function runAITurn(actedStart=0){
@@ -1176,12 +1225,12 @@ function runAITurn(actedStart=0){
     const was=state.identified,type=collectEvidence(hero);
     tile.clue=false;
     let extra=null;
-    if(cameraChance(hero)>0&&Math.random()<cameraChance(hero)){
+    if(state.evidence.length<6&&cameraChance(hero)>0&&Math.random()<cameraChance(hero)){
       extra=collectEvidence(hero,true);
       addLog('AI FIELD CAMERA',`${hero.name.split(' ')[0]}'s Field Camera captures an extra usable clue fragment.`,'good',hero.tile,hero.name.toUpperCase());
     }
     const reveal=!was&&state.identified?` · IDENTIFIED: ${state.phenomenon.name}`:'';
-    const surge=state.lastEvidenceSurge?` · THRESHOLD REACTS: ${state.lastEvidenceSurge.entityName}`:'';
+    const surge=state.lastEvidenceSurge?` · BOSS REVEALED: ${state.lastEvidenceSurge.entityName}`:'';
     return commitAIAction(acted+1,'AI INVESTIGATES',`${hero.name.split(' ')[0]} · ${type}${extra?` + ${extra}`:''} evidence · ${state.evidence.length}/6${reveal}${surge}`,'good');
   }
   if(aiSupportPower(hero)){const r=takeAIResolution();return commitAIAction(acted+1,r.title,r.detail,r.tone);}
@@ -1193,8 +1242,8 @@ function runAITurn(actedStart=0){
   if(localHostiles.length){
     const e=localHostiles[0];
     if(!hero.powerUsed && hero.id==='elias'){const emDmg=identifiedIs('Grey Visitors')?2:1;let van=0;entitiesOnTile(hero.tile).slice().forEach(x=>{repelEntity(x);if(x.hostile){x.hp-=emDmg;if(x.hp<=0){van++;defeatEntity(x,hero);}}});hero.powerUsed=true;addLog('EM PULSE',`${hero.name.split(' ')[0]} blasts the room; hostiles take ${emDmg} damage.`,'good',hero.tile,hero.name.toUpperCase());return commitAIAction(acted+1,'EM PULSE',`${hero.name.split(' ')[0]} repels the room · hostile damage ${emDmg}${van?` · ${van} vanquished`:''}`,'good');}
-    if(!hero.powerUsed && hero.id==='mara'){const dmg=identifiedIs('Jersey Devil')?3:2;e.hp-=dmg;hero.powerUsed=true;const van=e.hp<=0;addLog('TRANQ SHOT',`${hero.name.split(' ')[0]} hits ${e.name} for ${dmg} damage.`,'good',hero.tile,hero.name.toUpperCase());if(van)defeatEntity(e,hero);return commitAIAction(acted+1,'TRANQ SHOT',`${e.name} takes ${dmg} damage${van?' · VANQUISHED':''}`,'good');}
-    if(!hero.powerUsed && hero.id==='tessa'){const dmg=identifiedIs('Mimic Lights')?2:1;e.hp-=dmg;hero.powerUsed=true;const van=e.hp<=0;addLog('FLASH BURN',`${hero.name.split(' ')[0]} burns ${e.name} for ${dmg} damage.`,'good',hero.tile,hero.name.toUpperCase());if(van)defeatEntity(e,hero);else repelEntity(e);return commitAIAction(acted+1,'FLASH BURN',`${e.name} takes ${dmg} damage${van?' · VANQUISHED':' · repelled'}`,'good');}
+    if(!hero.powerUsed && hero.id==='mara'){const dmg=identifiedIs('Jersey Devil')?3:2;e.hp-=dmg;hero.powerUsed=true;const van=e.hp<=0;addLog('TRANQ SHOT',`${hero.name.split(' ')[0]} hits ${e.name} for ${dmg} damage.`,'good',hero.tile,hero.name.toUpperCase());if(van)defeatEntity(e,hero);return commitAIAction(acted+1,'TRANQ SHOT',`${e.name} takes ${dmg} damage${van?(e.boss?' · STAGGERED':' · VANQUISHED'):''}`,'good');}
+    if(!hero.powerUsed && hero.id==='tessa'){const dmg=identifiedIs('Mimic Lights')?2:1;e.hp-=dmg;hero.powerUsed=true;const van=e.hp<=0;addLog('FLASH BURN',`${hero.name.split(' ')[0]} burns ${e.name} for ${dmg} damage.`,'good',hero.tile,hero.name.toUpperCase());if(van)defeatEntity(e,hero);else repelEntity(e);return commitAIAction(acted+1,'FLASH BURN',`${e.name} takes ${dmg} damage${van?(e.boss?' · STAGGERED':' · VANQUISHED'):' · repelled'}`,'good');}
     if(aiUseFlashCharge(hero)){const r=takeAIResolution();return commitAIAction(acted+1,r.title,r.detail,r.tone);}
     if(aiUseSaltBomb(hero,e)){const r=takeAIResolution();return commitAIAction(acted+1,r.title,r.detail,r.tone);}
     if(aiUseBearSpray(hero,e)){const r=takeAIResolution();return commitAIAction(acted+1,r.title,r.detail,r.tone);}
@@ -1202,7 +1251,7 @@ function runAITurn(actedStart=0){
     if(aiPrepareStrobe(hero,e,acted)){const r=takeAIResolution();return commitAIAction(acted+1,r.title,r.detail,r.tone);}
     if(aiPrepareRockSalt(hero,e,acted)){const r=takeAIResolution();return commitAIAction(acted+1,r.title,r.detail,r.tone);}
     const buff=hero.aiAttackBuff||0,die=rng(6)+1,total=die+heroCombat(hero)+buff,def=e.defense,dmg=Math.max(0,total-def),hit=dmg>0;let outcome=total===def?'NO DAMAGE':'MISS',tone='bad';
-    if(hit){e.hp-=dmg;const van=e.hp<=0;addLog('AI ATTACK',`${hero.name.split(' ')[0]} rolls ${die} + ${heroCombat(hero)}${buff?` + ${buff}`:''} = ${total} against Defense ${def} and deals ${dmg} damage.`,'good',hero.tile,hero.name.toUpperCase());if(buff)repelEntity(e);if(van)defeatEntity(e,hero);outcome=`${dmg} DAMAGE${van?' · VANQUISHED':''}`;tone='good';}else addLog(total===def?'AI ATTACK BLOCKED':'AI ATTACK MISSES',`${hero.name.split(' ')[0]} rolls ${die} + ${heroCombat(hero)}${buff?` + ${buff}`:''} = ${total}; ${e.name}${total===def?' absorbs the strike':' evades'} (Defense ${def}).`,'bad',hero.tile,hero.name.toUpperCase());
+    if(hit){e.hp-=dmg;const van=e.hp<=0;addLog('AI ATTACK',`${hero.name.split(' ')[0]} rolls ${die} + ${heroCombat(hero)}${buff?` + ${buff}`:''} = ${total} against Defense ${def} and deals ${dmg} damage.`,'good',hero.tile,hero.name.toUpperCase());if(buff)repelEntity(e);if(van)defeatEntity(e,hero);outcome=`${dmg} DAMAGE${van?(e.boss?' · STAGGERED':' · VANQUISHED'):''}`;tone='good';}else addLog(total===def?'AI ATTACK BLOCKED':'AI ATTACK MISSES',`${hero.name.split(' ')[0]} rolls ${die} + ${heroCombat(hero)}${buff?` + ${buff}`:''} = ${total}; ${e.name}${total===def?' absorbs the strike':' evades'} (Defense ${def}).`,'bad',hero.tile,hero.name.toUpperCase());
     hero.aiAttackBuff=0;return commitAIAction(acted+1,`${hero.name.split(' ')[0]} ATTACKS`,rollHudHTML(die,[heroCombat(hero),buff],total,`DEF ${def}`,outcome),tone);
   }
   tile=state.tiles[hero.tile];
@@ -1210,7 +1259,7 @@ function runAITurn(actedStart=0){
     if(hero.id==='priya'&&!hero.powerUsed&&acted===0){const anchor=identifiedIs('Time Slip')?3:2;hero.aiStabilizeBuff=(hero.aiStabilizeBuff||0)+anchor;hero.powerUsed=true;addLog('ANCHOR FIELD',`${hero.name.split(' ')[0]} anchors the portal geometry: +${anchor} on the next Stabilize roll.`,'good',hero.tile,hero.name.toUpperCase());return commitAIAction(acted+1,'ANCHOR FIELD',`+${anchor} prepared for ${hero.name.split(' ')[0]}'s next Stabilize roll.`,'weird');}
     if(aiPrepareRitualChalk(hero,acted)){const r=takeAIResolution();return commitAIAction(acted+1,r.title,r.detail,r.tone);}
     const buff=hero.aiStabilizeBuff||0,base=heroStabilize(hero),die=rng(6)+1,total=die+base+buff,ok=total>=5;
-    if(ok){tile.portal=false;state.portals=state.portals.filter(p=>p!==tile.key);addLog('AI STABILIZES',`${hero.name.split(' ')[0]} rolls ${die} + ${base}${buff?` + ${buff}`:''} = ${total} and seals the portal in ${tile.name}.`,'good',hero.tile,hero.name.toUpperCase());hero.aiStabilizeBuff=0;if(state.portals.length===0)return winCase();}else{addLog('AI STABILIZE FAILS',`${hero.name.split(' ')[0]} rolls ${die} + ${base}${buff?` + ${buff}`:''} = ${total}; the portal holds.`,'bad',hero.tile,hero.name.toUpperCase());hero.aiStabilizeBuff=0;}
+    if(ok){tile.portal=false;state.portals=state.portals.filter(p=>p!==tile.key);addLog('AI STABILIZES',`${hero.name.split(' ')[0]} rolls ${die} + ${base}${buff?` + ${buff}`:''} = ${total} and seals the portal in ${tile.name}.`,'good',hero.tile,hero.name.toUpperCase());hero.aiStabilizeBuff=0;if(state.portals.length===0){banishBoss();return winCase();}}else{addLog('AI STABILIZE FAILS',`${hero.name.split(' ')[0]} rolls ${die} + ${base}${buff?` + ${buff}`:''} = ${total}; the portal holds.`,'bad',hero.tile,hero.name.toUpperCase());hero.aiStabilizeBuff=0;}
     return commitAIAction(acted+1,`${hero.name.split(' ')[0]} STABILIZES`,rollHudHTML(die,[base,buff],total,'5',ok?'SEALED':'FAILED'),ok?'good':'bad');
   }
   const priority=aiPriority(hero);
@@ -1252,7 +1301,18 @@ function spawnEntity(tileKey){ const phen=state.phenomenon.name; const hostileCh
   'Lure Light':{name:'Lure Light',symbol:'✧',hp:2,defense:4,attack:1}
   }; const picked=weightedPick(manifestationWeightTable(phen))||'Winged Cryptid'; const base=bases[picked]||bases['Winged Cryptid']; const e={id:'e'+Date.now()+Math.random(),tile:tileKey,hostile,name:base.name,symbol:base.symbol,hp:base.hp,maxHp:base.hp,defense:base.defense,attack:base.attack}; state.entities.push(e); addLog(hostile?'HOSTILE MANIFESTATION':'MANIFESTATION', `${e.name} appears in ${state.tiles[tileKey].name}.${hostile?' It is aggressive.':' It has not become directly hostile.'}`, hostile?'bad':'weird', tileKey, 'PHENOMENON', tileKey===humanHero().tile); renderAll(); }
 function repelEntity(e){ const opts=connectedNeighborKeys(e.tile).filter(k=>!e.hostile||!hostileRoomFull(k)); if(opts.length) e.tile=opts[rng(opts.length)]; }
-function defeatEntity(e,hero){ if(state.selectedTarget?.kind==='entity'&&state.selectedTarget.id===e.id) state.selectedTarget=null; const idx=state.entities.findIndex(x=>x.id===e.id); if(idx>=0) state.entities.splice(idx,1); addLog('ENTITY DRIVEN OFF', `${e.name} is driven away.`, 'good', hero.tile, hero.you?leadLabel():hero.name.toUpperCase(), hero.you); if(Math.random()<0.55) drawGearFor(hero,'defeat'); }
+function staggerBoss(e,hero){
+  if(!e?.boss)return false;if(state.selectedTarget?.kind==='entity'&&state.selectedTarget.id===e.id)state.selectedTarget=null;
+  const idx=state.entities.findIndex(x=>x.id===e.id);if(idx>=0)state.entities.splice(idx,1);
+  state.boss.active=false;state.boss.entityId=null;state.boss.staggeredRemaining=2;
+  addLog('BOSS STAGGERED',`${e.name} collapses back beyond the Threshold. The team has two full paranormal phases before it can return.`,'good',hero.tile,hero.you?leadLabel():hero.name.toUpperCase(),hero.you);
+  return true;
+}
+function banishBoss(){
+  const e=bossEntity();if(e){const idx=state.entities.findIndex(x=>x.id===e.id);if(idx>=0)state.entities.splice(idx,1);}
+  if(state.boss){state.boss.active=false;state.boss.entityId=null;state.boss.staggeredRemaining=null;state.boss.banished=true;}
+}
+function defeatEntity(e,hero){ if(e?.boss)return staggerBoss(e,hero); if(state.selectedTarget?.kind==='entity'&&state.selectedTarget.id===e.id) state.selectedTarget=null; const idx=state.entities.findIndex(x=>x.id===e.id); if(idx>=0) state.entities.splice(idx,1); addLog('ENTITY DRIVEN OFF', `${e.name} is driven away.`, 'good', hero.tile, hero.you?leadLabel():hero.name.toUpperCase(), hero.you); if(Math.random()<0.55) drawGearFor(hero,'defeat'); }
 function finishGearGain(hero,gear,source){ hero.gear.push(gear); addLog('EQUIPMENT FOUND', `${hero.name.split(' ')[0]} gains ${gearDisplayName(gear)}. Pack ${hero.gear.length}/3.`, 'good', hero.tile, hero.you?leadLabel():hero.name.toUpperCase(), hero.you); renderAll(); }
 function resumePausedFlow(){
   if(!state || state.gameOver || state.uiPaused) return;
@@ -1327,6 +1387,7 @@ function protectedCaseKeys(){
   const keys=new Set((state.heroes||[]).map(h=>h.tile));
   (state.portals||[]).forEach(k=>{if(state.tiles[k]?.portal)keys.add(k)});
   Object.values(state.tiles).forEach(t=>{if(t.clue&&state.evidence.length<6)keys.add(t.key)});
+  const b=bossEntity();if(b)keys.add(b.tile);
   return [...keys].filter(k=>state.tiles[k]);
 }
 function protectedNetworkConnected(){
@@ -1374,7 +1435,7 @@ function tryDoorShift(summary){
   return false;
 }
 function tryRoomVanish(summary){
-  const candidates=shuffle(Object.values(state.tiles).filter(t=>t.key!==key(0,0)&&!isWeirdnessProtected(t.key)&&!state.heroes.some(h=>h.tile===t.key)&&!t.portal&&!t.clue&&!t.cache));
+  const candidates=shuffle(Object.values(state.tiles).filter(t=>t.key!==key(0,0)&&!isWeirdnessProtected(t.key)&&!state.heroes.some(h=>h.tile===t.key)&&!state.entities.some(e=>e.boss&&e.tile===t.key)&&!t.portal&&!t.clue&&!t.cache));
   for(const tile of candidates){
     const vanishedEntities=state.entities.filter(e=>e.tile===tile.key); const keepEntities=state.entities.filter(e=>e.tile!==tile.key);
     delete state.tiles[tile.key]; state.entities=keepEntities;
@@ -1387,7 +1448,7 @@ function tryRoomVanish(summary){
   return false;
 }
 function tryEntityVanish(summary){
-  if(!state.entities.length)return false; const e=state.entities[rng(state.entities.length)],tile=state.tiles[e.tile];
+  const ordinary=state.entities.filter(e=>!e.boss); if(!ordinary.length)return false; const e=ordinary[rng(ordinary.length)],tile=state.tiles[e.tile];
   state.entities=state.entities.filter(x=>x.id!==e.id); if(state.selectedTarget?.kind==='entity'&&state.selectedTarget.id===e.id)state.selectedTarget=null;
   spatialEventLog(summary,`${e.name} flickers out of ${tile?.name||'the map'} without crossing a doorway.`,e.tile===humanHero().tile); return true;
 }
@@ -1398,22 +1459,63 @@ function applyDoomWeirdness(summary){
   if(runOne()){state.weirdnessCount=(state.weirdnessCount||0)+1;if(d>=9&&Math.random()<.14)runOne();}
 }
 function contactHostilityChance(){return state.doom<=2?0:Math.min(.07,.07*(state.doom-2)/(DOOM_MAX-2))}
-const PHEN_BOARD_BEAT=120, PHEN_HUD_BEAT=430;
+const PHEN_SILENT_BEAT=75, PHEN_ROLL_BEAT=560;
 let phenomenonFlow=null;
 function phenomenonBeat(title,detail,tone,next){
   if(!state||state.gameOver)return;
-  clearPlayerResult(); renderAll();
-  setTimeout(()=>{
-    if(!state||state.gameOver)return;
-    setActionResult(title,detail,tone); renderAll();
-    setTimeout(()=>{if(state&&!state.gameOver)next();},PHEN_HUD_BEAT);
-  },PHEN_BOARD_BEAT);
+  const hasContestRoll=typeof detail==='string'&&detail.includes('class="rollLine"');
+  if(hasContestRoll){
+    setActionResult(title,detail,tone);
+    renderAll();
+    return setTimeout(()=>{if(state&&!state.gameOver)next();},PHEN_ROLL_BEAT);
+  }
+  // Non-roll paranormal events update the board/log only. Keep the action HUD quiet.
+  renderAll();
+  setTimeout(()=>{if(state&&!state.gameOver)next();},PHEN_SILENT_BEAT);
+}
+function maybeReturnBoss(summary){
+  if(!state.boss?.revealed||state.boss.banished||state.boss.active||state.boss.staggeredRemaining!==0||!state.portals.length)return null;
+  const key=bossSpawnPortalKey(),e=spawnBoss(key,{returning:true});if(e)addPhaseEvent(summary,`${e.name} returns at full strength through ${state.tiles[key].name}.`,'bad',key===humanHero().tile);return e;
+}
+function advanceBossStagger(summary){
+  if(!state.boss?.revealed||state.boss.active||state.boss.banished||!Number.isFinite(state.boss.staggeredRemaining)||state.boss.staggeredRemaining<=0)return;
+  state.boss.staggeredRemaining--;
+  const def=bossDefinition();if(state.boss.staggeredRemaining>0)addPhaseEvent(summary,`${def.name} remains STAGGERED beyond the Threshold · ${state.boss.staggeredRemaining} paranormal phase remains before it can return.`,'good',false);
+  else addPhaseEvent(summary,`${def.name} is reforming beyond the Threshold · RETURN IMMINENT next paranormal phase.`,'weird',false);
+}
+function bossMoveToward(e,target){
+  const start=e.tile;let steps=0;for(let i=0;i<Math.max(1,e.move||1);i++){if(e.tile===target.tile)break;const next=stepToward(e.tile,target.tile);if(!next||next===e.tile||hostileRoomFull(next))break;e.tile=next;steps++;}return {start,steps,arrived:e.tile===target.tile};
+}
+function pullHeroTowardPortal(hero){
+  const portals=state.portals.filter(k=>state.tiles[k]?.portal).sort((a,b)=>pathDistance(hero.tile,a)-pathDistance(hero.tile,b));
+  const target=portals[0];if(!target||target===hero.tile)return null;const next=stepToward(hero.tile,target);if(!next||next===hero.tile||roomContested(next))return null;const from=hero.tile;hero.tile=next;return {from,to:next,portal:target};
+}
+function bossContactCheck(hero,targetNum=9){const nerve=Math.max(0,hero.nerve),die=rng(6)+1,total=die+nerve;return {die,nerve,total,target:targetNum,ok:total>=targetNum};}
+function finishRepeaterReturn(e,start){if(e?.bossKey==='Time Slip'&&start&&state.tiles[start]&&e.tile!==start&&!hostileRoomFull(start))e.tile=start;}
+function resolveBossActivation(e,target,startTile){
+  if(!e||!target||e.tile!==target.tile)return runNextPhenomenonEntity();const def=BOSS_CATALOG[e.bossKey]||bossDefinition(),summary=phenomenonFlow.summary,short=target.name.split(' ')[0];
+  if(e.bossKey==='Grey Visitors'){
+    const cap=contactPhaseCap(target),r=bossContactCheck(target,9);let outcome='RESISTED',tone='good';if(!r.ok&&!cap.exposure){target.exposure=Math.min(6,target.exposure+1);cap.exposure=true;outcome='+1 EXPOSURE';tone='bad';addPhaseEvent(summary,`${def.name} marks ${short}${target.you?' (YOU)':''}: +1 Exposure.`,'bad',target.you);checkStun(target);}else if(!r.ok)outcome='EXPOSURE CAPPED';return phenomenonBeat(`${def.name} · SURVEY MARK`,rollHudHTML(r.die,[r.nerve],r.total,'9',outcome),tone,runNextPhenomenonEntity);
+  }
+  if(e.bossKey==='Mimic Lights'){
+    const r=bossContactCheck(target,9);let outcome='RESISTED',tone='good';if(!r.ok){const pull=pullHeroTowardPortal(target);outcome=pull?`LURED → ${state.tiles[pull.to]?.name}`:'LURE HOLDS';tone='bad';if(pull)addPhaseEvent(summary,`${def.name} lures ${short}${target.you?' (YOU)':''} into ${state.tiles[pull.to].name}, toward an open portal.`,'bad',target.you);}return phenomenonBeat(`${def.name} · LURE`,rollHudHTML(r.die,[r.nerve],r.total,'9',outcome),tone,runNextPhenomenonEntity);
+  }
+  const die=rng(6)+1,total=die+e.attack,defense=heroDefense(target),hit=total>=defense,damage=e.bossKey==='Threshold Predator'?2:1;let outcome='MISS',tone='good';
+  if(hit){target.health-=damage;if(die===6)target.nerve-=1;outcome=`HIT · ${damage} Health${die===6?' · 1 Nerve':''}`;tone='bad';addPhaseEvent(summary,`${def.name} hits ${short}${target.you?' (YOU)':''} for ${damage} Health${die===6?', and 1 Nerve':''}.`,'bad',target.you);checkStun(target);} 
+  const done=()=>{finishRepeaterReturn(e,startTile);runNextPhenomenonEntity();};
+  return phenomenonBeat(`${def.name} ATTACKS`,rollHudHTML(die,[e.attack],total,`DEF ${defense}`,outcome),tone,done);
+}
+function runBossActivation(){
+  if(!state||state.gameOver||!phenomenonFlow)return;const e=bossEntity();if(!e)return runNextPhenomenonEntity();const target=nearestTarget(e.tile);if(!target)return runNextPhenomenonEntity();const def=BOSS_CATALOG[e.bossKey]||bossDefinition(),move=bossMoveToward(e,target),resolve=()=>resolveBossActivation(e,target,move.start);
+  if(move.steps>0)return phenomenonBeat('BOSS MOVES',`${def.name} · ${state.tiles[move.start]?.name} → ${state.tiles[e.tile]?.name} · ${move.steps} room${move.steps===1?'':'s'}${move.arrived?` · reaches ${target.name.split(' ')[0]}`:''}`,'bad',move.arrived?resolve:runNextPhenomenonEntity);
+  resolve();
 }
 function runPhenomenonPhase(){
   if(state.gameOver || state.uiPaused) return;
   clearPlayerResult(); renderAll();
-  phenomenonFlow={summary:{doomBefore:state.doom,entitiesBefore:state.entities.length,portalsBefore:state.portals.length,events:[]},entityIds:state.entities.map(e=>e.id),entityIndex:0,portalKeys:state.portals.slice(),portalIndex:0,contactCaps:{}};
-  runNextPhenomenonEntity();
+  phenomenonFlow={summary:{doomBefore:state.doom,entitiesBefore:state.entities.length,portalsBefore:state.portals.length,events:[]},entityIds:[],entityIndex:0,portalKeys:state.portals.slice(),portalIndex:0,contactCaps:{}};
+  maybeReturnBoss(phenomenonFlow.summary);phenomenonFlow.entityIds=state.entities.filter(e=>!e.boss).map(e=>e.id);
+  runBossActivation();
 }
 function runNextPhenomenonEntity(){
   if(!state||state.gameOver||!phenomenonFlow)return;
@@ -1434,6 +1536,10 @@ function contactEffectSpec(){
   if(name==='Threshold Predator') return {nerve:1,exposure:1};
   if(name==='Time Slip') return {nerve:0,exposure:1};
   return {nerve:1,exposure:0};
+}
+function contactCheckDifficulty(hero){
+  const b=bossEntity(); if(b&&b.bossKey==='Hollow Choir'&&pathDistance(b.tile,hero.tile)<=1)return 10;
+  return 9;
 }
 function contactPhaseCap(hero){
   if(!phenomenonFlow.contactCaps) phenomenonFlow.contactCaps={};
@@ -1462,16 +1568,16 @@ function resolvePhenomenonContact(e,target){
     detail=`${short}'s Protective Mask blocks the contact effect before a Contact Check.`;
     tone='good';
   } else {
-    const nerveMod=Math.max(0,target.nerve),die=rng(6)+1,total=die+nerveMod,resisted=total>=9;
+    const nerveMod=Math.max(0,target.nerve),die=rng(6)+1,total=die+nerveMod,contactTarget=contactCheckDifficulty(target),resisted=total>=contactTarget;
     if(resisted){
-      rollDetail=rollHudHTML(die,[nerveMod],total,'9','RESISTED');
+      rollDetail=rollHudHTML(die,[nerveMod],total,String(contactTarget),'RESISTED');
       tone='good';
     } else {
       const applied=[];
       if(canNerve){target.nerve=Math.max(0,target.nerve-1);cap.nerve=true;applied.push('−1 NERVE');}
       if(canExposure){target.exposure=Math.min(6,target.exposure+1);cap.exposure=true;applied.push('+1 EXPOSURE');}
       const effectText=applied.join(' · ');
-      rollDetail=rollHudHTML(die,[nerveMod],total,'9',effectText||'NO FURTHER EFFECT');
+      rollDetail=rollHudHTML(die,[nerveMod],total,String(contactTarget),effectText||'NO FURTHER EFFECT');
       if(applied.length){
         const prose=applied.length===2?'loses 1 Nerve and gains 1 Exposure':applied[0].includes('NERVE')?'loses 1 Nerve':'gains 1 Exposure';
         addPhaseEvent(summary,`${short}${target.you?' (YOU)':''} fails a Contact Check and ${prose}.`,'weird',target.you);
@@ -1513,12 +1619,12 @@ function runWeirdnessBeat(){
 }
 function finishPhenomenonSequence(){
   if(!state||state.gameOver||!phenomenonFlow)return;
-  const summary=phenomenonFlow.summary;phenomenonFlow=null;clearPlayerResult();renderAll();setTimeout(()=>{if(state&&!state.gameOver)showPhenomenonSummary(summary);},220);
+  const summary=phenomenonFlow.summary;advanceBossStagger(summary);phenomenonFlow=null;clearPlayerResult();renderAll();setTimeout(()=>{if(state&&!state.gameOver)showPhenomenonSummary(summary);},220);
 }
 function addPhaseEvent(summary,text,tone='weird',player=false){ summary.events.push({text,tone,player}); }
 function showPhenomenonSummary(summary){ if(!state || state.gameOver) return; const root=$('#modalRoot'); const br=$('#boardwrap')?.getBoundingClientRect(); const sx=br?br.left+br.width/2:window.innerWidth/2; const sy=br?br.top+br.height/2:window.innerHeight/2; const sw=br?br.width:window.innerWidth; root.innerHTML=`<div class="modalOverlay paranormalSummaryOverlay" style="--summary-x:${sx}px;--summary-y:${sy}px;--summary-w:${sw}px"><div class="modalPanel"><h2>Paranormal Phase Complete</h2><p>Consequential changes from the paranormal turn.</p><div class="summaryStats"><div><b>Doom</b><span>${summary.doomBefore} → ${state.doom}</span></div><div><b>Entities</b><span>${summary.entitiesBefore} → ${state.entities.length}</span></div><div><b>Open Portals</b><span>${summary.portalsBefore} → ${state.portals.length}</span></div></div><p class="hypothesisNote">Field pressure: ${partyPressureProfile().label}.</p><div class="summaryEvents">${summary.events.length?[...summary.events].reverse().map(ev=>`<div class="summaryEvent ${ev.player?'player':''} ${ev.text.includes('STUNNED')?'stunEvent':''}"><b>${ev.text.includes('STUNNED')?'STUNNED':ev.tone.toUpperCase()}</b><div>${ev.text}</div></div>`).join(''):'<div class="summaryEvent"><div>No consequential changes this phase.</div></div>'}</div><div style="display:flex;justify-content:flex-end;margin-top:16px"><button id="nextRoundBtn" class="primary">Begin Round ${state.round+1}</button></div></div></div>`; $('#nextRoundBtn').onclick=()=>{ root.innerHTML=''; startNextRound(); } }
 function startNextRound(){ if(state.gameOver || state.uiPaused) return; state.round++; state.selectedTarget=null; state.mobilityMode=null; state.actionDrawerOpen=false; state.lastPlayerResult=null; state.attackBuff=0; state.attackRepelOnHit=false; state.stabilizeAttemptsBonus=0; recoverStunnedHeroes(); state.heroes.forEach(h=>{ h.acted=false; h.defending=false; h.guard=false; h.powerUsed=false; h.regroupUsed=false; h.fieldPackUsed=false; }); state.phase='investigator'; moveMode=false; const first=state.heroes.findIndex(h=>!isStunned(h)); if(first===-1){ state.phase='phenomenon'; state.activeIndex=0; state.actionsLeft=0; addLog('PARTY STUNNED', `Round ${state.round}. The whole team is still recovering; the paranormal side presses the advantage.`, 'bad', humanHero().tile, 'FIELD TEAM', true); renderAll(); return setTimeout(runPhenomenonPhase,420); } state.activeIndex=first; state.actionsLeft=2; renderAll(); if(currentHero().ai) setTimeout(runAITurn,600); else addLog('YOUR TURN', `Round ${state.round}. ${leadFirst()} may act.`, 'good', currentHero().tile, leadLabel(), true); }
-function winCase(){ if(state.gameOver) return; state.gameOver=true; showEndModal(true,'The final portal folds inward and vanishes. The Pine Barrens return — at least for tonight — to ordinary darkness.'); }
+function winCase(){ if(state.gameOver) return; state.gameOver=true; const def=bossDefinition(); showEndModal(true,`The final portal folds inward. ${def?.name||'The entity'} is torn back beyond the Threshold and cannot return. The Pine Barrens settle — at least for tonight — into ordinary darkness.`); }
 function loseCase(text){ if(state.gameOver) return; state.gameOver=true; showEndModal(false,text); }
 function showEndModal(win,text){ const root=$('#modalRoot'); root.innerHTML=`<div class="modalOverlay"><div class="modalPanel"><div class="caseEyebrow">${win?'Investigation Complete':'Investigation Overwhelmed'}</div><h2>${win?'Case Closed':'Case Lost'}</h2><p>${text}</p><div class="summaryStats"><div><b>Rounds</b><span>${state.round}</span></div><div><b>Evidence</b><span>${state.evidence.length}/6</span></div><div><b>Doom</b><span>${state.doom}/${DOOM_MAX}</span></div><div><b>Open Portals</b><span>${state.portals.length}</span></div></div><div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:16px"><button id="returnSetupBtn">Return to Setup</button><button id="replayCaseBtn" class="primary">Replay Same Team</button></div></div></div>`; $('#replayCaseBtn').onclick=()=>{ root.innerHTML=''; beginCase(); }; $('#returnSetupBtn').onclick=()=>{ root.innerHTML=''; $('#gameScreen').classList.add('hidden'); $('#setupScreen').classList.remove('hidden'); renderSetup(); } }
 $$('.tabbtn').forEach(b=>b.onclick=()=>switchTab(b.dataset.tab));
