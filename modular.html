@@ -1,126 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modular Multiplication Visualization</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background-color: #111;
-            color: white;
-            font-family: Arial, sans-serif;
-        }
-        #canvas-container {
-            margin-top: 20px;
-            border: 1px solid white;
-        }
-        label, button {
-            margin: 5px;
-        }
-    </style>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Modular Atlas — Circle Multiplication Explorer</title>
+<style>
+:root{color-scheme:dark;--bg:#080c16;--panel:#111a2b;--line:#27344c;--text:#eaf2ff;--muted:#a6b5ca;--accent:#63e0e6}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 40% 10%,#182644 0,#080c16 65%);color:var(--text);font:15px/1.5 system-ui,Segoe UI,Arial,sans-serif}
+header{padding:18px max(20px,calc((100vw - 1400px)/2));display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+h1{font-size:clamp(22px,2.4vw,34px);letter-spacing:-.04em;margin:0}h1 span{color:var(--accent)}.sub{color:var(--muted);font-size:13px}.pill{border:1px solid #395070;border-radius:50px;padding:4px 12px;font-size:12px;color:#c7e7ed}
+main{max-width:1400px;margin:auto;padding:18px;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px}
+.stage{background:linear-gradient(135deg,#0b1424,#060a12);border:1px solid var(--line);border-radius:18px;overflow:hidden;min-width:0;position:relative;display:flex;flex-direction:column}
+#view{display:block;width:100%;height:min(74vh,760px);min-height:360px;touch-action:manipulation}
+.hud{display:flex;gap:18px;flex-wrap:wrap;justify-content:space-between;padding:11px 17px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+.hud b{color:var(--text)}.controls{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px;align-self:start}
+.controls h2{font-size:14px;letter-spacing:.12em;text-transform:uppercase;color:#b2ceda;margin:0 0 13px}.section{padding:0 0 20px;margin:0 0 20px;border-bottom:1px solid var(--line)}.section:last-child{border:0;margin:0;padding:0}
+label{display:block;font-size:13px;margin:12px 0 6px;color:#c6d4e8}.labelrow{display:flex;justify-content:space-between;align-items:center}.num{background:#07101e;color:var(--text);border:1px solid #42536d;border-radius:8px;padding:6px 8px;width:85px;font:inherit}
+input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}input[type=checkbox]{accent-color:var(--accent)}button,select{background:#1e304b;color:var(--text);border:1px solid #395270;border-radius:9px;padding:9px 12px;cursor:pointer;font:inherit}button:hover{border-color:var(--accent);background:#294360}button.active,button.primary{background:#15686e;border-color:#51d9da}.buttons{display:flex;gap:7px;flex-wrap:wrap}.buttons button{font-size:13px}
+select{width:100%}.toggle{display:flex;gap:9px;align-items:center;color:#c6d4e8;font-size:13px;margin:10px 0;cursor:pointer}.toggle input{margin:0}.note{color:var(--muted);font-size:12px;line-height:1.55}.formula{border:1px solid #344660;padding:10px;background:#0c1728;border-radius:10px;font-size:13px;line-height:1.8}.formula strong{color:#74dce0}#explain{min-height:55px}footer{max-width:1400px;margin:auto;padding:0 20px 24px;color:var(--muted);font-size:12px}
+@media(max-width:900px){main{grid-template-columns:1fr}.controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.section{margin:0}.section:nth-child(3){border-bottom:0}#view{height:min(70vw,670px);min-height:320px}}
+@media(max-width:600px){.controls{display:block}.section{margin-bottom:18px}#view{height:95vw;min-height:280px}main{padding:10px}header{padding:15px}}
+</style>
 </head>
 <body>
-    <h2>Modular Multiplication Visualization</h2>
-    <label>Multiplier (c): <input type="number" id="multiplier" value="2" step="0.1"></label>
-    <button onclick="togglePlayMultiplier()">Play/Pause</button>
-    <label>Divisions: <input type="number" id="divisions" value="200"></label>
-    <button onclick="togglePlayDivisions()">Play/Pause</button>
-    <label>Color: <input type="color" id="colorPicker" value="#ffffff" onchange="updateVisualization()"></label>
-    <button onclick="resetVisualization()">Reset</button>
-    <div id="canvas-container"></div>
-    <script>
-        let divisions = 200;
-        let multiplier = 2;
-        let canvas;
-        let playingMultiplier = false;
-        let playingDivisions = false;
-        let multiplierInterval;
-        let divisionsInterval;
-        let drawColor = '#ffffff';
-        
-        function setup() {
-            canvas = createCanvas(500, 500);
-            canvas.parent("canvas-container");
-            noLoop();
-            drawPattern();
-        }
-
-        function draw() {
-            drawPattern();
-        }
-
-        function drawPattern() {
-            background(0);
-            stroke(drawColor);
-            noFill();
-            let radius = width / 2 - 10;
-            let centerX = width / 2;
-            let centerY = height / 2;
-            
-            // Draw circle
-            ellipse(centerX, centerY, radius * 2);
-            
-            // Draw points and connections
-            for (let i = 0; i < divisions; i++) {
-                let angle1 = map(i, 0, divisions, 0, TWO_PI);
-                let x1 = centerX + radius * cos(angle1);
-                let y1 = centerY + radius * sin(angle1);
-                
-                let mappedIndex = (i * multiplier) % divisions;
-                let angle2 = map(mappedIndex, 0, divisions, 0, TWO_PI);
-                let x2 = centerX + radius * cos(angle2);
-                let y2 = centerY + radius * sin(angle2);
-                
-                line(x1, y1, x2, y2);
-            }
-        }
-
-        function updateVisualization() {
-            drawColor = document.getElementById('colorPicker').value;
-            redraw();
-        }
-
-        function resetVisualization() {
-            multiplier = 2;
-            divisions = 200;
-            document.getElementById('multiplier').value = multiplier;
-            document.getElementById('divisions').value = divisions;
-            document.getElementById('colorPicker').value = '#ffffff';
-            drawColor = '#ffffff';
-            redraw();
-        }
-
-        function togglePlayMultiplier() {
-            if (playingMultiplier) {
-                clearInterval(multiplierInterval);
-            } else {
-                multiplierInterval = setInterval(() => {
-                    multiplier += 0.1;
-                    document.getElementById('multiplier').value = multiplier.toFixed(1);
-                    redraw();
-                }, 100);
-            }
-            playingMultiplier = !playingMultiplier;
-        }
-
-        function togglePlayDivisions() {
-            if (playingDivisions) {
-                clearInterval(divisionsInterval);
-            } else {
-                divisionsInterval = setInterval(() => {
-                    divisions += 1;
-                    document.getElementById('divisions').value = divisions;
-                    redraw();
-                }, 100);
-            }
-            playingDivisions = !playingDivisions;
-        }
-    </script>
-</body>
-</html>
+<header><div><h1>MODULAR <span>ATLAS</span></h1><div class="sub">Circle multiplication · Chord envelopes · Emerging geometry</div></div><div class="pill">MATHEMATICAL PLAYGROUND</div></header>
+<main>
+<section class="stage" id="stage">
+<canvas id="view" aria-label="Circular modular multiplication chord visualization"></canvas>
+<div class="hud"><span>Mapping <b id="mapping">i → 2i mod 200</b></span><span>Envelope <b id="family">Cardioid · 1 cusp</b></span><span>Animation <b id="state">Paused</b></span></div>
+</section>
+<aside class="controls">
+<div class="section"><h2>Explore</h2><div class="buttons" id="presets"><button data-c="2" data-n="200" class="active">Cardioid</button><button data-c="3" data-n="250">Nephroid</button><button data-c="4" data-n="350">3 cusps</button><button data-c="7" data-n="400">6 cusps</button><button data-c="2.5" data-n="250">Between</button></div>
+<div class="labelrow"><label for="multiplier">Multiplier c</label><input class="num" type="number" id="multiplier" min="0" max="15" step=".01" value="2"></div><input id="cSlider" type="range" min="0" max="15" step=".01" value="2">
+<div class="labelrow"><label for="divisions">Circle divisions N</label><input class="num" type="number" id="divisions" min="10" max="1500" step="1" value="200"></div><input id="nSlider" type="range" min="10" max="1500" step="1" value="200">
+<div class="buttons"><button id="play" class="primary">▶ Animate c</button><button id="reverse">↶ Reverse</button><button id="reset">Reset</button></div>
+<label for="speed">Animation speed</label><input id="speed" type="range" min=".05" max="3" step=".05" value=".4"></div>
+<div class="section"><h2>Appearance</h2>
+<label for="palette">Color palette</label><select id="palette"><option value="spectrum">Spectral rainbow</option><option value="ice">Electric cyan</option><option value="fire">Solar flare</option><option value="mono">Monochrome</option><option value="twilight">Violet dusk</option></select>
+<label for="density">Line opacity</label><input type="range" min=".05" max="1" step=".01" value=".38" id="density">
+<label class="toggle"><input type="checkbox" id="glow" checked> Luminous chords</label>
+<label class="toggle"><input type="checkbox" id="envelope" checked> Mathematical envelope (integer c ≥ 2)</label>
+<label class="toggle"><input type="checkbox" id="cusps" checked> Show cusp points</label>
+<label class="toggle"><input type="checkbox" id="points"> Show division points</label>
+<label class="toggle"><input type="checkbox" id="trails"> Motion trails</label>
+<div class="buttons"><button id="export">↓ Save PNG</button><button id="fullscreen">⛶ Fullscreen</button></div></div>
+<div class="section"><h2>Behind the geometry</h2>
+<div class="formula">Start: <strong>z = e<sup>iθ</sup></strong><br>End: <strong>z<sup>c</sup> = e<sup>icθ</sup></strong> (integer c)<br>Chord: <strong>i → (c · i) mod N</strong></div>
+<p class="note" id="explain">For multiplier 2, the chords trace a cardioid envelope. Its cusp is opposite the fixed-point angle.</p>
+<p class="note">For integer c ≥ 2, the ideal continuous envelope is E(θ) = (c e<sup>iθ</sup> + e<sup>icθ</sup>)/(c + 1). The c − 1 cusps occur halfway between neighboring fixed-point angles. For noninteger c, the chosen angle representatives do not define a continuous circle map.</p></div>
+</aside></main>
+<footer>Tip: Space plays/pauses; left/right arrows adjust c; Shift + arrows make fine adjustments. Animation wraps at c = 15. All calculations run locally in your browser.</footer>
+<script>
+(()=>{
+'use strict';
+const $=id=>document.getElementById(id);
+const canvas=$('view'),ctx=canvas.getContext('2d');
+let c=2,n=200,playing=false,direction=1,last=0,raf=0,cssW=800,cssH=700,dirty=true,previousTrail=false;
+const TAU=Math.PI*2;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const integer=()=>Math.abs(c-Math.round(c))<1e-7;
+const palette=(t,alpha)=>{
+let h,s,l;
+switch($('palette').value){
+case 'ice':h=178+65*t;s=92;l=56;break;
+case 'fire':h=2+59*t;s=100;l=55;break;
+case 'mono':h=195;s=5;l=85;break;
+case 'twilight':h=266+94*t;s=90;l=65;break;
+default:h=(190+340*t)%360;s=95;l=65;
+}
+return 'hsla('+h+','+s+'%,'+l+'%,'+alpha+')';
+};
+function sync(){
+$('multiplier').value=Number(c.toFixed(3));$('cSlider').value=c;
+$('divisions').value=n;$('nSlider').value=n;
+$('mapping').textContent='i → '+Number(c.toFixed(2))+'i mod '+n;
+const k=Math.round(c);
+if(integer()&&k>=2){
+$('family').textContent=(k===2?'Cardioid':k===3?'Nephroid':'Epicycloid')+' · '+(k-1)+' cusp'+(k===2?'':'s');
+$('explain').textContent='The ideal envelope has '+(k-1)+' cusp'+(k===2?'':'s')+'. These lie at angles (2j+1)π/'+(k-1)+', halfway between fixed-point angles.';
+}else if(integer()&&k===1){$('family').textContent='Degenerate chords';$('explain').textContent='Every point is mapped to itself, so all chords collapse.';}
+else if(integer()&&k===0){$('family').textContent='Constant map';$('explain').textContent='Every chord points to angle zero.';}
+else{$('family').textContent='Noninteger sweep';$('explain').textContent='Noninteger multipliers create striking transitions, but do not give a well-defined continuous circle map on the identified endpoints.';}
+$('state').textContent=playing?'Playing '+(direction===1?'forward':'reverse'):'Paused';
+document.querySelectorAll('#presets button').forEach(b=>b.classList.toggle('active',Number(b.dataset.c)===c&&Number(b.dataset.n)===n));
+$('play').textContent=playing?'Ⅱ Pause':'▶ Animate c';
+}
+function setC(v){if(!Number.isFinite(v))return;c=clamp(v,0,15);dirty=true;sync();request();}
+function setN(v){if(!Number.isFinite(v))return;n=Math.round(clamp(v,10,1500));dirty=true;sync();request();}
+function resize(){
+const rect=canvas.getBoundingClientRect();cssW=Math.max(1,rect.width);cssH=Math.max(1,rect.height);
+const dpr=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(cssW*dpr);canvas.height=Math.round(cssH*dpr);
+ctx.setTransform(dpr,0,0,dpr,0,0);dirty=true;request();
+}
+function request(){if(!raf)raf=requestAnimationFrame(frame);}
+function paint(){
+const w=cssW,h=cssH,scale=Math.min(w,h)*.445,cx=w/2,cy=h/2;
+const trails=$('trails').checked;
+ctx.globalCompositeOperation='source-over';ctx.shadowBlur=0;
+if(trails&&previousTrail){ctx.fillStyle='rgba(5,9,17,.14)';ctx.fillRect(0,0,w,h);}else{ctx.fillStyle='#060b15';ctx.fillRect(0,0,w,h);}
+previousTrail=trails;
+ctx.save();ctx.translate(cx,cy);
+ctx.strokeStyle='rgba(132,159,193,.27)';ctx.lineWidth=1;
+ctx.beginPath();ctx.arc(0,0,scale,0,TAU);ctx.stroke();
+const alpha=Number($('density').value),glow=$('glow').checked;
+ctx.lineWidth=Math.max(.5,Math.min(1.25,450/n));ctx.shadowBlur=glow?Math.min(10,8*scale/300):0;
+ctx.globalCompositeOperation=glow?'lighter':'source-over';
+for(let i=0;i<n;i++){
+const a=TAU*i/n,b=TAU*((i*c)%n)/n;
+ctx.strokeStyle=palette(i/n,alpha);
+ctx.beginPath();ctx.moveTo(scale*Math.cos(a),scale*Math.sin(a));ctx.lineTo(scale*Math.cos(b),scale*Math.sin(b));ctx.stroke();
+}
+ctx.shadowBlur=0;ctx.globalCompositeOperation='source-over';
+if($('envelope').checked&&integer()&&c>=2){
+const k=Math.round(c),steps=Math.max(900,k*230);
+ctx.beginPath();
+for(let j=0;j<=steps;j++){
+const theta=TAU*j/steps;
+const x=scale*(k*Math.cos(theta)+Math.cos(k*theta))/(k+1);
+const y=scale*(k*Math.sin(theta)+Math.sin(k*theta))/(k+1);
+if(j===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+}
+ctx.strokeStyle='#f6fbff';ctx.lineWidth=2.1;ctx.shadowColor='#a1faff';ctx.shadowBlur=glow?12:0;ctx.stroke();ctx.shadowBlur=0;
+if($('cusps').checked){
+for(let j=0;j<k-1;j++){
+const theta=(2*j+1)*Math.PI/(k-1);
+const x=scale*(k*Math.cos(theta)+Math.cos(k*theta))/(k+1);
+const y=scale*(k*Math.sin(theta)+Math.sin(k*theta))/(k+1);
+ctx.fillStyle='#ffdc8b';ctx.beginPath();ctx.arc(x,y,4,0,TAU);ctx.fill();
+}
+}
+}
+if($('points').checked){
+ctx.fillStyle='#f0f5ff';
+for(let i=0;i<n;i++){let a=TAU*i/n;ctx.beginPath();ctx.arc(scale*Math.cos(a),scale*Math.sin(a),Math.max(.9,Math.min(2.5,320/n)),0,TAU);ctx.fill();}
+}
+ctx.restore();
+}
+function frame(ts){
+raf=0;
+if(playing&&last){const dt=Math.min((ts-last)/1000,.08);c+=direction*Number($('speed').value)*dt;if(c>15)c=0;if(c<0)c=15;sync();dirty=true;}
+last=ts;
+if(dirty||playing){paint();dirty=false;}
+if(playing)request();
+}
+function pause(){playing=false;last=0;sync();dirty=true;request();}
+function toggle(){playing=!playing;last=0;sync();request();}
+$('cSlider').addEventListener('input',e=>setC(Number(e.target.value)));
+$('multiplier').addEventListener('change',e=>setC(Number(e.target.value)));
+$('nSlider').addEventListener('input',e=>setN(Number(e.target.value)));
+$('divisions').addEventListener('change',e=>setN(Number(e.target.value)));
+$('play').addEventListener('click',toggle);
+$('reverse').addEventListener('click',()=>{direction*=-1;sync();});
+$('reset').addEventListener('click',()=>{pause();direction=1;setC(2);setN(200);$('palette').value='spectrum';$('density').value='.38';$('glow').checked=true;$('envelope').checked=true;$('cusps').checked=true;$('points').checked=false;$('trails').checked=false;previousTrail=false;dirty=true;request();});
+document.querySelectorAll('#presets button').forEach(b=>b.addEventListener('click',()=>{pause();setC(Number(b.dataset.c));setN(Number(b.dataset.n));}));
+['palette','density','glow','envelope','cusps','points','trails'].forEach(id=>$(id).addEventListener('input',()=>{dirty=true;if(id==='trails')previousTrail=false;request();}));
+$('export').addEventListener('click',()=>{paint();const a=document.createElement('a');a.download='modular-atlas-c'+Number(c.toFixed(2))+'-n'+n+'.png';a.href=canvas.toDataURL('image/png');a.click();});
+$('fullscreen').addEventListener('click',()=>{if(document.fullscreenElement)document.exitFullscreen();else $('stage').requestFullscreen?.();});
+document.addEventListener('keydown',e=>{if(['INPUT','SELECT','TEXTAREA','BUTTON'].includes(document.activeElement.tagName))return;if(e.code==='Space'){e.preventDefault();toggle();}else if(e.code==='ArrowRight'||e.code==='ArrowLeft'){e.preventDefault();pause();setC(Math.round((c+(e.code==='ArrowRight'?1:-1)*(e.shiftKey?.01:.1))*100)/100);}});
+new ResizeObserver(resize).observe(canvas);
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&playing)pause();});
+sync();resize();
+})();
+</script>
+</body></html>
