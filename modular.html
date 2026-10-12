@@ -111,7 +111,7 @@ ctx.beginPath();ctx.moveTo(scale*Math.cos(a),scale*Math.sin(a));ctx.lineTo(scale
 }
 ctx.shadowBlur=0;ctx.globalCompositeOperation='source-over';
 if($('envelope').checked&&integer()&&c>=2){
-const k=Math.round(c),steps=Math.max(900,k*230);
+const k=Math.round(c),steps=Math.min(12000,Math.max(900,k*230));
 ctx.beginPath();
 for(let j=0;j<=steps;j++){
 const theta=TAU*j/steps;
