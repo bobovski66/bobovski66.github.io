@@ -22,7 +22,11 @@ main{display:grid;grid-template-columns:minmax(520px,1fr) 420px;height:100%;min-
 #hud{position:absolute;left:14px;top:14px;background:rgba(8,10,18,.72);border:1px solid var(--line);border-radius:14px;padding:10px 12px;backdrop-filter:blur(7px);font-size:12px;color:var(--muted);max-width:430px;pointer-events:none}
 .row{display:flex;align-items:center;gap:8px;margin:4px 0}.sw{width:20px;height:3px;border-radius:2px;display:inline-block}.sw.dot{height:10px;width:10px;border-radius:50%}
 #caption{position:absolute;left:18px;right:18px;bottom:12px;color:var(--muted);font-size:12px;line-height:1.45;font-style:italic;max-width:760px;pointer-events:none}
-aside{min-height:0;overflow:auto;background:var(--panel);border-left:1px solid var(--line)}
+aside{min-height:0;display:flex;flex-direction:column;overflow:hidden;background:var(--panel);border-left:1px solid var(--line)}
+#sweepControls{flex:none;background:var(--panel2);box-shadow:0 4px 12px rgba(0,0,0,.2);position:relative;z-index:1}
+#sidebarContent{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain}
+#thetaSlider{height:20px;margin:3px 0;background:linear-gradient(#313a56,#313a56) center/100% 3px no-repeat}
+#thetaSlider:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 .panel{padding:13px 16px;border-bottom:1px solid var(--line)}
 .panel-title{font:600 10px/1.2 'Segoe UI',Arial,sans-serif;text-transform:uppercase;letter-spacing:.16em;color:var(--muted);margin-bottom:9px}
 select,button,input[type=range]{width:100%}select,button{background:#0c0f1b;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13px}button{cursor:pointer}button:hover,select:focus{border-color:var(--gold);outline:none}
@@ -55,17 +59,21 @@ input[type=range]{appearance:none;height:3px;border-radius:3px;background:#313a5
     <div id="caption">Drag to rotate, scroll to zoom, shift-drag to pan. Sweep θ to move along both Legendrians. The blue dashed comparison segment becomes vertical exactly when η₁=η₂; that is the Reeb-chord condition, with z-gap D=ψ₂−ψ₁.</div>
   </section>
   <aside>
+    <div class="panel" id="sweepControls" role="region" aria-label="Parameter sweep">
+      <div class="panel-title">Parameter sweep</div>
+      <label class="sliderlab" for="thetaSlider"><span>θ along both model families</span><span id="thetaVal">0.000</span></label>
+      <input type="range" id="thetaSlider" min="-5" max="5" step="0.001" value="0" />
+      <div class="grid2" style="margin-top:9px"><button id="snapChord">Snap to selected chord</button><button id="autoSweep">Auto-sweep: off</button></div>
+    </div>
+    <div id="sidebarContent">
     <div class="panel">
       <div class="panel-title">Model pair</div>
       <select id="pairSelect"></select>
       <div class="eq" id="pairEq" style="margin-top:9px"></div>
     </div>
     <div class="panel">
-      <div class="panel-title">Parameter sweep</div>
-      <div class="sliderlab"><span>θ along both model families</span><span id="thetaVal">0.000</span></div>
-      <input type="range" id="thetaSlider" min="-5" max="5" step="0.001" value="0" />
+      <div class="panel-title">Swept model statistics</div>
       <div id="sweepStats" style="margin-top:8px"></div>
-      <div class="grid2" style="margin-top:9px"><button id="snapChord">Snap to selected chord</button><button id="autoSweep">Auto-sweep: off</button></div>
       <div class="hint" id="sweepInterpret" style="margin-top:8px"></div>
     </div>
     <div class="panel">
@@ -105,6 +113,7 @@ input[type=range]{appearance:none;height:3px;border-radius:3px;background:#313a5
       <label class="chk"><input type="checkbox" id="showPlanes" /> Show contact planes</label>
       <label class="chk"><input type="checkbox" id="showFisher" checked /> Show Fisher markers</label>
       <div class="grid2" style="margin-top:9px"><button id="resetCam">Reset camera</button><button id="autoSpin">Auto-spin: off</button></div>
+    </div>
     </div>
   </aside>
 </main>
