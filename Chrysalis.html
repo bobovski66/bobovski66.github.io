@@ -29,6 +29,7 @@
 </style>
   
   
+  
 </head>
 <body>
   <div class="app-shell">
@@ -309,9 +310,85 @@
 
 </script>
 <script>
+(function (root, factory) {
+  const motion = factory();
+  if (typeof module === 'object' && module.exports) module.exports = motion;
+  else root.GardenMotion = motion;
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  'use strict';
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  function create() {
+    return { x: 0, y: 0, heading: -1, walking: false, gait: 0, trip: null };
+  }
+  function limit(options) {
+    return Math.max(.03, .5 - Math.min(options.width * .32, options.radius) / options.width - .035);
+  }
+  function setDestination(motion, anchorX, anchorY, options) {
+    const side = Math.sign(anchorX - motion.x) || motion.heading;
+    const bounds = limit(options);
+    motion.trip.anchorX = anchorX;
+    motion.trip.anchorY = anchorY;
+    motion.trip.goalX = clamp(anchorX - side * options.radius * .68 / options.width, -bounds, bounds);
+    motion.trip.goalY = anchorY;
+    motion.trip.phase = 'travel';
+    motion.trip.hold = 0;
+    motion.heading = side;
+  }
+  function begin(motion, kind, options) {
+    const rng = options.random || Math.random;
+    const side = Math.abs(motion.x) > .025 ? -Math.sign(motion.x) : (rng() < .5 ? -1 : 1);
+    const anchorX = options.destination === undefined ? side * (.38 + .04 * rng()) : clamp(options.destination / options.width, -.43, .43);
+    motion.trip = { kind, leg: 0, anchorX: 0, anchorY: 0, goalX: 0, goalY: 0, phase: 'travel', hold: 0 };
+    setDestination(motion, anchorX, (rng() - .5) * .035, options);
+  }
+  function cancel(motion) { motion.trip = null; motion.walking = false; }
+  function step(motion, dt, options) {
+    if (!Number.isFinite(dt) || dt <= 0 || options.paused) return;
+    if (options.resting) { cancel(motion); return; }
+    const bounds = limit(options);
+    motion.x = clamp(motion.x, -bounds, bounds);
+    let goalX = 0, goalY = 0;
+    if (motion.trip) {
+      const trip = motion.trip;
+      trip.goalX = clamp(trip.goalX, -bounds, bounds);
+      if (trip.phase === 'hold') {
+        motion.walking = false; trip.hold -= dt;
+        if (trip.hold > 0) return;
+        if (trip.kind === 'explore' && trip.leg === 0) {
+          trip.leg = 1;
+          setDestination(motion, -Math.sign(trip.anchorX || 1) * .40, -trip.anchorY, options);
+        } else { motion.trip = null; return; }
+      }
+      goalX = trip.goalX; goalY = trip.goalY;
+    } else if (options.busy) { motion.walking = false; return; }
+    const dx = (goalX - motion.x) * options.width, dy = (goalY - motion.y) * options.height;
+    const distance = Math.hypot(dx, dy);
+    const speed = options.width * (.085 + .035 * (options.wander || 0));
+    const travel = Math.min(distance, speed * dt);
+    motion.walking = distance > 1.5;
+    if (distance > .01) {
+      motion.heading = Math.sign(dx) || motion.heading;
+      motion.x += dx / distance * travel / options.width;
+      motion.y += dy / distance * travel / options.height;
+      motion.gait += travel / Math.max(16, options.radius * .52) * Math.PI;
+    }
+    if (distance <= travel + 1.5) {
+      motion.x = goalX; motion.y = goalY; motion.walking = false;
+      if (motion.trip) {
+        motion.trip.phase = 'hold';
+        motion.trip.hold = motion.trip.kind === 'explore' ? 1.3 : 1.8;
+      }
+    }
+  }
+  return { create, begin, step, cancel, limit };
+});
+
+</script>
+<script>
 (function () {
   'use strict';
   const M = window.Chrysalis;
+  const Motion = window.GardenMotion;
   const $ = id => document.getElementById(id);
   const KEY = 'chrysalis.garden.v1';
   const COLORS = ['#aabd85', '#d3bd77', '#97b9a4', '#b1a6c8', '#c9ac99'];
@@ -361,7 +438,7 @@
   let category = 'food', notebook = 'growth', voiceNeed = 'food', toastTimer = 0, lastSave = 0;
   let actionLock = 0, lastUI = 0, lastFrame = performance.now(), hiddenAt = 0, lastRequest = '';
   let lastPhase = state.phase, lastStage = state.stage, lastJournal = '', lastVoice = '', lastCare = '';
-  let audio, visualTime = 0, pointerTarget = 0, creatureX = 0, particleId = 0;
+  let audio, visualTime = 0, particleId = 0, movement = Motion.create();
   const particles = [];
   const canvas = $('garden'), ctx = canvas.getContext('2d');
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -421,7 +498,8 @@
     $('response-note').textContent = result.message;
     particlesFor(M.ACTIONS[key].motion);
     if (key === 'echo' || key === 'rhythm') sing(answeredSignal || state.signals[1], true);
-    if (key === 'explore' || key === 'puzzle') pointerTarget = destination === undefined ? (Math.random() - .5) * width * .4 : destination;
+    if (key === 'explore' || key === 'puzzle') Motion.begin(movement, key, Object.assign(movementOptions(), { destination }));
+    else Motion.cancel(movement);
     if (key === 'rest') toast(state.name + ' is taking a little nap.');
     renderUI(true); save();
   }
@@ -569,7 +647,11 @@
         lastRequest = key; sing(signal, false);
         $('habitat-message').textContent = 'A call of its own. What might it mean?';
       }
-    } else if (!force || !state.activity) $('habitat-message').textContent = pupa ? 'A warm presence is enough.' : sleeping ? 'Let the little dreams do their work.' : 'Tap your creature to say hello. Tap the garden to explore.';
+    } else if (!force || !state.activity) $('habitat-message').textContent = pupa ? 'A warm presence is enough.' : sleeping ? 'Let the little dreams do their work.' : movement.trip ? (movement.trip.kind === 'explore' ? 'Follow the little lights, all the way across the garden.' : 'A pebble waits on the far side of the garden.') : 'Tap your creature to say hello. Tap the garden to explore.';
+    canvas.dataset.creatureX = ((.5 + movement.x) * width).toFixed(1);
+    canvas.dataset.playTargetX = movement.trip ? ((.5 + movement.trip.anchorX) * width).toFixed(1) : '';
+    canvas.dataset.playTargetKind = movement.trip ? movement.trip.kind : '';
+    canvas.dataset.playLeg = movement.trip ? String(movement.trip.leg) : '';
     if (lastPhase !== state.phase || lastStage !== state.stage) {
       if (state.phase === 'pupa') { toast(state.name + ' is entering a chrysalis.'); category = 'care'; $('tab-care').click(); }
       if (state.stage > lastStage) { toast(state.name + ' emerged as a ' + M.formName(state) + '.'); particlesFor('emerge'); sing({ pitch: 540, beats: 4, style:'trill' }, true); }
@@ -634,24 +716,56 @@
     if(progress>.85)strokePath('rgba(239,244,188,.85)',1.4,()=>{ctx.moveTo(-3,-54);ctx.lineTo(5,-35);ctx.lineTo(-4,-20);ctx.lineTo(6,2);ctx.lineTo(0,22);});
     ctx.restore();
   }
+  function creatureGeometry() {
+    const mobileScale = Math.min(1, width / 580);
+    const scale = Math.max(.64, mobileScale) * [1.02, 1.13, 1.24, 1.32][state.stage];
+    const p = state.expressed.map(v => Math.min(1, Math.max(0, (v - .10) / .60)));
+    const w = 55 + state.genome[1] * 8 + p[4] * 15;
+    const h = 65 + state.genome[2] * 9 + p[3] * 9;
+    return { scale, p, w, h, radius: scale * (w * 1.12 + 8 + p[0] * 30) };
+  }
+  function movementOptions() {
+    const geometry = creatureGeometry();
+    return { width, height, radius: geometry.radius, wander: geometry.p[2],
+      paused: state.settings.paused, resting: state.phase === 'pupa' || state.sleepingUntil > state.age,
+      busy: state.activity && !['explore', 'puzzle'].includes(state.activity.type) };
+  }
+  function drawPlayTarget(t) {
+    if (!movement.trip || state.phase === 'pupa') return;
+    const trip = movement.trip, geometry = creatureGeometry();
+    const x = width * (.5 + trip.anchorX), groundY = height * (.63 + trip.anchorY) + 53 * geometry.scale;
+    if (trip.kind === 'puzzle') {
+      ellipse(x, groundY + 4, 21, 5, 'rgba(7,25,22,.18)');
+      const fill = ctx.createLinearGradient(x - 13, groundY - 10, x + 12, groundY + 5);
+      fill.addColorStop(0, '#c2c8af'); fill.addColorStop(1, '#7f9280');
+      ctx.save(); ctx.translate(x, groundY - 3); ctx.rotate(-.14);
+      ellipse(0, 0, 13, 8, fill); ellipse(-4, -3, 5.5, 2, 'rgba(235,237,207,.45)');
+      strokePath('rgba(61,91,66,.35)', .8, () => { ctx.moveTo(2, -4); ctx.lineTo(-1, 0); ctx.lineTo(2, 3); }); ctx.restore();
+    } else {
+      for (let i = 0; i < 4; i++) {
+        const flyX = x + Math.sin(t * 1.8 + i * 2.1) * 12;
+        const flyY = groundY - 55 * geometry.scale + Math.cos(t * 1.5 + i * 1.7) * 15 - i * 4;
+        const glow = ctx.createRadialGradient(flyX, flyY, 0, flyX, flyY, 15);
+        glow.addColorStop(0, 'rgba(235,242,166,.6)'); glow.addColorStop(1, 'rgba(235,242,166,0)');
+        ellipse(flyX, flyY, 15, 15, glow); ellipse(flyX, flyY, 2, 2, '#edf3b2');
+      }
+    }
+  }
   function drawCreature(t) {
-    const mobileScale=Math.min(1,width/580), baseScale=Math.max(.64,mobileScale)*[1.02,1.13,1.24,1.32][state.stage];
-    const p=state.expressed.map(v=>Math.min(1,Math.max(0,(v-.10)/.60))), bloom=p[0],lantern=p[1],wander=p[2],resonance=p[3],velvet=p[4];
+    const geometry=creatureGeometry(),baseScale=geometry.scale,p=geometry.p,bloom=p[0],lantern=p[1],wander=p[2],resonance=p[3],velvet=p[4];
     const activity=state.activity?state.activity.type:'idle',sleeping=state.sleepingUntil>state.age, pupa=state.phase==='pupa';
     const motionTime=reducedMotion?0:t;
-    const target=activity==='explore'||activity==='puzzle'?pointerTarget:0;
-    creatureX+=(target-creatureX)*.025;
-    const cx=width*.50+creatureX,cy=height*.63;
+    const cx=width*(.50+movement.x),cy=height*(.63+movement.y);
     hitCreature={x:cx,y:cy-17*baseScale,radius:87*baseScale};
     if(pupa){drawPupa(motionTime,baseScale,cx,cy);return;}
-    const w=55+state.genome[1]*8+velvet*15,h=65+state.genome[2]*9+resonance*9;
-    const hop=(activity==='explore'||activity==='puzzle')?Math.abs(Math.sin(motionTime*6))*13:activity==='rhythm'?Math.sin(motionTime*8)*3:0;
+    const w=geometry.w,h=geometry.h;
+    const hop=reducedMotion?0:movement.walking?Math.abs(Math.sin(movement.gait))*9:activity==='rhythm'?Math.sin(motionTime*8)*3:0;
     const bob=sleeping?Math.sin(motionTime*1.1)*2:Math.sin(motionTime*1.7)*2.1;
     const wiggle=state.request&&state.signals[state.request.signal].style==='wiggle';
     const lean=activity==='cuddle'?-.08:wiggle?Math.sin(motionTime*6)*.06:activity==='rhythm'?Math.sin(motionTime*4)*.05:Math.sin(motionTime*.55)*.015;
     ellipse(cx,cy+55*baseScale,61*baseScale,(9-hop*.13)*baseScale,'rgba(6,25,21,.28)');
     if(activity==='warmth'||lantern>.2){const aura=ctx.createRadialGradient(cx,cy,0,cx,cy,140*baseScale);aura.addColorStop(0,'rgba(221,218,135,'+(.08+lantern*.18)+')');aura.addColorStop(1,'rgba(221,218,135,0)');ellipse(cx,cy,140*baseScale,150*baseScale,aura);}
-    ctx.save();ctx.translate(cx,cy+bob-hop);ctx.rotate(lean);ctx.scale(baseScale,baseScale);
+    ctx.save();ctx.translate(cx,cy+bob-hop);ctx.rotate(lean);ctx.scale(-movement.heading*baseScale,baseScale);
     if(state.stage>0){
       const tail=20+wander*60;
       strokePath('#93bd9a',8+wander*4,()=>{ctx.moveTo(w*.63,26);ctx.bezierCurveTo(w+tail*.7,34,w+tail,-13,w+tail*.3,-7);});
@@ -659,7 +773,7 @@
       if(state.stage>1&&wander>.12){[-1,1].forEach(side=>{ctx.save();ctx.scale(side,1);ctx.beginPath();ctx.moveTo(w*.6,-12);ctx.bezierCurveTo(w+20+wander*34,-58,w+44+wander*21,20,w*.75,30);ctx.fillStyle='rgba(161,197,164,'+(.2+wander*.3)+')';ctx.fill();strokePath('rgba(194,219,176,.32)',1,()=>{ctx.moveTo(w*.65,-10);ctx.quadraticCurveTo(w+25,-12,w*.8,23);});ctx.restore();});}
     }
     const legCount=state.stage>=2&&wander>.22?4:2;
-    for(let i=0;i<legCount;i++){const xx=(i-(legCount-1)/2)*(legCount===2?42:27);const sway=(activity==='explore'?Math.sin(motionTime*7+i*2)*5:0);ellipse(xx,43+sway,12+wander*4,16+wander*10,'#8eb89a');ellipse(xx-3,46+sway,5,8,'rgba(199,221,172,.3)');}
+    for(let i=0;i<legCount;i++){const xx=(i-(legCount-1)/2)*(legCount===2?42:27);const sway=(!reducedMotion&&movement.walking?Math.sin(movement.gait+i*2)*5:0);ellipse(xx,43+sway,12+wander*4,16+wander*10,'#8eb89a');ellipse(xx-3,46+sway,5,8,'rgba(199,221,172,.3)');}
     const sideColor=['#aed0a5','#c5d597','#a3c9ad','#c7bfdb','#cfbfa9'][p.indexOf(Math.max(...p))];
     [-1,1].forEach(side=>{
       const count=state.stage===0?1:2+Math.round(bloom*3);
@@ -703,15 +817,12 @@
     if(sleeping){
       ctx.save();ctx.fillStyle='rgba(215,229,187,.6)';ctx.font='italic 15px Georgia';ctx.fillText('z',cx+50*baseScale,cy-80*baseScale+(reducedMotion?0:Math.sin(t)*3));ctx.font='italic 11px Georgia';ctx.fillText('z',cx+63*baseScale,cy-98*baseScale);ctx.restore();
     }
-    if(activity==='puzzle'){
-      ellipse(cx-75*baseScale,cy+49*baseScale,11*baseScale,6*baseScale,'#9fa795');ellipse(cx-78*baseScale,cy+47*baseScale,5*baseScale,2*baseScale,'#c2c7b3');
-    }
     if(activity==='eat'){
       for(let i=0;i<4;i++){const x=cx+(i-1.5)*12*baseScale,y=cy+20*baseScale+Math.sin(t*3+i)*4;ellipse(x,y,2,2,'rgba(236,216,162,.7)');}
     }
   }
   function draw(dt) {
-    const t=visualTime;ctx.clearRect(0,0,width,height);drawGarden(t);drawCreature(t);
+    const t=visualTime;ctx.clearRect(0,0,width,height);drawGarden(t);drawPlayTarget(t);drawCreature(t);
     for(let i=particles.length-1;i>=0;i--){
       const p=particles[i];p.life+=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;
       if(p.life>=p.max){particles.splice(i,1);continue;}
@@ -723,7 +834,7 @@
   canvas.addEventListener('click', e => {
     const rect=canvas.getBoundingClientRect(),x=e.clientX-rect.left,y=e.clientY-rect.top;
     if(Math.hypot(x-hitCreature.x,y-hitCreature.y)<hitCreature.radius) doAction('brush');
-    else if(state.phase==='awake')doAction('explore',Math.max(-width*.22,Math.min(width*.22,x-width*.5)));
+    else if(state.phase==='awake')doAction('explore',Math.max(-width*.43,Math.min(width*.43,x-width*.5)));
   });
   canvas.tabIndex=0;canvas.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();doAction('brush');}});
   $('sound-button').addEventListener('click',()=>{state.settings.sound=!state.settings.sound;syncSound();if(state.settings.sound)sing(state.signals[0],true);else if(audio)audio.suspend().catch(()=>{});save();});
@@ -750,7 +861,7 @@
   $('new-button').addEventListener('click',()=>$('new-dialog').showModal());
   $('confirm-new').addEventListener('click',()=>{
     const n=seed(),names=['Miro','Pip','Lumi','Moss','Fern','Kiko','Nori','Bramble'];
-    state=M.create(n,names[n%names.length]);particles.length=0;creatureX=0;pointerTarget=0;lastPhase='awake';lastStage=0;lastCare='';lastVoice='';lastJournal='';lastRequest='';lastFrame=performance.now();
+    state=M.create(n,names[n%names.length]);particles.length=0;movement=Motion.create();lastPhase='awake';lastStage=0;lastCare='';lastVoice='';lastJournal='';lastRequest='';lastFrame=performance.now();
     $('molt-history').replaceChildren();$('new-dialog').close();$('tab-food').click();syncSound();renderUI(true);save();toast('Hello, '+state.name+'. Another possible life.');
   });
   $('import-button').addEventListener('click',()=>$('import-file').click());
@@ -760,13 +871,13 @@
       if(file.size>250000)throw Error('That keepsake is too large.');
       const candidate=JSON.parse(await file.text());if(!M.validate(candidate))throw Error('That file is not a valid Chrysalis keepsake.');
       try{localStorage.setItem(KEY+'.previous',JSON.stringify(state));}catch(ignored){}
-      state=candidate;state.request=null;state.nextCall=state.age+8;lastPhase=state.phase;lastStage=state.stage;particles.length=0;creatureX=0;pointerTarget=0;lastCare='';lastVoice='';lastJournal='';lastRequest='';lastFrame=performance.now();$('molt-history').replaceChildren();syncSound();renderUI(true);save();toast('Welcome back, '+state.name+'.');
+      state=candidate;state.request=null;state.nextCall=state.age+8;lastPhase=state.phase;lastStage=state.stage;particles.length=0;movement=Motion.create();lastCare='';lastVoice='';lastJournal='';lastRequest='';lastFrame=performance.now();$('molt-history').replaceChildren();syncSound();renderUI(true);save();toast('Welcome back, '+state.name+'.');
     }catch(err){toast(err.message||'That keepsake could not be opened.');}
     e.target.value='';
   });
   function frame(now){
     const dt=Math.min(.25,Math.max(0,(now-lastFrame)/1000));lastFrame=now;
-    if(!state.settings.paused&&!document.hidden){M.advance(state,dt*state.settings.speed);visualTime+=reducedMotion?0:dt;}
+    if(!state.settings.paused&&!document.hidden){M.advance(state,dt*state.settings.speed);Motion.step(movement,dt,movementOptions());visualTime+=reducedMotion?0:dt;}
     draw(state.settings.paused?0:dt);renderUI(false);
     if(now-lastSave>3000){save();lastSave=now;}
     requestAnimationFrame(frame);
