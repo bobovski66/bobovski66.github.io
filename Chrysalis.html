@@ -1,0 +1,786 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#173e38">
+  <meta name="description" content="Raise a small, evolving creature. Its care becomes its shape, and your responses become a language of its own.">
+  <title>Chrysalis — a little life, shaped by you</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='10' fill='%23173e38'/%3E%3Cellipse cx='16' cy='17' rx='8' ry='10' fill='%23c7e6af'/%3E%3Ccircle cx='13' cy='15' r='1.3' fill='%23173e38'/%3E%3Ccircle cx='19' cy='15' r='1.3' fill='%23173e38'/%3E%3C/svg%3E">
+  <style>
+:root{--paper:#f7f7ee;--surface:#fffef8;--ink:#233e33;--muted:#7c8879;--line:#dce2d3;--green:#315b43;--lime:#d5eab2;--mint:#a3c8ae;--terracotta:#cb997f;--gold:#d5bb76;--lavender:#b4afcf;--radius:22px;--sans:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;--serif:"Iowan Old Style","Palatino Linotype",Georgia,serif}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px/1.5 var(--sans);-webkit-font-smoothing:antialiased}button,input,select{font:inherit}button,a,input,select{-webkit-tap-highlight-color:transparent}button{cursor:pointer;color:inherit}button{border:0}button:disabled{cursor:default;opacity:.42}button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,canvas:focus-visible{outline:3px solid #bc9968;outline-offset:4px}button,a,select{touch-action:manipulation}button svg,[data-icon] svg{width:18px;height:18px;display:block;flex-shrink:0}button{transition:background .18s,transform .18s,opacity .18s}button:active:not(:disabled){transform:translateY(1px)}[hidden]{display:none!important}.app-shell{max-width:1440px;padding:0 52px;margin:auto}.app-header{height:94px;display:flex;align-items:center;border-bottom:1px solid var(--line);gap:34px}.brand{font-family:var(--serif);font-size:32px;letter-spacing:-1.5px;text-decoration:none;color:var(--ink);display:flex;align-items:center;gap:12px}.brand-dot{color:#8aab79}.brand-mark{display:block;width:23px;height:29px;position:relative;transform:rotate(-17deg);border-radius:50% 50% 46% 46%;background:#d9e3c3}.brand-mark:before{content:"";position:absolute;width:17px;height:24px;left:3px;top:2px;border-radius:50%;border:1px solid #7c986b}.brand-mark span{position:absolute;width:1px;height:21px;background:#7c986b;left:11px;top:4px;transform:rotate(28deg)}.header-caption{font:italic 14px var(--serif);color:var(--muted);padding-top:4px}.header-actions{margin-left:auto;display:flex;align-items:center;gap:10px}.icon-button{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:transparent;color:var(--green)}.icon-button:hover,.quiet-button:hover{background:#e9eddf}.icon-button[aria-pressed=true]{background:var(--lime)}.quiet-button{display:inline-flex;align-items:center;gap:8px;background:transparent;border-radius:8px;padding:8px 11px;font-size:12px}.header-actions .quiet-button{margin-left:12px}.page-heading{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:36px 0 25px}.eyebrow{font-size:10px;font-weight:600;letter-spacing:1.7px;display:flex;align-items:center;gap:7px;color:var(--muted)}.live-dot{width:5px;height:5px;border-radius:50%;background:#8ba16e;display:inline-block}h1{font:400 43px/1.2 var(--serif);letter-spacing:-1.7px;margin:8px 0 7px}#name-button{background:transparent;font:inherit;letter-spacing:inherit;padding:0;color:inherit;display:inline-flex;align-items:baseline;gap:10px}#name-button span{display:inline-flex;opacity:.35;align-self:center}#name-button svg{width:15px;height:15px}#name-button:hover span{opacity:.9}.intro{margin:0;color:var(--muted);font-size:13px}.clock-control{display:flex;flex-direction:column;gap:7px}.clock-control label{font-size:10px;letter-spacing:1.1px;text-transform:uppercase;color:var(--muted)}.select-wrap{position:relative}.select-wrap>span{pointer-events:none;position:absolute;right:12px;top:11px}.select-wrap svg{width:13px;height:13px}select{color:var(--ink);font-size:12px;border:1px solid var(--line);border-radius:8px;padding:8px 34px 8px 12px;background:var(--surface);appearance:none;cursor:pointer;min-height:36px}.play-layout{display:grid;grid-template-columns:minmax(0,1fr) 326px;gap:22px;align-items:stretch}.habitat{background:#153a36;border-radius:var(--radius);position:relative;isolation:isolate;overflow:hidden;min-height:470px}#garden{width:100%;height:100%;position:absolute;inset:0;display:block;touch-action:manipulation;cursor:crosshair}.habitat-top{position:absolute;top:24px;left:25px;right:25px;display:flex;justify-content:space-between;gap:8px;pointer-events:none}.habitat-label{font-size:9px;letter-spacing:1.8px;color:#d4e3ba;display:flex;align-items:center;gap:7px}.tiny-star{font-size:13px;color:#c4d8a3}.age-label{font-size:10px;letter-spacing:.5px;color:#a3beb1}.habitat-bottom{position:absolute;bottom:21px;left:25px;right:25px;color:#dbe9cc;display:flex;justify-content:space-between;align-items:center;font-size:10px;gap:12px}.habitat-bottom>div{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.stage-indicator{width:5px;height:5px;background:#d5df9b;border-radius:50%}.habitat-divider{opacity:.35}.habitat-status{font:italic 11px var(--serif);color:#a8c3aa;white-space:nowrap}.habitat-message{position:absolute;bottom:57px;left:24px;right:24px;color:#bbd0b5;font-size:11px;text-align:center;pointer-events:none;min-height:18px}.signal-bubble{position:absolute;top:85px;left:50%;transform:translateX(-50%);background:#fcfdeb;box-shadow:0 10px 32px #061b2440;border-radius:14px;padding:12px 12px 12px 14px;display:flex;align-items:center;gap:10px;min-width:198px;z-index:2}.signal-bubble:after{content:"";position:absolute;bottom:-5px;left:46%;width:11px;height:11px;background:#fcfdeb;transform:rotate(45deg)}.signal-dot{width:8px;height:8px;border-radius:50%;background:#c9a784;box-shadow:0 0 0 4px #ede5cd;flex-shrink:0}.signal-caption{font-size:9px;color:#8a907d;display:block;line-height:1.3}.signal-play{padding:3px 0 0;background:transparent;display:flex;align-items:center;gap:9px;font:400 18px var(--serif);color:var(--ink)}.signal-play svg{width:12px;height:12px;opacity:.55}.signal-hint{width:28px;height:28px;border-radius:50%;background:transparent;margin-left:auto;color:#88967a;display:flex;align-items:center;justify-content:center}.signal-hint:hover{background:#e9edda}.signal-hint svg{width:15px;height:15px}.pause-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#0b252844;color:#e5edcf;font:italic 28px var(--serif);pointer-events:none;z-index:3;backdrop-filter:blur(2px)}.care-panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:23px 22px 17px;display:flex;flex-direction:column}.panel-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}.panel-heading .eyebrow{font-size:8px;letter-spacing:1.5px}h2{font:400 26px/1.2 var(--serif);letter-spacing:-.65px;margin:6px 0 0}.small-flower{font-size:26px;color:#abbf89;font-weight:300}.needs-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px 18px;margin-bottom:22px}.need-item>div{display:flex;gap:5px;align-items:center;margin-bottom:7px;font-size:9px;color:#7c8774}.need-item svg{width:12px;height:12px;stroke-width:1.5}.need-item>div>span:last-child{margin-left:auto;font-size:9px;color:#5b725d;font-variant-numeric:tabular-nums}progress{display:block;border:0;border-radius:4px;width:100%;height:4px;overflow:hidden;background:#edf0e3;appearance:none}progress::-webkit-progress-bar{background:#edf0e3;border-radius:4px}progress::-webkit-progress-value{background:#99b182;border-radius:4px;transition:width .5s}progress::-moz-progress-bar{background:#99b182;border-radius:4px}.need-item.low progress::-webkit-progress-value{background:#c59c7f}.need-item.low progress::-moz-progress-bar{background:#c59c7f}.care-tabs{display:flex;border-bottom:1px solid var(--line);gap:22px;margin-bottom:12px}.care-tabs button{padding:0 0 11px;background:transparent;color:#95a08c;font-size:11px;position:relative}.care-tabs button[aria-selected=true]{color:var(--ink)}.care-tabs button[aria-selected=true]:after{content:"";height:2px;background:var(--green);position:absolute;bottom:-1px;left:0;right:0}.care-choices{display:flex;flex-direction:column;gap:7px;min-height:192px}.care-action{width:100%;display:flex;align-items:center;gap:12px;background:#f6f7ee;border:1px solid transparent;border-radius:11px;padding:11px 12px;text-align:left;min-height:59px}.care-action:hover:not(:disabled){background:#eef2df;border-color:#d2ddbd}.action-icon{width:33px;height:33px;display:flex;align-items:center;justify-content:center;background:#e9efda;border-radius:9px;color:#7e9564;flex-shrink:0}.action-icon svg{width:19px;height:19px;stroke-width:1.5}.action-text{min-width:0}.action-name{font-size:11px;font-weight:500;display:block}.action-description{font-size:9px;color:#8d9681;display:block;margin-top:1px}.action-arrow{color:#a4b18e;font-size:15px;margin-left:auto}.response-note{font-size:9px;line-height:1.6;color:#99a08d;margin:10px 0 13px;min-height:29px}.echo-button{background:transparent;border-top:1px solid var(--line);padding:13px 0 0;display:flex;align-items:center;gap:9px;font-size:10px;margin-top:auto;color:#738666}.echo-button svg{width:14px;height:14px}.button-arrow{margin-left:auto;color:#a1ad93}.growth-strip{display:flex;align-items:center;gap:30px;padding:22px 25px;background:#ecf0df;border:1px solid #e0e7d1;border-radius:15px;margin:20px 0 31px}.growth-heading{display:flex;align-items:center;gap:13px;min-width:215px}.growth-icon{display:flex;align-items:center;justify-content:center;width:35px;height:40px;color:#8fa473}.growth-icon svg{width:27px;height:34px;stroke-width:1.3}.growth-heading .eyebrow{font-size:8px;letter-spacing:1.5px;color:#8d9b7c}.growth-heading h2{font-size:18px;letter-spacing:-.3px;margin-top:3px}.growth-center{flex:1;min-width:120px}.growth-labels{display:flex;justify-content:space-between;gap:10px;margin-bottom:8px;font-size:9px;color:#758569}.growth-labels span:last-child{font-variant-numeric:tabular-nums}#growth-progress{height:5px;background:#dde5cd}#growth-progress::-webkit-progress-bar{background:#dde5cd}#growth-progress::-webkit-progress-value{background:#8caa70}#growth-progress::-moz-progress-bar{background:#8caa70}.growth-detail{display:block;margin-top:7px;font-size:8px;color:#8b987d}.life-stages{display:flex;align-items:center;gap:8px;margin-left:8px}.life-dot{height:8px;width:8px;border:1px solid #bac9a1;border-radius:50%;display:block}.life-dot.active{background:#8ca36e;border-color:#8ca36e;box-shadow:0 0 0 4px #dce6c8}.life-dot.complete{background:#b4c49c;border-color:#b4c49c}.life-stages i{display:block;height:1px;width:18px;background:#cdd8bb}.notebook{padding-bottom:10px}.notebook-top{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);align-items:flex-start;gap:12px}.notebook-tabs{display:flex;gap:29px}.notebook-tabs button{display:flex;align-items:center;gap:7px;background:transparent;padding:0 0 16px;font-size:11px;color:#8e9883;position:relative}.notebook-tabs button svg{width:14px;height:14px}.notebook-tabs button[aria-selected=true]{color:var(--ink)}.notebook-tabs button[aria-selected=true]:after{content:"";height:2px;background:var(--green);position:absolute;bottom:-1px;left:0;right:0}.journal-count{display:flex;align-items:center;justify-content:center;min-width:16px;height:16px;background:#e8ecdc;border-radius:5px;font-size:8px;padding:0 4px}.notebook-caption{font:italic 12px var(--serif);color:#a1a88f}.notebook-content{padding:24px 0 8px;min-height:232px}.development-columns{display:grid;grid-template-columns:1fr 1fr;gap:65px}.section-kicker{font-size:8px;letter-spacing:1.5px;color:#8b977f}.notebook-intro{margin:7px 0 19px;color:#77856e;font-size:11px}.trait-bars{display:grid;grid-template-columns:1fr 1fr;gap:12px 25px}.trait-row{min-width:0}.trait-label{display:flex;align-items:center;gap:6px;margin-bottom:5px;font-size:9px;color:#768369}.trait-label>i{display:block;width:5px;height:5px;border-radius:50%}.trait-label>span:last-child{margin-left:auto;font-size:8px;color:#8c967e;font-variant-numeric:tabular-nums}.trait-row progress{height:3px}.care-distribution{height:20px;border-radius:5px;background:#e9eddd;display:flex;overflow:hidden;margin-top:23px}.care-segment{height:100%;transition:width .3s}.food-color{background:#a7bc87}.play-color{background:#ccb986}.care-color{background:#a6bdb4}.care-legend{display:flex;justify-content:space-between;gap:8px;margin-top:10px;font-size:9px;color:#839076}.care-legend>span{display:flex;align-items:center;gap:5px}.care-legend i{display:block;width:5px;height:5px;border-radius:50%}.care-legend>span>span{font-size:8px;color:#a1a98e}.history-note{font:italic 12px/1.6 var(--serif);color:#98a085;margin:17px 0 0}.molt-history{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.molt-token{font-size:9px;padding:4px 8px;border:1px solid #dce2cc;border-radius:5px;color:#758669}.voice-heading{display:flex;justify-content:space-between;gap:18px;align-items:flex-start}.voice-select{font-size:10px;color:#8a957b;display:flex;align-items:center;gap:8px}.voice-select select{padding:6px 25px 6px 8px;min-height:30px;font-size:11px;appearance:auto}.voice-bars{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 24px}.voice-row{padding-top:5px;min-width:0}.voice-top{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px}.voice-name{background:transparent;padding:2px 0;display:flex;align-items:center;gap:7px;font-size:11px;text-align:left;overflow-wrap:anywhere}.voice-name svg{width:12px;height:12px;color:#8a9c73}.voice-value{font-size:9px;color:#8f9c81;font-variant-numeric:tabular-nums}.voice-row progress{height:5px}.voice-row.leading progress::-webkit-progress-value{background:#7f9f61}.voice-row.leading progress::-moz-progress-bar{background:#7f9f61}.journal-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:16px 36px;max-height:330px;overflow:auto}.journal-entry{display:flex;align-items:flex-start;gap:11px;min-width:0}.journal-symbol{color:#93a476;background:#ecf0df;display:flex;align-items:center;justify-content:center;width:27px;height:29px;border-radius:7px;flex-shrink:0}.journal-symbol svg{width:14px;height:14px}.journal-message{font-size:11px;line-height:1.6;color:#6e7f64;margin:0}.journal-age{font-size:8px;color:#9ca58f;margin-top:3px;display:block}footer{border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:21px 0 30px;font-size:9px;color:#9aa28d;margin-top:14px}footer>div{display:flex;align-items:center;gap:12px;flex-wrap:wrap}footer button{background:transparent;color:#8b977d;padding:3px 0;font-size:9px}footer button:hover{color:var(--green)}.save-status{display:flex;align-items:center;gap:6px}.save-dot{width:4px;height:4px;border-radius:50%;background:#99ad7c;display:inline-block}.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#fdfef2;color:#3b563b;box-shadow:0 6px 40px #1c392128;border:1px solid #dce5cf;border-radius:12px;max-width:min(520px,calc(100% - 32px));padding:14px 20px;font-size:12px;z-index:20;pointer-events:none}dialog{background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:20px;padding:30px;max-width:480px;width:calc(100% - 32px);box-shadow:0 20px 80px #0c292b33;max-height:calc(100dvh - 40px);overflow:auto}dialog::backdrop{background:#112f3180;backdrop-filter:blur(5px)}.dialog-heading{display:flex;align-items:center;justify-content:space-between;gap:15px}.dialog-heading .eyebrow{font-size:9px}dialog h2{font-size:33px;margin:10px 0 19px}dialog p{font-size:12px;color:#7a876c;line-height:1.8;margin:12px 0 20px}.guide-list{display:flex;flex-direction:column;gap:15px;margin:22px 0}.guide-list>div{display:flex;align-items:flex-start;gap:15px}.guide-list>div>span{margin-top:3px;color:#8fa377}.guide-list p{margin:0;font-size:11px}.guide-list b{font-weight:500;color:#46603e}.guide-footnote{font-size:10px!important;border-top:1px solid var(--line);padding-top:17px}.primary-button{display:inline-flex;align-items:center;justify-content:center;border-radius:9px;background:#315b43;color:#f1f5e8;font-size:12px;min-height:41px;padding:10px 18px}.primary-button:hover{background:#234a35}.dialog-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.dialog-actions .quiet-button{font-size:11px}#name-form{display:flex;flex-direction:column;gap:12px}#name-form label{font-size:11px;color:#7b8b6e}#name-form input{border:1px solid #ccd7bd;border-radius:8px;padding:12px;background:var(--surface);color:var(--ink);font-size:16px}#name-form .primary-button{align-self:flex-start;margin-top:6px}.noscript{padding:24px;text-align:center}
+@media(min-width:1500px){.app-shell{padding:0 64px}.habitat{min-height:500px}}@media(max-width:1130px){.app-shell{padding:0 30px}.play-layout{grid-template-columns:minmax(0,1fr) 300px;gap:18px}.care-panel{padding:22px 19px 17px}.habitat{min-height:463px}.header-caption{display:none}.growth-strip{gap:20px}.growth-heading{min-width:190px}.notebook-caption{display:none}.development-columns{gap:45px}.habitat-status{display:none}}@media(max-width:860px){.app-shell{padding:0 22px}.app-header{height:78px}.page-heading{padding:29px 0 22px}h1{font-size:37px}.eyebrow{font-size:8px}.intro{font-size:11px}.play-layout{grid-template-columns:minmax(0,1fr) 278px;gap:14px}.habitat{min-height:454px}.habitat-top{left:19px;right:19px;top:21px}.habitat-label{font-size:8px;letter-spacing:1px}.age-label{font-size:9px}.habitat-bottom{left:19px;right:19px;font-size:9px}.habitat-bottom>div{gap:6px}.care-panel{padding:21px 16px 16px}.panel-heading h2{font-size:23px}.action-description{font-size:8px}.care-action{padding:10px;gap:9px}.action-icon{width:29px;height:30px}.action-name{font-size:10px}.growth-heading{min-width:175px}.growth-heading h2{font-size:16px}.growth-strip{padding:20px 18px}.life-stages{display:none}.development-columns{gap:30px}.voice-bars{grid-template-columns:repeat(3,1fr)}footer>div{gap:8px}}@media(max-width:690px){.app-shell{padding:0 18px}.app-header{height:72px;gap:12px}.brand{font-size:28px}.brand-mark{width:21px;height:27px}.header-actions{gap:2px}.header-actions .quiet-button{margin-left:4px;padding:7px;font-size:10px}.header-actions .quiet-button svg{width:15px;height:15px}.icon-button{width:34px;height:34px}.page-heading{align-items:flex-start;gap:12px;padding:27px 0 22px}h1{font-size:36px;margin-top:7px}.intro{max-width:240px;font-size:11px;line-height:1.6}.clock-control{margin-top:22px;gap:5px;flex-shrink:0}.clock-control label{font-size:8px}.clock-control select{font-size:10px;padding:7px 24px 7px 9px;min-height:32px;width:126px}.select-wrap>span{right:9px;top:10px}.select-wrap svg{width:11px;height:11px}.page-heading .eyebrow{font-size:7px;letter-spacing:1px}.play-layout{grid-template-columns:1fr;gap:16px}.habitat{min-height:410px}.habitat-top{top:20px;left:21px;right:21px}.habitat-label{font-size:8px;letter-spacing:1.5px}.habitat-bottom{left:21px;right:21px;bottom:20px}.habitat-status{display:block;font-size:9px}.habitat-bottom>div{font-size:9px}.habitat-message{font-size:10px}.signal-bubble{top:69px}.care-panel{padding:22px}.panel-heading{margin-bottom:20px}.panel-heading h2{font-size:26px}.needs-grid{gap:17px 26px;margin-bottom:24px}.need-item>div{font-size:10px;margin-bottom:8px}.need-item>div>span:last-child{font-size:10px}.need-item svg{width:13px;height:13px}.care-tabs{gap:30px}.care-tabs button{font-size:12px;padding-bottom:13px;min-height:34px}.care-choices{min-height:0;gap:8px}.care-action{padding:12px 13px;min-height:65px;gap:13px}.action-icon{width:36px;height:36px}.action-name{font-size:12px}.action-description{font-size:10px}.action-arrow{font-size:18px}.response-note{font-size:10px;min-height:0;margin:14px 0}.echo-button{font-size:12px;padding-top:15px;min-height:40px}.growth-strip{margin:18px 0 27px;padding:18px;gap:16px;flex-wrap:wrap}.growth-heading{min-width:0;flex-basis:100%}.growth-heading h2{font-size:20px}.growth-heading .eyebrow{font-size:8px}.growth-icon{width:29px;height:34px}.growth-center{flex-basis:100%}.growth-labels{font-size:10px}.growth-detail{font-size:9px}.notebook-tabs{gap:22px;width:100%;justify-content:space-between}.notebook-tabs button{font-size:10px;gap:5px;padding-bottom:14px}.notebook-tabs button svg{width:13px;height:13px}.journal-count{display:none}.notebook-content{padding-top:23px}.development-columns{grid-template-columns:1fr;gap:28px}.trait-bars{gap:15px 25px}.trait-label{font-size:11px;margin-bottom:7px}.trait-label>span:last-child{font-size:10px}.trait-row progress{height:4px}.section-kicker{font-size:9px}.notebook-intro{font-size:12px}.care-distribution{margin-top:18px;height:22px}.care-legend{font-size:11px}.care-legend>span>span{font-size:10px}.history-note{font-size:13px}.voice-heading{flex-direction:column;gap:0}.voice-select{font-size:11px;margin-bottom:22px}.voice-select select{font-size:12px;min-height:35px}.voice-bars{grid-template-columns:1fr 1fr;gap:17px 26px}.voice-name{font-size:12px;min-height:34px}.voice-value{font-size:10px}.journal-list{grid-template-columns:1fr;max-height:420px;gap:20px}.journal-message{font-size:12px}.journal-age{font-size:9px}.journal-symbol{width:30px;height:32px}footer{flex-direction:column;align-items:flex-start;gap:15px;padding-top:20px;margin-top:25px;font-size:10px}footer>div{gap:12px}footer button{font-size:10px;min-height:32px}dialog{padding:23px}dialog h2{font-size:29px}dialog p{font-size:12px}.guide-list p{font-size:12px}.guide-footnote{font-size:11px!important}.toast{font-size:12px;bottom:18px}}@media(max-width:380px){.app-shell{padding:0 13px}.header-actions .quiet-button{gap:4px;font-size:9px}.brand{font-size:26px;gap:9px}.clock-control select{width:109px;font-size:9px}.intro{max-width:180px;font-size:10px}.habitat{min-height:378px}.habitat-status{display:none}.notebook-tabs{gap:9px}.notebook-tabs button{font-size:9px;gap:4px}.notebook-tabs button svg{width:12px;height:12px}.care-panel{padding:20px}.eyebrow{letter-spacing:1px}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+/* Keep the smallest garden labels legible at ordinary desktop zoom. */
+@media(min-width:691px){
+ .action-name{font-size:12px}.action-description{font-size:10px;line-height:1.45}.care-action{min-height:65px}
+ .need-item>div{font-size:10px}.need-item>div>span:last-child{font-size:10px}.care-tabs button{font-size:12px}
+ .response-note{font-size:10px;min-height:32px}.echo-button{font-size:11px;padding-top:14px}
+ .trait-label{font-size:11px}.trait-label>span:last-child{font-size:10px}.trait-row progress{height:4px}
+ .section-kicker{font-size:9px}.notebook-intro{font-size:12px}.notebook-tabs button{font-size:12px}
+ .care-legend{font-size:11px}.care-legend>span>span{font-size:10px}.history-note{font-size:13px}
+ .growth-labels{font-size:11px}.growth-detail{font-size:10px}.habitat-label{font-size:10px}.age-label{font-size:11px}
+ .habitat-bottom{font-size:11px}.habitat-message{font-size:12px}.growth-heading h2{font-size:20px}
+ .journal-message{font-size:12px}.journal-age{font-size:10px}.voice-name{font-size:12px}.voice-value{font-size:11px}
+ footer,footer button{font-size:11px}.growth-strip{padding-top:24px;padding-bottom:24px}
+}
+@media(min-width:691px) and (max-width:860px){.action-description{font-size:9px}.need-item>div{font-size:9px}.habitat-bottom{font-size:10px}}
+
+</style>
+  
+  
+</head>
+<body>
+  <div class="app-shell">
+    <header class="app-header">
+      <a class="brand" href="#garden" aria-label="Chrysalis home"><span class="brand-mark" aria-hidden="true"><span></span></span><span>chrysalis<span class="brand-dot">.</span></span></a>
+      <span class="header-caption">a little life, shaped by you</span>
+      <div class="header-actions">
+        <button class="icon-button" id="sound-button" aria-label="Turn sound on" aria-pressed="false" data-icon="sound-off"></button>
+        <button class="icon-button" id="pause-button" aria-label="Pause time" aria-pressed="false" data-icon="pause"></button>
+        <button class="quiet-button" id="guide-button"><span data-icon="book" aria-hidden="true"></span><span>Field guide</span></button>
+      </div>
+    </header>
+    <main>
+      <div class="page-heading">
+        <div><div class="eyebrow"><span class="live-dot"></span>YOUR LITTLE CORNER OF THE WORLD</div><h1>Hello, <button id="name-button" aria-label="Rename your creature">Nori<span data-icon="edit" aria-hidden="true"></span></button></h1><p class="intro" id="intro">A small life, full of possibilities. See what grows.</p></div>
+        <div class="clock-control"><label for="speed">Garden time</label><div class="select-wrap"><select id="speed" aria-label="Garden time speed"><option value="1">1× · unhurried</option><option value="4" selected>4× · lively</option><option value="12">12× · a quick look</option></select><span data-icon="chevron" aria-hidden="true"></span></div></div>
+      </div>
+      <div class="play-layout">
+        <section class="habitat" aria-label="Your creature's garden">
+          <canvas id="garden" aria-label="Nori in a softly glowing garden. Tap the creature to stroke it, or the garden to explore." role="img"></canvas>
+          <div class="habitat-top"><span class="habitat-label"><span class="tiny-star" aria-hidden="true">✦</span>THE MOSS GARDEN</span><span class="age-label" id="age-label">a few moments old</span></div>
+          <div class="signal-bubble" id="signal-bubble" hidden><span class="signal-dot" aria-hidden="true"></span><div><span class="signal-caption" id="signal-caption">A little something to say</span><button id="signal-play" class="signal-play"><span id="signal-name">Peep</span><span data-icon="sound" aria-hidden="true"></span></button></div><button id="signal-hint" class="signal-hint" aria-label="Look for a clue" data-icon="question"></button></div>
+          <div class="habitat-message" id="habitat-message">Tap your creature to say hello.</div>
+          <div class="habitat-bottom"><div><span class="stage-indicator"></span><span id="stage-name">Hatchling</span><span class="habitat-divider">/</span><span id="form-name">A form still unfolding</span></div><span class="habitat-status" id="habitat-status">getting to know you</span></div>
+          <span class="pause-overlay" id="pause-overlay" hidden>Time is resting</span>
+        </section>
+        <aside class="care-panel" aria-label="Care for your creature">
+          <div class="panel-heading"><div><div class="eyebrow">THE EVERYDAY THINGS</div><h2>Spend a moment.</h2></div><span class="small-flower" aria-hidden="true">✳</span></div>
+          <div class="needs-grid" id="needs-grid">
+            <div class="need-item"><div><span data-icon="seed" aria-hidden="true"></span><label for="need-food">Nourishment</label><span id="value-food">72%</span></div><progress id="need-food" max="1" value=".72"></progress></div>
+            <div class="need-item"><div><span data-icon="spark" aria-hidden="true"></span><label for="need-play">Curiosity</label><span id="value-play">61%</span></div><progress id="need-play" max="1" value=".61"></progress></div>
+            <div class="need-item"><div><span data-icon="heart" aria-hidden="true"></span><label for="need-bond">Connection</label><span id="value-bond">68%</span></div><progress id="need-bond" max="1" value=".68"></progress></div>
+            <div class="need-item"><div><span data-icon="moon" aria-hidden="true"></span><label for="need-energy">Energy</label><span id="value-energy">86%</span></div><progress id="need-energy" max="1" value=".86"></progress></div>
+          </div>
+          <div class="care-tabs" role="tablist" aria-label="Kinds of care">
+            <button id="tab-food" role="tab" aria-selected="true" aria-controls="care-choices" data-category="food">Food</button>
+            <button id="tab-play" role="tab" aria-selected="false" aria-controls="care-choices" data-category="play" tabindex="-1">Play</button>
+            <button id="tab-care" role="tab" aria-selected="false" aria-controls="care-choices" data-category="care" tabindex="-1">Comfort</button>
+          </div>
+          <div id="care-choices" class="care-choices" role="tabpanel" aria-labelledby="tab-food"></div>
+          <div class="response-note" id="response-note">Different kinds of care leave different traces.</div>
+          <button class="echo-button" id="echo-button"><span data-icon="music" aria-hidden="true"></span>Echo its call<span class="button-arrow" aria-hidden="true">↗</span></button>
+        </aside>
+      </div>
+      <section class="growth-strip" aria-label="Life cycle">
+        <div class="growth-heading"><span class="growth-icon" data-icon="chrysalis" aria-hidden="true"></span><div><span class="eyebrow" id="growth-eyebrow">BECOMING</span><h2 id="growth-title">The first chrysalis</h2></div></div>
+        <div class="growth-center"><div class="growth-labels"><span id="growth-description">Growing through the little things.</span><span id="growth-percent">0%</span></div><progress id="growth-progress" max="1" value="0" aria-label="Progress toward metamorphosis"></progress><span class="growth-detail" id="growth-detail">0 of 6 care moments · growing</span></div>
+        <div class="life-stages" aria-label="Four life stages"><span class="life-dot active" id="life-dot-0" aria-label="Hatchling"></span><i></i><span class="life-dot" id="life-dot-1" aria-label="Sproutling"></span><i></i><span class="life-dot" id="life-dot-2" aria-label="Wanderling"></span><i></i><span class="life-dot" id="life-dot-3" aria-label="Imago"></span></div>
+      </section>
+      <section class="notebook">
+        <div class="notebook-top"><div class="notebook-tabs" role="tablist" aria-label="Creature notebook"><button id="notebook-growth" role="tab" aria-selected="true" aria-controls="growth-notes" data-notebook="growth"><span data-icon="leaf" aria-hidden="true"></span>Taking shape</button><button id="notebook-voice" role="tab" aria-selected="false" aria-controls="voice-notes" tabindex="-1" data-notebook="voice"><span data-icon="music" aria-hidden="true"></span>A little language</button><button id="notebook-journal" role="tab" aria-selected="false" aria-controls="journal-notes" tabindex="-1" data-notebook="journal"><span data-icon="book" aria-hidden="true"></span>Life journal<span id="journal-count" class="journal-count">1</span></button></div><span class="notebook-caption">Every creature has a history.</span></div>
+        <div id="growth-notes" role="tabpanel" aria-labelledby="notebook-growth" class="notebook-content">
+          <div class="development-columns"><div><div class="section-kicker">DEVELOPMENTAL TENDENCIES</div><p class="notebook-intro" id="tendency-intro">Small experiences are leaving their first traces.</p><div id="trait-bars" class="trait-bars"></div></div><div class="care-history"><div class="section-kicker">THE CARE YOU SHARE</div><p class="notebook-intro"><span id="care-total">0</span> little moments, becoming a life.</p><div id="care-distribution" class="care-distribution"></div><div class="care-legend"><span><i class="food-color"></i>Food <span id="food-share">0%</span></span><span><i class="play-color"></i>Play <span id="play-share">0%</span></span><span><i class="care-color"></i>Comfort <span id="care-share">0%</span></span></div><p class="history-note" id="history-note">Variety, repetition, and rest all shape what emerges.</p><div id="molt-history" class="molt-history"></div></div></div>
+        </div>
+        <div id="voice-notes" role="tabpanel" aria-labelledby="notebook-voice" class="notebook-content" hidden><div class="voice-heading"><div><div class="section-kicker">LEARNING TO BE UNDERSTOOD</div><p class="notebook-intro">Signals grow familiar when they lead to the care it needs.</p></div><label class="voice-select">When asking for<select id="voice-need"><option value="food">food</option><option value="play">play</option><option value="bond">company</option><option value="energy">rest</option></select></label></div><div id="voice-bars" class="voice-bars"></div><p class="history-note" id="voice-summary">A little language is just beginning.</p></div>
+        <div id="journal-notes" role="tabpanel" aria-labelledby="notebook-journal" class="notebook-content" hidden><ol id="journal-list" class="journal-list"></ol></div>
+      </section>
+    </main>
+    <footer><span class="save-status" id="save-status"><span class="save-dot"></span>Progress kept in this browser</span><div><button id="export-button">Save a keepsake</button><span>·</span><button id="import-button">Open a keepsake</button><span>·</span><button id="new-button">A new beginning</button></div></footer>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <dialog id="guide-dialog"><div class="dialog-heading"><div class="eyebrow">A SMALL FIELD GUIDE</div><button class="icon-button close-dialog" aria-label="Close field guide" data-icon="close"></button></div><h2>A life that takes shape.</h2><p>Your creature grows through three chrysalises. What it eats, how you play, and the quiet care you share influence the body that emerges.</p><div class="guide-list"><div><span data-icon="leaf"></span><p><b>Leave a little variety.</b> Nectar encourages petals and frills; moon mushrooms favor a glow. Exploration, rhythm, and rest each leave their own traces.</p></div><div><span data-icon="music"></span><p><b>Learn each other.</b> A peep might mean food for one creature and company for another. Meet a need after a signal and that association grows stronger. Tap the question mark for a clue.</p></div><div><span data-icon="chrysalis"></span><p><b>Give becoming some time.</b> Each chrysalis needs enough growth and care. Inside, the next body takes shape. Warmth and quiet company are welcome.</p></div><div><span data-icon="spark"></span><p><b>Make room for surprises.</b> Small variations introduce new calls and details at metamorphosis. Many different forms can thrive.</p></div></div><p class="guide-footnote">Use the faster garden clock to explore a whole life in a few minutes. Your creature rests while you're away. Keepsakes let you export and restore its history.</p><button class="primary-button close-dialog">Back to the garden</button></dialog>
+  <dialog id="name-dialog"><div class="dialog-heading"><div class="eyebrow">A NAME OF ITS OWN</div><button class="icon-button close-dialog" aria-label="Close rename" data-icon="close"></button></div><h2>What shall we call you?</h2><form id="name-form"><label for="pet-name">Your creature's name</label><input id="pet-name" maxlength="24" required autocomplete="off"><button class="primary-button" type="submit">A lovely name</button></form></dialog>
+  <dialog id="new-dialog"><div class="dialog-heading"><div class="eyebrow">ANOTHER POSSIBLE LIFE</div><button class="icon-button close-dialog" aria-label="Close new creature" data-icon="close"></button></div><h2>A new beginning.</h2><p>This replaces the creature in your garden. Save a keepsake first if you'd like to visit this life again.</p><div class="dialog-actions"><button class="quiet-button" id="export-before-new">Save current keepsake</button><button class="primary-button" id="confirm-new">Welcome a new creature</button></div></dialog>
+  <input type="file" id="import-file" accept="application/json,.json" hidden>
+  <noscript><p class="noscript">Chrysalis needs JavaScript to bring your creature to life.</p></noscript>
+<script>
+(function (root, factory) {
+  const model = factory();
+  if (typeof module === 'object' && module.exports) module.exports = model;
+  else root.Chrysalis = model;
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  'use strict';
+  const VERSION = 1;
+  const TRAITS = ['Bloom', 'Lantern', 'Wander', 'Resonance', 'Velvet'];
+  const STAGES = ['Hatchling', 'Sproutling', 'Wanderling', 'Imago'];
+  const NEEDS = ['food', 'play', 'bond', 'energy'];
+  const NEED_LABELS = { food: 'food', play: 'play', bond: 'company', energy: 'rest' };
+  const DURATIONS = [180, 360, 540];
+  const CARE_MIN = [6, 10, 14];
+  const PUPA_TIME = [40, 56, 76];
+  const clamp = (v, a, b) => Math.min(b === undefined ? 1 : b, Math.max(a === undefined ? 0 : a, v));
+  const normalize = a => { const sum = a.reduce((x, y) => x + y, 0); return a.map(x => x / sum); };
+  const ACTIONS = {
+    seeds: { name: 'Seed pearls', category: 'food', description: 'Earthy, nourishing little seeds.', icon: 'seed', affinity: [.15, .05, 1, .15, .1], effect: { food: .26, energy: .05 }, motion: 'eat' },
+    nectar: { name: 'Flower nectar', category: 'food', description: 'A sweet sip from the garden.', icon: 'flower', affinity: [1, .35, .05, .15, .05], effect: { food: .22, energy: .08 }, motion: 'eat' },
+    mushrooms: { name: 'Moon mushrooms', category: 'food', description: 'Soft caps with a faint glow.', icon: 'mushroom', affinity: [.1, 1, .1, .35, .2], effect: { food: .25, bond: .04 }, motion: 'eat' },
+    explore: { name: 'Follow fireflies', category: 'play', description: 'A little adventure together.', icon: 'spark', affinity: [.45, .2, 1, .1, .05], effect: { play: .3, energy: -.06, bond: .06 }, motion: 'explore' },
+    rhythm: { name: 'Make a rhythm', category: 'play', description: 'A small call-and-response game.', icon: 'music', affinity: [.1, .25, .1, 1, .1], effect: { play: .24, bond: .12, energy: -.03 }, motion: 'rhythm' },
+    puzzle: { name: 'Find the pebble', category: 'play', description: 'Hide a pebble. Follow its curiosity.', icon: 'pebble', affinity: [.15, .1, .7, .65, .1], effect: { play: .3, bond: .08, energy: -.05 }, motion: 'puzzle' },
+    brush: { name: 'A gentle stroke', category: 'care', description: 'A quiet moment of closeness.', icon: 'hand', affinity: [.25, .2, .05, .15, 1], effect: { bond: .3, energy: .05 }, motion: 'cuddle' },
+    warmth: { name: 'A patch of warmth', category: 'care', description: 'Let it settle into a warm glow.', icon: 'sun', affinity: [.2, 1, .05, .1, .55], effect: { bond: .18, energy: .18 }, motion: 'warmth' },
+    rest: { name: 'A little nap', category: 'care', description: 'Time to rest and gather itself.', icon: 'moon', affinity: [.1, .15, .05, .1, 1], effect: { energy: .3, bond: .04 }, motion: 'rest' },
+    echo: { name: 'Echo its call', category: 'voice', description: 'Answer in its own little language.', icon: 'music', affinity: [.1, .25, .05, 1, .2], effect: { bond: .2, play: .12 }, motion: 'rhythm' }
+  };
+  function random(s) {
+    let x = s.rng | 0;
+    x ^= x << 13; x ^= x >>> 17; x ^= x << 5;
+    s.rng = x >>> 0;
+    return s.rng / 4294967296;
+  }
+  function sample(s, p) {
+    const u = random(s); let c = 0;
+    for (let i = 0; i < p.length; i++) { c += p[i]; if (u < c) return i; }
+    return p.length - 1;
+  }
+  function record(s, message, kind) {
+    s.history.unshift({ message, kind: kind || 'care', age: s.age, time: Date.now() });
+    s.history = s.history.slice(0, 100);
+  }
+  function create(seed, name) {
+    const s = {
+      version: VERSION, rng: (seed >>> 0) || 761822, name: (name || 'Nori').slice(0, 24),
+      createdAt: Date.now(), lastSaved: Date.now(), age: 0, cycleAge: 0, stage: 0, phase: 'awake',
+      pupaLeft: 0, pupaTotal: 0, sleepingUntil: 0, lastActionAge: -10, nextCall: 5,
+      epi: [.2, .2, .2, .2, .2], expressed: [.2, .2, .2, .2, .2],
+      genome: [0, 0, 0, 0, 0], needs: { food: .72, play: .61, bond: .68, energy: .86 },
+      careCounts: Object.fromEntries(Object.keys(ACTIONS).map(k => [k, 0])),
+      careSinceMolt: 0, totalCare: 0, molts: [], mutations: 0, history: [],
+      signals: [
+        { name: 'Peep', style: 'peep', pitch: 610, beats: 1 },
+        { name: 'Trill', style: 'trill', pitch: 790, beats: 3 },
+        { name: 'Glow', style: 'glow', pitch: 390, beats: 2 },
+        { name: 'Wiggle', style: 'wiggle', pitch: 510, beats: 2 }
+      ],
+      voice: {}, voiceSuccess: { food: 0, play: 0, bond: 0, energy: 0 },
+      request: null, activity: null, settings: { speed: 4, paused: false, sound: false }
+    };
+    s.genome = s.genome.map(() => random(s));
+    NEEDS.forEach(k => { s.voice[k] = [.25, .25, .25, .25]; });
+    record(s, s.name + ' hatched into the garden. A small life begins.', 'birth');
+    return s;
+  }
+  function traitOrder(s) { return s.epi.map((v, i) => ({ value: v, name: TRAITS[i], index: i })).sort((a, b) => b.value - a.value); }
+  function formName(s) {
+    if (s.stage === 0) return 'A form still unfolding';
+    const ranked = traitOrder(s);
+    return ranked[0].name + ' ' + ['sprout', 'wanderer', 'imago'][Math.max(0, s.stage - 1)];
+  }
+  function learn(p, signal, reward, mutation) {
+    const eta = .38 * clamp(reward), mu = mutation === undefined ? .018 : mutation;
+    return normalize(p.map((v, i) => (1 - mu) * (v + eta * ((i === signal ? 1 : 0) - v)) + mu / p.length));
+  }
+  function selectTraits(s, affinity, strength) {
+    const fitness = affinity.map((a, i) => a + .06 * (s.genome[i] - .5));
+    const mean = fitness.reduce((sum, f, i) => sum + f * s.epi[i], 0);
+    const selected = normalize(s.epi.map((p, i) => p * Math.exp((strength || .34) * (fitness[i] - mean))));
+    s.epi = selected.map(p => .987 * p + .013 / TRAITS.length);
+  }
+  function newSignal(s) {
+    if (s.signals.length >= 8) return false;
+    const parent = s.signals[Math.floor(random(s) * s.signals.length)];
+    const prefix = ['Double ', 'High ', 'Soft ', 'Ripple '][s.signals.length - 4];
+    const variant = { name: prefix + parent.name.toLowerCase(), style: parent.style, pitch: clamp(parent.pitch * (.85 + random(s) * .4), 220, 1300), beats: Math.min(5, parent.beats + 1) };
+    s.signals.push(variant);
+    NEEDS.forEach(k => { s.voice[k] = s.voice[k].map(p => p * .96).concat(.04); });
+    s.mutations++;
+    record(s, 'A new variation: ' + variant.name + '. ' + s.name + ' is trying something new.', 'variation');
+    return true;
+  }
+  function beginPupa(s) {
+    s.phase = 'pupa'; s.request = null; s.activity = null;
+    s.sleepingUntil = 0; s.pupaTotal = PUPA_TIME[s.stage]; s.pupaLeft = s.pupaTotal;
+    const leading = traitOrder(s)[0].name.toLowerCase();
+    record(s, s.name + ' curled into a chrysalis. A ' + leading + ' tendency is taking shape.', 'pupa');
+  }
+  function emerge(s) {
+    s.stage = Math.min(3, s.stage + 1); s.phase = 'awake'; s.cycleAge = 0; s.careSinceMolt = 0;
+    s.genome = s.genome.map(g => clamp(g + (random(s) - .5) * .12));
+    s.expressed = normalize(s.epi.map((p, i) => .85 * p + .15 * s.expressed[i]));
+    s.needs.energy = Math.max(.82, s.needs.energy);
+    s.nextCall = s.age + 12;
+    s.molts.push({ stage: s.stage, age: s.age, epi: s.epi.slice(), genome: s.genome.slice(), form: formName(s) });
+    record(s, s.name + ' emerged as a ' + formName(s) + '. New details, the same familiar eyes.', 'emerge');
+    newSignal(s);
+    s.activity = { type: 'emerge', until: s.age + 18 };
+  }
+  function makeRequest(s) {
+    const urgency = NEEDS.map(k => Math.pow(1 - s.needs[k], 2) + .015);
+    const need = NEEDS[sample(s, normalize(urgency))];
+    const signal = sample(s, s.voice[need]);
+    s.request = { need, signal, created: s.age, until: s.age + 42 };
+    s.nextCall = s.age + 65 + random(s) * 18;
+  }
+  function advance(s, seconds, options) {
+    if (!Number.isFinite(seconds) || seconds <= 0) return;
+    const offline = options && options.offline;
+    let remaining = Math.min(seconds, 28800);
+    while (remaining > 0) {
+      const dt = Math.min(remaining, 2); remaining -= dt; s.age += dt;
+      const sleeping = offline || s.sleepingUntil > s.age;
+      if (s.phase === 'pupa') {
+        s.pupaLeft -= dt; s.needs.energy = clamp(s.needs.energy + .0018 * dt);
+        if (s.pupaLeft <= 0) { s.pupaLeft = 0; emerge(s); }
+      } else {
+        if (sleeping) {
+          s.needs.energy = clamp(s.needs.energy + .004 * dt);
+          s.needs.food = Math.max(.18, s.needs.food - (offline ? 0 : .0003 * dt));
+        } else {
+          const rates = { food: .0011, play: .00125, bond: .00085, energy: .0007 };
+          NEEDS.forEach(k => { s.needs[k] = Math.max(.08, s.needs[k] - rates[k] * dt); });
+        }
+        if (s.stage < 3) {
+          const wellbeing = NEEDS.reduce((a, k) => a + s.needs[k], 0) / NEEDS.length;
+          s.cycleAge = Math.min(DURATIONS[s.stage], s.cycleAge + dt * (.7 + .3 * wellbeing));
+          if (s.cycleAge >= DURATIONS[s.stage] && s.careSinceMolt >= CARE_MIN[s.stage]) beginPupa(s);
+        }
+        if (s.phase === 'awake') {
+          const rate = 1 - Math.exp(-dt / 160);
+          s.expressed = normalize(s.expressed.map((v, i) => v + rate * (s.epi[i] - v)));
+          if (!offline && !sleeping && !s.request && s.age >= s.nextCall) makeRequest(s);
+        }
+      }
+      if (s.request && s.age >= s.request.until) { s.request = null; s.nextCall = s.age + 18; }
+      if (s.activity && s.age >= s.activity.until) s.activity = null;
+    }
+    if (offline) { s.request = null; s.nextCall = s.age + 8; }
+  }
+  function act(s, action) {
+    const a = ACTIONS[action];
+    if (!a) return { ok: false, message: 'Unknown care action.' };
+    if (s.phase === 'pupa' && !['warmth', 'brush', 'rest', 'rhythm', 'echo'].includes(action)) return { ok: false, message: s.name + ' is resting inside the chrysalis. Try warmth or a quiet rhythm.' };
+    if (!s.settings.paused && s.age - s.lastActionAge < 1.6) return { ok: false, message: 'Give that moment a little time to settle.' };
+    s.lastActionAge = s.age;
+    const before = Object.assign({}, s.needs);
+    Object.entries(a.effect).forEach(([k, d]) => { s.needs[k] = clamp(s.needs[k] + d); });
+    const meaningful = Object.entries(a.effect).some(([k, d]) => d > 0 && before[k] < .94);
+    const strength = meaningful ? .35 : .10;
+    selectTraits(s, a.affinity, strength);
+    s.careCounts[action]++; s.totalCare++;
+    if (s.phase !== 'pupa') s.careSinceMolt++;
+    s.activity = { type: a.motion, until: s.age + 12 };
+    s.sleepingUntil = action === 'rest' ? s.age + 55 : 0;
+    let message = action === 'rest' ? s.name + ' settled down for a little nap.' : s.name + ' enjoyed ' + a.name.toLowerCase() + '.';
+    let learned = false;
+    if (s.request) {
+      const request = s.request;
+      const relief = Math.max(0, s.needs[request.need] - before[request.need]);
+      const reward = clamp(relief / .25) * clamp((1 - before[request.need]) * 1.8 + .15);
+      s.voice[request.need] = learn(s.voice[request.need], request.signal, reward);
+      if (reward > .12) {
+        s.voiceSuccess[request.need]++; learned = true;
+        message = s.signals[request.signal].name + ' → ' + a.name.toLowerCase() + '. The need for ' + NEED_LABELS[request.need] + ' eased.';
+      }
+      s.request = null; s.nextCall = s.age + 16 + random(s) * 12;
+    }
+    if (s.totalCare % 4 === 0 || learned || action === 'rest') record(s, message, learned ? 'learn' : 'care');
+    if (s.totalCare % 35 === 0 && s.phase !== 'pupa') newSignal(s);
+    if (s.phase === 'awake' && s.stage < 3 && s.cycleAge >= DURATIONS[s.stage] && s.careSinceMolt >= CARE_MIN[s.stage]) beginPupa(s);
+    return { ok: true, message, learned, action };
+  }
+  function growth(s) {
+    if (s.phase === 'pupa') return { percent: 1 - s.pupaLeft / s.pupaTotal, time: s.pupaLeft, care: 0, required: 0, ready: false };
+    if (s.stage >= 3) return { percent: 1, time: 0, care: s.careSinceMolt, required: 0, ready: true };
+    return { percent: Math.min(s.cycleAge / DURATIONS[s.stage], s.careSinceMolt / CARE_MIN[s.stage]), time: Math.max(0, DURATIONS[s.stage] - s.cycleAge), care: s.careSinceMolt, required: CARE_MIN[s.stage], ready: false };
+  }
+  function validate(s) {
+    const finite = (v, lo, hi) => typeof v === 'number' && Number.isFinite(v) && v >= lo && v <= hi;
+    const simplex = (a, n) => Array.isArray(a) && a.length === n && a.every(v => finite(v, 0, 1)) && Math.abs(a.reduce((x, y) => x + y, 0) - 1) < .0001;
+    if (!s || s.version !== VERSION || typeof s.name !== 'string' || !s.name.trim() || s.name.length > 24) return false;
+    if (!finite(s.rng, 1, 4294967295) || !finite(s.stage, 0, 3) || !Number.isInteger(s.stage) || !['awake', 'pupa'].includes(s.phase)) return false;
+    if (s.phase === 'pupa' && (s.stage >= 3 || !finite(s.pupaTotal, 1, 100) || !finite(s.pupaLeft, 0, s.pupaTotal))) return false;
+    for (const k of ['age','cycleAge','createdAt','lastSaved','sleepingUntil','nextCall','pupaLeft','pupaTotal','careSinceMolt','totalCare','mutations']) if (!finite(s[k], 0, 1e14)) return false;
+    if (!finite(s.lastActionAge, -10, 1e14) || !simplex(s.epi, 5) || !simplex(s.expressed, 5) || !Array.isArray(s.genome) || s.genome.length !== 5 || !s.genome.every(x => finite(x, 0, 1))) return false;
+    if (!s.needs || !NEEDS.every(k => finite(s.needs[k], 0, 1))) return false;
+    if (!s.careCounts || !Object.keys(ACTIONS).every(k => Number.isSafeInteger(s.careCounts[k]) && s.careCounts[k] >= 0)) return false;
+    if (!Array.isArray(s.signals) || s.signals.length < 4 || s.signals.length > 8 || !s.signals.every(x => x && typeof x.name === 'string' && x.name.length <= 80 && ['peep','trill','glow','wiggle'].includes(x.style) && finite(x.pitch, 100, 1500) && finite(x.beats, 1, 5))) return false;
+    if (!s.voice || !s.voiceSuccess || !NEEDS.every(k => simplex(s.voice[k], s.signals.length) && finite(s.voiceSuccess[k], 0, 1e14))) return false;
+    if (!s.settings || ![1,4,12].includes(s.settings.speed) || typeof s.settings.paused !== 'boolean' || typeof s.settings.sound !== 'boolean') return false;
+    if (!Array.isArray(s.history) || s.history.length > 100 || !s.history.every(x => x && typeof x.message === 'string' && x.message.length < 1000 && typeof x.kind === 'string' && finite(x.age, 0, 1e14) && finite(x.time, 0, 1e14))) return false;
+    if (!Array.isArray(s.molts) || s.molts.length > 3 || !s.molts.every(x => x && typeof x.form === 'string' && finite(x.stage, 1, 3) && finite(x.age, 0, 1e14) && simplex(x.epi, 5) && Array.isArray(x.genome) && x.genome.length === 5 && x.genome.every(g => finite(g, 0, 1)))) return false;
+    if (s.request && (!NEEDS.includes(s.request.need) || !Number.isInteger(s.request.signal) || !finite(s.request.signal, 0, s.signals.length - 1) || !finite(s.request.created, 0, 1e14) || !finite(s.request.until, s.request.created, 1e14))) return false;
+    if (s.activity && (!['eat','explore','rhythm','puzzle','cuddle','warmth','rest','emerge'].includes(s.activity.type) || !finite(s.activity.until, 0, 1e14))) return false;
+    return true;
+  }
+  return { VERSION, TRAITS, STAGES, NEEDS, NEED_LABELS, ACTIONS, DURATIONS, CARE_MIN, create, advance, act, growth, traitOrder, formName, validate, learn, normalize, record };
+});
+
+</script>
+<script>
+(function () {
+  'use strict';
+  const M = window.Chrysalis;
+  const $ = id => document.getElementById(id);
+  const KEY = 'chrysalis.garden.v1';
+  const COLORS = ['#aabd85', '#d3bd77', '#97b9a4', '#b1a6c8', '#c9ac99'];
+  const ICONS = {
+    'sound': '<path d="M11 5 6 9H3v6h3l5 4V5Zm4 3a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/>',
+    'sound-off': '<path d="M11 5 6 9H3v6h3l5 4V5Zm5 4 5 6m0-6-5 6"/>',
+    pause: '<path d="M8 5v14M16 5v14"/>',
+    resume: '<path d="m8 4 12 8-12 8V4Z"/>',
+    book: '<path d="M12 5C8 2 4 3 2 4v15c4-2 7-1 10 1m0-15c4-3 8-2 10-1v15c-4-2-7-1-10 1V5Z"/>',
+    edit: '<path d="m14 5 5 5M4 20l5-1L21 7a2 2 0 0 0-5-5L4 14l-1 7Z"/>',
+    chevron: '<path d="m7 10 5 5 5-5"/>',
+    question: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 4 2c-1.5 1-1.5 1.5-1.5 2.5M12 17h.01"/>',
+    seed: '<path d="M12 20c-9-1-9-11-3-15 8-5 13 3 10 9-2 4-5 6-7 6Zm0 0c-1-6 1-9 4-12"/>',
+    flower: '<path d="M12 9c-7-7-12 2-4 4-8 5 1 11 4 4 4 8 12 1 5-4 8-4 1-12-5-4Z"/><circle cx="12" cy="12" r="2"/>',
+    mushroom: '<path d="M3 13h18C21 1 3 1 3 13Zm6 0-1 8h8l-1-8M8 9h.01M14 6h.01M16 10h.01"/>',
+    spark: '<path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5L12 3ZM20 3v4m-2-2h4"/>',
+    music: '<path d="M9 18V6l11-3v12M9 9l11-3"/><ellipse cx="6" cy="18" rx="3" ry="2.5"/><ellipse cx="17" cy="15" rx="3" ry="2.5"/>',
+    pebble: '<path d="M5 18c-6-4 0-13 6-14 6-2 11 5 10 10-1 7-10 8-16 4Z"/><path d="m8 13 3-3 4 1"/>',
+    hand: '<path d="M8 12V6a2 2 0 0 1 4 0v6-8a2 2 0 0 1 4 0v8-6a2 2 0 0 1 4 0v10c0 6-10 8-13 3l-4-6a2 2 0 0 1 3-2l2 2"/>',
+    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 1v2m0 18v2M1 12h2m18 0h2M4 4l2 2m12 12 2 2M4 20l2-2M18 6l2-2"/>',
+    moon: '<path d="M20 15A9 9 0 0 1 9 3a9 9 0 1 0 11 12Z"/>',
+    heart: '<path d="M12 21 3 12C-2 5 8 0 12 6c4-6 14-1 9 6l-9 9Z"/>',
+    chrysalis: '<path d="M12 2v3m0 0c-10 3-8 15 0 17 8-2 10-14 0-17Zm0 0 4 6-8 5 8 4-4 5"/>',
+    leaf: '<path d="M21 3C8 1-1 8 5 17c9 7 17-2 16-14ZM4 21 16 9m-8 8V11m4 2h6"/>',
+    close: '<path d="m6 6 12 12M18 6 6 18"/>'
+  };
+  function icon(name) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[name] || ICONS.spark) + '</svg>'; }
+  function fillIcons(container) { (container || document).querySelectorAll('[data-icon]').forEach(el => { el.innerHTML = icon(el.dataset.icon); }); }
+  fillIcons();
+  const seed = () => { const n = new Uint32Array(1); crypto.getRandomValues(n); return n[0] || 2026; };
+  let state, storageFailed = false, welcome = '';
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) {
+      const candidate = JSON.parse(raw);
+      if (M.validate(candidate)) {
+        state = candidate;
+        const gap = Math.max(0, (Date.now() - state.lastSaved) / 1000);
+        if (gap > 30 && !state.settings.paused) {
+          M.advance(state, Math.min(gap * state.settings.speed, 28800), { offline: true });
+          if (gap > 90) { welcome = state.name + ' rested while you were away.'; M.record(state, welcome, 'rest'); }
+        }
+      } else welcome = 'That saved garden could not be read. A new life has begun.';
+    }
+  } catch (e) { storageFailed = true; welcome = 'Browser saving is unavailable. You can still save a keepsake.'; }
+  if (!state) state = M.create(seed(), 'Nori');
+  let category = 'food', notebook = 'growth', voiceNeed = 'food', toastTimer = 0, lastSave = 0;
+  let actionLock = 0, lastUI = 0, lastFrame = performance.now(), hiddenAt = 0, lastRequest = '';
+  let lastPhase = state.phase, lastStage = state.stage, lastJournal = '', lastVoice = '', lastCare = '';
+  let audio, visualTime = 0, pointerTarget = 0, creatureX = 0, particleId = 0;
+  const particles = [];
+  const canvas = $('garden'), ctx = canvas.getContext('2d');
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let width = 800, height = 470, dpr = 1, hitCreature = { x: 0, y: 0, radius: 90 };
+  const plantSeeds = Array.from({ length: 32 }, (_, i) => ({ x: ((i * 739 + 97) % 1000) / 1000, size: 14 + (i * 97 % 30), lean: Math.sin(i * 7) }));
+  function toast(message) {
+    $('toast').textContent = message; $('toast').hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => { $('toast').hidden = true; }, 4200);
+  }
+  function save() {
+    state.lastSaved = Date.now();
+    try { localStorage.setItem(KEY, JSON.stringify(state)); storageFailed = false; }
+    catch (e) { storageFailed = true; }
+    const el = $('save-status'); el.replaceChildren();
+    const dot = document.createElement('span'); dot.className = 'save-dot'; el.append(dot);
+    el.append(document.createTextNode(storageFailed ? 'Save a keepsake to keep this life' : 'Progress kept in this browser'));
+  }
+  function prettyAge(seconds) {
+    if (seconds < 60) return 'a few moments old';
+    if (seconds < 3600) return Math.floor(seconds / 60) + ' garden minutes old';
+    if (seconds < 86400) return Math.floor(seconds / 3600) + ' garden hours old';
+    return Math.floor(seconds / 86400) + ' garden days old';
+  }
+  function shortAge(seconds) { return seconds < 60 ? Math.floor(seconds) + 's' : seconds < 3600 ? Math.floor(seconds / 60) + 'm' : Math.floor(seconds / 3600) + 'h'; }
+  function remaining(seconds) { const real = Math.ceil(seconds / state.settings.speed); return real < 60 ? real + 's' : Math.ceil(real / 60) + 'm'; }
+  function ensureAudio() {
+    if (!state.settings.sound) return null;
+    try {
+      if (!audio) audio = new (window.AudioContext || window.webkitAudioContext)();
+      if (audio.state === 'suspended') audio.resume().catch(() => {});
+      return audio;
+    } catch (e) { return null; }
+  }
+  function sing(signal, soft) {
+    const ac = ensureAudio(); if (!ac || !signal) return;
+    const now = ac.currentTime;
+    for (let i = 0; i < signal.beats; i++) {
+      const osc = ac.createOscillator(), gain = ac.createGain();
+      osc.type = 'sine'; const start = now + i * .13;
+      osc.frequency.setValueAtTime(signal.pitch * (1 + .09 * Math.sin(i)), start);
+      osc.frequency.exponentialRampToValueAtTime(signal.pitch * (signal.style === 'trill' ? 1.34 : .82), start + .13);
+      gain.gain.setValueAtTime(.0001, start); gain.gain.exponentialRampToValueAtTime(soft ? .025 : .045, start + .02); gain.gain.exponentialRampToValueAtTime(.0001, start + .16);
+      osc.connect(gain); gain.connect(ac.destination); osc.start(start); osc.stop(start + .19);
+    }
+  }
+  function particlesFor(type) {
+    const count = reducedMotion ? 3 : type === 'emerge' ? 25 : 9;
+    for (let i = 0; i < count; i++) particles.push({ id: particleId++, x: hitCreature.x + (Math.random() - .5) * 90, y: hitCreature.y - 15 + (Math.random() - .5) * 70, vx: (Math.random() - .5) * 30, vy: -14 - Math.random() * 30, life: 0, max: 1.7 + Math.random(), color: type === 'eat' ? '#e9c99a' : type === 'rhythm' ? '#d4bde1' : '#dfebae', type });
+  }
+  function doAction(key, destination) {
+    const now = performance.now();
+    if (now < actionLock) return;
+    const answeredSignal = state.request ? state.signals[state.request.signal] : null;
+    const result = M.act(state, key);
+    if (!result.ok) { toast(result.message); return; }
+    actionLock = now + 430;
+    $('response-note').textContent = result.message;
+    particlesFor(M.ACTIONS[key].motion);
+    if (key === 'echo' || key === 'rhythm') sing(answeredSignal || state.signals[1], true);
+    if (key === 'explore' || key === 'puzzle') pointerTarget = destination === undefined ? (Math.random() - .5) * width * .4 : destination;
+    if (key === 'rest') toast(state.name + ' is taking a little nap.');
+    renderUI(true); save();
+  }
+  function renderActions() {
+    const box = $('care-choices'); box.replaceChildren();
+    Object.entries(M.ACTIONS).filter(([, a]) => a.category === category).forEach(([key, a]) => {
+      const b = document.createElement('button'); b.className = 'care-action'; b.dataset.action = key;
+      b.innerHTML = '<span class="action-icon">' + icon(a.icon) + '</span><span class="action-text"><span class="action-name">' + a.name + '</span><span class="action-description">' + a.description + '</span></span><span class="action-arrow" aria-hidden="true">+</span>';
+      b.addEventListener('click', () => doAction(key)); box.append(b);
+    });
+    updateAvailability();
+  }
+  function updateAvailability() {
+    document.querySelectorAll('.care-action').forEach(b => {
+      b.disabled = state.phase === 'pupa' && !['warmth','brush','rest','rhythm'].includes(b.dataset.action);
+    });
+    $('echo-button').disabled = !state.request && state.phase !== 'pupa';
+  }
+  function wireTabs(selector, activate) {
+    const tabs = Array.from(document.querySelectorAll(selector));
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => activate(tab));
+      tab.addEventListener('keydown', e => {
+        let next = i;
+        if (e.key === 'ArrowRight') next = (i + 1) % tabs.length;
+        else if (e.key === 'ArrowLeft') next = (i + tabs.length - 1) % tabs.length;
+        else if (e.key === 'Home') next = 0;
+        else if (e.key === 'End') next = tabs.length - 1;
+        else return;
+        e.preventDefault(); activate(tabs[next]); tabs[next].focus();
+      });
+    });
+    return tabs;
+  }
+  wireTabs('[data-category]', tab => {
+    category = tab.dataset.category;
+    document.querySelectorAll('[data-category]').forEach(t => { const on = t === tab; t.setAttribute('aria-selected', on); t.tabIndex = on ? 0 : -1; });
+    $('care-choices').setAttribute('aria-labelledby', tab.id); renderActions();
+  });
+  wireTabs('[data-notebook]', tab => {
+    notebook = tab.dataset.notebook;
+    document.querySelectorAll('[data-notebook]').forEach(t => { const on = t === tab; t.setAttribute('aria-selected', on); t.tabIndex = on ? 0 : -1; $(t.getAttribute('aria-controls')).hidden = !on; });
+    renderUI(true);
+  });
+  function renderTraits() {
+    const box = $('trait-bars');
+    if (!box.children.length) M.TRAITS.forEach((name, i) => {
+      const row = document.createElement('div'); row.className = 'trait-row';
+      row.innerHTML = '<div class="trait-label"><i style="background:' + COLORS[i] + '"></i><span>' + name + '</span><span class="trait-value">20%</span></div><progress max="1" value=".2" aria-label="' + name + ' tendency"></progress>'; box.append(row);
+    });
+    Array.from(box.children).forEach((row, i) => {
+      row.querySelector('.trait-value').textContent = Math.round(state.epi[i] * 100) + '%'; row.querySelector('progress').value = state.epi[i];
+    });
+    const top = M.traitOrder(state);
+    $('tendency-intro').textContent = state.totalCare < 3 ? 'Small experiences are leaving their first traces.' : top[0].name + ' and ' + top[1].name.toLowerCase() + ' are coming through.';
+    const counts = ['food','play','care'].map(c => Object.entries(M.ACTIONS).reduce((sum, [key, a]) => sum + ((a.category === c || (c === 'care' && a.category === 'voice')) ? state.careCounts[key] : 0), 0));
+    const total = Math.max(1, counts.reduce((a, b) => a + b, 0));
+    $('care-total').textContent = state.totalCare;
+    const key = counts.join(',');
+    if (key !== lastCare) {
+      lastCare = key; const dist = $('care-distribution'); dist.replaceChildren();
+      counts.forEach((n, i) => { const el = document.createElement('span'); el.className = 'care-segment ' + ['food-color','play-color','care-color'][i]; el.style.width = (100 * n / total) + '%'; dist.append(el); });
+      ['food-share','play-share','care-share'].forEach((id, i) => { $(id).textContent = Math.round(counts[i] / total * 100) + '%'; });
+      dist.setAttribute('role', 'img'); dist.setAttribute('aria-label', 'Care history: food ' + counts[0] + ', play ' + counts[1] + ', comfort ' + counts[2] + ' moments.');
+    }
+    const molts = $('molt-history');
+    if (molts.children.length !== state.molts.length) {
+      molts.replaceChildren(); state.molts.forEach(m => { const el = document.createElement('span'); el.className = 'molt-token'; el.textContent = m.form; molts.append(el); });
+    }
+    $('history-note').textContent = state.molts.length ? 'Each chrysalis keeps a trace of the life that came before.' : 'Variety, repetition, and rest all shape what emerges.';
+  }
+  function renderVoice() {
+    const values = state.voice[voiceNeed], key = voiceNeed + ':' + values.join(',');
+    if (key === lastVoice) return; lastVoice = key;
+    const box = $('voice-bars'); box.replaceChildren(); const max = Math.max(...values);
+    state.signals.forEach((signal, i) => {
+      const row = document.createElement('div'); row.className = 'voice-row' + (values[i] === max && max > .3 ? ' leading' : '');
+      const top = document.createElement('div'); top.className = 'voice-top';
+      const name = document.createElement('button'); name.className = 'voice-name'; name.innerHTML = icon('sound');
+      name.append(document.createTextNode(signal.name)); name.setAttribute('aria-label', 'Listen to ' + signal.name);
+      name.addEventListener('click', () => {
+        if (!state.settings.sound) { state.settings.sound = true; syncSound(); save(); }
+        sing(signal, false); particlesFor('rhythm');
+      });
+      const val = document.createElement('span'); val.className = 'voice-value'; val.textContent = Math.round(values[i] * 100) + '%';
+      top.append(name, val); const bar = document.createElement('progress'); bar.max = 1; bar.value = values[i]; bar.setAttribute('aria-label', signal.name + ' probability when asking for ' + M.NEED_LABELS[voiceNeed]); row.append(top, bar); box.append(row);
+    });
+    const winner = values.indexOf(max), successes = state.voiceSuccess[voiceNeed];
+    $('voice-summary').textContent = successes < 2 ? 'A little language is just beginning. Try answering a few calls.' : state.name + ' is learning to use ' + state.signals[winner].name.toLowerCase() + ' when asking for ' + M.NEED_LABELS[voiceNeed] + '. ' + successes + ' helpful responses so far.';
+  }
+  function renderJournal() {
+    const key = state.history.length + ':' + (state.history[0] ? state.history[0].time + state.history[0].message : '');
+    if (key === lastJournal) return; lastJournal = key;
+    const list = $('journal-list'); list.replaceChildren();
+    state.history.forEach(entry => {
+      const li = document.createElement('li'); li.className = 'journal-entry';
+      const symbol = document.createElement('span'); symbol.className = 'journal-symbol'; symbol.innerHTML = icon(({ birth:'seed', emerge:'leaf', pupa:'chrysalis', variation:'spark', learn:'music', rest:'moon' })[entry.kind] || 'heart');
+      const div = document.createElement('div'), p = document.createElement('p'), t = document.createElement('span');
+      p.className = 'journal-message'; p.textContent = entry.message; t.className = 'journal-age'; t.textContent = shortAge(entry.age) + ' into this life'; div.append(p, t); li.append(symbol, div); list.append(li);
+    });
+  }
+  function syncSound() {
+    $('sound-button').innerHTML = icon(state.settings.sound ? 'sound' : 'sound-off');
+    $('sound-button').setAttribute('aria-pressed', String(state.settings.sound));
+    $('sound-button').setAttribute('aria-label', state.settings.sound ? 'Turn sound off' : 'Turn sound on');
+  }
+  function renderUI(force) {
+    const now = performance.now(); if (!force && now - lastUI < 240) return; lastUI = now;
+    const nameBtn = $('name-button');
+    if (nameBtn.dataset.name !== state.name) {
+      nameBtn.dataset.name = state.name; nameBtn.replaceChildren(document.createTextNode(state.name));
+      const span = document.createElement('span'); span.innerHTML = icon('edit'); span.setAttribute('aria-hidden', 'true'); nameBtn.append(span);
+      canvas.setAttribute('aria-label', state.name + ' in a softly glowing garden. Tap the creature to stroke it, or the garden to explore.');
+      document.title = 'Chrysalis — ' + state.name + '\'s garden';
+    }
+    $('age-label').textContent = prettyAge(state.age);
+    const sleeping = state.sleepingUntil > state.age;
+    $('intro').textContent = state.phase === 'pupa' ? 'Something new is taking shape inside.' : state.stage === 3 ? 'A life still changing, in its own small ways.' : 'A small life, full of possibilities. See what grows.';
+    $('stage-name').textContent = state.phase === 'pupa' ? 'Chrysalis ' + (state.stage + 1) : M.STAGES[state.stage];
+    $('form-name').textContent = state.phase === 'pupa' ? 'a quiet transformation' : M.formName(state);
+    $('habitat-status').textContent = state.phase === 'pupa' ? 'becoming' : sleeping ? 'dreaming softly' : state.request ? 'something to say' : state.totalCare < 4 ? 'getting to know you' : 'a little more itself';
+    M.NEEDS.forEach(k => {
+      $('need-' + k).value = state.needs[k]; $('value-' + k).textContent = Math.round(state.needs[k] * 100) + '%';
+      $('need-' + k).parentElement.classList.toggle('low', state.needs[k] < .3);
+    });
+    const growth = M.growth(state), pupa = state.phase === 'pupa';
+    $('growth-eyebrow').textContent = pupa ? 'INSIDE THE CHRYSALIS' : state.stage === 3 ? 'A LIFE OF ITS OWN' : 'BECOMING';
+    $('growth-title').textContent = pupa ? 'A quiet transformation' : state.stage === 3 ? 'Hello, little imago.' : ['The first chrysalis','The second chrysalis','The final chrysalis'][state.stage];
+    $('growth-description').textContent = pupa ? 'A new body is taking shape.' : state.stage === 3 ? 'Its story keeps growing.' : growth.time <= 0 && growth.care < growth.required ? 'Ready for a few more shared moments.' : 'Growing through the little things.';
+    $('growth-progress').value = growth.percent; $('growth-percent').textContent = Math.round(growth.percent * 100) + '%';
+    $('growth-detail').textContent = pupa ? 'Emerging in about ' + remaining(growth.time) + (state.settings.paused ? ' · time paused' : '') : state.stage === 3 ? 'Three transformations · ' + state.totalCare + ' shared moments' : growth.care + ' of ' + growth.required + ' care moments · ' + (growth.time > 0 ? 'about ' + remaining(growth.time / .9) + ' of growth' : 'growth complete');
+    [0,1,2,3].forEach(i => { const dot = $('life-dot-' + i); dot.classList.toggle('active', i === state.stage); dot.classList.toggle('complete', i < state.stage); if (i === state.stage) dot.setAttribute('aria-current','step'); else dot.removeAttribute('aria-current'); });
+    $('pause-overlay').hidden = !state.settings.paused;
+    $('pause-button').setAttribute('aria-pressed', String(state.settings.paused));
+    $('pause-button').setAttribute('aria-label', state.settings.paused ? 'Resume time' : 'Pause time');
+    $('pause-button').innerHTML = icon(state.settings.paused ? 'resume' : 'pause');
+    $('speed').value = state.settings.speed;
+    const req = state.request;
+    $('signal-bubble').hidden = !req || pupa || sleeping;
+    if (req) {
+      const signal = state.signals[req.signal]; $('signal-name').textContent = signal.name;
+      $('signal-caption').textContent = 'A little something to say';
+      const key = req.created + ':' + req.signal;
+      if (key !== lastRequest) {
+        lastRequest = key; sing(signal, false);
+        $('habitat-message').textContent = 'A call of its own. What might it mean?';
+      }
+    } else if (!force || !state.activity) $('habitat-message').textContent = pupa ? 'A warm presence is enough.' : sleeping ? 'Let the little dreams do their work.' : 'Tap your creature to say hello. Tap the garden to explore.';
+    if (lastPhase !== state.phase || lastStage !== state.stage) {
+      if (state.phase === 'pupa') { toast(state.name + ' is entering a chrysalis.'); category = 'care'; $('tab-care').click(); }
+      if (state.stage > lastStage) { toast(state.name + ' emerged as a ' + M.formName(state) + '.'); particlesFor('emerge'); sing({ pitch: 540, beats: 4, style:'trill' }, true); }
+      lastPhase = state.phase; lastStage = state.stage; save();
+    }
+    $('journal-count').textContent = state.history.length;
+    updateAvailability();
+    if (notebook === 'growth' || force) renderTraits();
+    if (notebook === 'voice' || force) renderVoice();
+    if (notebook === 'journal' || force) renderJournal();
+  }
+  function resize() {
+    const rect = canvas.parentElement.getBoundingClientRect(); width = rect.width; height = rect.height;
+    dpr = Math.min(window.devicePixelRatio || 1, 2); canvas.width = Math.round(width * dpr); canvas.height = Math.round(height * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); draw(0);
+  }
+  function ellipse(x,y,rx,ry,color) { ctx.beginPath();ctx.ellipse(x,y,Math.max(.01,rx),Math.max(.01,ry),0,0,Math.PI*2);ctx.fillStyle=color;ctx.fill(); }
+  function strokePath(color,line,drawPath) { ctx.beginPath();drawPath();ctx.strokeStyle=color;ctx.lineWidth=line;ctx.lineCap='round';ctx.stroke(); }
+  function petal(x,y,w,h,angle,color) {
+    ctx.save();ctx.translate(x,y);ctx.rotate(angle);ctx.beginPath();ctx.moveTo(0,0);ctx.bezierCurveTo(-w,-h*.3,-w*.5,-h*.95,0,-h);ctx.bezierCurveTo(w*.65,-h*.85,w,-h*.25,0,0);ctx.fillStyle=color;ctx.fill();
+    strokePath('rgba(241,249,206,.28)',.8,()=>{ctx.moveTo(0,-3);ctx.quadraticCurveTo(w*.1,-h*.5,0,-h*.85);});ctx.restore();
+  }
+  function drawGarden(t) {
+    const bg=ctx.createLinearGradient(0,0,width,height);bg.addColorStop(0,'#193e3e');bg.addColorStop(.5,'#163b37');bg.addColorStop(1,'#1e4235');ctx.fillStyle=bg;ctx.fillRect(0,0,width,height);
+    const glow=ctx.createRadialGradient(width*.51,height*.37,5,width*.51,height*.37,width*.5);glow.addColorStop(0,'rgba(172,203,136,.12)');glow.addColorStop(1,'rgba(114,152,100,0)');ctx.fillStyle=glow;ctx.fillRect(0,0,width,height);
+    ctx.save();ctx.translate(width*.51,height*.5);
+    [1,.82].forEach((k,i)=>{ctx.beginPath();ctx.ellipse(0,0,width*.33*k,height*.37*k,-.08,-Math.PI*.95,Math.PI*.98);ctx.strokeStyle=i?'rgba(179,206,153,.035)':'rgba(179,206,153,.075)';ctx.lineWidth=1;ctx.stroke();});ctx.restore();
+    ellipse(width*.52,height*.80,width*.4,height*.12,'rgba(8,30,27,.20)');
+    const ground=ctx.createRadialGradient(width*.50,height*.79,10,width*.50,height*.79,width*.36);ground.addColorStop(0,'#587951');ground.addColorStop(.5,'#36593d');ground.addColorStop(1,'rgba(38,71,48,0)');
+    ellipse(width*.50,height*.77,width*.37,height*.12,ground);
+    for(let i=0;i<90;i++){const x=width*(.16+((i*433)%1000)/1000*.69),y=height*(.73+((i*127)%100)/1000);ellipse(x,y,1+(i%3)*.6,.8,'rgba(149,173,100,'+(.07+(i%4)*.03)+')');}
+    plantSeeds.forEach((p,i)=>{
+      const x=width*(.04+p.x*.92), edge=Math.abs(p.x-.5)*2,y=height*(.77+edge*.035)+(i%5)*5;
+      const size=p.size*(.65+edge*.8)*Math.min(1,width/600), sway=reducedMotion?0:Math.sin(t*.4+i)*2.5;
+      const color=i%3===0?'#668261':i%3===1?'#476b50':'#395e49';
+      strokePath(color,1,()=>{ctx.moveTo(x,y);ctx.quadraticCurveTo(x+p.lean*size*.3+sway,y-size*.55,x+p.lean*size*.5+sway,y-size);});
+      petal(x+p.lean*size*.2,y-size*.32,size*.18,size*.43,-.8,color);petal(x+p.lean*size*.3,y-size*.5,size*.18,size*.4,.8,color);
+    });
+    for(let i=0;i<13;i++){
+      const x=width*(.1+((i*397+177)%1000)/1250)+(reducedMotion?0:Math.sin(t*.23+i*2)*11);
+      const y=height*(.16+((i*163)%500)/1000)+(reducedMotion?0:Math.cos(t*.37+i)*10);
+      const a=.15+(reducedMotion?.15:(Math.sin(t*.8+i*3)+1)*.14);
+      const g=ctx.createRadialGradient(x,y,0,x,y,8);g.addColorStop(0,'rgba(220,236,150,'+a+')');g.addColorStop(1,'rgba(220,236,150,0)');ellipse(x,y,8,8,g);ellipse(x,y,1.1,1.1,'rgba(227,238,169,'+(a+.15)+')');
+    }
+    [[.22,.78,1],[.79,.80,.65]].forEach(([x,y,k])=>{
+      const sc=Math.min(1,width/640)*k;
+      for(let i=0;i<3;i++){const xx=width*x+(i-1)*14*sc,yy=height*y-(i%2)*6*sc;strokePath('#9bac85',3*sc,()=>{ctx.moveTo(xx,yy);ctx.quadraticCurveTo(xx-2*sc,yy-9*sc,xx,yy-17*sc);});ctx.beginPath();ctx.ellipse(xx,yy-17*sc,(10-i)*sc,(6-i)*sc,0,Math.PI,Math.PI*2);ctx.fillStyle=['#91a881','#a5b78b','#809b78'][i];ctx.fill();ellipse(xx-3*sc,yy-20*sc,1*sc,.7*sc,'#dce0b7');}
+    });
+  }
+  function drawPupa(t,scale,x,y) {
+    const progress=1-state.pupaLeft/state.pupaTotal;ctx.save();ctx.translate(x,y-12*scale);
+    const pulse=reducedMotion?1:1+Math.sin(t*1.8)*.012;ctx.scale(scale*pulse,scale*pulse);
+    ellipse(0,65,60,10,'rgba(5,22,20,.24)');
+    const aura=ctx.createRadialGradient(0,-15,2,0,-15,120);aura.addColorStop(0,'rgba(197,222,148,'+(.10+progress*.15)+')');aura.addColorStop(1,'rgba(197,222,148,0)');ellipse(0,-15,120,140,aura);
+    petal(-3,-15,38,108,-.18,'#658b60');petal(3,-15,36,105,.15,'#739365');
+    const fill=ctx.createLinearGradient(-55,-70,60,45);fill.addColorStop(0,'#c4d29a');fill.addColorStop(.5,'#99b77e');fill.addColorStop(1,'#5f8f69');
+    ctx.beginPath();ctx.moveTo(0,-83);ctx.bezierCurveTo(-63,-65,-64,27,0,70);ctx.bezierCurveTo(65,26,62,-64,0,-83);ctx.fillStyle=fill;ctx.fill();
+    ctx.save();ctx.globalAlpha=.12+progress*.2;ellipse(0,-1,30,45,'#f0efd0');ctx.restore();
+    [-36,-10,18,40].forEach((v,i)=>{strokePath('rgba(49,89,54,.4)',1.2,()=>{ctx.moveTo(-40+i*3,v);ctx.quadraticCurveTo(0,v+22,40-i*3,v-13);});});
+    strokePath('rgba(227,236,177,.45)',1.3,()=>{ctx.moveTo(-8,-66);ctx.bezierCurveTo(-39,-34,-31,14,-6,46);});
+    for(let i=0;i<7;i++)ellipse(Math.sin(i*5)*26,-50+i*15,1.5,1.5,'rgba(240,241,185,'+(.3+(reducedMotion?0:Math.sin(t+i))*.2)+')');
+    if(progress>.85)strokePath('rgba(239,244,188,.85)',1.4,()=>{ctx.moveTo(-3,-54);ctx.lineTo(5,-35);ctx.lineTo(-4,-20);ctx.lineTo(6,2);ctx.lineTo(0,22);});
+    ctx.restore();
+  }
+  function drawCreature(t) {
+    const mobileScale=Math.min(1,width/580), baseScale=Math.max(.64,mobileScale)*[1.02,1.13,1.24,1.32][state.stage];
+    const p=state.expressed.map(v=>Math.min(1,Math.max(0,(v-.10)/.60))), bloom=p[0],lantern=p[1],wander=p[2],resonance=p[3],velvet=p[4];
+    const activity=state.activity?state.activity.type:'idle',sleeping=state.sleepingUntil>state.age, pupa=state.phase==='pupa';
+    const motionTime=reducedMotion?0:t;
+    const target=activity==='explore'||activity==='puzzle'?pointerTarget:0;
+    creatureX+=(target-creatureX)*.025;
+    const cx=width*.50+creatureX,cy=height*.63;
+    hitCreature={x:cx,y:cy-17*baseScale,radius:87*baseScale};
+    if(pupa){drawPupa(motionTime,baseScale,cx,cy);return;}
+    const w=55+state.genome[1]*8+velvet*15,h=65+state.genome[2]*9+resonance*9;
+    const hop=(activity==='explore'||activity==='puzzle')?Math.abs(Math.sin(motionTime*6))*13:activity==='rhythm'?Math.sin(motionTime*8)*3:0;
+    const bob=sleeping?Math.sin(motionTime*1.1)*2:Math.sin(motionTime*1.7)*2.1;
+    const wiggle=state.request&&state.signals[state.request.signal].style==='wiggle';
+    const lean=activity==='cuddle'?-.08:wiggle?Math.sin(motionTime*6)*.06:activity==='rhythm'?Math.sin(motionTime*4)*.05:Math.sin(motionTime*.55)*.015;
+    ellipse(cx,cy+55*baseScale,61*baseScale,(9-hop*.13)*baseScale,'rgba(6,25,21,.28)');
+    if(activity==='warmth'||lantern>.2){const aura=ctx.createRadialGradient(cx,cy,0,cx,cy,140*baseScale);aura.addColorStop(0,'rgba(221,218,135,'+(.08+lantern*.18)+')');aura.addColorStop(1,'rgba(221,218,135,0)');ellipse(cx,cy,140*baseScale,150*baseScale,aura);}
+    ctx.save();ctx.translate(cx,cy+bob-hop);ctx.rotate(lean);ctx.scale(baseScale,baseScale);
+    if(state.stage>0){
+      const tail=20+wander*60;
+      strokePath('#93bd9a',8+wander*4,()=>{ctx.moveTo(w*.63,26);ctx.bezierCurveTo(w+tail*.7,34,w+tail,-13,w+tail*.3,-7);});
+      petal(w+tail*.35,-9,9,22+16*bloom,.85,'#bad09e');
+      if(state.stage>1&&wander>.12){[-1,1].forEach(side=>{ctx.save();ctx.scale(side,1);ctx.beginPath();ctx.moveTo(w*.6,-12);ctx.bezierCurveTo(w+20+wander*34,-58,w+44+wander*21,20,w*.75,30);ctx.fillStyle='rgba(161,197,164,'+(.2+wander*.3)+')';ctx.fill();strokePath('rgba(194,219,176,.32)',1,()=>{ctx.moveTo(w*.65,-10);ctx.quadraticCurveTo(w+25,-12,w*.8,23);});ctx.restore();});}
+    }
+    const legCount=state.stage>=2&&wander>.22?4:2;
+    for(let i=0;i<legCount;i++){const xx=(i-(legCount-1)/2)*(legCount===2?42:27);const sway=(activity==='explore'?Math.sin(motionTime*7+i*2)*5:0);ellipse(xx,43+sway,12+wander*4,16+wander*10,'#8eb89a');ellipse(xx-3,46+sway,5,8,'rgba(199,221,172,.3)');}
+    const sideColor=['#aed0a5','#c5d597','#a3c9ad','#c7bfdb','#cfbfa9'][p.indexOf(Math.max(...p))];
+    [-1,1].forEach(side=>{
+      const count=state.stage===0?1:2+Math.round(bloom*3);
+      for(let i=count-1;i>=0;i--){const angle=side*(.45+i*.35)+(reducedMotion?0:Math.sin(t*.9+i)*.035);petal(side*(w*.65),-h*.46+i*8,12+bloom*14,22+state.stage*9+bloom*29,angle,sideColor);}
+    });
+    if(state.stage>=2&&velvet>.1){
+      for(let i=0;i<18;i++){const a=i/18*Math.PI*2;ellipse(Math.cos(a)*(w-2),Math.sin(a)*(h*.8)-4,7+velvet*8,8+velvet*7,'#bed5b0');}
+    }
+    const hue=95+state.genome[0]*39+resonance*15-lantern*20;
+    const body=ctx.createLinearGradient(-w,-h,w,h*.65);body.addColorStop(0,'hsl('+hue+', 39%, '+(79+velvet*4)+'%)');body.addColorStop(.48,'hsl('+(hue+3)+', 32%, 72%)');body.addColorStop(1,'hsl('+(hue+16)+', 26%, 52%)');
+    const breath=1+(sleeping?Math.sin(motionTime*1.1)*.015:Math.sin(motionTime*1.7)*.008);
+    ctx.save();ctx.scale(breath,1/breath);
+    ctx.beginPath();ctx.moveTo(0,-h);ctx.bezierCurveTo(-w*.85,-h*1.08,-w*1.18,-h*.14,-w*.92,h*.35);ctx.bezierCurveTo(-w*.72,h*.81,w*.72,h*.81,w*.92,h*.35);ctx.bezierCurveTo(w*1.18,-h*.14,w*.85,-h*1.08,0,-h);ctx.fillStyle=body;ctx.fill();
+    ellipse(-18,-40,w*.35,h*.29,'rgba(239,248,205,.13)');
+    ctx.save();ctx.globalAlpha=.28;ellipse(0,12,w*.67,h*.43,'#e5ebbd');ctx.restore();
+    if(state.stage>0){
+      const tendril=24+resonance*40+state.stage*5;
+      [-1,1].forEach(side=>{
+        const tipX=side*(21+resonance*9)+(reducedMotion?0:Math.sin(motionTime*1.2+side)*3),tipY=-h-tendril;
+        strokePath('#98be99',3,()=>{ctx.moveTo(side*18,-h+12);ctx.quadraticCurveTo(side*36,-h-10,tipX,tipY);});
+        const tipGlow=ctx.createRadialGradient(tipX,tipY,0,tipX,tipY,13+lantern*11);tipGlow.addColorStop(0,'rgba(234,230,156,'+(.25+lantern*.4)+')');tipGlow.addColorStop(1,'rgba(234,230,156,0)');ellipse(tipX,tipY,14+lantern*12,14+lantern*12,tipGlow);ellipse(tipX,tipY,4+resonance*3,5+resonance*3,'#d9dfaa');
+      });
+    }else{petal(-10,-h+3,8,20,-.34,'#b1cc98');petal(5,-h+4,7,25,.32,'#c3d5a2');}
+    if(lantern>.03||state.stage>0){
+      const callGlow=state.request&&state.signals[state.request.signal].style==='glow';
+      for(let i=0;i<5+state.stage*2;i++){const xx=Math.sin(i*5.7)*w*.71,yy=9+Math.cos(i*3.8)*h*.4;const radius=1.5+lantern*3;const alpha=.15+lantern*.65+(callGlow?(Math.sin(motionTime*5)+1)*.2:0);ellipse(xx,yy,radius,radius,'rgba(243,232,156,'+Math.min(.9,alpha)+')');}
+    }
+    if(state.stage>=2&&resonance>.12){[-1,1].forEach(side=>{ellipse(side*w*.72,-2,8+resonance*6,10+resonance*9,'rgba(181,170,202,.36)');});}
+    const blink=sleeping||(!reducedMotion&&Math.sin(t*.8)>.995);
+    [-1,1].forEach(side=>{
+      const ex=side*19,ey=-h*.22;
+      if(blink){strokePath('#2c4b3a',2.7,()=>{ctx.moveTo(ex-5,ey);ctx.quadraticCurveTo(ex,ey+4,ex+5,ey);});}
+      else{ellipse(ex,ey,5.3,7.4,'#254936');ellipse(ex-1.3,ey-2.5,1.7,2,'#ecf4d6');}
+      ellipse(ex+side*8,ey+12,8,4.1,'rgba(197,148,132,.35)');
+    });
+    const ey=-h*.22;
+    if(activity==='eat'){ellipse(0,ey+16,4.5+Math.sin(motionTime*10),4,'#5c7553');}
+    else strokePath('#50704e',1.7,()=>{ctx.moveTo(-4,ey+14);ctx.quadraticCurveTo(0,ey+18,4,ey+14);});
+    [-1,1].forEach(side=>{const lifted=activity==='cuddle'||activity==='rhythm';strokePath('#92b695',7,()=>{ctx.moveTo(side*w*.87,5);ctx.quadraticCurveTo(side*(w+8),lifted?-5:18,side*(w+3),lifted?-15:21);});});
+    ctx.restore();ctx.restore();
+    if(sleeping){
+      ctx.save();ctx.fillStyle='rgba(215,229,187,.6)';ctx.font='italic 15px Georgia';ctx.fillText('z',cx+50*baseScale,cy-80*baseScale+(reducedMotion?0:Math.sin(t)*3));ctx.font='italic 11px Georgia';ctx.fillText('z',cx+63*baseScale,cy-98*baseScale);ctx.restore();
+    }
+    if(activity==='puzzle'){
+      ellipse(cx-75*baseScale,cy+49*baseScale,11*baseScale,6*baseScale,'#9fa795');ellipse(cx-78*baseScale,cy+47*baseScale,5*baseScale,2*baseScale,'#c2c7b3');
+    }
+    if(activity==='eat'){
+      for(let i=0;i<4;i++){const x=cx+(i-1.5)*12*baseScale,y=cy+20*baseScale+Math.sin(t*3+i)*4;ellipse(x,y,2,2,'rgba(236,216,162,.7)');}
+    }
+  }
+  function draw(dt) {
+    const t=visualTime;ctx.clearRect(0,0,width,height);drawGarden(t);drawCreature(t);
+    for(let i=particles.length-1;i>=0;i--){
+      const p=particles[i];p.life+=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;
+      if(p.life>=p.max){particles.splice(i,1);continue;}
+      ctx.save();ctx.globalAlpha=Math.min(1,(p.max-p.life)*1.5);const r=2.1*(1-p.life/p.max*.6);ellipse(p.x,p.y,r,r,p.color);
+      if(p.type==='rhythm'){ctx.strokeStyle=p.color;ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(p.x+r,p.y);ctx.lineTo(p.x+r,p.y-7);ctx.stroke();}
+      ctx.restore();
+    }
+  }
+  canvas.addEventListener('click', e => {
+    const rect=canvas.getBoundingClientRect(),x=e.clientX-rect.left,y=e.clientY-rect.top;
+    if(Math.hypot(x-hitCreature.x,y-hitCreature.y)<hitCreature.radius) doAction('brush');
+    else if(state.phase==='awake')doAction('explore',Math.max(-width*.22,Math.min(width*.22,x-width*.5)));
+  });
+  canvas.tabIndex=0;canvas.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();doAction('brush');}});
+  $('sound-button').addEventListener('click',()=>{state.settings.sound=!state.settings.sound;syncSound();if(state.settings.sound)sing(state.signals[0],true);else if(audio)audio.suspend().catch(()=>{});save();});
+  $('pause-button').addEventListener('click',()=>{state.settings.paused=!state.settings.paused;lastFrame=performance.now();renderUI(true);save();});
+  $('speed').addEventListener('change',e=>{state.settings.speed=Number(e.target.value);renderUI(true);save();});
+  $('echo-button').addEventListener('click',()=>doAction('echo'));
+  $('signal-play').addEventListener('click',()=>{if(!state.request)return;if(!state.settings.sound){state.settings.sound=true;syncSound();save();}sing(state.signals[state.request.signal]);});
+  $('signal-hint').addEventListener('click',()=>{
+    if(!state.request)return;
+    const hints={food:'A tiny rumble. That belly might be ready for something.',play:'Bright eyes follow the fireflies. A little play, perhaps?',bond:'A small lean in your direction. Maybe some company?',energy:'A slow blink, then another. A quiet rest might feel good.'};
+    toast(hints[state.request.need]);
+  });
+  document.querySelectorAll('.close-dialog').forEach(b=>b.addEventListener('click',()=>b.closest('dialog').close()));
+  document.querySelectorAll('dialog').forEach(d=>d.addEventListener('click',e=>{if(e.target===d){const r=d.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)d.close();}}));
+  $('guide-button').addEventListener('click',()=>$('guide-dialog').showModal());
+  $('name-button').addEventListener('click',()=>{$('pet-name').value=state.name;$('name-dialog').showModal();$('pet-name').select();});
+  $('name-form').addEventListener('submit',e=>{e.preventDefault();const name=$('pet-name').value.trim().replace(/[\u0000-\u001f]/g,'').slice(0,24);if(!name)return;state.name=name;$('name-dialog').close();renderUI(true);save();});
+  $('voice-need').addEventListener('change',e=>{voiceNeed=e.target.value;renderVoice();});
+  function exportPet(){
+    save();const data=JSON.stringify(state,null,2),blob=new Blob([data],{type:'application/json'}),url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download='chrysalis-'+state.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,24)+'-keepsake.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('A keepsake of this little life.');
+  }
+  $('export-button').addEventListener('click',exportPet);$('export-before-new').addEventListener('click',exportPet);
+  $('new-button').addEventListener('click',()=>$('new-dialog').showModal());
+  $('confirm-new').addEventListener('click',()=>{
+    const n=seed(),names=['Miro','Pip','Lumi','Moss','Fern','Kiko','Nori','Bramble'];
+    state=M.create(n,names[n%names.length]);particles.length=0;creatureX=0;pointerTarget=0;lastPhase='awake';lastStage=0;lastCare='';lastVoice='';lastJournal='';lastRequest='';lastFrame=performance.now();
+    $('molt-history').replaceChildren();$('new-dialog').close();$('tab-food').click();syncSound();renderUI(true);save();toast('Hello, '+state.name+'. Another possible life.');
+  });
+  $('import-button').addEventListener('click',()=>$('import-file').click());
+  $('import-file').addEventListener('change',async e=>{
+    const file=e.target.files[0];if(!file)return;
+    try{
+      if(file.size>250000)throw Error('That keepsake is too large.');
+      const candidate=JSON.parse(await file.text());if(!M.validate(candidate))throw Error('That file is not a valid Chrysalis keepsake.');
+      try{localStorage.setItem(KEY+'.previous',JSON.stringify(state));}catch(ignored){}
+      state=candidate;state.request=null;state.nextCall=state.age+8;lastPhase=state.phase;lastStage=state.stage;particles.length=0;creatureX=0;pointerTarget=0;lastCare='';lastVoice='';lastJournal='';lastRequest='';lastFrame=performance.now();$('molt-history').replaceChildren();syncSound();renderUI(true);save();toast('Welcome back, '+state.name+'.');
+    }catch(err){toast(err.message||'That keepsake could not be opened.');}
+    e.target.value='';
+  });
+  function frame(now){
+    const dt=Math.min(.25,Math.max(0,(now-lastFrame)/1000));lastFrame=now;
+    if(!state.settings.paused&&!document.hidden){M.advance(state,dt*state.settings.speed);visualTime+=reducedMotion?0:dt;}
+    draw(state.settings.paused?0:dt);renderUI(false);
+    if(now-lastSave>3000){save();lastSave=now;}
+    requestAnimationFrame(frame);
+  }
+  document.addEventListener('visibilitychange',()=>{
+    if(document.hidden){hiddenAt=Date.now();save();}
+    else{if(hiddenAt&&!state.settings.paused){const gap=(Date.now()-hiddenAt)/1000;M.advance(state,Math.min(gap*state.settings.speed,28800),{offline:true});if(gap>60)toast(state.name+' rested while you were away.');}hiddenAt=0;lastFrame=performance.now();renderUI(true);}
+  });
+  window.addEventListener('pagehide',save);
+  new ResizeObserver(resize).observe(canvas.parentElement);
+  renderActions();syncSound();renderUI(true);resize();save();requestAnimationFrame(frame);
+  if(welcome)setTimeout(()=>toast(welcome),700);
+})();
+
+</script>
+</body>
+</html>
