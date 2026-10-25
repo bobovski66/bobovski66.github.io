@@ -30,6 +30,7 @@
   
   
   
+  
 </head>
 <body>
   <div class="app-shell">
@@ -91,7 +92,7 @@
     <footer><span class="save-status" id="save-status"><span class="save-dot"></span>Progress kept in this browser</span><div><button id="export-button">Save a keepsake</button><span>·</span><button id="import-button">Open a keepsake</button><span>·</span><button id="new-button">A new beginning</button></div></footer>
   </div>
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
-  <dialog id="guide-dialog"><div class="dialog-heading"><div class="eyebrow">A SMALL FIELD GUIDE</div><button class="icon-button close-dialog" aria-label="Close field guide" data-icon="close"></button></div><h2>A life that takes shape.</h2><p>Your creature grows through three chrysalises. What it eats, how you play, and the quiet care you share influence the body that emerges.</p><div class="guide-list"><div><span data-icon="leaf"></span><p><b>Leave a little variety.</b> Nectar encourages petals and frills; moon mushrooms favor a glow. Exploration, rhythm, and rest each leave their own traces.</p></div><div><span data-icon="music"></span><p><b>Learn each other.</b> A peep might mean food for one creature and company for another. Meet a need after a signal and that association grows stronger. Tap the question mark for a clue.</p></div><div><span data-icon="chrysalis"></span><p><b>Give becoming some time.</b> Each chrysalis needs enough growth and care. Inside, the next body takes shape. Warmth and quiet company are welcome.</p></div><div><span data-icon="spark"></span><p><b>Make room for surprises.</b> Small variations introduce new calls and details at metamorphosis. Many different forms can thrive.</p></div></div><p class="guide-footnote">Use the faster garden clock to explore a whole life in a few minutes. Your creature rests while you're away. Keepsakes let you export and restore its history.</p><button class="primary-button close-dialog">Back to the garden</button></dialog>
+  <dialog id="guide-dialog"><div class="dialog-heading"><div class="eyebrow">A SMALL FIELD GUIDE</div><button class="icon-button close-dialog" aria-label="Close field guide" data-icon="close"></button></div><h2>A life that takes shape.</h2><p>Your creature grows through three chrysalises. What it eats, how you play, and the quiet care you share influence the body that emerges.</p><div class="guide-list"><div><span data-icon="leaf"></span><p><b>Leave a little variety.</b> Nectar encourages petals and frills; moon mushrooms favor a glow. Exploration, rhythm, and rest each leave their own traces.</p></div><div><span data-icon="music"></span><p><b>Learn each other.</b> A peep might mean food for one creature and company for another. Meet a need after a signal and that association grows stronger. Tap the question mark for a clue. The speaker button starts sound; tap a call to hear it again.</p></div><div><span data-icon="chrysalis"></span><p><b>Give becoming some time.</b> Each chrysalis needs enough growth and care. Inside, the next body takes shape. Warmth and quiet company are welcome.</p></div><div><span data-icon="spark"></span><p><b>Make room for surprises.</b> Small variations introduce new calls and details at metamorphosis. Many different forms can thrive.</p></div></div><p class="guide-footnote">Use the faster garden clock to explore a whole life in a few minutes. Your creature rests while you're away. Keepsakes let you export and restore its history.</p><button class="primary-button close-dialog">Back to the garden</button></dialog>
   <dialog id="name-dialog"><div class="dialog-heading"><div class="eyebrow">A NAME OF ITS OWN</div><button class="icon-button close-dialog" aria-label="Close rename" data-icon="close"></button></div><h2>What shall we call you?</h2><form id="name-form"><label for="pet-name">Your creature's name</label><input id="pet-name" maxlength="24" required autocomplete="off"><button class="primary-button" type="submit">A lovely name</button></form></dialog>
   <dialog id="new-dialog"><div class="dialog-heading"><div class="eyebrow">ANOTHER POSSIBLE LIFE</div><button class="icon-button close-dialog" aria-label="Close new creature" data-icon="close"></button></div><h2>A new beginning.</h2><p>This replaces the creature in your garden. Save a keepsake first if you'd like to visit this life again.</p><div class="dialog-actions"><button class="quiet-button" id="export-before-new">Save current keepsake</button><button class="primary-button" id="confirm-new">Welcome a new creature</button></div></dialog>
   <input type="file" id="import-file" accept="application/json,.json" hidden>
@@ -385,6 +386,153 @@
 
 </script>
 <script>
+(function (root, factory) {
+  const audio = factory();
+  if (typeof module === 'object' && module.exports) module.exports = audio;
+  else root.PetAudio = audio;
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  'use strict';
+  function create(options) {
+    options = options || {};
+    const env = options.environment || globalThis;
+    const Context = env.AudioContext || env.webkitAudioContext;
+    const onStateChange = options.onStateChange || function () {};
+    let enabled = !!options.enabled, context = null, primed = false, pending = null, wantsActive = false;
+    let epoch = 0, playId = 0, rebuild = false, scheduledNotes = 0, previousSessionType;
+    const active = new Set();
+    function status() {
+      if (!enabled) return 'off';
+      if (!Context) return 'unavailable';
+      if (wantsActive && context && context.state === 'running' && primed) return 'ready';
+      return pending ? 'starting' : 'locked';
+    }
+    function notify() { onStateChange(status()); }
+    function playbackSession(enable) {
+      try {
+        const session = env.navigator && env.navigator.audioSession;
+        if (!session) return;
+        if (enable) {
+          if (previousSessionType === undefined) previousSessionType = session.type;
+          session.type = 'playback';
+        } else if (previousSessionType !== undefined) {
+          session.type = previousSessionType;
+          previousSessionType = undefined;
+        }
+      } catch (e) { /* Audio Session is optional; ordinary Web Audio still works. */ }
+    }
+    function stopNotes() {
+      for (const voice of active) {
+        try { voice.gain.gain.cancelScheduledValues(context ? context.currentTime : 0); } catch (e) {}
+        try { voice.gain.gain.setValueAtTime(.0001, context ? context.currentTime : 0); } catch (e) {}
+        try { voice.osc.stop(); } catch (e) {}
+        try { voice.osc.disconnect(); voice.gain.disconnect(); } catch (e) {}
+      }
+      active.clear();
+    }
+    function suspendContext() {
+      if (!context || context.state === 'closed') return Promise.resolve();
+      try { return Promise.resolve(context.suspend()).catch(function () {}); }
+      catch (e) { return Promise.resolve(); }
+    }
+    function pause() {
+      epoch++; playId++; pending = null; wantsActive = false; stopNotes(); playbackSession(false);
+      const done = suspendContext(); notify(); return done.then(notify);
+    }
+    function setEnabled(value) {
+      const next = !!value;
+      if (next === enabled) return;
+      enabled = next;
+      if (!enabled) { pause(); return; }
+      epoch++; notify();
+    }
+    function unlock() {
+      if (!enabled || !Context) { notify(); return Promise.resolve(false); }
+      wantsActive = true;
+      playbackSession(true);
+      try {
+        if (!context || context.state === 'closed' || rebuild) {
+          const previous = context;
+          context = new Context({ latencyHint: 'interactive' });
+          primed = false; rebuild = false;
+          const current = context;
+          current.onstatechange = function () { if (context === current) notify(); };
+          if (previous && previous.state !== 'closed') {
+            try { Promise.resolve(previous.close()).catch(function () {}); } catch (e) {}
+          }
+        }
+        const current = context, attemptEpoch = epoch;
+        // Both priming and resume happen synchronously inside the trusted tap.
+        // Notes are created only after the context has actually started.
+        if (!primed || current.state !== 'running') {
+          const source = current.createBufferSource();
+          source.buffer = current.createBuffer(1, 1, current.sampleRate || 44100);
+          source.connect(current.destination);
+          source.onended = function () { try { source.disconnect(); } catch (e) {} };
+          source.start(0); primed = true;
+        }
+        const resumed = current.state === 'running' ? Promise.resolve() : current.resume();
+        let timer;
+        const deadline = new Promise(resolve => { timer = setTimeout(() => resolve(false), options.resumeTimeoutMs || 1800); });
+        const attempt = Promise.race([Promise.resolve(resumed).then(() => true, () => false), deadline])
+          .then(function (resumedOK) {
+            clearTimeout(timer);
+            if (context !== current || attemptEpoch !== epoch || !enabled) {
+              // A late permission result must never undo a mute or background pause.
+              if (context === current && (!enabled || !wantsActive)) suspendContext();
+              return false;
+            }
+            const ready = resumedOK && current.state === 'running';
+            if (!ready && current.state === 'interrupted') rebuild = true;
+            return ready;
+          }).catch(function () { clearTimeout(timer); return false; })
+          .then(function (ready) { if (pending === attempt) pending = null; notify(); return ready; });
+        pending = attempt; notify(); return attempt;
+      } catch (e) { pending = null; notify(); return Promise.resolve(false); }
+    }
+    function schedule(signal, soft) {
+      if (!enabled || !wantsActive || !context || context.state !== 'running' || !primed) { notify(); return false; }
+      stopNotes();
+      const now = context.currentTime + .03;
+      const pitch = Math.max(120, Math.min(1600, Number(signal.pitch) || 610));
+      const beats = Math.max(1, Math.min(5, Math.round(Number(signal.beats) || 1)));
+      try {
+        for (let i = 0; i < beats; i++) {
+          const osc = context.createOscillator(), gain = context.createGain();
+          const voice = { osc, gain }, start = now + i * .14;
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(pitch * (1 + .09 * Math.sin(i)), start);
+          osc.frequency.exponentialRampToValueAtTime(pitch * (signal.style === 'trill' ? 1.34 : .82), start + .15);
+          gain.gain.setValueAtTime(.0001, start);
+          gain.gain.exponentialRampToValueAtTime(soft ? .055 : .085, start + .025);
+          gain.gain.exponentialRampToValueAtTime(.0001, start + .19);
+          osc.connect(gain); gain.connect(context.destination); active.add(voice);
+          osc.onended = function () {
+            active.delete(voice);
+            try { osc.disconnect(); gain.disconnect(); } catch (e) {}
+          };
+          osc.start(start); osc.stop(start + .22); scheduledNotes++;
+        }
+        notify(); return true;
+      } catch (e) { stopNotes(); notify(); return false; }
+    }
+    function play(signal, settings) {
+      if (!signal || !enabled) return Promise.resolve(false);
+      settings = settings || {};
+      const id = ++playId, playEpoch = epoch;
+      const ready = settings.userGesture ? unlock() : status() === 'ready' ? Promise.resolve(true) : pending || Promise.resolve(false);
+      return ready.then(function (ok) {
+        if (!ok || !enabled || id !== playId || playEpoch !== epoch) return false;
+        return schedule(signal, !!settings.soft);
+      });
+    }
+    return { unlock, play, pause, setEnabled, status, refresh: notify,
+      details: () => ({ status: status(), scheduledNotes }) };
+  }
+  return { create };
+});
+
+</script>
+<script>
 (function () {
   'use strict';
   const M = window.Chrysalis;
@@ -438,7 +586,8 @@
   let category = 'food', notebook = 'growth', voiceNeed = 'food', toastTimer = 0, lastSave = 0;
   let actionLock = 0, lastUI = 0, lastFrame = performance.now(), hiddenAt = 0, lastRequest = '';
   let lastPhase = state.phase, lastStage = state.stage, lastJournal = '', lastVoice = '', lastCare = '';
-  let audio, visualTime = 0, particleId = 0, movement = Motion.create();
+  let visualTime = 0, particleId = 0, movement = Motion.create();
+  const voiceAudio = window.PetAudio.create({ environment: window, enabled: state.settings.sound, onStateChange: syncSound });
   const particles = [];
   const canvas = $('garden'), ctx = canvas.getContext('2d');
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -464,25 +613,16 @@
   }
   function shortAge(seconds) { return seconds < 60 ? Math.floor(seconds) + 's' : seconds < 3600 ? Math.floor(seconds / 60) + 'm' : Math.floor(seconds / 3600) + 'h'; }
   function remaining(seconds) { const real = Math.ceil(seconds / state.settings.speed); return real < 60 ? real + 's' : Math.ceil(real / 60) + 'm'; }
-  function ensureAudio() {
-    if (!state.settings.sound) return null;
-    try {
-      if (!audio) audio = new (window.AudioContext || window.webkitAudioContext)();
-      if (audio.state === 'suspended') audio.resume().catch(() => {});
-      return audio;
-    } catch (e) { return null; }
+  function sing(signal, soft, userGesture) {
+    return voiceAudio.play(signal, { soft: !!soft, userGesture: !!userGesture });
   }
-  function sing(signal, soft) {
-    const ac = ensureAudio(); if (!ac || !signal) return;
-    const now = ac.currentTime;
-    for (let i = 0; i < signal.beats; i++) {
-      const osc = ac.createOscillator(), gain = ac.createGain();
-      osc.type = 'sine'; const start = now + i * .13;
-      osc.frequency.setValueAtTime(signal.pitch * (1 + .09 * Math.sin(i)), start);
-      osc.frequency.exponentialRampToValueAtTime(signal.pitch * (signal.style === 'trill' ? 1.34 : .82), start + .13);
-      gain.gain.setValueAtTime(.0001, start); gain.gain.exponentialRampToValueAtTime(soft ? .025 : .045, start + .02); gain.gain.exponentialRampToValueAtTime(.0001, start + .16);
-      osc.connect(gain); gain.connect(ac.destination); osc.start(start); osc.stop(start + .19);
-    }
+  function playFromTap(signal, soft) {
+    const starting = voiceAudio.status() !== 'ready';
+    state.settings.sound = true; voiceAudio.setEnabled(true); syncSound(); save();
+    return sing(signal, soft, true).then(ok => {
+      if (starting && state.settings.sound) toast(ok ? 'Sound is on.' : voiceAudio.status() === 'unavailable' ? 'Audio is not available in this browser.' : 'Tap the speaker again to start sound.');
+      return ok;
+    });
   }
   function particlesFor(type) {
     const count = reducedMotion ? 3 : type === 'emerge' ? 25 : 9;
@@ -497,7 +637,7 @@
     actionLock = now + 430;
     $('response-note').textContent = result.message;
     particlesFor(M.ACTIONS[key].motion);
-    if (key === 'echo' || key === 'rhythm') sing(answeredSignal || state.signals[1], true);
+    if (key === 'echo' || key === 'rhythm') sing(answeredSignal || state.signals[1], true, true);
     if (key === 'explore' || key === 'puzzle') Motion.begin(movement, key, Object.assign(movementOptions(), { destination }));
     else Motion.cancel(movement);
     if (key === 'rest') toast(state.name + ' is taking a little nap.');
@@ -581,8 +721,7 @@
       const name = document.createElement('button'); name.className = 'voice-name'; name.innerHTML = icon('sound');
       name.append(document.createTextNode(signal.name)); name.setAttribute('aria-label', 'Listen to ' + signal.name);
       name.addEventListener('click', () => {
-        if (!state.settings.sound) { state.settings.sound = true; syncSound(); save(); }
-        sing(signal, false); particlesFor('rhythm');
+        playFromTap(signal, false); particlesFor('rhythm');
       });
       const val = document.createElement('span'); val.className = 'voice-value'; val.textContent = Math.round(values[i] * 100) + '%';
       top.append(name, val); const bar = document.createElement('progress'); bar.max = 1; bar.value = values[i]; bar.setAttribute('aria-label', signal.name + ' probability when asking for ' + M.NEED_LABELS[voiceNeed]); row.append(top, bar); box.append(row);
@@ -602,9 +741,14 @@
     });
   }
   function syncSound() {
-    $('sound-button').innerHTML = icon(state.settings.sound ? 'sound' : 'sound-off');
-    $('sound-button').setAttribute('aria-pressed', String(state.settings.sound));
-    $('sound-button').setAttribute('aria-label', state.settings.sound ? 'Turn sound off' : 'Turn sound on');
+    const audioState = voiceAudio.status(), ready = audioState === 'ready';
+    const label = ready ? 'Turn sound off' : audioState === 'off' ? 'Turn sound on' : audioState === 'unavailable' ? 'Audio unavailable' : 'Tap to start sound';
+    $('sound-button').innerHTML = icon(ready ? 'sound' : 'sound-off');
+    $('sound-button').setAttribute('aria-pressed', String(ready));
+    $('sound-button').setAttribute('aria-label', label);
+    $('sound-button').setAttribute('title', label);
+    $('sound-button').dataset.audioState = audioState;
+    $('sound-button').dataset.audioNotes = String(voiceAudio.details().scheduledNotes);
   }
   function renderUI(force) {
     const now = performance.now(); if (!force && now - lastUI < 240) return; lastUI = now;
@@ -837,11 +981,20 @@
     else if(state.phase==='awake')doAction('explore',Math.max(-width*.43,Math.min(width*.43,x-width*.5)));
   });
   canvas.tabIndex=0;canvas.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();doAction('brush');}});
-  $('sound-button').addEventListener('click',()=>{state.settings.sound=!state.settings.sound;syncSound();if(state.settings.sound)sing(state.signals[0],true);else if(audio)audio.suspend().catch(()=>{});save();});
+  function resumeFromGesture(event) {
+    if (event.isTrusted && event.target !== $('sound-button') && !$('sound-button').contains(event.target) && state.settings.sound && voiceAudio.status() !== 'ready') voiceAudio.unlock();
+  }
+  document.addEventListener('pointerup',resumeFromGesture,{capture:true,passive:true});
+  document.addEventListener('touchend',resumeFromGesture,{capture:true,passive:true});
+  document.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' ')resumeFromGesture(event);},true);
+  $('sound-button').addEventListener('click',()=>{
+    if(state.settings.sound&&voiceAudio.status()==='ready'){state.settings.sound=false;voiceAudio.setEnabled(false);syncSound();save();}
+    else playFromTap(state.signals[0],false);
+  });
   $('pause-button').addEventListener('click',()=>{state.settings.paused=!state.settings.paused;lastFrame=performance.now();renderUI(true);save();});
   $('speed').addEventListener('change',e=>{state.settings.speed=Number(e.target.value);renderUI(true);save();});
   $('echo-button').addEventListener('click',()=>doAction('echo'));
-  $('signal-play').addEventListener('click',()=>{if(!state.request)return;if(!state.settings.sound){state.settings.sound=true;syncSound();save();}sing(state.signals[state.request.signal]);});
+  $('signal-play').addEventListener('click',()=>{if(state.request)playFromTap(state.signals[state.request.signal],false);});
   $('signal-hint').addEventListener('click',()=>{
     if(!state.request)return;
     const hints={food:'A tiny rumble. That belly might be ready for something.',play:'Bright eyes follow the fireflies. A little play, perhaps?',bond:'A small lean in your direction. Maybe some company?',energy:'A slow blink, then another. A quiet rest might feel good.'};
@@ -862,7 +1015,7 @@
   $('confirm-new').addEventListener('click',()=>{
     const n=seed(),names=['Miro','Pip','Lumi','Moss','Fern','Kiko','Nori','Bramble'];
     state=M.create(n,names[n%names.length]);particles.length=0;movement=Motion.create();lastPhase='awake';lastStage=0;lastCare='';lastVoice='';lastJournal='';lastRequest='';lastFrame=performance.now();
-    $('molt-history').replaceChildren();$('new-dialog').close();$('tab-food').click();syncSound();renderUI(true);save();toast('Hello, '+state.name+'. Another possible life.');
+    $('molt-history').replaceChildren();$('new-dialog').close();$('tab-food').click();voiceAudio.setEnabled(state.settings.sound);syncSound();renderUI(true);save();toast('Hello, '+state.name+'. Another possible life.');
   });
   $('import-button').addEventListener('click',()=>$('import-file').click());
   $('import-file').addEventListener('change',async e=>{
@@ -871,7 +1024,7 @@
       if(file.size>250000)throw Error('That keepsake is too large.');
       const candidate=JSON.parse(await file.text());if(!M.validate(candidate))throw Error('That file is not a valid Chrysalis keepsake.');
       try{localStorage.setItem(KEY+'.previous',JSON.stringify(state));}catch(ignored){}
-      state=candidate;state.request=null;state.nextCall=state.age+8;lastPhase=state.phase;lastStage=state.stage;particles.length=0;movement=Motion.create();lastCare='';lastVoice='';lastJournal='';lastRequest='';lastFrame=performance.now();$('molt-history').replaceChildren();syncSound();renderUI(true);save();toast('Welcome back, '+state.name+'.');
+      state=candidate;state.request=null;state.nextCall=state.age+8;lastPhase=state.phase;lastStage=state.stage;particles.length=0;movement=Motion.create();lastCare='';lastVoice='';lastJournal='';lastRequest='';lastFrame=performance.now();$('molt-history').replaceChildren();voiceAudio.setEnabled(state.settings.sound);syncSound();renderUI(true);save();toast('Welcome back, '+state.name+'.');
     }catch(err){toast(err.message||'That keepsake could not be opened.');}
     e.target.value='';
   });
@@ -883,9 +1036,10 @@
     requestAnimationFrame(frame);
   }
   document.addEventListener('visibilitychange',()=>{
-    if(document.hidden){hiddenAt=Date.now();save();}
-    else{if(hiddenAt&&!state.settings.paused){const gap=(Date.now()-hiddenAt)/1000;M.advance(state,Math.min(gap*state.settings.speed,28800),{offline:true});if(gap>60)toast(state.name+' rested while you were away.');}hiddenAt=0;lastFrame=performance.now();renderUI(true);}
+    if(document.hidden){hiddenAt=Date.now();voiceAudio.pause();save();}
+    else{if(hiddenAt&&!state.settings.paused){const gap=(Date.now()-hiddenAt)/1000;M.advance(state,Math.min(gap*state.settings.speed,28800),{offline:true});if(gap>60)toast(state.name+' rested while you were away.');}hiddenAt=0;lastFrame=performance.now();voiceAudio.refresh();renderUI(true);}
   });
+  window.addEventListener('pageshow',()=>voiceAudio.refresh());
   window.addEventListener('pagehide',save);
   new ResizeObserver(resize).observe(canvas.parentElement);
   renderActions();syncSound();renderUI(true);resize();save();requestAnimationFrame(frame);
