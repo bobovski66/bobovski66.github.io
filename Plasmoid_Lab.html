@@ -1,0 +1,910 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b111b">
+  <meta name="application-version" content="1.1">
+  <meta name="description" content="A laboratory for Gaussian statistical agents, local delayed communication, Fisher dynamics, contact lifts, and directed forest complexes.">
+  <title>Plasmoid Information Lab</title>
+  <style>:root{color-scheme:dark;--bg:#0b111b;--panel:#111925;--line:#263344;--text:#e1e8ed;--muted:#91a2b3;--dim:#62788e;--accent:#91d5c0;--gold:#ffb45f;--blue:#64cbe0;--violet:#bd98f6;--radius:7px;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:13px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text)}button,select,input{font:inherit;color:inherit}button,select{border:1px solid var(--line);border-radius:var(--radius);background:#172230;min-height:34px}button{cursor:pointer;padding:7px 12px;transition:background .12s,border-color .12s}button:hover{background:#223142;border-color:#496176}button:disabled{opacity:.45;cursor:default}button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,canvas:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px}select{padding:6px 28px 6px 9px;max-width:100%;cursor:pointer}input[type=number]{border:1px solid var(--line);border-radius:5px;background:#0b1420;padding:6px 8px;min-width:0}input[type=range]{width:100%;accent-color:var(--accent);height:17px;margin:5px 0 0;cursor:pointer}input[type=checkbox]{accent-color:var(--accent);width:14px;height:14px;margin:0 8px 0 0}a{color:var(--accent);text-underline-offset:3px}small{font-size:10px;color:var(--dim)}[hidden]{display:none!important}.quiet{background:transparent;color:var(--muted);border-color:transparent}.quiet:hover{color:var(--text)}.primary{background:var(--accent);color:#10241f;border-color:var(--accent);font-weight:650}.primary:hover{background:#b0e6d5;border-color:#b0e6d5}.small{font-size:11px;min-height:28px;padding:4px 8px}.sr-only{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.app-header{height:78px;border-bottom:1px solid var(--line);padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:15px;background:#101823}.brand{display:flex;align-items:center;gap:12px;white-space:nowrap}.brand-mark{width:35px;height:35px;color:var(--accent)}h1{font-size:20px;font-weight:620;letter-spacing:-.6px;line-height:1.1;margin:0 0 5px}.brand p{font-size:11px;color:var(--muted);margin:0;letter-spacing:.25px}.header-actions{display:flex;align-items:center;gap:5px}.plane-label{font-size:11px;color:var(--dim);margin-right:18px}
+.workspace{display:grid;grid-template-columns:255px minmax(350px,1fr) 315px;min-height:calc(100dvh - 78px);max-width:2000px;margin:auto}.control-rail{padding:23px 18px 20px;border-right:1px solid var(--line);background:#101824;height:calc(100dvh - 78px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:#344658 transparent}.rail-title{display:flex;justify-content:space-between;font-size:10px;font-weight:650;letter-spacing:1.8px;color:var(--muted);margin-bottom:23px}.version{color:var(--dim);font-weight:400}.field-label{display:block;font-size:11px;color:var(--muted);margin-bottom:8px}#presetSelect{width:100%;font-size:12px}.control-help{font-size:11px;line-height:1.6;color:var(--muted);min-height:52px;margin:10px 0 15px}.transport{display:grid;grid-template-columns:1fr 1fr;gap:7px}.seed-row{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:5px;align-items:center;margin-top:12px;color:var(--muted);font-size:11px}.seed-row button{padding:5px 4px;font-size:11px}.seed-row input{width:100%;font-size:11px}.speed-row{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--muted);margin:8px 0 18px}.speed-row select{min-height:28px;padding-top:3px;padding-bottom:3px;font-size:11px}.control-group{border-top:1px solid var(--line);padding:13px 0 8px}.control-group summary{font-size:12px;font-weight:560;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;color:#cedae4;margin-bottom:5px}.control-group summary:after{content:'+';font-size:15px;font-weight:400;color:var(--dim)}.control-group[open] summary:after{content:'−'}.control-group summary::-webkit-details-marker{display:none}.range-control{margin-top:15px}.range-control label{font-size:11px;color:var(--muted);display:flex;justify-content:space-between;gap:8px}.range-control output{font-variant-numeric:tabular-nums;color:#d7e2ea;font-size:11px}.range-control .control-note{margin:3px 0 0;font-size:10px;line-height:1.5;color:var(--dim)}.range-control select{width:100%;margin-top:7px;min-height:30px;font-size:11px}.check{display:flex;align-items:center;font-size:11px;color:var(--muted);margin:12px 0}.offline-link{display:flex;align-items:center;justify-content:space-between;padding:13px 0 10px;font-size:11px;border-top:1px solid var(--line);margin-top:8px;text-decoration:none}.rail-footnote{font-size:10px;line-height:1.6;color:var(--dim);margin:3px 0 0}
+.lab-center{display:flex;flex-direction:column;min-width:0;height:calc(100dvh - 78px);overflow:hidden}.stage-toolbar{height:61px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid #1c2938;flex-shrink:0}.simulation-status{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted);white-space:nowrap}.running-light{height:6px;width:6px;background:var(--accent);border-radius:50%;box-shadow:0 0 9px #91d5c033}.running-light.paused{background:var(--dim);box-shadow:none}#clock{font-variant-numeric:tabular-nums;margin-left:6px;color:var(--text)}.pulse-tools{display:flex;gap:6px}.pulse-tools select{font-size:11px;min-height:31px;max-width:97px}.signal-button{font-size:11px;border-color:#8b6540;color:#f1c596;background:#30271f;min-height:31px}.signal-button:hover{background:#4b3726;border-color:var(--gold)}.stage-wrap{flex:1;min-height:300px;position:relative;overflow:hidden;background:#0b111c}#worldCanvas{width:100%;height:100%;display:block;touch-action:manipulation}.stage-label{position:absolute;left:22px;top:20px;pointer-events:none;display:flex;flex-direction:column;gap:6px}.stage-kicker{font-size:9px;letter-spacing:1.8px;color:#6d879d;font-weight:550}#stageDetail{font-size:10px;color:#718ba1;max-width:420px}.stage-bottom{position:absolute;left:22px;right:20px;bottom:17px;display:flex;justify-content:space-between;align-items:center;gap:6px;pointer-events:none}.type-legend{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.type-legend span{display:flex;gap:5px;align-items:center;font-size:10px;color:#9cadbd}.type-legend i{display:inline-block;width:5px;height:5px;border-radius:50%}#densityLabel{font-size:9px;color:#61788e;white-space:nowrap}.pulse-banner{position:absolute;top:18px;right:20px;border-left:2px solid var(--gold);padding:5px 10px;background:#0c1322dc;color:#e8bd8e;font-size:10px;max-width:240px;line-height:1.5;pointer-events:none}.measurement-strip{display:grid;grid-template-columns:repeat(4,1fr);padding:17px 20px 16px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);gap:10px;background:#101823;flex-shrink:0}.measurement-strip>div{border-right:1px solid var(--line);padding-left:7px}.measurement-strip>div:first-child{padding-left:0}.measurement-strip>div:last-child{border:0}.measurement-strip span{display:block;font-size:10px;color:var(--muted);line-height:1.4;min-height:14px}.measurement-strip strong{display:block;font-size:21px;font-weight:480;letter-spacing:-.7px;font-variant-numeric:tabular-nums;margin-top:5px}.measurement-strip small{display:none}.history-panel{height:183px;background:#0e1621;padding:10px 17px 8px;flex-shrink:0}.history-header{display:flex;align-items:center;justify-content:space-between;gap:5px}.plot-tabs{display:flex;gap:10px}.plot-tabs button{min-height:28px;background:transparent;color:var(--dim);padding:4px 0;border:0;border-bottom:1px solid transparent;border-radius:0;font-size:11px}.plot-tabs button.active{color:var(--text);border-bottom-color:var(--accent)}#historyCanvas{width:100%;height:101px;display:block;margin-top:4px}.plot-caption{display:flex;gap:15px;align-items:center;font-size:9px;color:var(--muted);height:16px}.plot-caption span{display:flex;align-items:center;gap:5px}.plot-caption .time-caption{margin-left:auto;font-size:9px;color:var(--dim)}.line-key{display:inline-block;width:11px;height:2px}.entropy-key{background:var(--blue)}.trace-key{background:var(--gold)}
+.inspector{border-left:1px solid var(--line);background:#111925;height:calc(100dvh - 78px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:#344658 transparent}.inspector-top{padding:23px 19px 16px;display:flex;align-items:center;justify-content:space-between;gap:6px}.inspector-top label{font-size:11px;color:var(--muted)}.inspector-top select{font-size:11px;min-height:30px;min-width:100px}.inspector-tabs{display:grid;grid-template-columns:repeat(3,1fr);padding:0 15px;border-bottom:1px solid var(--line);gap:12px}.inspector-tabs button{background:transparent;border:0;border-bottom:2px solid transparent;border-radius:0;min-height:36px;font-size:11px;color:var(--muted)}.inspector-tabs button.active{border-bottom-color:var(--accent);color:var(--text)}.inspector-panel{padding:20px 20px 22px}.panel-heading{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:19px}.panel-heading h2{font-size:14px;letter-spacing:-.2px;font-weight:530;margin:0}.panel-heading span{font-size:9px;color:var(--dim)}.panel-heading select{font-size:9px;min-height:26px;padding:3px 20px 3px 5px;max-width:125px}.mini-label{font-size:9px;letter-spacing:1.4px;color:var(--dim);margin:0 0 12px}.probability-row{display:grid;grid-template-columns:42px 1fr 36px;gap:9px;align-items:center;margin:11px 0;font-size:10px}.probability-row>span:first-child{color:var(--muted)}.probability-track{height:5px;background:#223043;border-radius:3px;overflow:hidden}.probability-fill{height:100%;border-radius:3px;transition:width .15s}.probability-row output{text-align:right;font-variant-numeric:tabular-nums;color:#bacad7}.readouts{margin:22px 0 0;display:grid;grid-template-columns:1fr auto;gap:11px 8px;font-size:11px}.readouts dt{color:var(--muted)}.readouts dd{margin:0;color:#d2dfe8;font-variant-numeric:tabular-nums;text-align:right}.section-rule{height:1px;background:var(--line);margin:23px 0 19px}.inspector h3{font-size:11px;font-weight:550;margin:20px 0 10px;color:#d3dee7}.latest-message{font-size:11px;line-height:1.7;color:var(--muted)}.latest-message .type-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:5px}.prediction-value{font-size:20px;font-weight:450;font-variant-numeric:tabular-nums;margin:0 0 6px;color:var(--accent)}.prediction-value.negative{color:#e3a1a5}.explanation{font-size:10px;line-height:1.65;color:var(--muted);margin:9px 0}.event-row{font-size:10px;display:grid;grid-template-columns:40px 1fr auto;gap:6px;padding:8px 0;border-bottom:1px solid #1d2a3a;color:var(--muted);align-items:center}.event-row .event-time{color:var(--dim);font-variant-numeric:tabular-nums}.event-row .event-tag{font-size:9px;color:var(--gold)}.event-empty{font-size:10px;color:var(--dim);line-height:1.7}.betti-row{display:grid;grid-template-columns:repeat(3,1fr);margin:10px 0 12px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:13px 0}.betti-row>div{text-align:center;border-right:1px solid var(--line)}.betti-row>div:last-child{border:0}.betti-row span{display:block;font-size:11px;color:var(--muted)}.betti-row strong{display:block;font-size:25px;font-weight:450;margin-top:3px;color:var(--accent);font-variant-numeric:tabular-nums}.math-caption{font-size:11px;color:#bfceda;line-height:1.6;margin:8px 0}#complexCanvas{display:block;width:100%;height:220px;background:#0d1521;border:1px solid #223042;border-radius:6px}.edge-buttons{display:flex;gap:6px;flex-wrap:wrap;margin:13px 0}.edge-buttons button{font-size:10px;padding:5px 8px;min-height:28px;white-space:nowrap}.edge-buttons button.selected{background:#29483e;border-color:#619680;color:#b8e5d6}.forest-verdict{font-size:10px;line-height:1.6;padding:10px 11px;background:#132b27;border-left:2px solid #73b79e;color:#b0d5c6;margin:12px 0 3px}.forest-verdict.invalid{background:#302329;border-color:#c4848c;color:#e4b0b5}.bottom-note{margin-top:20px}.contact-form{font-family:Georgia,serif;font-style:italic;font-size:26px;letter-spacing:.5px;padding:16px 10px;text-align:center;background:#0d1521;border:1px solid #223042;border-radius:6px;color:#c9b9e8}.contact-equation{font-size:12px;font-family:Georgia,serif;text-align:center;margin:23px 0 13px;color:#d5c7ef}.contact-meter{height:5px;background:#253045;border-radius:3px;margin-bottom:18px;overflow:hidden}.contact-meter>div{height:100%;background:var(--violet);width:0;transition:width .1s}.full-button{width:100%;font-size:11px;min-height:34px;background:#252138;border-color:#514366;color:#cfbde9}.coordinate-list{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:10px;line-height:1.8;white-space:pre-wrap;background:#0d1521;padding:10px;border-radius:5px;color:#9eb4c7;margin:7px 0 17px}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);padding:11px 18px;border:1px solid #4b6773;background:#172737f2;box-shadow:0 8px 30px #0007;border-radius:7px;max-width:min(90vw,550px);font-size:12px;z-index:30;line-height:1.6}dialog{color:var(--text);background:#111b29;border:1px solid #34475a;border-radius:11px;padding:0;width:min(850px,94vw);max-height:90dvh;box-shadow:0 30px 100px #0009}dialog::backdrop{background:#050910bd;backdrop-filter:blur(4px)}.dialog-bar{position:sticky;top:0;z-index:2;background:#111b29;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);padding:13px 23px;font-size:10px;letter-spacing:1px;color:var(--dim)}.model-article{padding:25px 40px 35px}.model-article h2{font-size:27px;letter-spacing:-.8px;font-weight:500;margin:4px 0 16px}.model-article h3{font-size:16px;font-weight:530;color:var(--accent);margin:32px 0 13px}.model-article p,.model-article li{font-size:13px;line-height:1.85;color:#b2c2d0}.model-article .model-lead{font-size:15px;line-height:1.8;color:#cfdae3}.formula{font-family:Georgia,serif;font-size:15px;line-height:1.8;padding:17px 20px;background:#0b1420;border-left:2px solid #557c73;margin:20px 0;overflow-x:auto}.model-article ul{padding-left:20px}.model-article li{margin:8px 0}
+.lab-center{min-height:625px}
+@media(min-height:950px){.history-panel{height:210px}#historyCanvas{height:128px}}
+@media(min-width:1700px){.workspace{grid-template-columns:270px minmax(350px,1fr) 345px}.inspector-panel{padding-left:24px;padding-right:24px}.control-rail{padding-left:23px;padding-right:23px}}
+@media(max-width:1180px){.workspace{grid-template-columns:225px minmax(320px,1fr) 280px}.control-rail{padding:20px 14px}.inspector-panel{padding:18px 14px}.app-header{padding:0 18px}.plane-label{display:none}.stage-toolbar{padding:0 13px}.stage-label{left:15px}.measurement-strip{padding:14px 13px}.measurement-strip span{font-size:9px}.measurement-strip strong{font-size:19px}.history-header .small{font-size:10px}.inspector-top{padding:20px 14px 16px}.panel-heading{flex-wrap:wrap;gap:9px}.stage-bottom{left:15px;right:13px}.type-legend{gap:9px}#densityLabel{display:none}.history-panel{padding-left:12px;padding-right:12px}}
+@media(max-width:960px){.workspace{grid-template-columns:210px minmax(0,1fr)}.inspector{grid-column:1/-1;height:auto;max-height:none;border-left:0;border-top:1px solid var(--line);display:grid;grid-template-columns:210px minmax(0,1fr)}.inspector-top{grid-column:1;padding:20px 15px;align-self:start}.inspector-tabs{grid-column:1;grid-row:2;display:flex;flex-direction:column;gap:5px;border-bottom:0;padding:0 15px 20px}.inspector-tabs button{text-align:left;border-bottom:0;border-left:2px solid transparent;padding-left:12px}.inspector-tabs button.active{border-bottom:0;border-left-color:var(--accent);background:#172638}.inspector-panel{grid-column:2;grid-row:1/4;min-height:360px;padding:23px 25px}.control-rail,.lab-center{height:calc(100dvh - 78px)}.stage-wrap{min-height:290px}.history-panel{height:175px}#historyCanvas{height:94px}.inspector-panel #complexCanvas{max-width:450px;height:250px}.betti-row{max-width:450px}.readouts{max-width:450px}.event-list{max-width:450px}.coordinate-list{max-width:450px}.contact-form{max-width:450px}.full-button,.contact-meter{max-width:450px}.header-actions{gap:0}.header-actions button{font-size:11px}.app-header .brand p{font-size:10px}}
+@media(max-width:600px){.app-header{height:auto;min-height:100px;flex-wrap:wrap;padding:15px 16px 9px;gap:9px}.brand-mark{width:29px;height:29px}.brand{gap:9px}.brand h1{font-size:19px}.header-actions{width:100%;justify-content:flex-end}.header-actions button{min-height:25px;font-size:10px;padding:3px 9px}.workspace{display:flex;flex-direction:column}.lab-center{order:0;height:690px;min-height:650px}.control-rail{order:2;height:auto;border-right:0;border-top:1px solid var(--line);padding:22px 20px}.inspector{order:1;display:block}.inspector-top{padding:19px 20px 12px}.inspector-tabs{display:grid;grid-template-columns:repeat(3,1fr);padding:0 20px;gap:10px;border-bottom:1px solid var(--line)}.inspector-tabs button{text-align:center;border-left:0;border-bottom:2px solid transparent;padding:7px 5px}.inspector-tabs button.active{border-left:0;border-bottom-color:var(--accent);background:transparent}.inspector-panel{padding:22px 20px}.stage-toolbar{height:56px;padding:0 15px}.stage-wrap{min-height:310px}.stage-label{top:16px;left:16px}.stage-label #stageDetail{max-width:210px;font-size:9px}.stage-kicker{font-size:8px}.pulse-banner{top:48px;right:15px;font-size:9px;max-width:185px}.stage-bottom{bottom:13px}.measurement-strip{padding:14px 14px;gap:7px}.measurement-strip span{font-size:9px;min-height:25px}.measurement-strip strong{font-size:19px;margin-top:2px}.measurement-strip>div{padding-left:0}.history-panel{height:166px;padding:8px 13px}#historyCanvas{height:92px}.plot-caption{font-size:8px;gap:10px}.plot-caption .time-caption{display:none}.history-header .small{font-size:9px}.history-header .plot-tabs{gap:12px}.history-header .plot-tabs button{font-size:10px}.simulation-status{font-size:10px;gap:6px}#clock{margin-left:2px}.pulse-tools select{max-width:86px;font-size:10px}.signal-button{padding:5px 8px;font-size:10px}.control-help{min-height:0}.rail-title{margin-bottom:17px}.control-group{padding:16px 0}.range-control{margin-top:17px}.range-control label{font-size:12px}.range-control output{font-size:12px}.check{font-size:12px}.model-article{padding:20px 23px 28px}.model-article h2{font-size:24px}.model-article p,.model-article li{font-size:12px}.formula{font-size:14px;padding:14px}#toast{bottom:15px;min-width:250px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="app-header">
+  <div class="brand">
+    <svg class="brand-mark" viewBox="0 0 38 38" aria-hidden="true"><path d="M3 30C10 30 9 8 19 8S28 30 35 30M3 30H35" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="19" cy="8" r="3" fill="currentColor"/></svg>
+    <div><h1>Plasmoid lab</h1><p>Local information &amp; statistical geometry</p></div>
+  </div>
+  <div class="header-actions">
+    <span class="plane-label">Euclidean plane</span>
+    <button id="modelButton" class="quiet">Read the model</button>
+    <button id="saveButton" class="quiet">Save experiment</button>
+    <button id="loadButton" class="quiet">Load</button>
+    <input id="loadInput" type="file" accept="application/json,.json" hidden>
+  </div>
+</header>
+
+<main class="workspace">
+  <aside class="control-rail" aria-label="Experiment controls">
+    <div class="rail-title"><span>EXPERIMENT</span><span class="version">01.1</span></div>
+    <label class="field-label" for="presetSelect">Starting configuration</label>
+    <select id="presetSelect">
+      <option value="ecology">Local ecology</option><option value="relay">Signal relay</option>
+      <option value="driven">Cyclic ecology</option><option value="cycle">Three-channel loop</option>
+      <option value="relaxation">Spatial relaxation</option>
+    </select>
+    <p id="presetDescription" class="control-help"></p>
+    <div class="transport">
+      <button id="runButton" class="primary">Pause</button><button id="stepButton">Step 0.2 s</button>
+    </div>
+    <div class="seed-row"><label for="seedInput">Seed</label><input id="seedInput" type="number" min="0" max="4294967295" value="24031"><button id="resetButton" class="quiet">Restart</button></div>
+    <div class="speed-row"><label for="playback">Playback</label><select id="playback"><option value="0.5">½×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select></div>
+    <details open class="control-group"><summary>Population</summary><div id="populationControls"></div></details>
+    <details open class="control-group"><summary>Local communication</summary><div id="communicationControls"></div></details>
+    <details class="control-group" open><summary>Spatial adaptation</summary><div id="spatialControls"></div></details>
+    <details class="control-group"><summary>Internal dynamics</summary><div id="internalControls"></div></details>
+    <details class="control-group"><summary>Display</summary>
+      <label class="check"><input type="checkbox" id="showDensity" checked> Gaussian density</label>
+      <label class="check"><input type="checkbox" id="showChannels" checked> Local channels</label>
+      <label class="check"><input type="checkbox" id="showTrails" checked> Motion trails</label>
+      <label class="check"><input type="checkbox" id="showCircles"> Circle overlays</label>
+    </details>
+    <a class="offline-link" href="Plasmoid_Lab_v1_1.html" download="Plasmoid_Lab_v1_1.html">Download offline lab <span aria-hidden="true">↓</span></a>
+    <p class="rail-footnote">Runs entirely in your browser. Save a snapshot to resume the same random stream.</p>
+  </aside>
+
+  <section class="lab-center" aria-label="Simulation and measurements">
+    <div class="stage-toolbar">
+      <div class="simulation-status"><span id="runningLight" class="running-light"></span><span id="runStatus">Running</span><span id="clock">0.0 s</span></div>
+      <div class="pulse-tools"><label class="sr-only" for="signalType">Signal type</label><select id="signalType" aria-label="Signal type"></select><button id="pulseButton" class="signal-button">Inject signal</button></div>
+    </div>
+    <div class="stage-wrap" id="stageWrap">
+      <canvas id="worldCanvas" tabindex="0" role="img" aria-label="Interactive Gaussian agent field. Click an agent to inspect it. Use the agent selector for keyboard access."></canvas>
+      <div class="stage-label"><span class="stage-kicker">GAUSSIAN AGENTS</span><span id="stageDetail">Click a bump to inspect its local world</span></div>
+      <div class="stage-bottom"><div id="typeLegend" class="type-legend"></div><span id="densityLabel">density · tone mapped</span></div>
+      <div id="pulseBanner" class="pulse-banner" hidden></div>
+    </div>
+    <div class="measurement-strip">
+      <div><span>Messages delivered</span><strong id="deliveredValue">0</strong></div>
+      <div><span>In flight</span><strong id="flightValue">0</strong></div>
+      <div><span>Mean entropy <small>nats</small></span><strong id="entropyValue">—</strong></div>
+      <div><span>Pulse ancestry <small>mean weight</small></span><strong id="traceValue">0%</strong></div>
+    </div>
+    <div class="history-panel">
+      <div class="history-header"><div class="plot-tabs" role="group" aria-label="Measurement"><button class="active" data-plot="information">Information</button><button data-plot="energy">Spatial energy</button></div><button id="csvButton" class="quiet small">Export message log</button></div>
+      <canvas id="historyCanvas" role="img" aria-label="Time series of entropy, pulse ancestry, or spatial interaction energy"></canvas>
+      <div id="plotCaption" class="plot-caption"><span><i class="line-key entropy-key"></i> Mean entropy / log K</span><span><i class="line-key trace-key"></i> Pulse ancestry</span><span class="time-caption">simulation time</span></div>
+    </div>
+  </section>
+
+  <aside class="inspector" aria-label="Local state inspector">
+    <div class="inspector-top"><label for="agentSelect">Inspect agent</label><select id="agentSelect"></select></div>
+    <nav class="inspector-tabs" aria-label="Inspector views"><button data-tab="agent" class="active">State</button><button data-tab="topology">Topology</button><button data-tab="contact">Contact</button></nav>
+    <div id="agentPanel" class="inspector-panel">
+      <div class="panel-heading"><h2 id="agentHeading">Agent P1</h2><span id="agentStateHint">local predictor</span></div>
+      <p class="mini-label">SIGNAL DISTRIBUTION π</p>
+      <div id="probabilityBars"></div>
+      <dl class="readouts" id="agentReadouts"></dl>
+      <div class="section-rule"></div>
+      <h3>Latest received message</h3><div id="latestMessage" class="latest-message">Waiting for a local message.</div>
+      <h3>Predictive effect</h3><p id="predictionGain" class="prediction-value">—</p>
+      <p class="explanation">Gain is scored on the <em>next</em> message: log π<sub>after</sub>(y) − log π<sub>before</sub>(y). It can be negative.</p>
+      <div class="section-rule"></div>
+      <h3>Recent deliveries</h3><div id="eventList" class="event-list"></div>
+    </div>
+    <div id="topologyPanel" class="inspector-panel" hidden>
+      <div class="panel-heading"><h2>Local forest complex</h2><select id="windowSize" aria-label="Maximum agents in local topology window"><option value="4">Up to 4 agents</option><option value="3">Up to 3 agents</option></select></div>
+      <p id="complexWindow" class="explanation"></p>
+      <canvas id="complexCanvas" role="img" aria-label="One-skeleton of the local directed forest complex. Each vertex is a directed communication channel."></canvas>
+      <div class="betti-row"><div><span>β₀</span><strong id="betti0">0</strong></div><div><span>β₁</span><strong id="betti1">0</strong></div><div><span>β₂</span><strong id="betti2">0</strong></div></div>
+      <p id="faceCounts" class="math-caption"></p><p class="explanation">Exact snapshot homology over 𝔽₂ on this window. Each complex vertex represents a directed channel.</p>
+      <div class="section-rule"></div>
+      <h3>Try a transmission pattern</h3><p class="explanation">Select channels. A permitted collection is one simplex of the forest complex.</p>
+      <div id="edgeButtons" class="edge-buttons"></div><p id="forestVerdict" class="forest-verdict"></p>
+      <button id="clearEdges" class="quiet small">Clear selection</button>
+      <p class="explanation bottom-note">Filled faces show your valid selection. The background shows the full 1-skeleton. A single-parent condition and the absence of directed cycles define the complex.</p>
+    </div>
+    <div id="contactPanel" class="inspector-panel" hidden>
+      <div class="panel-heading"><h2>Statistical contact lift</h2></div>
+      <div class="contact-form">α = dz − η · dθ</div>
+      <p class="explanation">Natural parameters θ, expectation parameters η = ∇ψ, and the log-normalizer ψ define the statistical Legendrian.</p>
+      <dl class="readouts" id="contactReadouts"></dl>
+      <div class="contact-equation">c = z − ψ &nbsp;&nbsp; ċ = −γc</div>
+      <div class="contact-meter"><div id="contactMeter"></div></div>
+      <button id="perturbContact" class="full-button">Perturb potential by +0.6</button>
+      <div id="contactControls"></div>
+      <p class="explanation">This evolves the potential residual exactly on the invariant slice η = ∇ψ. Changing γ affects this lift’s residual; the projected statistical dynamics follow their declared laws.</p>
+      <div class="section-rule"></div><h3>Natural parameters θ</h3><pre id="thetaValues" class="coordinate-list"></pre>
+      <h3>Expectation parameters η</h3><pre id="etaValues" class="coordinate-list"></pre>
+      <p class="explanation">The covariance is σ²I in this first version. The Fisher line element is |dμ|²/σ² + 4(d log σ)² + Σ(dπ)²/π.</p>
+    </div>
+  </aside>
+</main>
+<div id="toast" role="status" aria-live="polite" hidden></div>
+
+<dialog id="modelDialog">
+  <div class="dialog-bar"><span>MODEL / VERSION 01.1</span><button id="closeModel" class="quiet">Close</button></div>
+  <article class="model-article">
+    <h2>A local statistical ecology</h2><p class="model-lead">Each bump is a normalized Gaussian spatial distribution carrying a categorical predictor. Its communication history changes that predictor. Its spatial shape and location adapt under the Fisher metric.</p>
+    <h3>State and spatial geometry</h3>
+    <p>Agent <i>i</i> has q<sub>i</sub>(x,a) = 𝒩(x; μ<sub>i</sub>, σ<sub>i</sub>²I) π<sub>i</sub>(a). Every Gaussian has unit mass. Its peak therefore changes when its width changes. The displayed field is the sum of these densities, colored by their local signal composition, sampled on a display grid and tone mapped.</p>
+    <div class="formula">ds² = |dμ|² / σ² + 4(dℓ)² + Σ<sub>a</sub> (dπ<sub>a</sub>)² / π<sub>a</sub>, &nbsp; ℓ = log σ.</div>
+    <p>The support is the Euclidean plane. A weak eighth-power confinement potential keeps agents near the viewing region. Communication and pair interactions use w(r) = (1 − r²/R²)³ for r &lt; R, and zero otherwise. This cutoff is C². For spatial adaptation, all derivatives of the cutoff are included.</p>
+    <p>The pair energy is w(r)[b exp(−r²/(2r₀²)) − a B<sub>ij</sub>], with r₀ = 0.24 and the exact Gaussian Bhattacharyya affinity</p>
+    <div class="formula">B<sub>ij</sub> = [2σ<sub>i</sub>σ<sub>j</sub> / S] exp(−r² / 4S), &nbsp; S = σ<sub>i</sub>² + σ<sub>j</sub>².</div>
+    <p>Add κ(ℓ − log σ₀)²/2 per agent and U(μ) = (0.4/8)[(x/5)⁸ + (y/3.15)⁸]. The Fisher spatial flow is μ̇ = −mσ²∇<sub>μ</sub>E and ℓ̇ = −(m/4)∂<sub>ℓ</sub>E. The adaptive explicit integrator uses an Armijo backtracking check; accepted spatial steps descend in E while parameters remain fixed. Logged width keeps σ positive. Freezing width restricts the flow to the fixed-width submanifold.</p>
+    <h3>Messages, prediction, and provenance</h3>
+    <p>A candidate channel exists when w(r) ≥ 0.025 and the message rate is positive. The loop calibration uses only the declared arrows A → B → C → A. Each admitted directed link has a Poisson emission count of mean λw(r)Δt in each integration interval. The sender samples a signal type from its current π. Channel noise changes it to a uniformly chosen different type with probability ε.</p>
+    <p>Packets are addressed to agents. Membership is checked at emission; their latency is τ + r/c, using distance at emission. Packets already in flight still arrive when agents move or controls change. This is a local delayed graph channel with distance-dependent latency. Deliveries are processed in scheduled order at integration boundaries, at most 0.04 simulation seconds after their due time. The model does not impose a continuous-space wave equation.</p>
+    <p>A received type y has loss −log π(y). The exact categorical natural-gradient flow during exposure η gives</p>
+    <div class="formula">π⁺ = e<sup>−η</sup>π⁻ + (1 − e<sup>−η</sup>)e<sub>y</sub>.</div>
+    <p>Surprise is −log π⁻(y). State change is D<sub>KL</sub>(π⁺ ∥ π⁻). Next-message gain evaluates the current prediction against the state immediately before the previous message, on the new message. Intervening background refresh and game dynamics are included in that comparison. These quantities are distinct; the lab does not label them transfer entropy.</p>
+    <p>A pulse changes only its selected source’s emitted types for a finite duration. A separate nonnegative vector records the part of each π inherited from the current pulse. The sender samples ancestry conditionally on the emitted type. A received tagged contribution is added with exactly the same weight as its categorical update. Noise preserves ancestry while possibly changing the type. Thus ancestry is not a measure of signal correctness. A new pulse clears the current ancestry labels; the existing predictive states remain.</p>
+    <p>Background refresh solves π̇ = ε(1/K − π) exactly and adds untagged mass. Optional cyclic activity uses the explicit non-potential replicator game f<sub>a</sub> = π<sub>a+1</sub> − π<sub>a−1</sub> for K ≥ 3. It uses a normalized exponential step, rescaling same-type ancestry contributions by the same factor. The spatial potential is independent of type, so grouping does not read another agent’s hidden predictor.</p>
+    <h3>Contact realization</h3>
+    <p>For q<sub>θ</sub> = exp(θ · T − ψ), use α = dz − η · dθ and the statistical Legendrian η = ∇ψ, z = ψ. With α(X<sub>H</sub>) = −H, the Hamiltonian</p>
+    <div class="formula">H = (η − ∇ψ) · v(θ,t) + γ(z − ψ)</div>
+    <p>restricts to θ̇ = v on the Legendrian. This lab evolves the invariant slice η = ∇ψ with c = z − ψ and ċ = −γc. It reconstructs η and z from the state and the exactly decaying residual after each update. Received messages induce discrete parameter updates and are lifted by the same reconstruction. This is a diagnostic contact realization of the chosen statistical dynamics, rather than an independent integration of every ambient contact coordinate.</p>
+    <p>The spatial natural parameters are (μ<sub>x</sub>/σ², μ<sub>y</sub>/σ², −1/(2σ²)). Categorical parameters are log(π<sub>a</sub>/π<sub>K</sub>) for a &lt; K. Their expectation coordinates are (μ<sub>x</sub>, μ<sub>y</sub>, |μ|² + 2σ², π₁, …, π<sub>K−1</sub>).</p>
+    <h3>Directed topology</h3>
+    <p>The inspector chooses the selected agent and up to three nearest agents within its nominal range. It retains every currently admitted directed channel whose endpoints are in that window. This inspection limit does not limit the simulation’s communication.</p>
+    <p>The complex’s vertices are these channels. A collection is a simplex exactly when each receiving agent has at most one incoming selected channel and the selection contains no directed cycle. All faces are enumerated. Boundary ranks and ordinary Betti numbers are calculated exactly over 𝔽₂. The largest inspected window has four agents, so its forests contain at most three edges and its complex has dimension at most two.</p>
+    <p>The three-channel loop has f = (3,3) and β = (1,1). The complete bidirected four-agent graph has f = (12,48,64) and β = (1,0,27). A local window cannot certify the absence of a longer global cycle. Time persistence and spatial Čech complexes are further stages of this project; this version computes snapshot forest homology.</p>
+    <h3>Reproducibility</h3>
+    <p>Save experiment captures the complete state, controls, random-generator state, pending packets, the last 3,000 deliveries, and up to 600 measurement samples. Loading resumes the random stream exactly. Playback speed changes the wall-clock rate; the equations use simulation time. Display controls do not consume randomness. The offline download is self-contained and needs no network connection.</p>
+    <h3>Mathematical sources</h3>
+    <ul><li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10137715/" target="_blank" rel="noopener">Frank Nielsen: Fisher–Rao geometry of multivariate normal distributions</a></li><li><a href="https://arxiv.org/abs/1412.5780" target="_blank" rel="noopener">Shin-itiro Goto: Legendrian attractors and contact relaxation</a></li><li><a href="https://www.sciencedirect.com/science/article/pii/S0097316599929849" target="_blank" rel="noopener">Dmitry Kozlov: Complexes of Directed Trees</a></li></ul>
+  </article>
+</dialog>
+<script type="module">/* Plasmoid Information Lab. All stochastic state is explicit and serializable. */
+const VERSION = 1;
+const COLORS = ['#ffb45f', '#64cbe0', '#bd98f6', '#8fd3a0', '#f5819a', '#e0db78'];
+const DEFAULTS = {
+  count: 36, types: 3, radius: 1.65, messageRate: 1.7, learning: .25,
+  noise: .035, latency: .14, signalSpeed: 3, background: .012,
+  movement: true, mobility: 1.4, attraction: 1.05, repulsion: 1.7,
+  sigma: .39, shapeAdaptation: true, shapeStiffness: 2.8,
+  drive: 0, contactGamma: 1, network: 'radial', pulseDuration: 3,
+};
+const PRESETS = {
+  ecology: {name: 'Local ecology', description: 'Gaussian overlap draws agents together. Short-range repulsion leaves room for local exchange.', settings: {}},
+  relay: {name: 'Signal relay', description: 'A stationary lattice makes the delayed spread of a local signal easy to follow.', settings: {count: 35, movement: false, radius: 2, messageRate: 4, noise: .02, background: .006, drive: 0, pulseDuration: 8}},
+  driven: {name: 'Cyclic ecology', description: 'A declared antisymmetric replicator game supplies internal circulation between signal types.', settings: {count: 42, drive: 1.5, messageRate: 1.2, background: .008, movement: true}},
+  cycle: {name: 'Three-channel loop', description: 'A calibration network: A → B → C → A. Its forest complex is the boundary of a triangle.', settings: {count: 3, types: 3, network: 'cycle', movement: false, radius: 3.8, messageRate: 2.8, learning: .3, noise: 0, background: 0, drive: 0}},
+  relaxation: {name: 'Spatial relaxation', description: 'Messages are switched off. Watch the spatial energy descend under the Fisher metric.', settings: {messageRate: 0, movement: true, drive: 0}},
+};
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const sum = a => a.reduce((s, x) => s + x, 0);
+const safeLog = x => Math.log(Math.max(1e-300, x));
+const entropy = p => -sum(p.map(x => x > 0 ? x * safeLog(x) : 0));
+const kl = (p, q) => sum(p.map((x, a) => x > 0 ? x * (safeLog(x) - safeLog(q[a])) : 0));
+const fisherDistance = (p, q) => 2 * Math.acos(clamp(sum(p.map((x, a) => Math.sqrt(x * q[a]))), 0, 1));
+function normalize(p) { const z = sum(p); return p.map(x => x / z); }
+
+class Random {
+  constructor(seed = 24031) { this.state = Number(seed) >>> 0; }
+  next() {
+    this.state = (this.state + 0x6D2B79F5) >>> 0;
+    let t = this.state;
+    t = Math.imul(t ^ t >>> 15, t | 1);
+    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  }
+  categorical(p) { let r = this.next(); for (let a = 0; a < p.length - 1; a++) { r -= p[a]; if (r < 0) return a; } return p.length - 1; }
+  poisson(mean) {
+    if (mean <= 0) return 0;
+    const threshold = Math.exp(-mean); let product = 1, n = 0;
+    do { product *= this.next(); n++; } while (product > threshold);
+    return n - 1;
+  }
+}
+
+// C² communication/interaction cutoff. Gaussian densities themselves remain untruncated.
+function cutoff(r2, radius) {
+  const u = 1 - r2 / (radius * radius);
+  return u > 0 ? u * u * u : 0;
+}
+
+function spatialEnergy(agents, settings, gradient = false) {
+  const n = agents.length, g = gradient ? agents.map(() => ({x: 0, y: 0, l: 0})) : null;
+  const R2 = settings.radius ** 2, r02 = .24 ** 2, l0 = Math.log(settings.sigma);
+  let energy = 0;
+  for (let i = 0; i < n; i++) {
+    const a = agents[i], ux = a.x / 5, uy = a.y / 3.15;
+    energy += .4 / 8 * (ux ** 8 + uy ** 8) + settings.shapeStiffness / 2 * (a.l - l0) ** 2;
+    if (g) {
+      g[i].x += .4 / 5 * ux ** 7;
+      g[i].y += .4 / 3.15 * uy ** 7;
+      g[i].l += settings.shapeStiffness * (a.l - l0);
+    }
+    for (let j = 0; j < i; j++) {
+      const b = agents[j], dx = a.x - b.x, dy = a.y - b.y, r2 = dx * dx + dy * dy;
+      if (r2 >= R2) continue;
+      const u = 1 - r2 / R2, w = u ** 3;
+      const si2 = Math.exp(2 * a.l), sj2 = Math.exp(2 * b.l), S = si2 + sj2;
+      const B = 2 * Math.exp(a.l + b.l) / S * Math.exp(-r2 / (4 * S));
+      const rep = settings.repulsion * Math.exp(-r2 / (2 * r02));
+      const att = settings.attraction * B, pair = rep - att;
+      energy += w * pair;
+      if (g) {
+        const f = -6 / R2 * u ** 2 * pair + w * (-rep / r02 + att / (2 * S));
+        g[i].x += f * dx; g[i].y += f * dy;
+        g[j].x -= f * dx; g[j].y -= f * dy;
+        g[i].l -= w * att * (1 - 2 * si2 / S + r2 * si2 / (2 * S * S));
+        g[j].l -= w * att * (1 - 2 * sj2 / S + r2 * sj2 / (2 * S * S));
+      }
+    }
+  }
+  return {energy, gradient: g};
+}
+
+function contactCoordinates(a) {
+  const s2 = Math.exp(2 * a.l), reference = Math.max(a.p.at(-1), 1e-300);
+  const theta = [a.x / s2, a.y / s2, -1 / (2 * s2), ...a.p.slice(0, -1).map(x => safeLog(x) - safeLog(reference))];
+  const eta = [a.x, a.y, a.x * a.x + a.y * a.y + 2 * s2, ...a.p.slice(0, -1)];
+  const psi = (a.x * a.x + a.y * a.y) / (2 * s2) + Math.log(2 * Math.PI * s2) - safeLog(reference);
+  return {theta, eta, psi, z: psi + a.c, residual: a.c};
+}
+
+function makeAgent(id, x, y, p, sigma) {
+  return {id, x, y, l: Math.log(sigma), p, trace: p.map(() => 0), c: 0,
+    received: 0, sent: 0, lastSender: null, lastReceive: null, scoreReference: null,
+    lastSurprise: null, lastGain: null, lastKL: null, trail: []};
+}
+
+class Lab {
+  constructor(preset = 'ecology', seed = 24031, overrides = {}) {
+    if (!(preset in PRESETS)) throw new Error('Unknown experiment.');
+    this.preset = preset; this.seed = Number(seed) >>> 0; this.rng = new Random(this.seed);
+    this.settings = {...DEFAULTS, ...PRESETS[preset].settings, ...overrides};
+    this.settings.count = clamp(Math.round(this.settings.count), 3, 72);
+    this.settings.types = clamp(Math.round(this.settings.types), 2, 6);
+    if (preset === 'cycle') { this.settings.count = 3; this.settings.network = 'cycle'; }
+    this.time = 0; this.nextMessage = 1; this.nextPulse = 1;
+    this.queue = []; this.events = []; this.history = []; this.pulse = null;
+    this.totalSent = 0; this.totalReceived = 0; this.totalTagged = 0; this.fisherLength = 0;
+    this.scoreSum = 0; this.scoreCount = 0; this.lastHistory = -.25; this.lineFailures = 0;
+    this.agents = this.makeAgents();
+    this.recordHistory();
+  }
+  makeAgents() {
+    const {count: n, types: k, sigma} = this.settings, out = [];
+    const cols = this.preset === 'relay' ? 7 : Math.ceil(Math.sqrt(n * 1.5));
+    const rows = Math.ceil(n / cols);
+    for (let i = 0; i < n; i++) {
+      let x, y;
+      if (this.preset === 'cycle') {
+        const t = -Math.PI / 2 + i * 2 * Math.PI / 3;
+        x = 1.45 * Math.cos(t); y = 1.45 * Math.sin(t);
+      } else {
+        x = ((i % cols) / Math.max(1, cols - 1) - .5) * 8;
+        y = (Math.floor(i / cols) / Math.max(1, rows - 1) - .5) * 4.6;
+        const jitter = this.preset === 'relay' ? .045 : .28;
+        x += (this.rng.next() - .5) * jitter; y += (this.rng.next() - .5) * jitter;
+      }
+      let p;
+      if (this.preset === 'relay') p = Array.from({length: k}, (_, a) => a === 1 ? .72 : .28 / (k - 1));
+      else { p = Array.from({length: k}, (_, a) => .15 + this.rng.next() * .4 + (a === i % k ? 1.8 : 0)); p = normalize(p); }
+      out.push(makeAgent(i, x, y, p, sigma));
+    }
+    return out;
+  }
+  channels() {
+    if (this.settings.messageRate === 0) return [];
+    const edges = [], n = this.agents.length;
+    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
+      if (i === j || (this.settings.network === 'cycle' && j !== (i + 1) % n)) continue;
+      const a = this.agents[i], b = this.agents[j], d = Math.hypot(a.x - b.x, a.y - b.y);
+      const weight = cutoff(d * d, this.settings.radius);
+      if (weight >= .025) edges.push({from: i, to: j, weight, distance: d});
+    }
+    return edges;
+  }
+  spatialStep(requested) {
+    if (!this.settings.movement || this.settings.mobility === 0) return requested;
+    const current = spatialEnergy(this.agents, this.settings, true);
+    const v = current.gradient.map((g, i) => {
+      const s2 = Math.exp(2 * this.agents[i].l), m = this.settings.mobility;
+      return {x: -m * s2 * g.x, y: -m * s2 * g.y, l: this.settings.shapeAdaptation ? -m / 4 * g.l : 0};
+    });
+    const maxV = Math.max(...v.map(a => Math.max(Math.abs(a.x), Math.abs(a.y), 2 * Math.abs(a.l))), .01);
+    let h = Math.min(requested, .08 / maxV);
+    const derivative = sum(v.map((a, i) => a.x * current.gradient[i].x + a.y * current.gradient[i].y + a.l * current.gradient[i].l));
+    const old = this.agents.map(a => ({x: a.x, y: a.y, l: a.l}));
+    for (let attempt = 0; attempt < 16; attempt++) {
+      this.agents.forEach((a, i) => { a.x = old[i].x + h * v[i].x; a.y = old[i].y + h * v[i].y; a.l = old[i].l + h * v[i].l; });
+      const next = spatialEnergy(this.agents, this.settings).energy;
+      if (Number.isFinite(next) && next <= current.energy + 1e-4 * h * derivative + 1e-11) return h;
+      h *= .5;
+    }
+    this.agents.forEach((a, i) => Object.assign(a, old[i]));
+    this.lineFailures++;
+    return requested;
+  }
+  continuous(h) {
+    const k = this.settings.types, refresh = Math.exp(-this.settings.background * h);
+    for (const a of this.agents) {
+      for (let b = 0; b < k; b++) { a.p[b] = refresh * a.p[b] + (1 - refresh) / k; a.trace[b] *= refresh; }
+      if (this.settings.drive > 0 && k >= 3) {
+        const old = a.p.slice();
+        const fitness = old.map((_, b) => old[(b + 1) % k] - old[(b - 1 + k) % k]);
+        a.p = normalize(old.map((p, b) => p * Math.exp(this.settings.drive * h * fitness[b])));
+        a.trace = a.trace.map((p, b) => p * a.p[b] / Math.max(old[b], 1e-300));
+      }
+      a.c *= Math.exp(-this.settings.contactGamma * h);
+    }
+  }
+  emit(edge) {
+    const a = this.agents[edge.from], b = this.agents[edge.to];
+    let type, tagged = false, pulseId = null;
+    if (this.pulse && this.pulse.source === a.id && this.time < this.pulse.until) {
+      type = this.pulse.type; tagged = true; pulseId = this.pulse.id;
+    } else {
+      type = this.rng.categorical(a.p);
+      if (this.pulse && this.rng.next() < a.trace[type] / Math.max(a.p[type], 1e-300)) { tagged = true; pulseId = this.pulse.id; }
+    }
+    const emittedType = type;
+    if (this.rng.next() < this.settings.noise) type = (type + 1 + Math.floor(this.rng.next() * (this.settings.types - 1))) % this.settings.types;
+    const latency = this.settings.latency + edge.distance / this.settings.signalSpeed;
+    this.queue.push({id: this.nextMessage++, from: a.id, to: b.id, type, emittedType,
+      tagged, pulseId, sentAt: this.time, dueAt: this.time + latency,
+      x0: a.x, y0: a.y, x1: b.x, y1: b.y});
+    a.sent++; this.totalSent++;
+  }
+  deliver(message) {
+    const a = this.agents[message.to], before = a.p.slice(), k = before.length;
+    const gain = a.scoreReference ? safeLog(before[message.type]) - safeLog(a.scoreReference[message.type]) : null;
+    const surprise = -safeLog(before[message.type]), retention = Math.exp(-this.settings.learning);
+    const tagged = message.tagged && this.pulse && message.pulseId === this.pulse.id;
+    for (let b = 0; b < k; b++) {
+      a.p[b] = retention * before[b] + (b === message.type ? 1 - retention : 0);
+      a.trace[b] = retention * a.trace[b] + (tagged && b === message.type ? 1 - retention : 0);
+    }
+    a.scoreReference = before;
+    const change = kl(a.p, before);
+    this.fisherLength += fisherDistance(before, a.p);
+    a.received++; a.lastSender = message.from; a.lastReceive = this.time;
+    a.lastSurprise = surprise; a.lastGain = gain; a.lastKL = change;
+    this.totalReceived++; if (tagged) this.totalTagged++;
+    if (gain !== null) { this.scoreSum += gain; this.scoreCount++; }
+    this.events.push({...message, receivedAt: this.time, surprise, gain, change, currentPulse: !!tagged});
+    if (this.events.length > 3000) this.events.shift();
+  }
+  step(requested = .035) {
+    const h = this.spatialStep(Math.min(requested, .04));
+    this.continuous(h); this.time += h;
+    const due = [], remaining = [];
+    for (const m of this.queue) (m.dueAt <= this.time + 1e-12 ? due : remaining).push(m);
+    this.queue = remaining;
+    due.sort((a, b) => a.dueAt - b.dueAt || a.id - b.id);
+    due.forEach(m => this.deliver(m));
+    for (const edge of this.channels()) {
+      const n = this.rng.poisson(this.settings.messageRate * edge.weight * h);
+      for (let i = 0; i < n; i++) this.emit(edge);
+    }
+    if (this.time - this.lastHistory >= .24) this.recordHistory();
+    return h;
+  }
+  advance(duration) {
+    const target = this.time + duration;
+    let steps = 0;
+    while (this.time < target - 1e-9 && steps++ < 100000) this.step(Math.min(.035, target - this.time));
+  }
+  inject(source, type) {
+    this.agents.forEach(a => { a.trace = a.trace.map(() => 0); });
+    this.pulse = {id: this.nextPulse++, source, type, start: this.time,
+      until: this.time + this.settings.pulseDuration, duration: this.settings.pulseDuration};
+    this.totalTagged = 0;
+    return this.pulse;
+  }
+  recordHistory() {
+    this.lastHistory = this.time;
+    const n = this.agents.length;
+    this.history.push({time: this.time, entropy: sum(this.agents.map(a => entropy(a.p))) / n,
+      energy: spatialEnergy(this.agents, this.settings).energy,
+      trace: sum(this.agents.map(a => sum(a.trace))) / n,
+      reached: this.agents.filter(a => sum(a.trace) > .01).length,
+      received: this.totalReceived, contact: Math.sqrt(sum(this.agents.map(a => a.c * a.c)) / n)});
+    if (this.history.length > 600) this.history.shift();
+    for (const a of this.agents) { a.trail.push({x: a.x, y: a.y}); if (a.trail.length > 60) a.trail.shift(); }
+  }
+  localComplex(selected, window = 4) {
+    const center = this.agents[selected];
+    const nearby = this.agents.filter(a => a.id !== selected && Math.hypot(a.x - center.x, a.y - center.y) < this.settings.radius)
+      .sort((a, b) => Math.hypot(a.x - center.x, a.y - center.y) - Math.hypot(b.x - center.x, b.y - center.y) || a.id - b.id)
+      .slice(0, window - 1).map(a => a.id);
+    const nodes = [selected, ...nearby];
+    const set = new Set(nodes), edges = this.channels().filter(e => set.has(e.from) && set.has(e.to));
+    return {...forestComplex(edges, nodes.length), nodes, edges};
+  }
+  snapshot() {
+    const {rng, ...state} = this;
+    return {format: 'plasmoid-information-lab', version: VERSION, rngState: rng.state, ...structuredClone(state)};
+  }
+  static restore(data) {
+    if (data.format !== 'plasmoid-information-lab' || data.version !== VERSION || !(data.preset in PRESETS)) throw new Error('This is not a supported Plasmoid Lab experiment.');
+    if (!Array.isArray(data.agents) || data.agents.length < 3 || data.agents.length > 72) throw new Error('Invalid population.');
+    const s = data.settings;
+    const limits = {count:[3,72],types:[2,6],radius:[.5,5],messageRate:[0,6],learning:[.01,1],noise:[0,1],latency:[.05,2],signalSpeed:[.5,12],background:[0,.2],mobility:[0,5],attraction:[0,4],repulsion:[0,5],sigma:[.1,1],shapeStiffness:[.1,10],drive:[0,5],contactGamma:[0,5],pulseDuration:[.5,15]};
+    for (const [key, [min,max]] of Object.entries(limits)) if (!Number.isFinite(s?.[key]) || s[key] < min || s[key] > max) throw new Error('Invalid setting: '+key);
+    if (!Number.isInteger(s.types) || !Number.isInteger(s.count) || s.count !== data.agents.length || !['radial','cycle'].includes(s.network)) throw new Error('Invalid population settings.');
+    if (typeof s.movement !== 'boolean' || typeof s.shapeAdaptation !== 'boolean') throw new Error('Invalid motion settings.');
+    const vector = p => Array.isArray(p) && p.length === s.types && p.every(x => Number.isFinite(x) && x >= 0 && x <= 1);
+    data.agents.forEach((a,i) => {
+      if (a.id !== i || ![a.x,a.y,a.l,a.c].every(Number.isFinite) || Math.abs(a.x)>100 || Math.abs(a.y)>100 || a.l < -10 || a.l > 3 || Math.abs(a.c)>1e6 || !vector(a.p) || Math.abs(sum(a.p)-1)>1e-7 || !vector(a.trace) || a.trace.some((x,j)=>x>a.p[j]+1e-8) || (a.scoreReference!==null && (!vector(a.scoreReference)||Math.abs(sum(a.scoreReference)-1)>1e-7))) throw new Error('Invalid statistical agent.');
+      if (!Array.isArray(a.trail) || a.trail.length>60 || a.trail.some(p=>![p.x,p.y].every(Number.isFinite))) throw new Error('Invalid trail.');
+    });
+    if (!Number.isFinite(data.time) || data.time<0 || data.time>1e9 || !Number.isInteger(data.rngState)) throw new Error('Invalid simulation clock.');
+    for (const key of ['nextMessage','nextPulse','totalSent','totalReceived','totalTagged','scoreCount','lineFailures']) if (!Number.isSafeInteger(data[key]) || data[key]<0) throw new Error('Invalid event counter.');
+    for (const key of ['fisherLength','scoreSum','lastHistory']) if (!Number.isFinite(data[key])) throw new Error('Invalid accumulated measurement.');
+    const messageOK = m => Number.isInteger(m.from) && Number.isInteger(m.to) && m.from>=0 && m.to>=0 && m.from<s.count && m.to<s.count && m.from!==m.to && Number.isInteger(m.type) && m.type>=0 && m.type<s.types && [m.sentAt,m.dueAt,m.x0,m.y0,m.x1,m.y1].every(Number.isFinite) && m.dueAt>m.sentAt;
+    if (!Array.isArray(data.queue) || data.queue.length>50000 || !data.queue.every(messageOK) || !Array.isArray(data.events) || data.events.length>3000 || !data.events.every(messageOK)) throw new Error('Invalid message history.');
+    if (!Array.isArray(data.history) || data.history.length>600 || data.history.some(h=>!['time','entropy','energy','trace','reached','received','contact'].every(k=>Number.isFinite(h[k])))) throw new Error('Invalid measurements.');
+    if (data.pulse && (!Number.isInteger(data.pulse.source) || data.pulse.source<0 || data.pulse.source>=s.count || !Number.isInteger(data.pulse.type) || data.pulse.type<0 || data.pulse.type>=s.types || ![data.pulse.start,data.pulse.until,data.pulse.duration].every(Number.isFinite))) throw new Error('Invalid signal source.');
+    const lab = new Lab(data.preset in PRESETS ? data.preset : 'ecology', data.seed, s);
+    const keys = ['preset','seed','settings','time','nextMessage','nextPulse','agents','queue','events','history','pulse','totalSent','totalReceived','totalTagged','fisherLength','scoreSum','scoreCount','lastHistory','lineFailures'];
+    for (const k of keys) lab[k] = structuredClone(data[k]);
+    lab.rng.state = data.rngState >>> 0;
+    return lab;
+  }
+}
+
+function forestValidity(edges) {
+  const incoming = new Map(), children = new Map();
+  for (const e of edges) {
+    if (incoming.has(e.to)) return {ok: false, reason: 'Two selected channels enter agent '+(e.to+1)+'. A forest allows at most one incoming channel per agent.'};
+    incoming.set(e.to, e.from);
+    if (!children.has(e.from)) children.set(e.from, []);
+    children.get(e.from).push(e.to);
+  }
+  const active = new Set(), done = new Set();
+  function visit(v) {
+    if (active.has(v)) return false;
+    if (done.has(v)) return true;
+    active.add(v);
+    for (const w of children.get(v) || []) if (!visit(w)) return false;
+    active.delete(v); done.add(v); return true;
+  }
+  for (const v of children.keys()) if (!visit(v)) return {ok: false, reason: 'The selected channels contain a directed cycle.'};
+  return {ok: true, reason: edges.length ? 'These '+edges.length+' channels form a directed forest: a '+(edges.length-1)+'-simplex.' : 'The empty selection is the empty face.'};
+}
+
+function boundaryRank(upper, lower) {
+  if (!upper?.length || !lower?.length) return 0;
+  const rows = new Map(lower.map((f,i)=>[f.join(','),i])), basis = new Map();
+  let rank = 0;
+  for (const f of upper) {
+    let column = 0n;
+    for (let i=0;i<f.length;i++) column ^= 1n << BigInt(rows.get(f.filter((_,j)=>i!==j).join(',')));
+    while (column) {
+      const pivot = column.toString(2).length-1;
+      if (basis.has(pivot)) column ^= basis.get(pivot);
+      else { basis.set(pivot,column); rank++; break; }
+    }
+  }
+  return rank;
+}
+
+function forestComplex(edges, nodeCount) {
+  const faces = Array.from({length:Math.max(1,nodeCount-1)},()=>[]);
+  function grow(chosen, start) {
+    if (chosen.length) faces[chosen.length-1].push(chosen.slice());
+    if (chosen.length >= nodeCount-1) return;
+    for (let i=start;i<edges.length;i++) {
+      chosen.push(i);
+      if (forestValidity(chosen.map(j=>edges[j])).ok) grow(chosen,i+1);
+      chosen.pop();
+    }
+  }
+  grow([],0);
+  const ranks = faces.map((f,d)=>d?boundaryRank(f,faces[d-1]):0);
+  const betti = faces.map((f,d)=>f.length-ranks[d]-(ranks[d+1]||0));
+  const fVector = faces.map(f=>f.length), euler = sum(fVector.map((n,d)=>n*(d%2?-1:1)));
+  return {faces,fVector,betti,euler};
+}
+
+
+const byId = id => document.getElementById(id);
+const total = a => a.reduce((s,x)=>s+x,0);
+const limit = (x,a,b) => Math.max(a,Math.min(b,x));
+const number = (x,d=3) => Number.isFinite(x) ? x.toFixed(d) : '—';
+const percent = x => (100*x).toFixed(1)+'%';
+const rgbColors = COLORS.map(c=>[1,3,5].map(i=>parseInt(c.slice(i,i+2),16)));
+let lab = new Lab('ecology',24031);
+let focused=0, running=!matchMedia('(prefers-reduced-motion: reduce)').matches, tab='agent', plot='information';
+let local=null, localSignature='', selectedChannels=new Set(), windowMax=4;
+let densityDirty=true, lastDensity=-1e9, lastUI=-1e9, lastTopology=-1e9;
+let currentEdges=[], toastTimeout, lastFrame=performance.now(), accumulator=0;
+const DISPLAY_DEFAULTS=Object.freeze({density:true,channels:true,trails:true,circles:false});
+const DISPLAY_CONTROLS=[['showDensity','density'],['showChannels','channels'],['showTrails','trails'],['showCircles','circles']];
+const display={...DISPLAY_DEFAULTS};
+function restoreDisplayPreferences(saved={}){
+  for(const key of Object.keys(DISPLAY_DEFAULTS))display[key]=typeof saved?.[key]==='boolean'?saved[key]:DISPLAY_DEFAULTS[key];
+}
+const world=byId('worldCanvas'), worldContext=world.getContext('2d');
+const raster=document.createElement('canvas'), rasterContext=raster.getContext('2d');
+let view={w:600,h:400,dpr:1,scale:50,ox:300,oy:200};
+
+const specs=[
+  {key:'count',label:'Agents',group:'population',min:3,max:72,step:1,digits:0,restart:true},
+  {key:'types',label:'Signal types',group:'population',min:2,max:6,step:1,digits:0,restart:true},
+  {key:'radius',label:'Nominal range R',group:'communication',min:.7,max:4,step:.05,digits:2},
+  {key:'messageRate',label:'Per-link emission rate λ',group:'communication',min:0,max:6,step:.1,digits:1,unit:' /s'},
+  {key:'learning',label:'Exposure per message η',group:'communication',min:.02,max:.8,step:.01,digits:2},
+  {key:'noise',label:'Channel noise',group:'communication',min:0,max:.5,step:.005,digits:2,percentage:true},
+  {key:'latency',label:'Base latency τ',group:'communication',min:.05,max:1,step:.01,digits:2,unit:' s'},
+  {key:'signalSpeed',label:'Distance / latency scale c',group:'communication',min:.5,max:8,step:.25,digits:2},
+  {key:'pulseDuration',label:'Source duration',group:'communication',min:1,max:12,step:.5,digits:1,unit:' s'},
+  {key:'movement',label:'Fisher spatial adaptation',group:'spatial',checkbox:true},
+  {key:'mobility',label:'Spatial mobility m',group:'spatial',min:0,max:3,step:.1,digits:1},
+  {key:'attraction',label:'Gaussian attraction a',group:'spatial',min:0,max:3,step:.05,digits:2},
+  {key:'repulsion',label:'Short-range repulsion b',group:'spatial',min:.1,max:4,step:.1,digits:1},
+  {key:'shapeAdaptation',label:'Adapt Gaussian width',group:'spatial',checkbox:true},
+  {key:'sigma',label:'Preferred width σ₀',group:'spatial',min:.2,max:.75,step:.01,digits:2},
+  {key:'background',label:'Background refresh ε',group:'internal',min:0,max:.1,step:.002,digits:3,unit:' /s'},
+  {key:'drive',label:'Cyclic game strength',group:'internal',min:0,max:3,step:.1,digits:1,note:'Uses an antisymmetric replicator game; active for 3 or more types.'},
+  {key:'contactGamma',label:'Residual damping γ',group:'contact',min:0,max:3,step:.1,digits:1,unit:' /s'},
+];
+
+function specValue(s,v) { return s.percentage ? (v*100).toFixed(1)+'%' : Number(v).toFixed(s.digits??2)+(s.unit||''); }
+function createControls() {
+  for(const group of new Set(specs.map(s=>s.group)))byId(group+'Controls').replaceChildren();
+  for(const s of specs){
+    const container=byId(s.group+'Controls');
+    if(s.checkbox){
+      const label=document.createElement('label');label.className='check';
+      label.innerHTML=`<input id="control-${s.key}" type="checkbox">${s.label}`;container.append(label);
+    }else{
+      const div=document.createElement('div');div.className='range-control';
+      div.innerHTML=`<label for="control-${s.key}">${s.label}<output id="value-${s.key}"></output></label><input id="control-${s.key}" type="range" min="${s.min}" max="${s.max}" step="${s.step}">${s.note?`<p class="control-note">${s.note}</p>`:''}`;
+      container.append(div);
+    }
+    const input=byId('control-'+s.key);
+    input.addEventListener('input',()=>{
+      if(!s.checkbox)byId('value-'+s.key).textContent=specValue(s,Number(input.value));
+      if(s.restart)return;
+      lab.settings[s.key]=s.checkbox?input.checked:Number(input.value);
+      markDirty();
+    });
+    if(s.restart)input.addEventListener('change',()=>{
+      const settings={...lab.settings,[s.key]:Number(input.value)};
+      restart(lab.preset,settings);
+    });
+  }
+}
+function agentName(id){return lab.preset==='cycle'?String.fromCharCode(65+id):'P'+(id+1);}
+function syncControls(){
+  for(const s of specs){const el=byId('control-'+s.key);if(s.checkbox)el.checked=lab.settings[s.key];else{el.value=lab.settings[s.key];byId('value-'+s.key).textContent=specValue(s,lab.settings[s.key]);}}
+  byId('control-count').disabled=lab.settings.network==='cycle';
+  byId('control-drive').disabled=lab.settings.types<3;
+  byId('presetSelect').value=lab.preset;
+  byId('presetDescription').textContent=PRESETS[lab.preset].description;
+  byId('seedInput').value=lab.seed;
+  const previousSignal=Number(byId('signalType').value)||0;
+  byId('signalType').innerHTML=Array.from({length:lab.settings.types},(_,a)=>`<option value="${a}">Type ${a+1}</option>`).join('');
+  byId('signalType').value=Math.min(previousSignal,lab.settings.types-1);
+  byId('typeLegend').innerHTML=Array.from({length:lab.settings.types},(_,a)=>`<span><i style="background:${COLORS[a]}"></i>Type ${a+1}</span>`).join('');
+  byId('agentSelect').innerHTML=lab.agents.map(a=>`<option value="${a.id}">${agentName(a.id)}</option>`).join('');
+  byId('agentSelect').value=focused;
+  byId('probabilityBars').innerHTML=Array.from({length:lab.settings.types},(_,a)=>`<div class="probability-row"><span>Type ${a+1}</span><div class="probability-track"><div class="probability-fill" id="prob-${a}" style="background:${COLORS[a]}"></div></div><output id="prob-value-${a}"></output></div>`).join('');
+  for(const [id,key] of DISPLAY_CONTROLS)byId(id).checked=display[key];
+  updateTransport();
+}
+function markDirty(){densityDirty=true;lastUI=-1e9;lastTopology=-1e9;}
+function restart(preset,settings){
+  const seed=Number(byId('seedInput').value)>>>0;
+  lab=new Lab(preset,seed,settings||{});focused=0;selectedChannels.clear();localSignature='';
+  accumulator=0;syncControls();markDirty();updateUI(performance.now());
+}
+function updateTransport(){
+  byId('runButton').textContent=running?'Pause':'Run';
+  byId('runStatus').textContent=running?'Running':'Paused';
+  byId('runningLight').classList.toggle('paused',!running);
+}
+function toast(message){
+  clearTimeout(toastTimeout);byId('toast').textContent=message;byId('toast').hidden=false;
+  toastTimeout=setTimeout(()=>{byId('toast').hidden=true;},4500);
+}
+function chooseAgent(id){focused=id;byId('agentSelect').value=id;selectedChannels.clear();localSignature='';markDirty();updateUI(performance.now());}
+function setTab(name){
+  tab=name;
+  document.querySelectorAll('[data-tab]').forEach(b=>{const active=b.dataset.tab===tab;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});
+  for(const name of ['agent','topology','contact'])byId(name+'Panel').hidden=name!==tab;
+  markDirty();updateUI(performance.now());
+}
+function inject(){
+  const type=Number(byId('signalType').value);lab.inject(focused,type);markDirty();
+  toast(`${agentName(focused)} is the source of Type ${type+1} for ${lab.settings.pulseDuration} simulation seconds.${running?'':' Resume to emit messages.'}`);
+  updateUI(performance.now());
+}
+
+function fitCanvas(canvas,rect){
+  const dpr=Math.min(devicePixelRatio||1,2),w=Math.max(1,rect.width),h=Math.max(1,rect.height);
+  if(canvas.width!==Math.round(w*dpr)||canvas.height!==Math.round(h*dpr)){canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);}
+  const context=canvas.getContext('2d');context.setTransform(dpr,0,0,dpr,0,0);return {context,w,h,dpr};
+}
+function resizeWorld(){
+  const {w,h,dpr}=fitCanvas(world,byId('stageWrap').getBoundingClientRect());
+  view={w,h,dpr,scale:Math.min(w/10.5,h/6.95),ox:w/2,oy:h/2+8};densityDirty=true;
+}
+const project=(x,y)=>({x:view.ox+x*view.scale,y:view.oy-y*view.scale});
+function mix(p){return [0,1,2].map(k=>total(p.map((v,a)=>v*rgbColors[a][k])));}
+function rgba(rgb,alpha=1){return `rgba(${rgb.map(Math.round).join(',')},${alpha})`;}
+
+function renderDensity(now){
+  if(!display.density)return;
+  if(!densityDirty&&now-lastDensity<135)return;
+  densityDirty=false;lastDensity=now;
+  const pw=Math.ceil(view.w/7),ph=Math.ceil(view.h/7);
+  if(raster.width!==pw||raster.height!==ph){raster.width=pw;raster.height=ph;}
+  const image=rasterContext.createImageData(pw,ph),data=image.data;
+  const aa=lab.agents.map(a=>({x:a.x,y:a.y,s2:Math.exp(2*a.l),color:mix(a.p)}));
+  for(let iy=0;iy<ph;iy++){
+    const y=(view.oy-(iy+.5)*view.h/ph)/view.scale;
+    for(let ix=0;ix<pw;ix++){
+      const x=((ix+.5)*view.w/pw-view.ox)/view.scale;
+      let density=0,r=0,g=0,b=0;
+      for(const a of aa){const q=Math.exp(-((x-a.x)**2+(y-a.y)**2)/(2*a.s2))/(2*Math.PI*a.s2);density+=q;r+=q*a.color[0];g+=q*a.color[1];b+=q*a.color[2];}
+      const at=4*(iy*pw+ix);
+      if(density>1e-12){data[at]=r/density;data[at+1]=g/density;data[at+2]=b/density;data[at+3]=Math.round(128*(1-Math.exp(-1.15*density)));}
+    }
+  }
+  rasterContext.putImageData(image,0,0);
+}
+
+function arrow(ctx,from,to,color,alpha=.2,offset=0){
+  const dx=to.x-from.x,dy=to.y-from.y,d=Math.hypot(dx,dy);if(d<15)return;
+  const ux=dx/d,uy=dy/d,px=-uy,py=ux;
+  const x0=from.x+ux*9+px*offset,y0=from.y+uy*9+py*offset;
+  const x1=to.x-ux*10+px*offset,y1=to.y-uy*10+py*offset;
+  ctx.strokeStyle=color;ctx.fillStyle=color;ctx.globalAlpha=alpha;ctx.lineWidth=.8;
+  ctx.beginPath();ctx.moveTo(x0,y0);ctx.lineTo(x1,y1);ctx.stroke();
+  const ax=x0+(x1-x0)*.67,ay=y0+(y1-y0)*.67;
+  ctx.beginPath();ctx.moveTo(ax+ux*3,ay+uy*3);ctx.lineTo(ax-ux*2+px*2,ay-uy*2+py*2);ctx.lineTo(ax-ux*2-px*2,ay-uy*2-py*2);ctx.closePath();ctx.fill();ctx.globalAlpha=1;
+}
+
+function renderWorld(now){
+  const ctx=worldContext,{w,h}=view;
+  ctx.setTransform(view.dpr,0,0,view.dpr,0,0);ctx.clearRect(0,0,w,h);ctx.fillStyle='#0b111c';ctx.fillRect(0,0,w,h);
+  renderDensity(now);
+  if(display.density){ctx.imageSmoothingEnabled=true;ctx.drawImage(raster,0,0,w,h);}
+  ctx.lineWidth=.6;
+  for(let x=-6;x<=6;x++){const p=project(x,0);ctx.strokeStyle=x===0?'#40536b2b':'#34465e20';ctx.beginPath();ctx.moveTo(p.x,0);ctx.lineTo(p.x,h);ctx.stroke();}
+  for(let y=-4;y<=4;y++){const p=project(0,y);ctx.strokeStyle=y===0?'#40536b2b':'#34465e20';ctx.beginPath();ctx.moveTo(0,p.y);ctx.lineTo(w,p.y);ctx.stroke();}
+  const selected=lab.agents[focused];
+  if(display.circles){const p=project(selected.x,selected.y);ctx.beginPath();ctx.arc(p.x,p.y,lab.settings.radius*view.scale,0,Math.PI*2);ctx.strokeStyle='#91d5c03a';ctx.setLineDash([3,6]);ctx.lineWidth=.8;ctx.stroke();ctx.setLineDash([]);}
+  if(display.trails){for(const a of lab.agents){if(a.trail.length<2)continue;ctx.beginPath();a.trail.forEach((p,i)=>{const s=project(p.x,p.y);i?ctx.lineTo(s.x,s.y):ctx.moveTo(s.x,s.y);});ctx.strokeStyle=rgba(mix(a.p),.14);ctx.lineWidth=.9;ctx.stroke();}}
+  currentEdges=lab.channels();
+  const localNodes=tab==='topology'&&local?new Set(local.nodes):null;
+  if(display.channels){for(const e of currentEdges){const a=lab.agents[e.from],b=lab.agents[e.to];const highlighted=localNodes&&localNodes.has(e.from)&&localNodes.has(e.to);arrow(ctx,project(a.x,a.y),project(b.x,b.y),highlighted?'#91d5c0':'#738fa8',highlighted?.4:.07+e.weight*.12,lab.settings.network==='cycle'?0:2.1);}}
+  for(const m of lab.queue){
+    const progress=limit((lab.time-m.sentAt)/(m.dueAt-m.sentAt),0,1);
+    const p=project(m.x0+(m.x1-m.x0)*progress,m.y0+(m.y1-m.y0)*progress);
+    const traced=m.tagged&&lab.pulse&&m.pulseId===lab.pulse.id;
+    ctx.beginPath();ctx.arc(p.x,p.y,traced?2.5:1.6,0,Math.PI*2);ctx.fillStyle=COLORS[m.type];
+    if(traced){ctx.shadowColor='#ffb45f';ctx.shadowBlur=7;}ctx.globalAlpha=traced?.95:.65;ctx.fill();ctx.shadowBlur=0;ctx.globalAlpha=1;
+    if(traced){ctx.beginPath();ctx.arc(p.x,p.y,.8,0,Math.PI*2);ctx.fillStyle='#fff3d4';ctx.fill();}
+  }
+  for(const a of lab.agents){
+    const p=project(a.x,a.y),rgb=mix(a.p),radius=Math.exp(a.l)*view.scale,trace=total(a.trace);
+    if(display.circles){
+      ctx.beginPath();ctx.arc(p.x,p.y,Math.max(6,radius),0,Math.PI*2);ctx.strokeStyle=rgba(rgb,display.density?.28:.55);ctx.lineWidth=.9;ctx.stroke();
+      if(trace>.008){ctx.beginPath();ctx.arc(p.x,p.y,Math.max(9,radius*.75),0,Math.PI*2);ctx.strokeStyle=`rgba(255,191,114,${.1+.75*trace})`;ctx.lineWidth=1+2*trace;ctx.stroke();}
+      if(a.id===focused||(localNodes&&localNodes.has(a.id))){ctx.beginPath();ctx.arc(p.x,p.y,Math.max(10,radius+4),0,Math.PI*2);ctx.strokeStyle=a.id===focused?'#d0eadf':'#91d5c06a';ctx.lineWidth=a.id===focused?1.15:.8;ctx.setLineDash(a.id===focused?[]:[2,4]);ctx.stroke();ctx.setLineDash([]);}
+    }
+    ctx.beginPath();ctx.arc(p.x,p.y,a.id===focused?4.2:3.2,0,Math.PI*2);ctx.fillStyle=rgba(rgb);ctx.shadowBlur=9;ctx.shadowColor=rgba(rgb,.5);ctx.fill();ctx.shadowBlur=0;
+    if(a.id===focused||lab.agents.length<=6||(localNodes&&localNodes.has(a.id))){ctx.fillStyle=a.id===focused?'#e1f0e9':'#9eb3c4';ctx.font='10px ui-monospace,monospace';ctx.textAlign='center';ctx.fillText(agentName(a.id),p.x,p.y-Math.max(radius+11,21));}
+  }
+  if(display.circles&&lab.pulse&&lab.time<lab.pulse.until){const a=lab.agents[lab.pulse.source],p=project(a.x,a.y),phase=((lab.time-lab.pulse.start)*.8)%1;ctx.beginPath();ctx.arc(p.x,p.y,(.4+phase*.9)*view.scale,0,Math.PI*2);ctx.strokeStyle=`rgba(255,180,95,${.4*(1-phase)})`;ctx.lineWidth=1;ctx.stroke();}
+  const scaleY=h-43,scaleX=w-91;
+  if(w>380){ctx.strokeStyle='#607b9255';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(scaleX,scaleY);ctx.lineTo(scaleX+view.scale,scaleY);ctx.stroke();ctx.fillStyle='#6c859b';ctx.font='9px system-ui';ctx.textAlign='center';ctx.fillText('1 space unit',scaleX+view.scale/2,scaleY-7);}
+}
+
+function dlHTML(entries){return entries.map(([label,value])=>`<dt>${label}</dt><dd>${value}</dd>`).join('');}
+function updateUI(now){
+  lastUI=now;const a=lab.agents[focused],k=lab.settings.types;
+  byId('clock').textContent=number(lab.time,1)+' s';
+  byId('deliveredValue').textContent=lab.totalReceived.toLocaleString();byId('flightValue').textContent=lab.queue.length.toLocaleString();
+  byId('entropyValue').textContent=number(total(lab.agents.map(a=>entropy(a.p)))/lab.agents.length,3);
+  byId('traceValue').textContent=percent(total(lab.agents.map(a=>total(a.trace)))/lab.agents.length);
+  byId('agentHeading').textContent='Agent '+agentName(focused);
+  byId('agentStateHint').textContent=lab.pulse?.source===focused&&lab.time<lab.pulse.until?'active signal source':'local predictor';
+  for(let b=0;b<k;b++){byId('prob-'+b).style.width=(100*a.p[b])+'%';byId('prob-value-'+b).textContent=(100*a.p[b]).toFixed(1)+'%';}
+  const incoming=currentEdges.filter(e=>e.to===focused).length,outgoing=currentEdges.filter(e=>e.from===focused).length;
+  byId('agentReadouts').innerHTML=dlHTML([
+    ['Position μ',number(a.x,2)+', '+number(a.y,2)],['Gaussian width σ',number(Math.exp(a.l),3)],
+    ['Entropy H(π)',number(entropy(a.p),3)+' nats'],['Pulse ancestry',percent(total(a.trace))],
+    ['Channels in / out',incoming+' / '+outgoing],['Received / sent',a.received+' / '+a.sent],
+    ['Latest state change',a.lastKL===null?'—':number(a.lastKL,4)+' nats'],
+  ]);
+  const recent=lab.events.filter(e=>e.to===focused).slice(-5).reverse();
+  if(recent.length){const e=recent[0];byId('latestMessage').innerHTML=`<span class="type-dot" style="background:${COLORS[e.type]}"></span>Type ${e.type+1} from ${agentName(e.from)}<br>Surprise ${number(e.surprise,3)} nats · latency ${number(e.dueAt-e.sentAt,2)} s${e.currentPulse?'<br><span style="color:var(--gold)">Copied from the current pulse</span>':''}`;}else byId('latestMessage').textContent='Waiting for a local message.';
+  byId('predictionGain').textContent=a.lastGain===null?'—':(a.lastGain>=0?'+':'')+number(a.lastGain,4)+' nats';
+  byId('predictionGain').classList.toggle('negative',a.lastGain!==null&&a.lastGain<0);
+  byId('eventList').innerHTML=recent.length?recent.map(e=>`<div class="event-row"><span class="event-time">${number(e.receivedAt,1)} s</span><span>${agentName(e.from)} → ${agentName(e.to)} · <span style="color:${COLORS[e.type]}">Type ${e.type+1}</span></span><span class="event-tag">${e.currentPulse?'pulse':''}</span></div>`).join(''):'<p class="event-empty">Messages will appear here after their transmission delay.</p>';
+  if(lab.pulse){const left=lab.pulse.until-lab.time;byId('pulseBanner').hidden=false;byId('pulseBanner').textContent=left>0?`${agentName(lab.pulse.source)} emits Type ${lab.pulse.type+1} · ${number(left,1)} s left`:`Source stopped · ${lab.agents.filter(a=>total(a.trace)>.01).length} agents retain >1% ancestry`;}else byId('pulseBanner').hidden=true;
+  byId('densityLabel').hidden=!display.density;
+  byId('stageDetail').textContent=tab==='topology'?'Highlighted agents define the inspected local window':'Click a bump to inspect its local world';
+  if(tab==='contact')updateContact(a);
+  if(tab==='topology'&&(now-lastTopology>500||!local))updateTopology(now);
+  renderHistory();
+}
+
+function updateContact(a){
+  const c=contactCoordinates(a);
+  byId('contactReadouts').innerHTML=dlHTML([['Log-normalizer ψ',number(c.psi,5)],['Potential z',number(c.z,5)],['Residual c = z − ψ',number(c.residual,5)],['Expectation relation','η = ∇ψ'],['Decay half-life',lab.settings.contactGamma>0?number(Math.log(2)/lab.settings.contactGamma,2)+' s':'∞']]);
+  byId('contactMeter').style.width=Math.min(100,100*Math.abs(a.c)/1.2)+'%';
+  const names=['θₓ','θᵧ','θᵣ²',...Array.from({length:lab.settings.types-1},(_,i)=>'θ'+(i+1))];
+  byId('thetaValues').textContent=c.theta.map((x,i)=>names[i].padEnd(5)+' '+number(x,5)).join('\n');
+  const enames=['E[x]','E[y]','E[r²]',...Array.from({length:lab.settings.types-1},(_,i)=>'π'+(i+1))];
+  byId('etaValues').textContent=c.eta.map((x,i)=>enames[i].padEnd(6)+' '+number(x,5)).join('\n');
+}
+
+function updateTopology(now){
+  lastTopology=now;local=lab.localComplex(focused,windowMax);
+  const signature=local.nodes.join(',')+'|'+local.edges.map(e=>e.from+':'+e.to).join(',');
+  if(signature!==localSignature){
+    localSignature=signature;
+    const keys=new Set(local.edges.map(e=>e.from+':'+e.to));selectedChannels=new Set([...selectedChannels].filter(k=>keys.has(k)));
+    byId('edgeButtons').innerHTML=local.edges.length?local.edges.map(e=>`<button data-edge="${e.from}:${e.to}" aria-pressed="false">${agentName(e.from)} → ${agentName(e.to)}</button>`).join(''):'<span class="event-empty">No admitted channels in this window.</span>';
+    byId('edgeButtons').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{const key=b.dataset.edge;selectedChannels.has(key)?selectedChannels.delete(key):selectedChannels.add(key);updateForestSelection();}));
+  }
+  byId('complexWindow').textContent=`${local.nodes.map(agentName).join(', ')} · nearest ${local.nodes.length} agents, including the selected agent, within nominal range. All admitted channels between them are retained.`;
+  for(let d=0;d<3;d++)byId('betti'+d).textContent=local.betti[d]||0;
+  byId('faceCounts').textContent='f = ('+local.fVector.join(', ')+')    χ = '+local.euler;
+  updateForestSelection();
+}
+function updateForestSelection(){
+  if(!local)return;
+  const selected=local.edges.filter(e=>selectedChannels.has(e.from+':'+e.to));const validity=forestValidity(selected);
+  byId('forestVerdict').textContent=validity.reason;
+  byId('forestVerdict').classList.toggle('invalid',!validity.ok);
+  byId('edgeButtons').querySelectorAll('button').forEach(b=>{const active=selectedChannels.has(b.dataset.edge);b.classList.toggle('selected',active);b.setAttribute('aria-pressed',String(active));});
+  renderComplex();
+}
+function complexPoints(w,h,n){const r=Math.min(w*.33,h*.35);return Array.from({length:n},(_,i)=>({x:w/2+r*Math.cos(-Math.PI/2+2*Math.PI*i/n),y:h/2+r*Math.sin(-Math.PI/2+2*Math.PI*i/n)-3}));}
+function renderComplex(){
+  if(tab!=='topology'||!local)return;
+  const canvas=byId('complexCanvas'),{context:ctx,w,h}=fitCanvas(canvas,canvas.getBoundingClientRect());ctx.clearRect(0,0,w,h);
+  const points=complexPoints(w,h,local.edges.length),selection=local.edges.map((e,i)=>selectedChannels.has(e.from+':'+e.to)?i:-1).filter(i=>i>=0);
+  const valid=forestValidity(selection.map(i=>local.edges[i])).ok;
+  if(valid&&selection.length===3){ctx.beginPath();selection.forEach((j,i)=>{const p=points[j];i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y);});ctx.closePath();ctx.fillStyle='#91d5c024';ctx.fill();}
+  ctx.lineWidth=.8;
+  for(const f of local.faces[1]||[]){const [a,b]=f.map(i=>points[i]);ctx.strokeStyle=selection.includes(f[0])&&selection.includes(f[1])?(valid?'#91d5c0':'#c88d97'):'#55708b39';ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}
+  for(let i=0;i<points.length;i++){
+    const p=points[i],e=local.edges[i],active=selection.includes(i);
+    ctx.beginPath();ctx.arc(p.x,p.y,active?5:3.5,0,Math.PI*2);ctx.fillStyle=active?(valid?'#b4e2d0':'#e5a5ae'):'#7f9bb0';ctx.fill();
+    ctx.font='9px ui-monospace,monospace';ctx.textAlign='center';ctx.fillStyle=active?'#d0e4db':'#819aad';
+    const away=p.y<h/2?-10:16;ctx.fillText(agentName(e.from)+'→'+agentName(e.to),p.x,p.y+away);
+  }
+  ctx.fillStyle='#6b8296';ctx.font='9px system-ui';ctx.textAlign='center';ctx.fillText(points.length?`${points.length} channel vertices · ${total(local.fVector)} nonempty faces`:'Empty channel complex',w/2,h-10);
+}
+
+function renderHistory(){
+  const canvas=byId('historyCanvas'),{context:ctx,w,h}=fitCanvas(canvas,canvas.getBoundingClientRect());ctx.clearRect(0,0,w,h);
+  const pad={l:29,r:9,t:9,b:18},pw=w-pad.l-pad.r,ph=h-pad.t-pad.b;
+  const latest=lab.history.at(-1)?.time||0,start=Math.max(0,latest-90),end=Math.max(10,latest),samples=lab.history.filter(s=>s.time>=start);
+  let ymin=0,ymax=1;
+  if(plot==='energy'){const values=samples.map(s=>s.energy);ymin=Math.min(...values);ymax=Math.max(...values);const m=Math.max(.03,(ymax-ymin)*.15);ymin-=m;ymax+=m;}
+  const X=t=>pad.l+(t-start)/(end-start)*pw,Y=y=>pad.t+(ymax-y)/(ymax-ymin)*ph;
+  ctx.font='9px system-ui';ctx.textAlign='right';ctx.fillStyle='#6d859b';ctx.strokeStyle='#26364a88';ctx.lineWidth=.6;
+  for(let i=0;i<=2;i++){const val=ymin+(ymax-ymin)*i/2,y=Y(val);ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();ctx.fillText(plot==='energy'?val.toFixed(1):val.toFixed(1),pad.l-5,y+3);}
+  ctx.textAlign='center';for(let i=0;i<=3;i++){const t=start+(end-start)*i/3;ctx.fillText(t.toFixed(0)+'s',X(t),h-3);}
+  function line(key,color,scale=1){ctx.beginPath();samples.forEach((s,i)=>{const x=X(s.time),y=Y(s[key]/scale);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.strokeStyle=color;ctx.lineWidth=1.5;ctx.stroke();}
+  if(plot==='information'){line('entropy','#64cbe0',Math.log(lab.settings.types));line('trace','#ffb45f');}
+  else line('energy','#91d5c0');
+}
+
+function setPlot(name){
+  plot=name;
+  document.querySelectorAll('[data-plot]').forEach(b=>b.classList.toggle('active',b.dataset.plot===plot));
+  byId('plotCaption').innerHTML=plot==='information'?'<span><i class="line-key entropy-key"></i> Mean entropy / log K</span><span><i class="line-key trace-key"></i> Pulse ancestry</span><span class="time-caption">simulation time</span>':'<span><i class="line-key" style="background:#91d5c0"></i> Spatial interaction potential</span><span class="time-caption">simulation time</span>';
+  renderHistory();
+}
+
+function download(filename,content,type){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);}
+function save(){const state=lab.snapshot();state.view={focused,tab,plot,windowMax,display};download(`Plasmoid_Experiment_${lab.seed}_${Math.floor(lab.time)}s.json`,JSON.stringify(state,null,2),'application/json');toast('Saved the experiment, queued messages, and random stream.');}
+function exportCSV(){
+  const keys=['id','from','to','emittedType','type','sentAt','dueAt','receivedAt','tagged','pulseId','currentPulse','surprise','change','gain'];
+  const rows=[keys.join(','),...lab.events.map(e=>keys.map(k=>e[k]??'').join(','))];
+  download(`Plasmoid_Message_Log_${lab.seed}.csv`,rows.join('\n'),'text/csv');toast('Exported '+lab.events.length+' deliveries. Agent and type indices in the CSV start at zero.');
+}
+
+createControls();syncControls();
+byId('presetSelect').addEventListener('change',()=>{restart(byId('presetSelect').value);if(lab.preset==='cycle')setTab('topology');toast(PRESETS[lab.preset].name+' loaded.');});
+byId('resetButton').addEventListener('click',()=>{restart(lab.preset,{...lab.settings});toast('Restarted with the same seed and current controls.');});
+byId('runButton').addEventListener('click',()=>{running=!running;accumulator=0;updateTransport();});
+byId('stepButton').addEventListener('click',()=>{running=false;updateTransport();lab.advance(.2);markDirty();updateUI(performance.now());});
+byId('pulseButton').addEventListener('click',inject);
+byId('agentSelect').addEventListener('change',()=>chooseAgent(Number(byId('agentSelect').value)));
+document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
+document.querySelectorAll('[data-plot]').forEach(b=>b.addEventListener('click',()=>setPlot(b.dataset.plot)));
+byId('windowSize').addEventListener('change',()=>{windowMax=Number(byId('windowSize').value);selectedChannels.clear();markDirty();updateTopology(performance.now());});
+byId('clearEdges').addEventListener('click',()=>{selectedChannels.clear();updateForestSelection();});
+byId('perturbContact').addEventListener('click',()=>{lab.agents[focused].c+=.6;markDirty();updateContact(lab.agents[focused]);});
+for(const [id,key] of DISPLAY_CONTROLS)byId(id).addEventListener('change',()=>{display[key]=byId(id).checked;markDirty();});
+byId('modelButton').addEventListener('click',()=>byId('modelDialog').showModal());
+byId('closeModel').addEventListener('click',()=>byId('modelDialog').close());
+byId('modelDialog').addEventListener('click',e=>{if(e.target===byId('modelDialog')){const r=e.target.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)e.target.close();}});
+byId('saveButton').addEventListener('click',save);byId('csvButton').addEventListener('click',exportCSV);
+byId('loadButton').addEventListener('click',()=>byId('loadInput').click());
+byId('loadInput').addEventListener('change',async()=>{
+  const file=byId('loadInput').files[0];if(!file)return;
+  try{
+    if(file.size>20*1024*1024)throw new Error('Experiment files must be smaller than 20 MB.');
+    const data=JSON.parse(await file.text()),restored=Lab.restore(data);lab=restored;
+    focused=limit(Number.isInteger(data.view?.focused)?data.view.focused:0,0,lab.agents.length-1);
+    running=false;accumulator=0;selectedChannels.clear();localSignature='';
+    windowMax=[3,4].includes(data.view?.windowMax)?data.view.windowMax:4;
+    byId('windowSize').value=windowMax;
+    restoreDisplayPreferences(data.view?.display);
+    syncControls();setPlot(['information','energy'].includes(data.view?.plot)?data.view.plot:'information');
+    setTab(['agent','topology','contact'].includes(data.view?.tab)?data.view.tab:'agent');markDirty();
+    toast('Restored at '+number(lab.time,1)+' s. Press Run to continue the same random stream.');
+  }catch(e){toast('Could not load this experiment: '+e.message);}finally{byId('loadInput').value='';}
+});
+document.querySelector('.offline-link').addEventListener('click',e=>{
+  e.preventDefault();
+  const copy=document.documentElement.cloneNode(true);
+  copy.querySelector('#modelDialog').removeAttribute('open');
+  copy.querySelector('#toast').setAttribute('hidden','');
+  download('Plasmoid_Lab_v1_1.html','<!doctype html>\n'+copy.outerHTML,'text/html');
+  toast('Downloaded the self-contained lab. Use Save experiment separately to preserve the current simulation.');
+});
+
+let pointerStart=null;
+world.addEventListener('pointerdown',e=>{pointerStart={x:e.clientX,y:e.clientY};});
+world.addEventListener('pointerup',e=>{
+  if(!pointerStart||Math.hypot(e.clientX-pointerStart.x,e.clientY-pointerStart.y)>10)return;pointerStart=null;
+  const rect=world.getBoundingClientRect(),x=e.clientX-rect.left,y=e.clientY-rect.top;
+  const nearest=lab.agents.map(a=>({id:a.id,d:Math.hypot(project(a.x,a.y).x-x,project(a.x,a.y).y-y)})).sort((a,b)=>a.d-b.d)[0];
+  if(nearest.d<55)chooseAgent(nearest.id);
+});
+world.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown'){e.preventDefault();chooseAgent((focused+1)%lab.agents.length);}
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();chooseAgent((focused+lab.agents.length-1)%lab.agents.length);}
+  if(e.key===' '){e.preventDefault();running=!running;updateTransport();}
+  if(e.key==='Enter'){e.preventDefault();inject();}
+});
+byId('complexCanvas').addEventListener('pointerup',e=>{
+  if(!local?.edges.length)return;const rect=e.currentTarget.getBoundingClientRect();
+  const p=complexPoints(rect.width,rect.height,local.edges.length),x=e.clientX-rect.left,y=e.clientY-rect.top;
+  const i=p.findIndex(a=>Math.hypot(a.x-x,a.y-y)<15);if(i<0)return;
+  const edge=local.edges[i],key=edge.from+':'+edge.to;selectedChannels.has(key)?selectedChannels.delete(key):selectedChannels.add(key);updateForestSelection();
+});
+
+new ResizeObserver(()=>{resizeWorld();if(tab==='topology')renderComplex();renderHistory();}).observe(byId('stageWrap'));
+window.addEventListener('resize',()=>{resizeWorld();if(tab==='topology')renderComplex();renderHistory();});
+document.addEventListener('visibilitychange',()=>{lastFrame=performance.now();accumulator=0;});
+window.addEventListener('error',e=>{running=false;updateTransport();toast('The simulation paused after an error: '+e.message);});
+
+resizeWorld();setTab('agent');
+function frame(now){
+  const delta=Math.min(.15,(now-lastFrame)/1000);lastFrame=now;
+  if(running&&!document.hidden){
+    accumulator+=delta*Number(byId('playback').value);
+    let steps=0;
+    while(accumulator>=.035&&steps++<24){const h=lab.step(.035);accumulator-=h;}
+    if(steps>=24)accumulator=Math.min(accumulator,.15);
+  }
+  if(now-lastUI>180)updateUI(now);
+  renderWorld(now);requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
