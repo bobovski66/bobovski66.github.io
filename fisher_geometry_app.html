@@ -1,12 +1,17 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0d1923"><meta name="description" content="Explore Fisher information geometry through three exact statistical models: a spherical simplex, flat independent coins, and hyperbolic normal distributions."><title>Fisher Geometry · Distributions, distance & curvature</title>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0d1923"><meta name="description" content="Explore Fisher information geometry through seven statistical models: spherical simplexes, independent coins, hyperbolic normals, products, and singular mixtures."><title>Fisher Geometry · Distributions, distance & curvature</title>
 <style>
 :root{color-scheme:dark;--bg:#0b151f;--panel:#12232f;--ink:#e3edf3;--muted:#9bb0bf;--line:#2b4352;--teal:#80dccc;--gold:#f0cf88;--blue:#83b9ee;--purple:#b5a3ee;--rose:#efa7bc;--font:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 75% 0,#1c3343,transparent 60%),var(--bg);color:var(--ink);font:16px/1.55 var(--font)}button,input,select{font:inherit}button,select,input[type=number]{border:1px solid #385464;border-radius:7px;color:var(--ink);background:#192e3d;padding:7px 10px;font-size:14px}button{cursor:pointer;transition:border-color .15s,background .15s}button:hover{border-color:#80acba;background:#254354}button[aria-pressed=true],button.active{background:#204b46;border-color:var(--teal);color:#c3ffef}button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offset:3px}.primary{color:#0d2924;background:var(--teal);border-color:var(--teal);font-weight:700}.primary:hover{color:#0d2924;background:#acf0e2}input[type=range]{width:100%;display:block;margin:7px 0 1px;accent-color:var(--teal);height:20px}input[type=number]{width:100%;min-width:0}select{width:100%;min-width:0;appearance:none;padding-right:28px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpath d='m1 1 4 4 4-4' stroke='%23c1d7df' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}a{color:var(--teal)}header,.wrap{max-width:1560px;margin:auto;padding-left:28px;padding-right:28px}header{display:flex;align-items:center;justify-content:space-between;gap:22px;padding-top:26px;padding-bottom:20px}.eyebrow{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.16em;color:var(--teal)}h1{font:400 clamp(32px,3vw,44px)/1.12 Georgia,serif;letter-spacing:-.025em;margin:7px 0 9px}header p{font-size:15px;color:var(--muted);margin:0;max-width:740px}.actions{display:flex;gap:7px;align-items:center;flex-shrink:0}.model-tabs{display:flex;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:17px}.model-tabs button{padding:10px 15px;font-weight:600;font-size:14px;display:flex;gap:12px;align-items:center}.pill{font-size:12px;min-width:23px;height:23px;display:inline-flex;align-items:center;justify-content:center;border:1px solid #65837f70;border-radius:50%;color:var(--gold);font-weight:500}.intro-line{display:flex;justify-content:space-between;align-items:baseline;gap:15px;margin:16px 0;color:#b4c8d3;font-size:14px}.intro-line strong{color:var(--ink);font-weight:500}.layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:16px;align-items:start}.panel{background:linear-gradient(145deg,#142733,#11202c);border:1px solid var(--line);border-radius:12px;overflow:hidden}.controls{padding:18px}.section-title,.label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#acc1ce}.section-title{margin:0 0 12px}.control{margin-bottom:17px}.control label{display:flex;justify-content:space-between;gap:8px;font-size:14px;margin-bottom:6px}.control output{font-variant-numeric:tabular-nums;color:var(--teal)}.small{font-size:12px;color:var(--muted);line-height:1.55}.control .small{margin-top:5px;display:block}.row{display:flex;align-items:center;gap:7px}.row>*{min-width:0}.equal>*{flex:1}.edit-buttons{display:flex;gap:7px;margin-bottom:12px}.edit-buttons button{flex:1}.edit-buttons button[data-end=A]{color:var(--teal)}.edit-buttons button[data-end=B]{color:var(--rose)}.divider{height:1px;background:var(--line);margin:19px 0}.coordinate-sliders .control{margin-bottom:15px}.display-options{display:grid;gap:9px;font-size:14px;color:#b8cbd6}.display-options label{display:flex;gap:8px;align-items:center;cursor:pointer}.display-options input{accent-color:var(--teal);margin:0}.controls-summary{display:none}.controls-container{min-width:0}.content{min-width:0}.stages{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}.panel-head{padding:15px 17px 5px;display:flex;align-items:center;justify-content:space-between;gap:8px}.panel-head h2{font-size:16px;font-weight:600;margin:0}.panel-head .kicker{font-size:12px;color:var(--muted);margin-bottom:2px}.panel-head button{font-size:12px;padding:3px 8px}.plot{display:block;width:100%;height:350px;touch-action:none}.plot-note{color:var(--muted);font-size:12px;padding:0 17px 14px;min-height:53px}.panel-bottom{border-top:1px solid var(--line);padding:13px 17px;min-height:112px}.metric-row{display:flex;gap:18px;align-items:center;justify-content:space-between}.matrix{display:grid;grid-template-columns:1fr 1fr;gap:2px 14px;font:15px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace;border-left:1px solid #6c8d9b;border-right:1px solid #6c8d9b;padding:2px 12px;min-width:140px;color:#d1eee7;text-align:right;font-variant-numeric:tabular-nums}.detail{font-size:13px;color:var(--muted);line-height:1.6}.detail strong{color:var(--ink);font-weight:500}.formula{font-family:Georgia,serif;color:#d7e5e7;font-size:17px;line-height:1.6;margin:5px 0;overflow-wrap:anywhere}.curvature-values{display:flex;gap:25px;margin-bottom:5px}.curvature-values .value{font-size:23px;line-height:1.2;font-variant-numeric:tabular-nums;color:var(--gold)}.curvature-values .small{display:block;margin-top:3px}.probe-bar{margin-top:14px;padding:14px 17px;display:grid;grid-template-columns:auto minmax(100px,1fr) 215px;gap:15px;align-items:center}.probe-bar input{margin:3px 0}.probe-controls{display:flex;align-items:center;gap:7px}.probe-controls button{padding:7px 13px}.probe-controls .t-value{font-size:13px;color:var(--muted);white-space:nowrap}.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--muted);margin-top:7px}.legend span{display:flex;align-items:center;gap:6px}.legend i{width:18px;height:3px;border-radius:3px;display:inline-block}.measurements{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:14px}.measure{padding:15px 17px}.measure .label{letter-spacing:.045em;font-size:12px}.measure strong{display:block;font-size:27px;font-weight:500;line-height:1.2;margin-top:6px;font-variant-numeric:tabular-nums}.measure .small{margin-top:5px}.lower{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}.lower .plot{height:235px}.lower .panel-head{padding-bottom:7px}.lengths{width:100%;font-size:13px;border-collapse:collapse;margin-top:14px}.lengths td,.lengths th{padding:6px 0;border-bottom:1px solid #29414d80;text-align:right;font-weight:400;font-variant-numeric:tabular-nums}.lengths th{color:var(--muted);font-size:12px}.lengths td:first-child,.lengths th:first-child{text-align:left}.lengths td:first-child{display:flex;align-items:center;gap:6px}.lengths .route-dot{width:6px;height:6px;border-radius:50%;display:inline-block}.lengths tr.selected{color:#f7dfad}.notice{padding:11px 12px;border-radius:7px;background:#0d1b26;font-size:13px;color:var(--muted);margin-top:12px}.notice strong{color:#c9e1e6;font-weight:500}.question{padding:14px 18px;font-size:14px;margin-top:14px;border-left:3px solid #76b9ac;border-radius:6px;color:#bfd3dc;background:#142a35}.question strong{color:var(--gold);font-weight:500}.footer{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;color:var(--muted);font-size:12px;padding:19px 0 24px}.status{font-size:12px;color:var(--muted);margin-top:11px}.hidden,[hidden]{display:none!important}summary{list-style:none;cursor:pointer;border:1px solid #385464;border-radius:7px;padding:7px 11px;font-size:14px;background:#192e3d}summary::-webkit-details-marker{display:none}details{position:relative}.menu{position:absolute;right:0;top:42px;min-width:220px;border:1px solid #436272;background:#172e3e;padding:7px;border-radius:9px;z-index:8;box-shadow:0 12px 35px #0007;display:grid;gap:4px}.menu button{text-align:left;border-color:transparent;background:transparent;font-size:14px}.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);border:1px solid var(--teal);background:#254a43;color:#e6fff6;border-radius:9px;padding:10px 16px;font-size:14px;z-index:20;max-width:90vw}dialog{background:#142733;color:var(--ink);border:1px solid #466678;border-radius:14px;max-width:800px;width:calc(100% - 30px);max-height:87vh;padding:28px;overflow:auto;box-shadow:0 25px 80px #0009}dialog::backdrop{background:#0009;backdrop-filter:blur(4px)}dialog h2{font:30px/1.2 Georgia,serif;margin:0 0 18px}dialog h3{font-size:17px;color:var(--teal);margin:23px 0 8px}dialog p{font-size:16px;color:#bfd1dc}dialog .equation{font:19px/1.7 Georgia,serif;text-align:center;padding:13px;border-radius:8px;background:#0e1e29;margin:12px 0}dialog table{border-collapse:collapse;width:100%;font-size:14px}dialog td,dialog th{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left}dialog th{color:var(--muted);font-weight:500}.dialog-close{float:right}.chart-key{font-size:12px;color:var(--muted);padding:0 16px 12px;display:flex;gap:12px}.chart-key i{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px}.probe-status{font-size:13px;color:var(--muted);margin-bottom:3px}.edit-hint{color:var(--muted);font-size:12px;margin:10px 0 0}.n-input{max-width:80px}.main-invariant{font-size:12px;color:var(--muted);white-space:nowrap}
 @media(min-width:1450px){.plot{height:390px}}@media(max-width:1150px){.layout{grid-template-columns:225px minmax(0,1fr)}header,.wrap{padding-left:18px;padding-right:18px}.metric-row{display:block}.matrix{width:145px;margin-top:8px}.panel-bottom{min-height:150px}.formula{font-size:16px}.plot{height:320px}.curvature-values{gap:16px}.probe-bar{grid-template-columns:auto minmax(80px,1fr)}.probe-route{grid-column:1/-1}.probe-route select{width:auto;min-width:200px}.main-invariant{display:none}}@media(max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}.controls{display:grid;grid-template-columns:1fr 1fr;gap:0 24px}.control-edit{grid-row:span 2}.control-display{grid-column:2}.controls>.divider{display:none}.controls-summary{display:block;margin-bottom:10px}.plot{height:335px}.metric-row{display:flex}.panel-bottom{min-height:128px}.main-invariant{display:inline}.control-samples>.divider{margin-top:0}}@media(max-width:620px){header{display:block;padding-top:22px;padding-bottom:17px}header,.wrap{padding-left:13px;padding-right:13px}.actions{margin-top:16px}header p{font-size:14px}.model-tabs{gap:6px}.model-tabs button{flex:1;justify-content:center;font-size:13px;padding:8px 7px;gap:6px}.model-tabs button:last-child{flex-basis:100%}.intro-line{display:block;font-size:14px;margin:13px 0}.main-invariant{display:none}.stages,.lower{grid-template-columns:1fr;gap:13px}.plot{height:340px}.panel-bottom{min-height:0}.panel-head{padding:14px 14px 5px}.plot-note{padding-left:14px;padding-right:14px;min-height:0}.probe-bar{grid-template-columns:1fr;gap:10px;padding:13px 14px}.probe-controls{justify-content:space-between}.probe-route{grid-column:auto}.probe-route select{width:100%}.measurements{gap:8px;grid-template-columns:1fr}.measure{display:grid;grid-template-columns:1fr auto;padding:12px 14px;align-items:center}.measure strong{grid-column:2;grid-row:1/3;margin:0;font-size:25px;padding-left:10px}.measure .small{margin:2px 0 0;max-width:220px}.controls{display:block;padding:16px}.controls>.divider{display:block}.control-display{margin-top:17px}.metric-row{gap:8px}.curvature-values .value{font-size:23px}.intro-line strong{display:block;margin-top:3px}.lower .plot{height:230px}.question{font-size:14px}.model-tabs .pill{width:20px;height:20px;min-width:20px}.footer{padding-top:17px}.formula{font-size:17px}dialog{padding:20px}dialog .equation{font-size:17px}}@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+.model-groups{display:flex;flex-direction:column;gap:10px}.model-group{display:flex;align-items:flex-start;gap:14px}.model-group-label{font-size:13px;color:var(--muted);width:92px;flex-shrink:0;padding-top:12px}.model-group .model-tabs{flex:1;border:0;padding:0}.model-groups{border-bottom:1px solid var(--line);padding-bottom:17px}.higher-stages .plot{height:360px}.higher-volume{cursor:grab}.higher-volume:active{cursor:grabbing}.higher-volume:focus-visible{outline:2px solid var(--gold);outline-offset:-4px}.rotation-control{display:flex;align-items:center;gap:12px;padding:0 17px 9px;font-size:14px;color:var(--muted)}.rotation-control input{max-width:180px;margin:0}.higher-glyph-note{font-size:14px;color:#c6d9df;min-height:86px}.higher-stages .panel-bottom{min-height:104px}.higher-metric-body,.higher-curvature-body{padding:10px 17px 18px}.higher-matrix{grid-template-columns:1fr 1fr 1fr;max-width:330px;margin:12px 0;font-size:16px;min-width:0}.higher-eigenvalues{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px;font-size:14px;color:#cce4e1;font-variant-numeric:tabular-nums}.higher-eigenvalues span{padding:3px 7px;border:1px solid var(--line);border-radius:5px}.rank-badge{font-size:14px;color:var(--teal);white-space:nowrap}.rank-badge.singular{color:var(--gold)}.higher-lower .curvature-values{margin:15px 0 9px}.higher-lower .control{margin-bottom:9px}.higher-lower .lengths{margin-top:17px}.higher-lower .small{font-size:13px}.higher-curvature-body>.detail,.higher-metric-body>.detail{font-size:14px}.merge-button{margin-top:10px;width:100%;color:var(--gold);font-size:14px}.higher-stages .formula{font-size:16px}.model-tabs button{min-height:44px}.higher-lower .formula{font-size:16px}.higher-tangent-key{color:var(--blue)}
+@media(min-width:1450px){.higher-stages .plot{height:410px}}@media(max-width:1150px){.model-group{display:block}.model-group-label{padding:0 0 7px;width:auto}.higher-stages .plot{height:330px}.model-group .model-tabs{gap:6px}.model-group .model-tabs button{padding:8px 11px}.higher-matrix{font-size:15px}}
+@media(max-width:900px){.higher-stages .plot{height:350px}.model-group-label{font-size:14px}.model-group .model-tabs button{font-size:14px}.higher-glyph-note{min-height:0}}
+@media(max-width:620px){.model-group .model-tabs{display:grid;grid-template-columns:1fr 1fr}.model-group .model-tabs button{font-size:14px;justify-content:flex-start;padding:10px;gap:7px}.model-group .model-tabs button:last-child{grid-column:auto}.model-group:first-child .model-tabs button:last-child{grid-column:1/-1}.higher-stages .plot{height:340px}.higher-stages .panel-bottom{min-height:0}.higher-lower .curvature-values{gap:22px}.higher-matrix{font-size:16px;width:100%;max-width:330px;column-gap:12px}.higher-glyph-note{padding:12px 14px}.higher-metric-body,.higher-curvature-body{padding-left:14px;padding-right:14px}.rotation-control{padding-left:14px;padding-right:14px}.higher-stages .formula{font-size:16px}}
+
 </style></head><body>
 <header><div><div class="eyebrow">Statistical models / intrinsic geometry</div><h1>Fisher geometry</h1><p>A point is a probability law. Move it to see how statistical distinguishability changes the geometry of space.</p></div><div class="actions"><button id="guideBtn">How it works</button><details id="experimentMenu"><summary>Experiment</summary><div class="menu"><button id="saveBtn">Save experiment (.json)</button><button id="openBtn">Open experiment…</button><button id="offlineBtn">Download offline lab</button><button id="csvBtn">Export path data (.csv)</button><button id="pngBtn">Save linked views (.png)</button></div></details></div></header>
-<main class="wrap"><nav class="model-tabs" aria-label="Statistical model"><button data-model="categorical" aria-pressed="true">Three outcomes <span class="pill">+</span></button><button data-model="coins" aria-pressed="false">Two independent coins <span class="pill">0</span></button><button data-model="normal" aria-pressed="false">Normal distributions <span class="pill">−</span></button></nav><div class="intro-line"><span id="modelDescription"></span><span class="main-invariant">Same distributions. Two views of their geometry.</span></div>
-<div class="layout"><details class="controls-container" id="controlsDisclosure" open><summary class="controls-summary">Edit distributions &amp; options</summary><aside class="panel controls" aria-label="Distribution controls"><div class="control-edit"><h2 class="section-title">Choose two distributions</h2><div class="control"><label for="presetSelect">Starting example</label><select id="presetSelect"></select></div><div class="edit-buttons" aria-label="Endpoint to edit"><button data-end="A" aria-pressed="true">Edit A</button><button data-end="B" aria-pressed="false">Edit B</button></div><div id="coordinateSliders" class="coordinate-sliders"></div><div class="row equal"><button id="swapBtn">Swap A / B</button><button id="resetBtn">Reset</button></div><p class="edit-hint">Drag A or B on the parameter chart. Click elsewhere to move the selected endpoint.</p><div class="divider"></div></div>
+<main class="wrap"><div class="model-groups"><div class="model-group"><div class="model-group-label">Surfaces · 2D</div><nav class="model-tabs" aria-label="Two-dimensional statistical model"><button data-model="categorical" aria-pressed="true">Three outcomes <span class="pill">+</span></button><button data-model="coins" aria-pressed="false">Two independent coins <span class="pill">0</span></button><button data-model="normal" aria-pressed="false">Normal distributions <span class="pill">−</span></button></nav></div><div class="model-group"><div class="model-group-label">Volumes · 3D</div><nav class="model-tabs" aria-label="Three-dimensional statistical model"><button data-higher-model="coins3" aria-pressed="false">Three coins <span class="pill">0</span></button><button data-higher-model="categorical4" aria-pressed="false">Four outcomes <span class="pill">+</span></button><button data-higher-model="product" aria-pressed="false">Coin × normal <span class="pill">−/0</span></button><button data-higher-model="mixture" aria-pressed="false">Normal mixture <span class="pill">∗</span></button></nav></div></div><div class="intro-line"><span id="modelDescription"></span><span class="main-invariant">Same distributions. Two views of their geometry.</span></div>
+<div class="layout" id="regularModel"><details class="controls-container" id="controlsDisclosure" open><summary class="controls-summary">Edit distributions &amp; options</summary><aside class="panel controls" aria-label="Distribution controls"><div class="control-edit"><h2 class="section-title">Choose two distributions</h2><div class="control"><label for="presetSelect">Starting example</label><select id="presetSelect"></select></div><div class="edit-buttons" aria-label="Endpoint to edit"><button data-end="A" aria-pressed="true">Edit A</button><button data-end="B" aria-pressed="false">Edit B</button></div><div id="coordinateSliders" class="coordinate-sliders"></div><div class="row equal"><button id="swapBtn">Swap A / B</button><button id="resetBtn">Reset</button></div><p class="edit-hint">Drag A or B on the parameter chart. Click elsewhere to move the selected endpoint.</p><div class="divider"></div></div>
 <div class="control-samples"><h2 class="section-title">Independent observations</h2><div class="control"><label for="samples">Sample size n</label><div class="row"><input id="samples" type="range" min="1" max="100" step="1" value="1"><input id="sampleNumber" class="n-input" type="number" min="1" max="100" step="1" value="1" aria-label="Sample size value"></div><span class="small">n repeats multiply g and KL by n, and every Fisher distance by √n. The geometry view fits its scale automatically.</span></div><div class="divider"></div></div>
 <div class="control-display"><h2 class="section-title">What to show</h2><div class="display-options"><label><input id="ellipsesToggle" type="checkbox" checked>Equal local Fisher steps</label><label><input id="compareToggle" type="checkbox" checked>Compare three paths</label></div><div class="notice"><strong id="modelTag">Spherical geometry</strong><br><span id="oneObservation"></span></div><div class="status" id="editStatus" role="status">Ready</div></div></aside></details>
 <div class="content"><div class="stages"><section class="panel"><div class="panel-head"><div><div class="kicker">The parameter chart</div><h2 id="chartTitle">Probability simplex</h2></div><span class="small" id="chartBadge">Drag endpoints</span></div><canvas id="parameterCanvas" class="plot" aria-label="Distribution parameter chart with endpoints, paths and Fisher metric ellipses"></canvas><div id="parameterNote" class="plot-note"></div><div class="panel-bottom"><div class="metric-row"><div><div class="label">Fisher matrix at the probe</div><div class="small" id="metricCoordinates"></div><div class="detail" id="metricDet"></div></div><div id="metricMatrix" class="matrix" aria-label="Fisher information matrix"></div></div></div></section>
@@ -15,9 +20,82 @@
 <div class="measurements"><section class="panel measure"><div class="label">Fisher–Rao distance A to B</div><strong id="distanceValue"></strong><div class="small">Exact length of the shortest path inside this statistical model.</div></section><section class="panel measure"><div class="label">KL(A ∥ B), n observations</div><strong id="klABValue"></strong><div class="small">Directional divergence, measured in nats.</div></section><section class="panel measure"><div class="label">KL(B ∥ A), n observations</div><strong id="klBAValue"></strong><div class="small">Reverse the comparison and it can change.</div></section></div>
 <div class="lower"><section class="panel"><div class="panel-head"><div><div class="kicker">What the points represent</div><h2 id="densityTitle">One-observation distributions</h2></div></div><canvas id="densityCanvas" class="plot" aria-label="Distributions at A, B and the moving probe"></canvas><div class="chart-key"><span><i style="background:var(--teal)"></i>A</span><span><i style="background:var(--rose)"></i>B</span><span><i style="background:var(--gold)"></i>Probe</span></div><div class="panel-bottom"><div class="probe-status" id="probeDescription"></div><div class="formula" id="metricFormula"></div><div class="detail" id="distributionDetails"></div></div></section>
 <section class="panel"><div class="panel-head"><div><div class="kicker">Where the metric comes from</div><h2>KL is locally quadratic</h2></div><button id="klZoomBtn" aria-pressed="false">Zoom near A</button></div><canvas id="klCanvas" class="plot" aria-label="KL divergence and half the squared Fisher distance from A along the selected path"></canvas><div class="chart-key"><span><i style="background:var(--teal)"></i>n KL(A ∥ Pₜ)</span><span><i style="background:var(--gold)"></i>½ d(A, Pₜ)²</span></div><div class="panel-bottom"><div class="detail">The curves agree to second order near A. Farther away, divergence and squared distance can differ.</div><table class="lengths"><thead><tr><th>Route from A to B</th><th>Length</th><th>Extra</th></tr></thead><tbody id="lengthRows"></tbody></table><div class="small" style="margin-top:8px">Shortest length is exact. Other lengths use 600-segment midpoint integration.</div></div></section></div>
-<div id="discovery" class="question"></div></div></div><footer class="footer"><span>Curvature belongs to the Fisher metric. Ellipse shape and matrix entries depend on coordinates.</span><span><a href="https://bobovski66.github.io/">More explorations</a> · <a href="https://franknielsen.github.io/rnoti-p36-compressed.pdf" target="_blank" rel="noopener">Mathematical background</a></span></footer></main>
+<div id="discovery" class="question"></div></div></div><section id="higherModel" hidden aria-label="Three-dimensional Fisher models">
+  <div class="layout">
+    <details class="controls-container" id="higherControls" open>
+      <summary class="controls-summary">Edit distributions &amp; options</summary>
+      <aside class="panel controls" aria-label="Higher-dimensional distribution controls">
+        <div class="control-edit">
+          <h2 class="section-title">Choose two distributions</h2>
+          <div class="control"><label for="higherPreset">Starting example</label><select id="higherPreset"></select></div>
+          <div class="edit-buttons" aria-label="Higher-dimensional endpoint to edit"><button id="higherEditA" aria-pressed="true">Edit A</button><button id="higherEditB" aria-pressed="false">Edit B</button></div>
+          <div id="higherCoordinates" class="coordinate-sliders"></div>
+          <div class="row equal"><button id="higherSwap">Swap A / B</button><button id="higherReset">Reset</button></div>
+          <button id="higherMerge" class="merge-button" hidden>Show coincident components</button>
+          <p class="edit-hint">Use the sliders to edit endpoints. Drag the volume to rotate it.</p>
+          <div class="divider"></div>
+        </div>
+        <div class="control-samples">
+          <h2 class="section-title">Independent observations</h2>
+          <div class="control"><label for="higherN">Sample size n <output id="higherNValue">1</output></label><input id="higherN" type="range" min="1" max="100" step="1" value="1"><span class="small">Each repeat includes every product factor. g and KL scale by n; lengths scale by √n.</span></div>
+          <div class="divider"></div>
+        </div>
+        <div class="control-display">
+          <h2 class="section-title">What to show</h2>
+          <div class="control" id="higherChartControl"><label for="higherChart">Cube coordinates</label><select id="higherChart"><option value="angles">Fisher angles θ₁, θ₂, θ₃</option><option value="probability">Probabilities p₁, p₂, p₃</option></select></div>
+          <div class="display-options"><label><input id="higherEllipsoid" type="checkbox" checked>Equal local Fisher steps</label><label id="higherCompareControl"><input id="higherCompare" type="checkbox" checked>Compare parameter paths</label><label id="higherPlaneControl"><input id="higherShowPlane" type="checkbox" checked>Selected tangent plane</label></div>
+          <div class="notice"><strong id="higherTag"></strong><br><span id="higherObservation"></span></div>
+          <div class="status" id="higherEditStatus" role="status"></div>
+        </div>
+      </aside>
+    </details>
+    <div class="content">
+      <div class="stages higher-stages">
+        <section class="panel">
+          <div class="panel-head"><div><div class="kicker">A volume of probability laws</div><h2 id="higherVolumeTitle"></h2></div><button id="higherResetView">Reset view</button></div>
+          <canvas id="higherVolume" class="plot higher-volume" tabindex="0" role="img" aria-label="Rotatable three-dimensional parameter chart with distribution endpoints, a probe, a local Fisher ellipsoid and a selected tangent plane"></canvas>
+          <div class="rotation-control"><label for="higherRotation">Rotation</label><input id="higherRotation" type="range" min="-3.14" max="3.14" step=".01" value="-.65"></div>
+          <div class="plot-note" id="higherVolumeNote"></div>
+          <div class="panel-bottom higher-glyph-note" id="higherGlyphNote"></div>
+        </section>
+        <section class="panel">
+          <div class="panel-head"><div><div class="kicker">What the points represent</div><h2 id="higherDensityTitle"></h2></div></div>
+          <canvas id="higherDensity" class="plot" role="img" aria-label="Observed distributions at A, B and the moving probe"></canvas>
+          <div class="chart-key"><span><i style="background:var(--teal)"></i>A</span><span><i style="background:var(--rose)"></i>B</span><span><i style="background:var(--gold)"></i>Probe</span></div>
+          <div class="panel-bottom"><div class="probe-status" id="higherProbeDescription"></div><div class="formula" id="higherDistributionFormula"></div><div class="detail" id="higherDensityNote"></div></div>
+        </section>
+      </div>
+      <section class="panel probe-bar" aria-label="Move along a higher-dimensional path">
+        <div class="probe-controls"><button id="higherPlay" class="primary">Play</button><span id="higherTValue" class="t-value">t = 0.40</span></div>
+        <div><label for="higherT" class="small">Move the probe from A to B</label><input id="higherT" type="range" min="0" max="1" step=".001" value=".4"><div class="legend"><span><i style="background:var(--gold)"></i><span id="higherMainRoute">Fisher shortest</span></span><span data-higher-comparison="linear"><i style="background:var(--blue)"></i>Parameter line</span><span data-higher-comparison="exponential"><i style="background:var(--purple)"></i>Exponential</span></div></div>
+        <div class="probe-route"><label for="higherRoute" class="small">Probe follows</label><select id="higherRoute"><option value="fisher">Fisher shortest path</option><option value="linear">Straight parameter line</option><option value="exponential">Exponential interpolation</option></select></div>
+      </section>
+      <div class="measurements">
+        <section class="panel measure"><div class="label" id="higherDistanceLabel">Fisher–Rao distance A to B</div><strong id="higherDistance"></strong><div class="small" id="higherDistanceNote"></div></section>
+        <section class="panel measure"><div class="label">KL(A ∥ B), n observations</div><strong id="higherKLForward"></strong><div class="small">Directional divergence, measured in nats.</div></section>
+        <section class="panel measure"><div class="label">KL(B ∥ A), n observations</div><strong id="higherKLReverse"></strong><div class="small" id="higherEndpointNote">Reverse the comparison and it can change.</div></section>
+      </div>
+      <div class="lower higher-lower">
+        <section class="panel">
+          <div class="panel-head"><div><div class="kicker">Local distinguishability</div><h2>Fisher matrix &amp; rank</h2></div><span class="rank-badge" id="higherRank" role="status"></span></div>
+          <div class="higher-metric-body"><div class="small" id="higherMetricCoordinates"></div><div class="matrix higher-matrix" id="higherMatrix" aria-label="Three by three Fisher information matrix"></div><div class="higher-eigenvalues" id="higherEigenvalues"></div><div class="detail" id="higherRankNote"></div><div class="formula" id="higherMetricFormula"></div></div>
+        </section>
+        <section class="panel">
+          <div class="panel-head"><div><div class="kicker">Curvature in three dimensions</div><h2 id="higherCurvatureTitle">Choose a tangent two-plane</h2></div></div>
+          <div class="higher-curvature-body"><div id="higherPlaneInputs"><div class="control"><label for="higherPlane">Tangent plane at the probe</label><select id="higherPlane"></select></div><div class="control" id="higherTiltControl" hidden><label for="higherTilt">Tilt toward the coin direction <output id="higherTiltValue">0°</output></label><input id="higherTilt" type="range" min="0" max="90" step="1" value="0"></div></div>
+            <div class="curvature-values"><div><span class="value" id="higherK"></span><span class="small" id="higherKLabel">Sectional curvature K</span></div><div><span class="value" id="higherR"></span><span class="small">Scalar curvature R</span></div></div><div class="detail" id="higherCurvatureNote"></div>
+            <table class="lengths"><thead><tr><th>Path</th><th>Fisher length</th></tr></thead><tbody id="higherLengths"></tbody></table><div class="small" id="higherLengthNote"></div>
+          </div>
+        </section>
+      </div>
+      <div id="higherDiscovery" class="question"></div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer"><span>Curvature belongs to the Fisher metric. Metric glyphs and matrix entries depend on coordinates.</span><span><a href="https://bobovski66.github.io/">More explorations</a> · <a href="https://franknielsen.github.io/rnoti-p36-compressed.pdf" target="_blank" rel="noopener">Mathematical background</a></span></footer></main>
 <input id="fileInput" type="file" accept=".json,application/json" hidden><div id="toast" class="toast" role="status" hidden></div>
-<dialog id="guide"><button id="closeGuide" class="dialog-close">Close</button><h2>From probability laws to geometry</h2><p>A statistical model is a family of distributions. Its coordinates might be probabilities, means or standard deviations. The Fisher metric asks how much a small change in those coordinates changes the distribution in a way data can distinguish.</p><div class="equation">gᵢⱼ(θ) = Eθ[∂ᵢ log pθ(X) · ∂ⱼ log pθ(X)]<br>ds² = dθᵀ g(θ) dθ</div><h3>One point, two views</h3><p>The left chart uses familiar parameters. Its ellipses satisfy δθᵀgδθ = 0.2². Each ellipse shows tangent displacements of the same local Fisher length; it is a local approximation, not a finite confidence region. Near a boundary the ellipse may be clipped by the model domain.</p><p>The right view uses the same distributions in coordinates or an embedding where the geometry is easier to see. It shows a finite geodesic circle of radius 0.2 around the probe. The sphere is an isometric embedding; the coin angles are Euclidean coordinates; the normal disk is a conformal chart with a hyperbolic metric.</p><h3>Three models with known curvature</h3><table><thead><tr><th>One observation</th><th>Geometry</th><th>K for n = 1</th><th>R for n = 1</th></tr></thead><tbody><tr><td>One of three categories</td><td>Sphere of radius 2</td><td>1/4</td><td>1/2</td></tr><tr><td>Two independent coin flips</td><td>Euclidean rectangle</td><td>0</td><td>0</td></tr><tr><td>One normal draw</td><td>Scaled hyperbolic plane</td><td>−1/2</td><td>−1</td></tr></tbody></table><p>These are exact Levi–Civita curvatures, not estimates from a heatmap. In two dimensions R = 2K. Positive and negative curvature refer to intrinsic Riemannian geometry. Curvature alone does not measure the bumpiness of a loss function or establish whether an optimizer will struggle.</p><h3>The square-root sphere</h3><div class="equation">p ↦ (2√p₁, 2√p₂, 2√p₃)<br>d(A, B) = 2 arccos Σᵢ √(aᵢbᵢ)</div><p>Because Σpᵢ = 1, the image lies on a sphere of radius 2. Pulling back the Euclidean metric gives Σdpᵢ²/pᵢ. The shortest path is the great-circle arc in the positive octant. The plotted sphere is an orthographic projection: screen distances are not spherical distances. Drag it to rotate.</p><h3>Two independent Bernoulli variables</h3><div class="equation">θ₁ = 2 arcsin √p, &nbsp; θ₂ = 2 arcsin √q<br>ds² = dθ₁² + dθ₂²</div><p>One observation contains both flips, with four joint probabilities (1−p)(1−q), (1−p)q, p(1−q), pq. Independence restricts the statistical model to two dimensions. The geodesic stays inside that independence model. A shorter great-circle path in the full four-category simplex could leave independence; it is a different optimization problem.</p><h3>Normal distributions are hyperbolic</h3><div class="equation">ds² = (dμ² + 2dσ²)/σ²<br>x = μ/√2, &nbsp; y = σ<br>ds² = 2(dx² + dy²)/y²</div><p>The upper half-plane is therefore hyperbolic with K = −1/2. Its geodesics are vertical lines or semicircles orthogonal to y = 0 in (x, y). In (μ, σ), those semicircles are stretched horizontally. The disk shows the same metric in conformal coordinates, where ds² = 8|dw|²/(1−|w|²)². Points near the disk rim are far apart in the hyperbolic metric.</p><h3>Three routes need not agree</h3><p>The Fisher route minimizes Riemannian length and is parameterized at constant Fisher speed. The parameter line interpolates the coordinates shown on the left. Exponential interpolation is straight in natural parameters: log-odds for the coin model and (μ/σ², −1/2σ²) for normals; categorical probabilities follow normalized geometric interpolation.</p><p>Exponential interpolation is an e-geodesic, which refers to the exponential connection. The curvature reported here is for the Levi–Civita connection. An exponential family can be dually flat while its Levi–Civita geometry has nonzero curvature.</p><h3>KL, local distance and sample size</h3><div class="equation">KL(Pθ ∥ Pθ₊δ) = ½ δᵀg(θ)δ + O(‖δ‖³)</div><p>KL is directional and is not a metric. Half the squared Fisher distance agrees with it to second order near the starting point, but not in general over a finite separation. The graph follows the selected route; its gold curve uses the shortest distance from A to each probe distribution, rather than the length already traveled along a longer route.</p><p>For n independent repetitions, gₙ = ng, KLₙ = n KL, dₙ = √n d and Kₙ = K/n. In the coin model, a repetition is a complete pair of flips. The right view auto-fits its coordinate scale; the distributions themselves do not change when n changes.</p><h3>Numerical details and saving</h3><p>Distances, geodesics, metrics and curvatures use closed forms. Comparison lengths use 600-segment midpoint integration, so small discrepancies can occur near coincident paths. Normal density curves are displayed over a finite x window. Endpoints stay strictly inside the regular model domain. Save records all three model setups and the current probe; Open restores the experiment paused. The offline HTML includes the same setup and has no external dependencies.</p><p>Background: Frank Nielsen, <a href="https://doi.org/10.1090/noti2403" target="_blank" rel="noopener">The Many Faces of Information Geometry</a>, Notices of the AMS, 2022. The formulas shown here use the Fisher metric without the alternative factor-of-four normalization sometimes used for the unit-sphere embedding.</p></dialog>
+<dialog id="guide"><button id="closeGuide" class="dialog-close">Close</button><h2>From probability laws to geometry</h2><p>A statistical model is a family of distributions. Its coordinates might be probabilities, means or standard deviations. The Fisher metric asks how much a small change in those coordinates changes the distribution in a way data can distinguish.</p><div class="equation">gᵢⱼ(θ) = Eθ[∂ᵢ log pθ(X) · ∂ⱼ log pθ(X)]<br>ds² = dθᵀ g(θ) dθ</div><h3>One point, two views</h3><p>The left chart uses familiar parameters. Its ellipses satisfy δθᵀgδθ = 0.2². Each ellipse shows tangent displacements of the same local Fisher length; it is a local approximation, not a finite confidence region. Near a boundary the ellipse may be clipped by the model domain.</p><p>The right view uses the same distributions in coordinates or an embedding where the geometry is easier to see. It shows a finite geodesic circle of radius 0.2 around the probe. The sphere is an isometric embedding; the coin angles are Euclidean coordinates; the normal disk is a conformal chart with a hyperbolic metric.</p><h3>Surface models with known curvature</h3><table><thead><tr><th>One observation</th><th>Geometry</th><th>K for n = 1</th><th>R for n = 1</th></tr></thead><tbody><tr><td>One of three categories</td><td>Sphere of radius 2</td><td>1/4</td><td>1/2</td></tr><tr><td>Two independent coin flips</td><td>Euclidean rectangle</td><td>0</td><td>0</td></tr><tr><td>One normal draw</td><td>Scaled hyperbolic plane</td><td>−1/2</td><td>−1</td></tr></tbody></table><p>These are exact Levi–Civita curvatures, not estimates from a heatmap. In two dimensions R = 2K. Positive and negative curvature refer to intrinsic Riemannian geometry. Curvature alone does not measure the bumpiness of a loss function or establish whether an optimizer will struggle.</p><h3>The square-root sphere</h3><div class="equation">p ↦ (2√p₁, 2√p₂, 2√p₃)<br>d(A, B) = 2 arccos Σᵢ √(aᵢbᵢ)</div><p>Because Σpᵢ = 1, the image lies on a sphere of radius 2. Pulling back the Euclidean metric gives Σdpᵢ²/pᵢ. The shortest path is the great-circle arc in the positive octant. The plotted sphere is an orthographic projection: screen distances are not spherical distances. Drag it to rotate.</p><h3>Two independent Bernoulli variables</h3><div class="equation">θ₁ = 2 arcsin √p, &nbsp; θ₂ = 2 arcsin √q<br>ds² = dθ₁² + dθ₂²</div><p>One observation contains both flips, with four joint probabilities (1−p)(1−q), (1−p)q, p(1−q), pq. Independence restricts the statistical model to two dimensions. The geodesic stays inside that independence model. A shorter great-circle path in the full four-category simplex could leave independence; it is a different optimization problem.</p><h3>Normal distributions are hyperbolic</h3><div class="equation">ds² = (dμ² + 2dσ²)/σ²<br>x = μ/√2, &nbsp; y = σ<br>ds² = 2(dx² + dy²)/y²</div><p>The upper half-plane is therefore hyperbolic with K = −1/2. Its geodesics are vertical lines or semicircles orthogonal to y = 0 in (x, y). In (μ, σ), those semicircles are stretched horizontally. The disk shows the same metric in conformal coordinates, where ds² = 8|dw|²/(1−|w|²)². Points near the disk rim are far apart in the hyperbolic metric.</p><h3>Three routes need not agree</h3><p>The Fisher route minimizes Riemannian length and is parameterized at constant Fisher speed. The parameter line interpolates the coordinates shown on the left. Exponential interpolation is straight in natural parameters: log-odds for the coin model and (μ/σ², −1/2σ²) for normals; categorical probabilities follow normalized geometric interpolation.</p><p>Exponential interpolation is an e-geodesic, which refers to the exponential connection. The curvature reported here is for the Levi–Civita connection. An exponential family can be dually flat while its Levi–Civita geometry has nonzero curvature.</p><h3>KL, local distance and sample size</h3><div class="equation">KL(Pθ ∥ Pθ₊δ) = ½ δᵀg(θ)δ + O(‖δ‖³)</div><p>KL is directional and is not a metric. Half the squared Fisher distance agrees with it to second order near the starting point, but not in general over a finite separation. The graph follows the selected route; its gold curve uses the shortest distance from A to each probe distribution, rather than the length already traveled along a longer route.</p><p>For n independent repetitions, gₙ = ng, KLₙ = n KL, dₙ = √n d and Kₙ = K/n. In the coin model, a repetition is a complete pair of flips. The right view auto-fits its coordinate scale; the distributions themselves do not change when n changes.</p><h3>Three-dimensional models</h3><p>The volume views keep all three parameters visible. Drag to rotate, use the rotation slider, or focus the volume and use the arrow keys. The gold glyph is a tangent ellipsoid of Fisher length 0.2, rather than a finite confidence region. Its axes can extend beyond a probability boundary; very long axes are truncated and explicitly labeled. Dashed gold axes mark numerical null directions where a bounded equal-length ellipsoid no longer exists.</p><p>Three independent coins have eight joint outcomes and a flat Fisher-angle cube. Four outcomes have three degrees of freedom: their probability chart is a tetrahedron, while their square-root image lies in R⁴ on S³ of radius 2√n. A tetrahedron in this lab is a coordinate chart, not a Euclidean isometric realization of that curved manifold.</p><h3>Products and sectional curvature</h3><div class="equation">g<sub>P×Q</sub> = g<sub>P</sub> ⊕ g<sub>Q</sub><br>d²<sub>P×Q</sub> = d²<sub>P</sub> + d²<sub>Q</sub></div><p>For the coin–normal product, one observation includes both independent variables. The Fisher metric is n[dθ² + (dμ² + 2dσ²)/σ²]. The normal tangent plane has K = −1/(2n); mixed planes spanned by a coin direction and a normal direction have K = 0. The tilt control uses the plane spanned by eμ and cos(α)eσ + sin(α)eθ, where the e vectors are Fisher-orthonormal. It gives K = −cos²(α)/(2n).</p><p>In dimension three, scalar curvature is twice the sum of sectional curvatures over the three coordinate planes of an orthonormal frame. It is 0 for three independent coins, 3/(2n) for four outcomes, and −1/n for the coin–normal product. The two-dimensional relation R = 2K does not apply to a general three-dimensional model.</p><h3>Mixtures and invisible directions</h3><div class="equation">f(x) = w φ(x − μ₁) + (1 − w) φ(x − μ₂)<br>gᵢⱼ = n ∫ (∂ᵢf ∂ⱼf)/f dx</div><p>Both component variances are fixed at one. The component label is unobserved, so this is a mixture rather than a product. Exchanging component labels preserves the observed density. At μ₁ = μ₂ the Fisher matrix has rank one: its only first-order identifiable direction is w dμ₁ + (1 − w)dμ₂. Its two null directions do not imply that the entire nearby model has only one dimension; higher-order changes can distinguish separated components.</p><p>The mixture display follows a straight line in (w, μ₁, μ₂). It does not claim that this is a Fisher geodesic. The length of a parameter path may be positive even when its endpoints represent the same density. No mixture distance or curvature estimate is displayed. Where the matrix loses rank, it does not define a Riemannian metric on this three-parameter chart.</p><h3>Numerical details and saving</h3><p>In the regular surface and volume models, distances, geodesics, metrics and curvatures use closed forms. Comparison lengths use 600-segment midpoint integration, so small discrepancies can occur near coincident paths. Normal density curves are displayed over a finite x window. Endpoints stay strictly inside the regular model domain. The mixture Fisher matrix and KL use 640-panel Simpson quadrature over the union of component means expanded by nine standard deviations. Volume comparison-path lengths use 500-segment midpoint integration. Numerical rank uses max(10⁻¹⁰, 10⁻⁸λmax) as the eigenvalue tolerance. Save records all seven model setups and the current probe; Open restores the experiment paused. The offline HTML includes the same setup and has no external dependencies.</p><p>Background: Frank Nielsen, <a href="https://doi.org/10.1090/noti2403" target="_blank" rel="noopener">The Many Faces of Information Geometry</a>, Notices of the AMS, 2022. The formulas shown here use the Fisher metric without the alternative factor-of-four normalization sometimes used for the unit-sphere embedding.</p></dialog>
 <script type="application/json" id="embeddedExperiment">null</script><script id="mathCode">/* Fisher geometry for three regular, two-dimensional statistical models.
    One observation is one category, one pair of independent coins, or one normal draw.
    Metrics and KL divergences multiply by n for n independent observations. */
@@ -138,7 +216,7 @@ function drawDensity(){const {ctx,w,h}=context(density),id=state.model;if(id==='
  else{const values=[F.probabilities(id,state.A),F.probabilities(id,state.B),F.probabilities(id,probe)],labels=id==='coins'?['00','01','10','11']:['1','2','3'],f=frame(w,h,{xmin:0,xmax:labels.length,ymin:0,ymax:1},{l:43,r:19,t:22,b:40});ctx.fillStyle='#0e202c';ctx.fillRect(f.r.x,f.r.y,f.r.w,f.r.h);const group=f.r.w/labels.length,bw=group*.19;for(let i=0;i<labels.length;i++){for(let j=0;j<3;j++){const x=f.r.x+group*(i+.5)+(j-1)*bw-bw*.4,y=f.y(values[j][i]);ctx.fillStyle=[colors.A,colors.B,colors.probe][j];ctx.globalAlpha=j===2?1:.77;ctx.fillRect(x,y,bw*.8,f.r.y+f.r.h-y);ctx.globalAlpha=1;}ctx.fillStyle='#b7cbd5';ctx.font='12px system-ui';ctx.textAlign='center';ctx.fillText(labels[i],f.r.x+group*(i+.5),f.r.y+f.r.h+20);}ctx.strokeStyle='#64829866';ctx.strokeRect(f.r.x,f.r.y,f.r.w,f.r.h);ctx.fillStyle='#9db4c3';ctx.font='12px system-ui';ctx.textAlign='right';for(const y of [0,.5,1])ctx.fillText(fmt(y,1),f.r.x-8,f.y(y)+4);ctx.textAlign='left';ctx.fillText('probability',f.r.x,f.r.y-9);ctx.textAlign='right';ctx.fillText(id==='coins'?'joint outcome':'outcome',f.r.x+f.r.w,h-5);}
 }
 function drawKL(){const {ctx,w,h}=context(klCanvas),xmax=zoom ? .15 : 1,visible=klCurves.filter(p=>p.t<=xmax+.002),ymax=Math.max(.0000001,...visible.flatMap(p=>[p.kl,p.half]))*1.12,f=frame(w,h,{xmin:0,xmax,ymin:0,ymax},{l:53,r:22,t:22,b:43});ctx.fillStyle='#0e202c';ctx.fillRect(f.r.x,f.r.y,f.r.w,f.r.h);ctx.save();ctx.beginPath();ctx.rect(f.r.x,f.r.y,f.r.w,f.r.h);ctx.clip();line(ctx,klCurves,p=>[f.x(p.t),f.y(p.kl)],colors.A,2);line(ctx,klCurves,p=>[f.x(p.t),f.y(p.half)],colors.probe,1.8,true);if(state.t<=xmax){ctx.strokeStyle='#b4c5cf77';ctx.setLineDash([3,4]);ctx.beginPath();ctx.moveTo(f.x(state.t),f.r.y);ctx.lineTo(f.x(state.t),f.r.y+f.r.h);ctx.stroke();ctx.setLineDash([]);for(const [v,col]of [[F.kl(state.model,state.A,probe,state.n),colors.A],[.5*F.distance(state.model,state.A,probe,state.n)**2,colors.probe]]){ctx.beginPath();ctx.arc(f.x(state.t),f.y(v),3.5,0,2*Math.PI);ctx.fillStyle=col;ctx.fill();}}ctx.restore();axes(ctx,f,'path parameter t','nats',zoom?3:4,3);if(zoom&&state.t>xmax){ctx.fillStyle='#9cb7c6';ctx.font='12px system-ui';ctx.textAlign='right';ctx.fillText('Probe beyond zoom',f.r.x+f.r.w-6,f.r.y+15);}}
-function redraw(){drawParameter();drawGeometry();drawDensity();drawKL();}
+function redraw(){if($('regularModel').hidden)return;drawParameter();drawGeometry();drawDensity();drawKL();}
 function pointer(canvas,event){const r=canvas.getBoundingClientRect();return [event.clientX-r.left,event.clientY-r.top];}
 function bindDrag(){main.addEventListener('pointerdown',e=>{if(!main._screen)return;const xy=pointer(main,e);let key=state.edit;for(const k of ['A','B'])if(Math.hypot(...main._screen(state[k]).map((v,i)=>v-xy[i]))<17)key=k;drag={canvas:'parameter',key};main.setPointerCapture(e.pointerId);setEndpoint(key,main._inverse(xy));});main.addEventListener('pointermove',e=>{if(drag?.canvas==='parameter')setEndpoint(drag.key,main._inverse(pointer(main,e)));});main.addEventListener('pointerup',()=>{drag=null;});main.addEventListener('pointercancel',()=>{drag=null;});
  geometry.addEventListener('pointerdown',e=>{if(state.model!=='categorical')return;drag={canvas:'sphere',point:pointer(geometry,e),yaw:state.yaw,pitch:state.pitch};geometry.setPointerCapture(e.pointerId);geometry.style.cursor='grabbing';});geometry.addEventListener('pointermove',e=>{if(drag?.canvas!=='sphere')return;const p=pointer(geometry,e);state.yaw=drag.yaw-(p[0]-drag.point[0])*.008;state.pitch=F.clamp(drag.pitch+(p[1]-drag.point[1])*.008,-1.4,1.4);dirty=true;});function endSphere(){if(drag?.canvas==='sphere'){drag=null;geometry.style.cursor='grab';}}geometry.addEventListener('pointerup',endSphere);geometry.addEventListener('pointercancel',endSphere);}
@@ -160,7 +238,516 @@ function bind(){document.querySelectorAll('[data-model]').forEach(b=>b.onclick=(
 function animate(stamp){if(!lastFrame)lastFrame=stamp;const dt=Math.min(.1,(stamp-lastFrame)/1000);lastFrame=stamp;if(playing&&!document.hidden&&!drag){state.t+=direction*dt/state.duration;if(state.t>=1){state.t=1;direction=-1;}if(state.t<=0){state.t=0;direction=1;}probe=F.path(state.model,state.A,state.B,state.t,state.route);dirty=true;if(stamp-lastUI>100){lastUI=stamp;updateProbeUI();}}
  if(dirty&&stamp-lastPaint>32){redraw();dirty=false;lastPaint=stamp;}requestAnimationFrame(animate);}
 const mobileControls=matchMedia('(max-width:900px)');$('controlsDisclosure').open=!mobileControls.matches;mobileControls.addEventListener('change',e=>$('controlsDisclosure').open=!e.matches);
+window.FisherRegular={snapshot,restore,pause(){playing=false;syncPlay();},refresh(){syncUI();dirty=true;}};
 bind();let embedded=null;try{embedded=JSON.parse($('embeddedExperiment').textContent);}catch(e){}
 if(embedded){try{restore(embedded);}catch(e){notify('Could not restore the embedded experiment. Starting with defaults.');buildControls();recompute();syncUI();}}else{buildControls();recompute();syncUI();}requestAnimationFrame(animate);
 })();
-</script></body></html>
+</script><script type="application/json" id="higherExperiment">null</script>
+<script id="higherMathCode">/* Three-dimensional Fisher models. One observation includes every product factor.
+   The mixture component label is hidden; both components have variance one. */
+const FisherHigherMath = (() => {
+  'use strict';
+  const F = FisherMath;
+  const dot = F.dot, mix = F.mix, clamp = F.clamp;
+  const configs = {
+    coins3: {
+      name: 'Three independent coins', chart: 'Fisher-angle cube', dimension: 3,
+      labels: ['First coin · p₁', 'Second coin · p₂', 'Third coin · p₃'],
+      coords: ['p₁', 'p₂', 'p₃'], formula: 'ds² = n Σᵢ dpᵢ²/[pᵢ(1 − pᵢ)] = n Σᵢ dθᵢ²',
+      description: 'Three independent flips per observation. Their Fisher angles form a flat three-dimensional cube.',
+      note: 'θᵢ = 2 arcsin √pᵢ. This cube uses Euclidean Fisher coordinates; switch to probabilities to see coordinate distortion.',
+      observation: 'One observation records all three flips: eight possible joint outcomes.',
+      discovery: 'Switch between probabilities and Fisher angles. The local ellipsoid changes shape while every sectional curvature stays zero.',
+      presets: [
+        {name: 'Three changing biases', A: [.08, .25, .72], B: [.86, .75, .16]},
+        {name: 'Only one coin changes', A: [.08, .5, .5], B: [.92, .5, .5]},
+        {name: 'Near rare outcomes', A: [.02, .03, .05], B: [.22, .32, .18]}
+      ]
+    },
+    categorical4: {
+      name: 'Four outcomes', chart: 'Probability tetrahedron', dimension: 3,
+      labels: ['Outcome 1 · p₁', 'Outcome 2 · p₂', 'Outcome 3 · p₃', 'Outcome 4 · p₄'],
+      coords: ['p₁', 'p₂', 'p₃'], formula: 'gᵢⱼ = n(δᵢⱼ/pᵢ + 1/p₄),  p₄ = 1 − p₁ − p₂ − p₃',
+      description: 'Four probabilities fill a three-dimensional simplex. Its Fisher geometry is a positive orthant of the three-sphere.',
+      note: 'The tetrahedron is an affine probability chart, not an isometric embedding. The square-root model lies on S³ of radius 2√n in R⁴.',
+      observation: 'One observation selects exactly one of four outcomes.',
+      discovery: 'Move an endpoint toward a rare outcome. The metric entries change, but every tangent two-plane still has curvature 1/(4n).',
+      presets: [
+        {name: 'Across the tetrahedron', A: [.56, .2, .14, .1], B: [.09, .12, .24, .55]},
+        {name: 'One rare outcome', A: [.4, .3, .29, .01], B: [.25, .25, .3, .2]},
+        {name: 'Small local step', A: [.25, .25, .25, .25], B: [.28, .23, .26, .23]}
+      ]
+    },
+    product: {
+      name: 'Coin × normal', chart: 'Hyperbolic disk × interval', dimension: 3,
+      labels: ['Coin probability · p', 'Normal mean · μ', 'Standard deviation · σ'],
+      coords: ['θ', 'μ', 'σ'], formula: 'ds² = n[dθ² + (dμ² + 2dσ²)/σ²],  θ = 2 arcsin √p',
+      description: 'An independent coin and normal measurement give a product of a flat interval and a hyperbolic plane.',
+      note: 'Each horizontal disk is a normal family; height is the coin angle θ. This is a coordinate cylinder, not a Euclidean isometric embedding.',
+      observation: 'One observation records a coin flip and an independent real-valued normal draw.',
+      discovery: 'Choose the tilted tangent plane and turn it from the normal factor toward the coin direction. Its curvature changes continuously from −1/(2n) to 0.',
+      presets: [
+        {name: 'Both factors change', A: [.1, -1.3, .45], B: [.9, 1.4, .8]},
+        {name: 'Only the normal changes', A: [.5, -1.8, .5], B: [.5, 1.8, .8]},
+        {name: 'Only the coin changes', A: [.05, 0, 1], B: [.95, 0, 1]}
+      ]
+    },
+    mixture: {
+      name: 'Two-normal mixture', chart: 'Mixture parameter volume', dimension: 3,
+      labels: ['Component 1 weight · w', 'Component 1 mean · μ₁', 'Component 2 mean · μ₂'],
+      coords: ['w', 'μ₁', 'μ₂'], formula: 'f(x) = w φ(x − μ₁) + (1 − w) φ(x − μ₂),  σ₁ = σ₂ = 1',
+      description: 'The generating component is hidden. When the two normal components coincide, the Fisher matrix loses rank.',
+      note: 'The diagonal wall is μ₁ = μ₂. The path interpolates parameters; its length is integrated numerically and is not a shortest-distance calculation.',
+      observation: 'One observation is a real value; which normal component generated it is unobserved.',
+      discovery: 'In “Exchange component labels,” A and B give the same density. Their parameter path visits different densities and passes through a rank-one Fisher matrix at t = 0.5.',
+      presets: [
+        {name: 'Exchange component labels', A: [.3, -1.6, 1.6], B: [.7, 1.6, -1.6]},
+        {name: 'Bring two peaks together', A: [.5, -2, 2], B: [.5, 0, 0]},
+        {name: 'Move one component', A: [.4, -2, .8], B: [.4, -.5, 2]}
+      ]
+    }
+  };
+  function metric(id, p, n = 1) {
+    if (id === 'coins3') return p.map((v, i) => p.map((_, j) => i === j ? n / (v * (1 - v)) : 0));
+    if (id === 'categorical4') return Array.from({length: 3}, (_, i) => Array.from({length: 3}, (_, j) => n * ((i === j ? 1 / p[i] : 0) + 1 / p[3])));
+    if (id === 'product') return [[n / (p[0] * (1 - p[0])), 0, 0], [0, n / p[2] ** 2, 0], [0, 0, 2 * n / p[2] ** 2]];
+    if (Math.abs(p[1] - p[2]) < 1e-12) return [[0, 0, 0], [0, n * p[0] ** 2, n * p[0] * (1 - p[0])], [0, n * p[0] * (1 - p[0]), n * (1 - p[0]) ** 2]];
+    const g = Array.from({length: 3}, () => [0, 0, 0]);
+    integrate(p, (x, w) => {
+      const a = phi(x - p[1]), b = phi(x - p[2]), f = p[0] * a + (1 - p[0]) * b;
+      const d = [a - b, p[0] * (x - p[1]) * a, (1 - p[0]) * (x - p[2]) * b];
+      for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) g[i][j] += n * w * d[i] * d[j] / f;
+    });
+    return g;
+  }
+  function displayMetric(id, p, n, angles = true) {
+    if (id === 'coins3' && angles) return [[n, 0, 0], [0, n, 0], [0, 0, n]];
+    if (id === 'product') return [[n, 0, 0], [0, n / p[2] ** 2, 0], [0, 0, 2 * n / p[2] ** 2]];
+    return metric(id, p, n);
+  }
+  function phi(x) { return Math.exp(-x * x / 2) / Math.sqrt(2 * Math.PI); }
+  function density(p, x) { return p[0] * phi(x - p[1]) + (1 - p[0]) * phi(x - p[2]); }
+  function integrate(p, fn, q = p, steps = 640) {
+    const low = Math.min(p[1], p[2], q[1], q[2]) - 9, high = Math.max(p[1], p[2], q[1], q[2]) + 9, h = (high - low) / steps;
+    for (let i = 0; i <= steps; i++) fn(low + i * h, h / 3 * (i === 0 || i === steps ? 1 : i % 2 ? 4 : 2));
+  }
+  function probabilities(id, p) {
+    if (id === 'categorical4') return p.slice();
+    return Array.from({length: 8}, (_, k) => p.reduce((v, b, i) => v * ((k >> (2 - i)) & 1 ? b : 1 - b), 1));
+  }
+  function kl(id, a, b, n = 1) {
+    if (id === 'product') return n * (bernoulliKL(a[0], b[0]) + F.kl('normal', a.slice(1), b.slice(1)));
+    if (id !== 'mixture') {
+      const u = probabilities(id, a), v = probabilities(id, b);
+      return Math.max(0, n * u.reduce((s, x, i) => s + x * Math.log(x / v[i]), 0));
+    }
+    let total = 0;
+    integrate(a, (x, w) => {const u = density(a, x), v = density(b, x); total += w * u * Math.log(u / v);}, b);
+    return Math.abs(total) < 1e-14 ? 0 : Math.max(0, n * total);
+  }
+  function bernoulliKL(a, b) {return a * Math.log(a / b) + (1 - a) * Math.log((1 - a) / (1 - b));}
+  function distance(id, a, b, n = 1) {
+    if (id === 'mixture') return null;
+    if (id === 'categorical4') return F.categoryDistance(a, b, n);
+    if (id === 'coins3') return Math.sqrt(n) * Math.hypot(...a.map((x, i) => F.theta(x) - F.theta(b[i])));
+    return Math.sqrt(n) * Math.hypot(F.theta(a[0]) - F.theta(b[0]), F.distance('normal', a.slice(1), b.slice(1)));
+  }
+  function path(id, a, b, t, route = 'fisher') {
+    if (t <= 0) return a.slice(); if (t >= 1) return b.slice();
+    if (id === 'mixture' || route === 'linear') return mix(a, b, t);
+    if (id === 'product') return [F.path('coins', [a[0]], [b[0]], t, route)[0], ...F.path('normal', a.slice(1), b.slice(1), t, route)];
+    return F.path(id === 'coins3' ? 'coins' : 'categorical', a, b, t, route);
+  }
+  function length(id, a, b, route, n = 1, steps = 500) {
+    if (id !== 'mixture' && route === 'fisher') return distance(id, a, b, n);
+    let total = 0;
+    for (let k = 0; k < steps; k++) {
+      const p = path(id, a, b, k / steps, route), q = path(id, a, b, (k + 1) / steps, route), mid = path(id, a, b, (k + .5) / steps, route);
+      const v = q.slice(0, 3).map((x, i) => x - p[i]);
+      total += Math.sqrt(Math.max(0, quadratic(metric(id, mid, n), v)));
+    }
+    return total;
+  }
+  function quadratic(g, v) {return dot(v, g.map(row => dot(row, v)));}
+  function eigen(g) {
+    const a = g.map(r => r.slice()), v = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+    for (let k = 0; k < 40; k++) {
+      let i = 0, j = 1;
+      for (let p = 0; p < 3; p++) for (let q = p + 1; q < 3; q++) if (Math.abs(a[p][q]) > Math.abs(a[i][j])) {i = p; j = q;}
+      if (Math.abs(a[i][j]) < 1e-13) break;
+      const angle = .5 * Math.atan2(2 * a[i][j], a[j][j] - a[i][i]), c = Math.cos(angle), s = Math.sin(angle), ai = a[i][i], aj = a[j][j], aij = a[i][j];
+      for (let m = 0; m < 3; m++) if (m !== i && m !== j) {const ami = a[m][i], amj = a[m][j]; a[m][i] = a[i][m] = c * ami - s * amj; a[m][j] = a[j][m] = s * ami + c * amj;}
+      a[i][i] = c * c * ai - 2 * s * c * aij + s * s * aj; a[j][j] = s * s * ai + 2 * s * c * aij + c * c * aj; a[i][j] = a[j][i] = 0;
+      for (let m = 0; m < 3; m++) {const vi = v[m][i], vj = v[m][j]; v[m][i] = c * vi - s * vj; v[m][j] = s * vi + c * vj;}
+    }
+    return [0, 1, 2].map(i => ({value: Math.max(0, a[i][i]), vector: v.map(row => row[i])})).sort((a, b) => a.value - b.value);
+  }
+  function rank(e) {return e.filter(x => x.value > Math.max(1e-10, e[2].value * 1e-8)).length;}
+  function sectional(id, plane, angle = 0, n = 1) {
+    if (id === 'mixture') return null;
+    if (id === 'categorical4') return .25 / n;
+    if (id === 'coins3') return 0;
+    return plane === '12' ? -.5 / n : plane === 'tilt' ? -.5 * Math.cos(angle * Math.PI / 180) ** 2 / n : 0;
+  }
+  function scalar(id, n = 1) {return id === 'categorical4' ? 1.5 / n : id === 'coins3' ? 0 : id === 'product' ? -1 / n : null;}
+  return {configs, metric, displayMetric, phi, density, integrate, probabilities, kl, distance, path, length, quadratic, eigen, rank, sectional, scalar};
+})();
+</script>
+<script>(() => {
+  'use strict';
+  const H = FisherHigherMath, F = FisherMath, $ = id => document.getElementById(id);
+  const C = {A: '#80dccc', B: '#efa7bc', probe: '#f0cf88', fisher: '#f0cf88', linear: '#83b9ee', exponential: '#b5a3ee', ink: '#d8e7ee', muted: '#a5bfce', wire: '#64879780'};
+  const names = {fisher: 'Fisher shortest', linear: 'Parameter line', exponential: 'Exponential'};
+  const tetra = [[1, 1, 1], [1, -1, -1], [-1, 1, -1], [-1, -1, 1]];
+  const add = (a, b) => a.map((x, i) => x + b[i]), sub = (a, b) => a.map((x, i) => x - b[i]), mul = (a, s) => a.map(x => x * s), dot = F.dot;
+  const volume = $('higherVolume'), density = $('higherDensity');
+  let active = false, id = 'coins3', setups = {}, n = 1, t = .4, route = 'fisher', edit = 'A', angles = true, compare = true, ellipsoid = true, showPlane = true, plane = '12', tilt = 0;
+  let yaw = -.65, pitch = .35, playing = false, direction = 1, dirty = true, last = 0, lastUI = 0, lastPaint = 0, drag = null, probe, g, eig, rank = 3, paths = {}, lengths = {}, dAB, clipped = false;
+  for (const key of Object.keys(H.configs)) {const p = H.configs[key].presets[0]; setups[key] = {A: p.A.slice(), B: p.B.slice(), preset: 0};}
+  const fmt = (x, digits = 3) => x === null || !Number.isFinite(x) ? '—' : Math.abs(x) > 0 && (Math.abs(x) < .0005 || Math.abs(x) >= 1e5) ? x.toExponential(2) : x.toFixed(digits);
+  const signed = x => x === null ? '—' : Math.abs(x) < 1e-14 ? '0' : `${x > 0 ? '+' : '−'}${fmt(Math.abs(x), n > 10 ? 4 : 3)}`;
+  function notice(message) { $('toast').textContent = message; $('toast').hidden = false; clearTimeout(notice.timer); notice.timer = setTimeout(() => $('toast').hidden = true, 3800); }
+  function current() {return setups[id];}
+  function activate(key) {
+    window.FisherRegular.pause(); active = true; playing = false; id = key; t = .4; route = key === 'mixture' ? 'linear' : 'fisher'; plane = key === 'product' ? '12' : '01'; tilt = 0; edit = 'A';
+    $('regularModel').hidden = true; $('higherModel').hidden = false;
+    document.querySelectorAll('[data-model]').forEach(b => b.setAttribute('aria-pressed', 'false'));
+    document.querySelectorAll('[data-higher-model]').forEach(b => b.setAttribute('aria-pressed', b.dataset.higherModel === id));
+    $('modelDescription').textContent = H.configs[id].description;
+    document.querySelector('.main-invariant').textContent = 'Parameter volume. Linked observations.';
+    buildControls(); recompute();
+  }
+  function deactivate() {
+    active = false; playing = false; $('regularModel').hidden = false; $('higherModel').hidden = true;
+    document.querySelectorAll('[data-higher-model]').forEach(b => b.setAttribute('aria-pressed', 'false'));
+    window.FisherRegular.refresh();
+    document.querySelector('.main-invariant').textContent = 'Same distributions. Two views of their geometry.';
+  }
+  function controlBounds(i) {
+    if (id === 'mixture' && i > 0 || id === 'product' && i === 1) return [-3, 3, .01];
+    if (id === 'product' && i === 2) return [.2, 2.5, .01];
+    return id === 'categorical4' ? [.002, .994, .001] : [.01, .99, .001];
+  }
+  function buildControls() {
+    const c = H.configs[id];
+    $('higherPreset').replaceChildren(...c.presets.map((p, i) => new Option(p.name, i)), new Option('Custom endpoints', -1));
+    $('higherPreset').value = current().preset;
+    $('higherCoordinates').replaceChildren();
+    c.labels.forEach((label, i) => {
+      const row = document.createElement('div'); row.className = 'control';
+      const l = document.createElement('label'); l.htmlFor = `higherCoordinate${i}`; l.append(document.createTextNode(label));
+      const out = document.createElement('output'); out.id = `higherCoordinateOut${i}`; l.append(out);
+      const input = document.createElement('input'), bounds = controlBounds(i); input.id = `higherCoordinate${i}`; input.type = 'range'; input.min = bounds[0]; input.max = bounds[1]; input.step = bounds[2]; input.setAttribute('aria-label', label);
+      input.oninput = () => {
+        playing = false; const p = current()[edit].slice(), v = +input.value;
+        if (id === 'categorical4') {const free = Math.max(0, 1 - v - .006), total = p.reduce((sum, x, j) => sum + (j === i ? 0 : Math.max(0, x - .002)), 0); for (let j = 0; j < 4; j++) if (j !== i) p[j] = .002 + free * (total > 1e-12 ? Math.max(0, p[j] - .002) / total : 1 / 3); p[i] = v;}
+        else p[i] = v;
+        current()[edit] = p; current().preset = -1; $('higherPreset').value = -1; syncCoordinates(); recompute();
+      };
+      row.append(l, input); $('higherCoordinates').append(row);
+    });
+    const labels = id === 'product' ? ['θ', 'μ', 'σ'] : id === 'coins3' && angles ? ['θ₁', 'θ₂', 'θ₃'] : c.coords;
+    const options = [['01', `${labels[0]} and ${labels[1]}`], ['02', `${labels[0]} and ${labels[2]}`], ['12', `${labels[1]} and ${labels[2]}`]];
+    if (id === 'product') options.push(['tilt', 'Tilt: normal plane toward coin direction']);
+    $('higherPlane').replaceChildren(...options.map(p => new Option(p[1], p[0]))); $('higherPlane').value = plane;
+    $('higherChartControl').hidden = id !== 'coins3'; $('higherMerge').hidden = id !== 'mixture'; $('higherCompareControl').hidden = id === 'mixture'; $('higherPlaneControl').hidden = id === 'mixture'; $('higherPlaneInputs').hidden = id === 'mixture';
+    $('higherRoute').replaceChildren(...(id === 'mixture' ? [['linear', 'Parameter line (not minimized)']] : [['fisher', 'Fisher shortest path'], ['linear', 'Straight parameter line'], ['exponential', 'Exponential interpolation']]).map(p => new Option(p[1], p[0])));
+    $('higherRoute').disabled = id === 'mixture'; $('higherRoute').value = route;
+    $('higherVolumeTitle').textContent = id === 'coins3' && !angles ? 'Probability cube' : c.chart;
+    $('higherVolumeNote').textContent = id === 'coins3' && !angles ? 'A probability chart of the same flat model. Ellipsoids show coordinate distortion; they do not measure curvature.' : c.note;
+    $('higherDensityTitle').textContent = id === 'coins3' || id === 'categorical4' ? 'One-observation probabilities' : id === 'product' ? 'Joint density, split by coin result' : 'Observed mixture densities';
+    $('higherDistributionFormula').textContent = id === 'coins3' ? 'P(x₁, x₂, x₃) = ∏ᵢ pᵢˣⁱ(1 − pᵢ)¹⁻ˣⁱ' : id === 'categorical4' ? 'P(X = i) = pᵢ,  Σᵢ pᵢ = 1' : id === 'product' ? 'f(c, x) = pᶜ(1 − p)¹⁻ᶜ · φμ,σ(x)' : c.formula;
+    $('higherDensityNote').textContent = id === 'product' ? 'Both panels use the same vertical scale. Integrating each joint-density curve gives the corresponding coin probability.' : id === 'mixture' ? 'Dashed blue and lavender curves are the probe’s weighted component contributions; they add to its gold observed density.' : 'Each group compares the same outcome under A, B and the probe.';
+    $('higherTag').textContent = id === 'coins3' ? 'Flat product geometry' : id === 'categorical4' ? 'Spherical three-dimensional geometry' : id === 'product' ? 'Mixed sectional curvatures' : 'Hidden labels & singularities';
+    $('higherObservation').textContent = c.observation; $('higherMetricFormula').textContent = id === 'mixture' ? 'gᵢⱼ = n ∫ (∂ᵢf ∂ⱼf)/f dx' : c.formula; $('higherDiscovery').textContent = c.discovery;
+    $('higherMainRoute').textContent = id === 'mixture' ? 'Parameter path (not minimized)' : 'Fisher shortest';
+    $('higherDistanceLabel').textContent = id === 'mixture' ? 'Parameter path length A to B' : 'Fisher–Rao distance A to B';
+    $('higherDistanceNote').textContent = id === 'mixture' ? 'Numerical Fisher length of this path; it can be positive even when A and B have the same density.' : 'Exact shortest distance inside this three-dimensional statistical model.';
+    $('higherCurvatureTitle').textContent = id === 'mixture' ? 'Rank loss and curvature' : 'Choose a tangent two-plane';
+    $('higherChart').value = angles ? 'angles' : 'probability'; $('higherCompare').checked = compare; $('higherEllipsoid').checked = ellipsoid; $('higherShowPlane').checked = showPlane;
+    syncCoordinates();
+  }
+  function syncCoordinates() {
+    current()[edit].forEach((v, i) => {$(`higherCoordinate${i}`).value = v; $(`higherCoordinateOut${i}`).value = fmt(v);});
+    $('higherEditA').setAttribute('aria-pressed', edit === 'A'); $('higherEditB').setAttribute('aria-pressed', edit === 'B');
+    $('higherEditStatus').textContent = `Editing ${edit}. ${id === 'categorical4' ? 'Changing one probability rescales the other three.' : 'The linked view uses the same distribution.'}`;
+  }
+  function recompute() {
+    const s = current(); dAB = H.distance(id, s.A, s.B, n); paths = {}; lengths = {};
+    for (const r of id === 'mixture' ? ['linear'] : ['fisher', 'linear', 'exponential']) {
+      paths[r] = Array.from({length: 181}, (_, k) => H.path(id, s.A, s.B, k / 180, r));
+      lengths[r] = H.length(id, s.A, s.B, r, n);
+    }
+    $('higherDistance').textContent = fmt(id === 'mixture' ? lengths.linear : dAB);
+    const forward = H.kl(id, s.A, s.B, n), reverse = H.kl(id, s.B, s.A, n);
+    $('higherKLForward').textContent = fmt(forward); $('higherKLReverse').textContent = fmt(reverse);
+    $('higherEndpointNote').textContent = id === 'mixture' && forward < 1e-9 && reverse < 1e-9 ? 'A and B have the same observed density: component labels have been exchanged.' : 'Reverse the comparison and it can change.';
+    $('higherLengths').replaceChildren(...Object.keys(lengths).map(r => {
+      const tr = document.createElement('tr'), a = document.createElement('td'), b = document.createElement('td'), swatch = document.createElement('i');
+      swatch.className = 'route-dot'; swatch.style.background = id === 'mixture' ? C.probe : C[r]; a.append(swatch, document.createTextNode(id === 'mixture' ? 'Parameter line' : names[r])); b.textContent = fmt(lengths[r]); tr.append(a, b); tr.dataset.higherRoute = r; return tr;
+    }));
+    $('higherLengthNote').textContent = id === 'mixture' ? '500-segment midpoint integration of √(dθᵀg dθ). No Fisher shortest path is being claimed.' : 'Fisher distance is exact. Other route lengths use 500-segment midpoint integration.';
+    updateProbe();
+  }
+  function updateProbe() {
+    probe = H.path(id, current().A, current().B, t, route); g = H.displayMetric(id, probe, n, angles); eig = H.eigen(g); rank = H.rank(eig);
+    $('higherT').value = t; $('higherTValue').textContent = `t = ${fmt(t, 2)}`; $('higherN').value = n; $('higherNValue').value = n; $('higherPlay').textContent = playing ? 'Pause' : 'Play';
+    const labels = id === 'coins3' && angles ? ['θ₁', 'θ₂', 'θ₃'] : H.configs[id].coords;
+    $('higherMetricCoordinates').textContent = `Coordinates (${labels.join(', ')}), n = ${n}`;
+    $('higherMatrix').replaceChildren(...g.flat().map(v => {const span = document.createElement('span'); span.textContent = fmt(v, 2); return span;}));
+    $('higherEigenvalues').replaceChildren(...eig.map((e, i) => {const span = document.createElement('span'); span.textContent = `λ${i + 1} = ${fmt(e.value)}`; return span;}));
+    $('higherRank').textContent = `Rank ${rank} / 3`; $('higherRank').classList.toggle('singular', rank < 3);
+    const exactMerge = id === 'mixture' && Math.abs(probe[1] - probe[2]) < 1e-10;
+    $('higherRankNote').textContent = exactMerge ? 'Two null tangent directions. Only the weighted common-mean displacement is visible to first order; separating the components can still matter at higher order.' : rank < 3 ? 'Near singularity: numerical rank uses a relative eigenvalue tolerance of 10⁻⁸. Very weak directions remain identifiable away from exact coincidence.' : 'All three directions are locally identifiable. Eigenvalues and ellipsoid shapes depend on the displayed coordinates.';
+    $('higherProbeDescription').textContent = `Probe: ${H.configs[id].labels.map((label, i) => `${label.split(' · ').pop()} = ${fmt(probe[i])}`).join(' · ')}`;
+    $('higherDensity').setAttribute('aria-label', `${$('higherDensityTitle').textContent}. ${$('higherProbeDescription').textContent}`);
+    document.querySelectorAll('[data-higher-comparison]').forEach(e => e.hidden = id === 'mixture' || !compare && e.dataset.higherComparison !== route);
+    document.querySelectorAll('[data-higher-route]').forEach(e => e.classList.toggle('selected', e.dataset.higherRoute === route));
+    updateCurvature(); dirty = true;
+  }
+  function updateCurvature() {
+    $('higherTiltControl').hidden = id !== 'product' || plane !== 'tilt'; $('higherTilt').value = tilt; $('higherTiltValue').value = `${tilt}°`;
+    const K = H.sectional(id, plane, tilt, n), R = H.scalar(id, n);
+    $('higherK').textContent = signed(K); $('higherR').textContent = signed(R);
+    $('higherKLabel').textContent = id === 'mixture' ? 'Curvature not computed' : 'Sectional curvature K';
+    $('higherCurvatureNote').textContent = id === 'mixture' ? Math.abs(probe[1] - probe[2]) < 1e-10 ? 'At coincident components the Fisher matrix is singular, so it does not define a Riemannian metric on this three-parameter chart. Its Riemannian curvatures are undefined there.' : 'The observed Fisher metric is integrated numerically. This lab does not estimate mixture curvature; dashes do not mean zero. The coincident-component wall is singular.' : id === 'product' ? 'The normal plane has K = −1/(2n); mixed coin–normal planes have K = 0. For the tilted plane, K = −cos²(α)/(2n). Scalar curvature stays R = −1/n.' : id === 'categorical4' ? 'Every tangent two-plane has K = 1/(4n). In dimension three, R = 2(K₁₂ + K₁₃ + K₂₃) = 3/(2n), rather than 2K.' : 'Every tangent two-plane has K = 0. Independence makes the three Fisher-angle directions a Euclidean product.';
+    dirty = true;
+  }
+  function chartPoint(p) {
+    if (id === 'coins3') return p.map(v => (angles ? F.theta(v) / Math.PI : v) * 2 - 1);
+    if (id === 'categorical4') return p.reduce((out, v, i) => add(out, mul(tetra[i], v)), [0, 0, 0]);
+    if (id === 'product') {const d = F.disk(p.slice(1)); return [1.1 * d[0], 1.1 * d[1], (F.theta(p[0]) / Math.PI - .5) * 2.2];}
+    return [(p[0] - .5) * 2, p[1] / 3, p[2] / 3];
+  }
+  function deltaWorld(p, v) {
+    if (id === 'coins3') return mul(v, angles ? 2 / Math.PI : 2);
+    if (id === 'categorical4') return [...v, -v.reduce((a, b) => a + b, 0)].reduce((out, d, i) => add(out, mul(tetra[i], d)), [0, 0, 0]);
+    if (id === 'mixture') return [2 * v[0], v[1] / 3, v[2] / 3];
+    const h = 1e-5, theta = F.theta(p[0]), a = [F.prob(theta + h * v[0]), p[1] + h * v[1], p[2] + h * v[2]], b = [F.prob(theta - h * v[0]), p[1] - h * v[1], p[2] - h * v[2]];
+    return mul(sub(chartPoint(a), chartPoint(b)), 1 / (2 * h));
+  }
+  function tangentBasis() {
+    if (id === 'product' && plane === 'tilt') {
+      const a = tilt * Math.PI / 180;
+      return [[0, probe[2] / Math.sqrt(n), 0], [Math.sin(a) / Math.sqrt(n), 0, Math.cos(a) * probe[2] / Math.sqrt(2 * n)]];
+    }
+    const i = +plane[0], j = +plane[1], u = [0, 0, 0], v = [0, 0, 0]; u[i] = 1 / Math.sqrt(g[i][i]); v[j] = 1;
+    const projection = dot(u, g.map(row => dot(row, v))), vv = sub(v, mul(u, projection));
+    return [u, mul(vv, 1 / Math.sqrt(H.quadratic(g, vv)))];
+  }
+  function context(canvas) {
+    const box = canvas.getBoundingClientRect(), dpr = Math.min(devicePixelRatio || 1, 2), w = box.width, h = box.height;
+    if (w < 2 || h < 2) return null;
+    const width = Math.round(w * dpr), height = Math.round(h * dpr);
+    if (canvas.width !== width || canvas.height !== height) {canvas.width = width; canvas.height = height;}
+    const ctx = canvas.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, w, h); ctx.font = '13px system-ui';
+    return {ctx, w, h};
+  }
+  function drawVolume() {
+    const frame = context(volume); if (!frame) return; const {ctx, w, h} = frame;
+    const cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch), scale = Math.min((w - 85) / 3.2, (h - 75) / 3.15);
+    function screen(p) {const x = cy * p[0] + sy * p[2], z = -sy * p[0] + cy * p[2], y = cp * p[1] - sp * z; return [w / 2 + scale * x, h / 2 + 7 - scale * y];}
+    function line(points, color, width = 1, dashed = false) {
+      ctx.beginPath(); points.forEach((p, i) => {const q = screen(p); if (i) ctx.lineTo(...q); else ctx.moveTo(...q);}); ctx.strokeStyle = color; ctx.lineWidth = width; ctx.setLineDash(dashed ? [5, 4] : []); ctx.stroke(); ctx.setLineDash([]);
+    }
+    function polygon(points, color, alpha = .1) {ctx.beginPath(); points.forEach((p, i) => {const q = screen(p); if (i) ctx.lineTo(...q); else ctx.moveTo(...q);}); ctx.closePath(); ctx.fillStyle = color; ctx.globalAlpha = alpha; ctx.fill(); ctx.globalAlpha = 1;}
+    function label(p, text, dx = 0, dy = 0, color = C.muted) {const q = screen(p); ctx.fillStyle = color; ctx.textAlign = 'center'; ctx.fillText(text, q[0] + dx, q[1] + dy);}
+    function circle(z, radius = 1.1) {return Array.from({length: 81}, (_, i) => {const a = 2 * Math.PI * i / 80; return [radius * Math.cos(a), radius * Math.sin(a), z];});}
+    if (id === 'coins3' || id === 'mixture') {
+      const vertices = Array.from({length: 8}, (_, i) => [i & 1 ? 1 : -1, i & 2 ? 1 : -1, i & 4 ? 1 : -1]);
+      polygon([vertices[0], vertices[1], vertices[3], vertices[2]], '#72b2bd', .06);
+      for (let i = 0; i < 8; i++) for (let b = 0; b < 3; b++) if (!(i & (1 << b))) line([vertices[i], vertices[i | 1 << b]], C.wire);
+      if (id === 'mixture') {
+        const wall = [[-1, -1, -1], [1, -1, -1], [1, 1, 1], [-1, 1, 1]];
+        polygon(wall, C.linear, .16); line([...wall, wall[0]], '#83b9ee90'); label([0, 1, 1], 'μ₁ = μ₂', 0, -18);
+        label([1, -1, -1], 'w', 8, 23); label([-1, 1, -1], 'μ₁', -14); label([-1, -1, 1], 'μ₂', -14);
+      } else {
+        const symbols = angles ? ['θ₁', 'θ₂', 'θ₃'] : ['p₁', 'p₂', 'p₃'];
+        label([1, -1, -1], symbols[0], 8, 23); label([-1, 1, -1], symbols[1], -14); label([-1, -1, 1], symbols[2], -14);
+        for (const z of [-.5, 0, .5]) {line([[-1, -1, z], [1, -1, z]], '#50728345'); line([[-1, z, -1], [1, z, -1]], '#50728345');}
+      }
+    } else if (id === 'categorical4') {
+      for (const face of [[0, 1, 2], [0, 1, 3], [0, 2, 3], [1, 2, 3]]) polygon(face.map(i => tetra[i]), '#80b8c2', .055);
+      for (let i = 0; i < 4; i++) for (let j = i + 1; j < 4; j++) line([tetra[i], tetra[j]], C.wire);
+      tetra.forEach((p, i) => label(mul(p, 1.12), `p${['₁', '₂', '₃', '₄'][i]} = 1`, 0, 5));
+    } else {
+      for (const z of [-1.1, -.55, 0, .55, 1.1]) line(circle(z), C.wire);
+      for (let j = 0; j < 12; j++) {const a = 2 * Math.PI * j / 12; line([[1.1 * Math.cos(a), 1.1 * Math.sin(a), -1.1], [1.1 * Math.cos(a), 1.1 * Math.sin(a), 1.1]], '#64879755');}
+      const z = chartPoint(probe)[2]; polygon(circle(z), C.linear, .075);
+      for (const sigma of [.3, 1, 3]) line(Array.from({length: 120}, (_, k) => {const d = F.disk([-7 + 14 * k / 119, sigma]); return [1.1 * d[0], 1.1 * d[1], z];}), '#7fabb850');
+      label([0, 0, 1.1], 'Coin angle θ', 0, -23); label([1.1, 0, -1.1], 'Normal disk', 2, 25);
+    }
+    const q = chartPoint(probe);
+    if (showPlane && id !== 'mixture') {
+      const basis = tangentBasis().map(v => deltaWorld(probe, mul(v, .4))), a = basis[0], b = basis[1];
+      const corners = [add(q, add(a, b)), add(q, sub(a, b)), sub(q, add(a, b)), add(q, sub(b, a))];
+      polygon(corners, C.linear, .18); line([...corners, corners[0]], '#83b9ee95', 1);
+    }
+    for (const r of Object.keys(paths)) if (id === 'mixture' || r === 'fisher' || r === route || compare) line(paths[r].map(chartPoint), id === 'mixture' ? C.probe : C[r], r === route ? 2.8 : 1.5, r === 'exponential');
+    clipped = false;
+    if (ellipsoid) {
+      const threshold = Math.max(1e-10, eig[2].value * 1e-8), axes = eig.map(e => {
+        if (e.value <= threshold) return null;
+        let a = deltaWorld(probe, mul(e.vector, .2 / Math.sqrt(e.value))), length = Math.hypot(...a);
+        if (length > .58) {clipped = true; a = mul(a, .58 / length);} return a;
+      });
+      if (rank === 3) for (let k = 0; k < 3; k++) line(Array.from({length: 81}, (_, i) => {const a = 2 * Math.PI * i / 80; return add(q, add(mul(axes[k], Math.cos(a)), mul(axes[(k + 1) % 3], Math.sin(a))));}), '#ffe1a8', 1.5);
+      else eig.forEach((e, i) => {
+        if (axes[i]) line([sub(q, axes[i]), add(q, axes[i])], '#ffe1a8', 2);
+        else {const v = deltaWorld(probe, e.vector), length = Math.hypot(...v); if (length > 0) line([sub(q, mul(v, .6 / length)), add(q, mul(v, .6 / length))], '#ffe1a8', 1.7, true);}
+      });
+    }
+    for (const [key, p] of [['A', current().A], ['B', current().B], ['Probe', probe]]) {
+      const xy = screen(chartPoint(p)); ctx.beginPath(); ctx.arc(...xy, key === 'Probe' ? 5 : 4, 0, 2 * Math.PI); ctx.fillStyle = key === 'Probe' ? C.probe : C[key]; ctx.fill(); ctx.strokeStyle = '#0c1b27'; ctx.lineWidth = 1.2; ctx.stroke(); ctx.textAlign = 'left'; ctx.fillStyle = C.ink; ctx.fillText(key, xy[0] + 8, xy[1] + (key === 'Probe' ? 18 : -8));
+    }
+    ctx.fillStyle = C.muted; ctx.textAlign = 'left'; ctx.font = '12px system-ui'; ctx.fillText(id === 'coins3' && angles ? 'Euclidean Fisher coordinates' : 'Coordinate view · Fisher lengths, not screen lengths', 15, 23);
+    $('higherGlyphNote').textContent = !ellipsoid ? 'Local Fisher steps are hidden.' : rank < 3 ? 'Dashed gold axes mark numerical null directions. The equal-length set is unbounded there; no finite ellipsoid exists.' : clipped ? 'Gold: equal local Fisher length 0.2. Long glyph axes are truncated for display; see the eigenvalues below.' : `Gold: tangent ellipsoid δθᵀgδθ = 0.2².${showPlane && id !== 'mixture' ? ' Blue patch: selected tangent two-plane.' : ''} A tangent approximation can extend beyond a probability boundary.`;
+  }
+  function drawDensity() {
+    const frame = context(density); if (!frame) return; const {ctx, w, h} = frame, laws = [current().A, current().B, probe], colors = [C.A, C.B, C.probe];
+    function line(points, color, width = 1.7, dashed = false) {ctx.beginPath(); points.forEach((p, i) => i ? ctx.lineTo(...p) : ctx.moveTo(...p)); ctx.strokeStyle = color; ctx.lineWidth = width; ctx.setLineDash(dashed ? [5, 4] : []); ctx.stroke(); ctx.setLineDash([]);}
+    function box(x, y, ww, hh, xmin, xmax, ymax, title) {
+      ctx.fillStyle = '#0e202c'; ctx.fillRect(x, y, ww, hh); ctx.strokeStyle = '#54768b66'; ctx.strokeRect(x, y, ww, hh);
+      const X = v => x + (v - xmin) / (xmax - xmin) * ww, Y = v => y + hh - v / ymax * hh;
+      ctx.font = '12px system-ui'; ctx.fillStyle = C.muted; ctx.textAlign = 'right';
+      for (const a of [0, .5, 1]) ctx.fillText(fmt(a * ymax, 2), x - 7, Y(a * ymax) + 4);
+      ctx.textAlign = 'center'; for (let i = 0; i <= 4; i++) {const xx = xmin + (xmax - xmin) * i / 4; ctx.fillText(fmt(xx, 1), X(xx), y + hh + 19);}
+      ctx.textAlign = 'left'; ctx.fillText(title, x, y - 11); return {X, Y};
+    }
+    if (id === 'coins3' || id === 'categorical4') {
+      const probs = laws.map(p => H.probabilities(id, p)), labels = id === 'coins3' ? Array.from({length: 8}, (_, i) => i.toString(2).padStart(3, '0')) : ['1', '2', '3', '4'];
+      const x = 43, y = 36, ww = w - 60, hh = h - 88, group = ww / labels.length, bw = group * .22;
+      ctx.fillStyle = '#0e202c'; ctx.fillRect(x, y, ww, hh); ctx.strokeStyle = '#54768b66'; ctx.strokeRect(x, y, ww, hh);
+      ctx.font = '12px system-ui'; ctx.fillStyle = C.muted; ctx.textAlign = 'right'; for (const v of [0, .5, 1]) ctx.fillText(fmt(v, 1), x - 8, y + hh * (1 - v) + 4);
+      for (let i = 0; i < labels.length; i++) {
+        probs.forEach((p, j) => {ctx.fillStyle = colors[j]; const bh = hh * p[i]; ctx.fillRect(x + group * (i + .5) + (j - 1) * bw - bw * .4, y + hh - bh, bw * .8, bh);});
+        ctx.textAlign = 'center'; ctx.fillStyle = C.muted; ctx.fillText(labels[i], x + group * (i + .5), y + hh + 21);
+      }
+      ctx.textAlign = 'left'; ctx.fillText('probability', x, 20); ctx.textAlign = 'right'; ctx.fillText(id === 'coins3' ? 'joint flip outcome' : 'outcome', w - 18, h - 13); return;
+    }
+    const xmin = id === 'mixture' ? Math.min(...laws.flatMap(p => [p[1], p[2]])) - 4 : Math.min(...laws.map(p => p[1] - 4 * p[2]));
+    const xmax = id === 'mixture' ? Math.max(...laws.flatMap(p => [p[1], p[2]])) + 4 : Math.max(...laws.map(p => p[1] + 4 * p[2]));
+    const xs = Array.from({length: 320}, (_, i) => xmin + (xmax - xmin) * i / 319);
+    const ymax = 1.15 * Math.max(...laws.flatMap(p => xs.map(x => id === 'mixture' ? H.density(p, x) : Math.max(p[0], 1 - p[0]) * F.density(p.slice(1), x))));
+    if (id === 'product') {
+      const hh = (h - 113) / 2;
+      for (let c = 0; c < 2; c++) {
+        const f = box(48, 35 + c * (hh + 48), w - 67, hh, xmin, xmax, ymax, `Coin = ${c} · joint density`);
+        laws.forEach((p, j) => line(xs.map(x => [f.X(x), f.Y((c ? p[0] : 1 - p[0]) * F.density(p.slice(1), x))]), colors[j], j === 2 ? 2.4 : 1.6));
+      }
+    } else {
+      const f = box(48, 35, w - 67, h - 83, xmin, xmax, ymax, 'Observed density');
+      line(xs.map(x => [f.X(x), f.Y(probe[0] * H.phi(x - probe[1]))]), C.linear, 1.4, true);
+      line(xs.map(x => [f.X(x), f.Y((1 - probe[0]) * H.phi(x - probe[2]))]), C.exponential, 1.4, true);
+      laws.forEach((p, j) => line(xs.map(x => [f.X(x), f.Y(H.density(p, x))]), colors[j], j === 2 ? 2.5 : 1.7, j === 0));
+    }
+    ctx.fillStyle = C.muted; ctx.textAlign = 'right'; ctx.font = '12px system-ui'; ctx.fillText('observation x', w - 18, h - 8);
+  }
+  function redraw() {if (!active) return; drawVolume(); drawDensity(); dirty = false;}
+  function snapshot() {return {id, setups: JSON.parse(JSON.stringify(setups)), n, t, route, edit, angles, compare, ellipsoid, showPlane, plane, tilt, yaw, pitch};}
+  function checkedSnapshot(s) {
+    if (!s || !H.configs[s.id] || !s.setups) throw Error('Invalid higher-dimensional experiment.');
+    const number = (v, lo, hi) => {if (typeof v !== 'number' || !Number.isFinite(v) || v < lo || v > hi) throw Error('Experiment contains an invalid parameter.'); return v;};
+    const models = {};
+    for (const key of Object.keys(H.configs)) {
+      const model = s.setups[key]; if (!model) throw Error('A model setup is missing.');
+      models[key] = {preset: Number.isInteger(model.preset) && model.preset >= -1 && model.preset < H.configs[key].presets.length ? model.preset : -1};
+      for (const endpoint of ['A', 'B']) {
+        const p = model[endpoint]; if (!Array.isArray(p) || p.length !== (key === 'categorical4' ? 4 : 3)) throw Error('Invalid endpoint dimensions.');
+        const q = p.map((v, i) => key === 'coins3' || key === 'categorical4' || i === 0 ? number(v, .0001, .9999) : key === 'product' && i === 2 ? number(v, .2, 2.5) : number(v, -3, 3));
+        if (key === 'categorical4' && Math.abs(q.reduce((a, b) => a + b, 0) - 1) > 1e-8) throw Error('Four probabilities must sum to one.'); models[key][endpoint] = q;
+      }
+    }
+    const nn = number(s.n, 1, 100); if (!Number.isInteger(nn)) throw Error('Sample size must be an integer.');
+    return {...s, setups: models, n: nn, t: number(s.t, 0, 1), yaw: number(s.yaw, -3.14, 3.14), pitch: number(s.pitch, -1.3, 1.3), tilt: number(s.tilt, 0, 90), plane: ['01', '02', '12', 'tilt'].includes(s.plane) && (s.id === 'product' || s.plane !== 'tilt') ? s.plane : '01', route: s.id === 'mixture' ? 'linear' : ['fisher', 'linear', 'exponential'].includes(s.route) ? s.route : 'fisher', edit: s.edit === 'B' ? 'B' : 'A', angles: !!s.angles, compare: !!s.compare, ellipsoid: !!s.ellipsoid, showPlane: !!s.showPlane};
+  }
+  function restore(s, visible) {
+    const q = checkedSnapshot(s); setups = q.setups; activate(q.id);
+    ({n, t, route, edit, angles, compare, ellipsoid, showPlane, plane, tilt, yaw, pitch} = q); playing = false; $('higherRotation').value = yaw; buildControls(); recompute();
+    if (!visible) deactivate();
+  }
+  function fullSnapshot() {return {format: 'fisher-geometry-lab', version: 2, savedAt: new Date().toISOString(), active: active ? 'higher' : 'regular', regular: window.FisherRegular.snapshot(), higher: snapshot()};}
+  function download(name, body, type) {const blob = body instanceof Blob ? body : new Blob([body], {type}), url = URL.createObjectURL(blob), a = document.createElement('a'); a.href = url; a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(url), 3000); $('experimentMenu').open = false;}
+  function offline() {
+    const doc = document.documentElement.cloneNode(true);
+    doc.querySelector('#embeddedExperiment').textContent = JSON.stringify(window.FisherRegular.snapshot()).replaceAll('<', '\\u003c');
+    doc.querySelector('#higherExperiment').textContent = JSON.stringify({higher: snapshot(), active}).replaceAll('<', '\\u003c');
+    doc.querySelector('#experimentMenu').removeAttribute('open'); doc.querySelector('#guide').removeAttribute('open'); doc.querySelector('#toast').hidden = true;
+    download('fisher-geometry.html', '<!doctype html>\n' + doc.outerHTML, 'text/html');
+  }
+  function exportCSV() {
+    const labels = id === 'coins3' && angles ? ['theta1', 'theta2', 'theta3'] : H.configs[id].coords;
+    const rows = [['model', 'n', 'route', 't', 'parameter1', 'parameter2', 'parameter3', 'p4_if_categorical', 'metric_coordinates', 'g11', 'g12', 'g13', 'g21', 'g22', 'g23', 'g31', 'g32', 'g33', 'numerical_rank', 'distance_A_probe_exact', 'KL_A_probe', 'KL_probe_A', 'selected_plane', 'tilt_degrees', 'sectional_K_exact', 'scalar_R_exact']];
+    for (const r of Object.keys(paths)) for (let i = 0; i <= 240; i++) {
+      const tt = i / 240, p = H.path(id, current().A, current().B, tt, r), gg = H.displayMetric(id, p, n, angles);
+      rows.push([id, n, r, tt, p[0], p[1], p[2], p[3] ?? '', labels.join(' / '), ...gg.flat(), H.rank(H.eigen(gg)), H.distance(id, current().A, p, n), H.kl(id, current().A, p, n), H.kl(id, p, current().A, n), id === 'mixture' ? '' : plane, id === 'product' && plane === 'tilt' ? tilt : '', H.sectional(id, plane, tilt, n), H.scalar(id, n)]);
+    }
+    const csv = rows.map(row => row.map(v => {const s = String(v ?? ''); return /[",\n]/.test(s) ? `"${s.replaceAll('"', '""')}"` : s;}).join(',')).join('\r\n') + '\r\n'; download('fisher-geometry-higher-paths.csv', csv, 'text/csv');
+  }
+  function exportPNG() {
+    redraw(); const canvas = document.createElement('canvas'); canvas.width = 1500; canvas.height = 1000; const ctx = canvas.getContext('2d'); ctx.fillStyle = '#0c1b27'; ctx.fillRect(0, 0, 1500, 1000);
+    ctx.fillStyle = C.ink; ctx.font = '36px Georgia'; ctx.fillText(`Fisher geometry · ${H.configs[id].name}`, 35, 55); ctx.fillStyle = C.muted; ctx.font = '19px system-ui'; ctx.fillText(`n = ${n}   t = ${fmt(t, 2)}   ${id === 'mixture' ? 'Parameter path length' : 'Fisher distance'} = ${fmt(id === 'mixture' ? lengths.linear : dAB)}   Rank ${rank}/3`, 35, 96);
+    const fit = (image, x, y, w, h) => {const scale = Math.min(w / image.width, h / image.height), ww = image.width * scale, hh = image.height * scale; ctx.drawImage(image, x + (w - ww) / 2, y + (h - hh) / 2, ww, hh);};
+    fit(volume, 20, 125, 720, 510); fit(density, 760, 125, 720, 510); ctx.font = '19px system-ui'; ctx.fillStyle = C.ink; ctx.fillText($('higherMetricCoordinates').textContent, 35, 685);
+    for (let i = 0; i < 3; i++) ctx.fillText(g[i].map(v => fmt(v, 3)).join('     '), 35, 727 + i * 31);
+    ctx.fillStyle = C.probe; ctx.fillText(`Sectional K = ${signed(H.sectional(id, plane, tilt, n))}     Scalar R = ${signed(H.scalar(id, n))}`, 775, 685); ctx.fillStyle = C.muted; ctx.font = '17px system-ui';
+    ctx.fillText(id === 'mixture' ? 'Mixture curvature is not computed. Singular at coincident means.' : id === 'product' ? `Plane: ${$('higherPlane').selectedOptions[0].textContent} · tilt ${tilt}°` : 'All tangent two-planes have the same sectional curvature.', 775, 723);
+    ctx.fillText('A: teal · B: rose · Probe: gold', 775, 765); ctx.fillText(id === 'mixture' ? 'Dashed gold axes: numerical null directions. Path is not minimized.' : 'Gold glyph: equal local Fisher steps. Blue patch: selected tangent plane.', 35, 885);
+    ctx.fillText('Volumes are coordinate views. The Fisher metric determines lengths.', 35, 925); canvas.toBlob(blob => {if (blob) download('fisher-geometry-higher.png', blob, 'image/png');});
+  }
+  document.querySelectorAll('[data-higher-model]').forEach(b => b.onclick = () => activate(b.dataset.higherModel));
+  document.querySelectorAll('[data-model]').forEach(b => b.addEventListener('click', deactivate));
+  $('higherEditA').onclick = () => {edit = 'A'; syncCoordinates();}; $('higherEditB').onclick = () => {edit = 'B'; syncCoordinates();};
+  $('higherPreset').onchange = () => {const index = +$('higherPreset').value; if (index < 0) return; const p = H.configs[id].presets[index]; setups[id] = {A: p.A.slice(), B: p.B.slice(), preset: index}; t = .4; playing = false; syncCoordinates(); recompute();};
+  $('higherSwap').onclick = () => {[current().A, current().B] = [current().B, current().A]; current().preset = -1; $('higherPreset').value = -1; t = 1 - t; playing = false; syncCoordinates(); recompute();};
+  $('higherReset').onclick = () => {const p = H.configs[id].presets[0]; setups[id] = {A: p.A.slice(), B: p.B.slice(), preset: 0}; t = .4; playing = false; $('higherPreset').value = 0; syncCoordinates(); recompute();};
+  $('higherMerge').onclick = () => {const p = H.configs.mixture.presets[0]; setups.mixture = {A: p.A.slice(), B: p.B.slice(), preset: 0}; t = .5; route = 'linear'; playing = false; $('higherPreset').value = 0; syncCoordinates(); recompute();};
+  $('higherN').oninput = () => {n = +$('higherN').value; recompute();};
+  $('higherT').oninput = () => {playing = false; t = +$('higherT').value; updateProbe();};
+  $('higherPlay').onclick = () => {playing = !playing; if (t >= 1) direction = -1; if (t <= 0) direction = 1; updateProbe();};
+  $('higherRoute').onchange = () => {route = $('higherRoute').value; playing = false; updateProbe();};
+  $('higherCompare').onchange = () => {compare = $('higherCompare').checked; updateProbe();};
+  $('higherEllipsoid').onchange = () => {ellipsoid = $('higherEllipsoid').checked; dirty = true;};
+  $('higherShowPlane').onchange = () => {showPlane = $('higherShowPlane').checked; dirty = true;};
+  $('higherChart').onchange = () => {angles = $('higherChart').value === 'angles'; buildControls(); updateProbe();};
+  $('higherPlane').onchange = () => {plane = $('higherPlane').value; updateCurvature();};
+  $('higherTilt').oninput = () => {tilt = +$('higherTilt').value; updateCurvature();};
+  $('higherRotation').oninput = () => {yaw = +$('higherRotation').value; dirty = true;};
+  $('higherResetView').onclick = () => {yaw = -.65; pitch = .35; $('higherRotation').value = yaw; dirty = true;};
+  volume.addEventListener('pointerdown', e => {drag = {x: e.clientX, y: e.clientY, yaw, pitch}; volume.setPointerCapture(e.pointerId);});
+  volume.addEventListener('pointermove', e => {if (!drag) return; yaw = F.clamp(drag.yaw - (e.clientX - drag.x) * .008, -3.14, 3.14); pitch = F.clamp(drag.pitch + (e.clientY - drag.y) * .008, -1.3, 1.3); $('higherRotation').value = yaw; dirty = true;});
+  volume.addEventListener('pointerup', () => drag = null); volume.addEventListener('pointercancel', () => drag = null);
+  volume.addEventListener('keydown', e => {if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return; e.preventDefault(); yaw = F.clamp(yaw + (e.key === 'ArrowLeft' ? -.1 : e.key === 'ArrowRight' ? .1 : 0), -3.14, 3.14); pitch = F.clamp(pitch + (e.key === 'ArrowUp' ? .1 : e.key === 'ArrowDown' ? -.1 : 0), -1.3, 1.3); $('higherRotation').value = yaw; dirty = true;});
+  document.addEventListener('keydown', e => {if (active && e.code === 'Space' && !['INPUT', 'SELECT', 'BUTTON', 'SUMMARY', 'TEXTAREA'].includes(e.target.tagName) && !$('guide').open) {e.preventDefault(); e.stopImmediatePropagation(); playing = !playing; updateProbe();}}, true);
+  for (const key of ['saveBtn', 'offlineBtn', 'csvBtn', 'pngBtn']) $(key).addEventListener('click', e => {
+    if ((key === 'csvBtn' || key === 'pngBtn') && !active) return; e.preventDefault(); e.stopImmediatePropagation();
+    if (key === 'saveBtn') download('fisher-geometry-experiment.json', JSON.stringify(fullSnapshot(), null, 2), 'application/json');
+    else if (key === 'offlineBtn') offline(); else if (key === 'csvBtn') exportCSV(); else exportPNG();
+  }, true);
+  $('fileInput').onchange = async () => {
+    const file = $('fileInput').files[0]; if (!file) return;
+    try {
+      if (file.size > 1e6) throw Error('Experiment is too large (maximum 1 MB).'); const data = JSON.parse(await file.text());
+      if (data.format !== 'fisher-geometry-lab') throw Error('Choose a Fisher Geometry experiment JSON file.');
+      if (data.version === 1) {window.FisherRegular.restore(data); deactivate();}
+      else if (data.version === 2) {checkedSnapshot(data.higher); window.FisherRegular.restore(data.regular); restore(data.higher, data.active === 'higher');}
+      else throw Error('Unsupported experiment version.'); notice('Experiment restored paused.');
+    } catch (e) {notice(e.message || 'Could not open the experiment.');} $('fileInput').value = '';
+  };
+  const mobile = matchMedia('(max-width:900px)'); $('higherControls').open = !mobile.matches; mobile.addEventListener('change', e => $('higherControls').open = !e.matches);
+  new ResizeObserver(() => dirty = true).observe($('higherModel'));
+  function animate(stamp) {
+    const dt = last ? Math.min(.1, (stamp - last) / 1000) : 0; last = stamp;
+    if (active && playing && !document.hidden && !drag) {
+      t += direction * dt / 12; if (t >= 1) {t = 1; direction = -1;} if (t <= 0) {t = 0; direction = 1;}
+      if (stamp - lastUI > 70) {lastUI = stamp; updateProbe();}
+    }
+    if (active && dirty && stamp - lastPaint > 32) {lastPaint = stamp; redraw();} requestAnimationFrame(animate);
+  }
+  window.FisherHigher = {snapshot, checkedSnapshot, restore, fullSnapshot};
+  let embedded = null; try {embedded = JSON.parse($('higherExperiment').textContent);} catch (_) {}
+  if (embedded) {try {restore(embedded.higher, embedded.active);} catch (_) {deactivate(); notice('Could not restore the higher-dimensional setup.');}}
+  requestAnimationFrame(animate);
+})();
+</script>
+</body></html>
