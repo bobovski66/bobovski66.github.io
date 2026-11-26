@@ -1,510 +1,163 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Hopf Fibration — Stereoscopic Viewer (Standalone)</title>
-  <style>
-    :root { color-scheme: dark; }
-    body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; background: #0a0a0a; color: #eaeaea; }
-    .wrap { padding: 16px; max-width: 1100px; margin: 0 auto; }
-    .controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 12px; }
-    label { font-size: 12px; opacity: .95; }
-    label > span.val { margin-left: 8px; font-size: 11px; opacity: .8; }
-    input[type="range"] { vertical-align: middle; margin-left: 8px; }
-    select { background: transparent; color: #eaeaea; border: 1px solid #333; border-radius: 8px; padding: 2px 8px; }
-    .row { display: flex; gap: 8px; }
-    .col { flex: 1 1 0; }
-    .panel { border: 1px solid #222; border-radius: 12px; padding: 12px; background: #0f0f0f; box-shadow: 0 2px 10px rgba(0,0,0,.3); }
-    .hint { font-size: 12px; opacity: .8; margin-top: 8px; }
-    details { margin-top: 8px; }
-    summary { cursor: pointer; font-size: 13px; text-decoration: underline; }
-    .viewer { width: 100%; }
-    .stereo { display: flex; gap: 8px; }
-    canvas { display: inline-block; vertical-align: top; }
-    .mono { display: none; }
-    .small { font-size: 11px; opacity: .85; }
-  </style>
-  <!-- three.js -->
-  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
-</head>
-<body>
-  <div class="wrap">
-    <h2>Hopf Fibration — Stereoscopic Viewer (Standalone)</h2>
-    <div class="panel">
-      <div class="controls" id="controls">
-        <label>Fibers
-          <input id="fibers" type="range" min="24" max="600" step="1" value="120" />
-          <span class="val" id="fibersVal">120</span>
-        </label>
-        <label>Samples/Fiber
-          <input id="samples" type="range" min="32" max="512" step="1" value="128" />
-          <span class="val" id="samplesVal">128</span>
-        </label>
-        <label>IPD
-          <input id="ipd" type="range" min="0" max="0.2" step="0.005" value="0.06" />
-          <span class="val" id="ipdVal">0.060</span>
-        </label>
-        <label>Phase speed
-          <input id="phase" type="range" min="0" max="2.0" step="0.05" value="0.7" />
-          <span class="val" id="phaseVal">0.70</span>
-        </label>
-        <label>Opacity
-          <input id="opacity" type="range" min="0.05" max="1.0" step="0.01" value="0.82" />
-          <span class="val" id="opacityVal">0.82</span>
-        </label>
-        <label>Radius scale
-          <input id="radius" type="range" min="0.6" max="1.5" step="0.01" value="0.9" />
-          <span class="val" id="radiusVal">0.90</span>
-        </label>
-        <label><input id="stereo" type="checkbox" checked /> Stereo</label>
-        <label>View
-          <select id="viewMode">
-            <option value="parallel" selected>Parallel</option>
-            <option value="cross">Cross‑eye</option>
-          </select>
-        </label>
-        <label><input id="beads" type="checkbox" /> Moving beads</label>
-      </div>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0b1923"><meta name="description" content="Explore Hopf fibers in 3D with monitor calibration, a guided fusion target, parallel and cross-eye stereo, red/cyan glasses and fusion-free wiggle viewing."><title>Hopf Stereo Lab · Find your view</title>
+<style>
+:root{color-scheme:dark;--bg:#0b151e;--panel:#122632;--ink:#e0edf2;--muted:#9fb4c0;--line:#2d4756;--teal:#7fdccc;--gold:#f2c37a;--rose:#eda5b9;--font:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 70% 0,#1c3442,transparent 58%),var(--bg);color:var(--ink);font:16px/1.55 var(--font)}button,input,select{font:inherit}button,select,input[type=number]{font-size:14px;background:#1a3241;border:1px solid #3c5969;border-radius:7px;color:var(--ink);padding:7px 11px}button{cursor:pointer;transition:border-color .15s,background .15s}button:hover{background:#284b5c;border-color:#83b4c4}button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,a:focus-visible,canvas:focus-visible{outline:2px solid var(--gold);outline-offset:3px}button[aria-pressed=true]{background:#234c43;border-color:var(--teal);color:#c8ffed}.primary{color:#0c2c26;background:var(--teal);border-color:var(--teal);font-weight:700}.primary:hover{color:#0c2c26;background:#a7eddf}button:disabled{opacity:.45;cursor:default}select{width:100%;appearance:none;padding-right:29px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpath d='m1 1 4 4 4-4' stroke='%23c5dce5' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}input[type=range]{width:100%;height:20px;display:block;accent-color:var(--teal);margin:6px 0 0}input[type=number]{width:100%;min-width:0}a{color:var(--teal)}header,.wrap{max-width:1500px;margin:auto;padding-left:28px;padding-right:28px}header{display:flex;justify-content:space-between;align-items:center;gap:20px;padding-top:25px;padding-bottom:21px}.eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.16em;font-weight:700;color:var(--teal)}h1{font:400 clamp(32px,3vw,43px)/1.13 Georgia,serif;letter-spacing:-.02em;margin:6px 0 9px}header p{margin:0;color:var(--muted);max-width:750px;font-size:15px}.actions,.row{display:flex;align-items:center;gap:7px}.actions{flex-shrink:0}.row>*{min-width:0}.equal>*{flex:1}.workflow{display:flex;align-items:center;gap:10px;border:1px solid #3c5b64;background:#19332e55;border-radius:11px;padding:12px 16px;margin-bottom:17px;flex-wrap:wrap}.workflow .small{margin-right:auto}.workflow button{font-size:13px}.layout{display:grid;grid-template-columns:265px minmax(0,1fr);gap:15px;align-items:start}.panel{background:linear-gradient(145deg,#152a36,#11212d);border:1px solid var(--line);border-radius:12px;overflow:hidden}.controls{padding:17px}.section-title,.label{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#b3cad5}.section-title{margin:0 0 12px}.control{margin-bottom:17px}.control label{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-size:14px;margin-bottom:6px}.control output{font-variant-numeric:tabular-nums;color:var(--teal)}.small{color:var(--muted);font-size:12px;line-height:1.55}.control .small{display:block;margin-top:5px}.divider{height:1px;background:var(--line);margin:18px 0}.notice{padding:10px 12px;background:#0d1c26;color:var(--muted);font-size:13px;line-height:1.55;border-radius:8px;margin:11px 0}.notice.warning{border:1px solid #7a683e;color:var(--gold)}.notice strong{color:#d4e7eb;font-weight:500}.checks{display:grid;gap:9px;color:#bed1db;font-size:14px}.checks label{display:flex;align-items:center;gap:8px;cursor:pointer}.checks input{accent-color:var(--teal);margin:0}.control-disclosure summary{font-size:14px;color:#c8dde4;cursor:pointer;list-style:none;padding:4px 0}.control-disclosure summary::after{content:' +';color:var(--teal)}.control-disclosure[open] summary::after{content:' −'}.control-disclosure>div{margin-top:13px}.main{min-width:0}.modebar{padding:13px 15px;display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line)}.modebar button{font-size:13px;padding:6px 12px}.stage-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 16px}.stage-head h2{margin:0;font-weight:500;font-size:16px}.stage-head .row button{font-size:13px;padding:5px 10px}.stage{position:relative;height:510px;background:#07131b;overflow:hidden}.stage canvas{position:absolute;inset:0;display:block;width:100%;height:100%}#sceneCanvas{pointer-events:none}#overlayCanvas{touch-action:none;cursor:grab}.stage-foot{padding:13px 16px;border-top:1px solid var(--line)}.mode-instruction{font-size:14px;color:#c2d8df;margin-bottom:10px}.stage-foot .row{flex-wrap:wrap}.stage-foot .row button{font-size:13px}.readouts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:14px 0}.readout{border:1px solid var(--line);border-radius:9px;background:#10232e;padding:11px 13px}.readout .value{font-size:21px;font-variant-numeric:tabular-nums;line-height:1.3;margin-top:5px;color:#deeee9}.readout .small{margin-top:4px}.below{display:grid;grid-template-columns:1fr 1.2fr;gap:14px;margin-top:14px}.panel-head{padding:14px 16px 4px}.panel-head h2{font-size:16px;font-weight:500;margin:0}.base-canvas{width:100%;height:155px;display:block;touch-action:none}.base-foot{padding:1px 15px 13px;font-size:13px;color:var(--muted)}.viewing-guide{padding:15px 17px}.viewing-guide p{font-size:14px;color:#b8ced9;margin:8px 0}.viewing-guide strong{color:#e1eee9;font-weight:500}.key-val{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--muted);margin:5px 0}.key-val strong{font-weight:500;color:#dfecf1;font-variant-numeric:tabular-nums}.badge{display:inline-block;border-radius:5px;padding:2px 6px;background:#224337;color:#b0efcc;font-size:12px}.badge.estimate{background:#3a3324;color:#efd29a}.footer{padding:18px 0 24px;color:var(--muted);font-size:12px;display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap}.file-menu{position:relative}.file-menu summary{list-style:none;cursor:pointer;background:#1a3241;border:1px solid #3c5969;border-radius:7px;font-size:14px;padding:7px 11px}.file-menu summary::-webkit-details-marker{display:none}.menu{position:absolute;right:0;top:42px;z-index:10;background:#172f3d;border:1px solid #456577;box-shadow:0 15px 35px #0008;border-radius:9px;padding:7px;min-width:220px;display:grid;gap:4px}.menu button{border-color:transparent;background:transparent;font-size:14px;text-align:left}.hidden,[hidden]{display:none!important}dialog{background:#142a36;color:var(--ink);border:1px solid #4b7181;border-radius:14px;max-width:780px;width:calc(100% - 30px);max-height:88vh;padding:26px;overflow:auto;box-shadow:0 24px 80px #0009}dialog::backdrop{background:#000a;backdrop-filter:blur(4px)}dialog h2{font:29px/1.2 Georgia,serif;margin:0 0 16px}dialog h3{font-size:17px;color:var(--teal);margin:23px 0 9px}dialog p{font-size:16px;color:#c0d2dc}.close-dialog{float:right}.equation{font:18px/1.7 Georgia,serif;padding:13px;text-align:center;background:#0c202b;border-radius:8px;margin:13px 0}.calibration-ruler{height:92px;display:flex;align-items:center;justify-content:center;overflow:visible;margin:20px 0 8px}.ruler{height:34px;border-left:2px solid #fff0c1;border-right:2px solid #fff0c1;border-bottom:2px solid #fff0c1;position:relative;flex-shrink:0;background:repeating-linear-gradient(90deg,transparent 0,transparent calc(10% - 1px),#cfbf8c88 calc(10% - 1px),#cfbf8c88 10%);background-size:100% 13px;background-repeat:no-repeat;background-position:bottom}.ruler span{position:absolute;left:0;right:0;top:-28px;text-align:center;font-size:14px;color:#ffe9a9}.cal-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:20px;flex-wrap:wrap}.calibration-dialog{max-width:720px}.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:11px 16px;background:#244b43;border:1px solid var(--teal);border-radius:9px;z-index:20;font-size:14px;max-width:90vw}.controls-summary{display:none}.status-note{font-size:12px;color:var(--muted);margin-top:9px}.scene-switch{display:flex;gap:6px;margin-bottom:15px}.scene-switch>*{flex:1;font-size:13px;padding:7px}.pair-controls .row{margin-top:8px}.pair-controls .row button{font-size:12px;padding:6px 8px}.readout .label{font-size:11px;letter-spacing:.07em}.calibration-dialog .control label{font-size:15px}.calibration-dialog .small{font-size:13px}.guide-table{width:100%;font-size:14px;border-collapse:collapse}.guide-table td,.guide-table th{padding:8px;border-bottom:1px solid var(--line);text-align:left}.guide-table th{font-weight:500;color:var(--muted)}
+@media(min-width:1400px){.stage{height:550px}}@media(max-width:1050px){header,.wrap{padding-left:18px;padding-right:18px}.layout{grid-template-columns:235px minmax(0,1fr)}.modebar{padding:11px 12px;gap:5px}.modebar button{font-size:12px;padding:6px 9px}.below{grid-template-columns:1fr}.readouts{gap:8px}.readout{padding:10px}.readout .value{font-size:18px}.stage{height:480px}}@media(max-width:760px){header{display:block;padding:20px 14px 17px}.actions{margin-top:15px}.wrap{padding:0 12px}.workflow{padding:11px 12px;gap:7px}.workflow .small{width:100%}.workflow button{flex:1;font-size:12px;padding:7px 8px}.layout{grid-template-columns:1fr}.controls-summary{display:block;font-size:14px;list-style:none;cursor:pointer;padding:10px 13px;border:1px solid var(--line);background:#182f3d;border-radius:8px;margin-bottom:0}.controls-container[open] .controls-summary{margin-bottom:10px}.controls{display:grid;grid-template-columns:1fr 1fr;gap:0 20px;padding:15px}.controls>.divider{display:none}.control-geometry{grid-row:span 2}.stage{height:420px}.stage-head{padding:12px}.stage-head h2{font-size:14px}.readouts{grid-template-columns:1fr 1fr}.readout:last-child{grid-column:1/-1}.below{grid-template-columns:1fr}.stage-foot{padding:12px}.modebar{padding:11px;gap:5px}.modebar button{font-size:12px;padding:6px 9px}.viewing-guide{padding:13px 15px}.footer{padding-top:17px}dialog{padding:20px}.calibration-ruler{margin-top:25px}}@media(max-width:440px){.controls{display:block}.stage{height:380px}.stage-head .row{gap:5px}.stage-head .row button{padding:5px 8px;font-size:12px}.stage-head{align-items:flex-start}.modebar button{flex:1 0 28%;font-size:12px}.workflow .small{font-size:12px}.readout .label{font-size:11px}.readout .value{font-size:18px}.stage-foot .row button{font-size:12px;padding:6px 8px}.cal-foot .row{flex-wrap:wrap}header p{font-size:14px}.scene-switch button{font-size:14px}}@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body>
+<header><div><div class="eyebrow">Hopf fibration / stereo without guesswork</div><h1>Find your view</h1><p>Explore linked circles in ordinary 3D, then build a stereo setup that fits your screen. Start small and add depth gradually.</p></div><div class="actions"><button id="guideBtn">Viewing guide</button><details id="fileMenu" class="file-menu"><summary>Experiment</summary><div class="menu"><button id="saveBtn">Save setup (.json)</button><button id="openBtn">Open setup…</button><button id="offlineBtn">Download offline viewer</button><button id="pngBtn">Save current view (.png)</button><button id="csvBtn">Export fiber coordinates (.csv)</button></div></details></div></header>
+<main class="wrap"><div class="workflow"><span class="small">For a stereo pair, start here:</span><button id="screenStep">Screen scale</button><button id="targetStep">Fusion target</button><button id="hopfStep">Show fibers</button></div><div class="layout">
+<details id="controlsDisclosure" class="controls-container" open><summary class="controls-summary">Viewing &amp; geometry controls</summary><aside class="panel controls" aria-label="Viewing and geometry controls"><div class="control-view"><h2 class="section-title">Fit the display</h2><button id="calibrateBtn" class="primary" style="width:100%">Calibrate screen scale</button><div class="status-note"><span id="scaleBadge" class="badge estimate">Scale estimated</span></div><div class="notice" id="scaleNote">Physical sizes are estimates until you match the ruler to your monitor.</div>
+<div class="control"><label for="depth">Horizontal disparity cap <output id="depthOut"></output></label><input id="depth" type="range" min="0" max="3" step=".05"><span class="small">Separate from pair size. Zero gives matching camera views.</span></div><div class="row equal" style="margin-bottom:17px"><button id="flatBtn">Zero depth</button><button id="gentleBtn">Gentle depth</button></div>
+<div id="pairControls" class="pair-controls" hidden><div class="control"><label for="pairWidth">Each image width <output id="pairWidthOut"></output></label><input id="pairWidth" type="range" min="20" max="75" step="1"></div><div class="control"><label for="gap">Gap between images <output id="gapOut"></output></label><input id="gap" type="range" min="2" max="20" step="1"></div><div class="row equal"><button id="smallPairBtn">Smaller pair</button><button id="normalPairBtn">Reset pair</button></div><p id="fitNote" class="small"></p></div>
+<div class="control"><label for="zoom">Object size <output id="zoomOut"></output></label><input id="zoom" type="range" min=".7" max="1.4" step=".01"></div><details class="control-disclosure"><summary>Viewing geometry</summary><div><div class="control"><label for="eyeSeparation">Eye separation, if known <output id="eyeOut"></output></label><input id="eyeSeparation" type="range" min="50" max="78" step="1"><span class="small">64 mm is a starting assumption, not a measurement.</span></div><div class="control"><label for="viewDistance">Distance to screen <output id="distanceOut"></output></label><input id="viewDistance" type="range" min="35" max="100" step="1"></div><div class="key-val"><span>Reference target distance</span><strong id="vergenceReadout">—</strong></div><p class="small">Geometric estimate from image-center spacing, not a report of what you perceive.</p></div></details><div class="divider"></div></div>
+<div class="control-geometry"><h2 class="section-title">Choose the scene</h2><div class="scene-switch"><button id="sceneTarget" aria-pressed="false">Test target</button><button id="sceneHopf" aria-pressed="true">Hopf fibers</button></div><div class="control"><label for="preset">Fiber arrangement</label><select id="preset"><option value="link">Two linked fibers</option><option value="ring">One torus of fibers</option><option value="tori">Three nested tori</option><option value="belt">A belt of base points</option><option value="exceptional">Circle &amp; exceptional line</option></select></div><div class="control" id="countControl"><label for="count">Fiber count <output id="countOut"></output></label><input id="count" type="range" min="6" max="72" step="6"></div><div class="control"><label for="selectedFiber">Highlight a fiber</label><select id="selectedFiber"></select></div><details class="control-disclosure"><summary>Drawing &amp; motion</summary><div><div class="control"><label for="samples">Curve samples</label><select id="samples"><option>128</option><option selected>192</option><option>256</option></select></div><div class="control"><label for="lineWidth">Tube thickness <output id="lineWidthOut"></output></label><input id="lineWidth" type="range" min=".02" max=".075" step=".005"></div><div class="control"><label for="phaseSpeed">Bead speed <output id="phaseOut"></output></label><input id="phaseSpeed" type="range" min=".1" max="1.2" step=".05"></div><div class="checks"><label><input id="beads" type="checkbox" checked>Beads along fibers</label><label><input id="autoOrbit" type="checkbox">Rotate while animating</label><label><input id="marks" type="checkbox" checked>Pair alignment dots</label><label><input id="gray" type="checkbox">Monochrome</label></div><p class="small">Red/cyan mode always uses luminance so both eyes receive every fiber.</p></div></details></div>
+</aside></details>
+<div class="main"><section class="panel" aria-label="Hopf stereoscopic viewer"><nav class="modebar" aria-label="Viewing mode"><button data-mode="orbit" aria-pressed="true">Orbit</button><button data-mode="parallel" aria-pressed="false">Parallel</button><button data-mode="cross" aria-pressed="false">Cross-eye</button><button data-mode="anaglyph" aria-pressed="false">Red/cyan</button><button data-mode="wiggle" aria-pressed="false">Wiggle</button></nav><div class="stage-head"><div><h2 id="sceneTitle">Two linked fibers</h2><div class="small" id="sceneSubtitle"></div></div><div class="row"><button id="playBtn">Animate</button><button id="resetViewBtn">Reset view</button></div></div><div id="stage" class="stage"><canvas id="sceneCanvas" aria-hidden="true"></canvas><canvas id="overlayCanvas" tabindex="0" role="img" aria-label="Interactive Hopf fibers in 3D; drag to rotate or use arrow keys"></canvas></div><div class="stage-foot"><div id="modeInstruction" class="mode-instruction"></div><div class="row"><button id="targetAgainBtn">Try the fusion target</button><button id="continueBtn">Continue with fibers</button><button id="wiggleBtn">Use wiggle instead</button></div><div id="geometryWarning" class="notice" hidden></div></div></section>
+<div class="readouts"><div class="readout"><div class="label">Image centers</div><div id="spacingReadout" class="value">Single view</div><div id="spacingNote" class="small"></div></div><div class="readout"><div class="label">Horizontal shift</div><div id="disparityReadout" class="value">—</div><div class="small">Camera-view difference, relative to the reference plane.</div></div><div class="readout"><div class="label">Vertical alignment</div><div class="value">Shared projection</div><div class="small">Parallel optical axes; no toe-in.</div></div></div>
+<div class="below"><section class="panel"><div class="panel-head"><h2>One base point, one fiber</h2></div><canvas id="baseCanvas" class="base-canvas" aria-label="Base sphere in longitude and latitude coordinates; click a point to highlight its Hopf fiber"></canvas><div id="fiberNote" class="base-foot"></div></section><section class="panel viewing-guide"><h2 class="section-title">Find a setting you can use</h2><p><strong>Start with the target.</strong> Each eye gets half a cross. If the inner targets fuse, the middle circle contains a complete +.</p><p><strong>Keep the pair small.</strong> A wide browser should not force a wide stereo pair. Change image width independently of depth.</p><p><strong>Orbit and wiggle need no fusion.</strong> They reveal the same linked geometry through ordinary perspective and motion.</p><p class="small">Start shallow. If viewing feels strained, switch to orbit or wiggle.</p><button id="mathBtn" style="margin-top:5px">The Hopf construction</button></section></div>
+</div></div><footer class="footer"><span id="rendererStatus">Initializing the renderer…</span><span><a href="https://bobovski66.github.io/">More explorations</a></span></footer></main>
+<input id="fileInput" type="file" accept=".json,application/json" hidden><div id="toast" class="toast" role="status" hidden></div>
+<dialog id="calibration" class="calibration-dialog"><button id="closeCalibration" class="close-dialog">Close</button><h2>Match the screen to a real length</h2><p>Hold a ruler beside the bar and adjust it until its end marks are the stated distance apart. This accounts for your monitor, system scaling and browser zoom.</p><div class="control"><label for="calibrationReference">Reference to match</label><select id="calibrationReference"><option value="50">50 mm on a ruler</option><option value="53.98">Short edge of a standard bank card · 53.98 mm</option><option value="85.6">Long edge of a standard bank card · 85.60 mm</option></select></div><div class="calibration-ruler"><div id="ruler" class="ruler"><span id="rulerLabel">50 mm</span></div></div><div class="control"><label for="rulerSize">Adjust the on-screen bar</label><input id="rulerSize" type="range" min="90" max="600" step=".5"><span class="small">Match the end marks, then save. Choose the ruler reference if a card edge will not fit on screen.</span></div><div class="cal-foot"><button id="resetCalibration">Use estimated scale</button><button id="saveCalibration" class="primary">Save screen scale</button></div><p class="small">Recheck after changing browser zoom or moving this window to a different monitor. The scale is remembered in this browser.</p></dialog>
+<dialog id="guide"><button id="closeGuide" class="close-dialog">Close</button><h2>Getting a stereo pair to fuse</h2><p>The original viewer let image size follow browser width. This version keeps pair size and depth separate. Calibrate the screen first if you want the millimeter controls to describe your actual display.</p><h3>Choose the method you use</h3><table class="guide-table"><thead><tr><th>Mode</th><th>Which eye sees which image?</th></tr></thead><tbody><tr><td>Parallel</td><td>Left eye sees left panel; right eye sees right panel.</td></tr><tr><td>Cross-eye</td><td>Left eye sees right panel; right eye sees left panel.</td></tr><tr><td>Red/cyan</td><td>Red filter over the left eye, cyan over the right.</td></tr><tr><td>Orbit / wiggle</td><td>Ordinary single-image viewing; no eye fusion needed.</td></tr></tbody></table><h3>Begin with zero depth</h3><p>Open Fusion target. The two camera views initially match, except that one eye receives a horizontal stroke and the other a vertical stroke. Bring the two inner circles together into a middle circle. A complete + in the middle shows that the two eye views are being combined. The two outer copies can remain visible.</p><p>For parallel viewing, keep the pair small and let your gaze relax past the screen. For cross-eye viewing, a fingertip held between you and the screen can help you bring the inner targets together; then try focusing on the middle target. These methods do not work equally well for everyone.</p><p>Once you have a steady middle image, choose Gentle depth. The amber dot is nearer and the teal dot farther than the reference dot. Then continue with two linked fibers. Keep the scene still while finding the image; moving beads and rotation can wait.</p><h3>Why image spacing matters</h3><p>For parallel viewing, corresponding features separated by more than your eye spacing require the eyes to diverge. The viewer flags that geometry using your chosen eye separation. This is a geometric check, not a guarantee of comfortable fusion at smaller separations. Use Smaller pair to reduce the width and gap together.</p><p>At zero local camera disparity, a free-viewed pair can still appear behind the screen in parallel mode or in front of it in cross-eye mode. In anaglyph mode the zero-disparity reference is on the screen. The reference-distance readout uses the simple ray geometry Z = ID/(I − S), where I is eye spacing, D is viewing distance, and S is signed image-center separation.</p><h3>The camera construction</h3><p>The cameras stay parallel and use shifted frusta. For a point (x,y,z), eye position e, reference distance D and focal scale f, the local projected coordinates are:</p><div class="equation">u = f[(x − e)/(D − z) + e/D]<br>v = fy/(D − z)</div><p>The vertical coordinate is identical for both eyes. At z = 0 the horizontal coordinates match too. Depth controls cap the horizontal camera-view shift using the scene bound. Cross-eye mode swaps the camera views; it does not mirror the scene. Anaglyph uses luminance in the red and cyan channels.</p><h3>Alternatives and saving</h3><p>Wiggle moves a single viewpoint between the two eye positions, with a threefold motion gain. It provides motion parallax, rather than simultaneous binocular stereo. Orbit lets you drag and inspect the geometry directly. Neither requires you to fuse two images.</p><p>Save records the scene, view, animation phase and calibration. Open restores the setup paused. Offline HTML contains the same setup and has no external dependencies. An exported image should be displayed at the intended physical scale if you want to preserve its free-viewing arrangement. Fusion is something you assess with your eyes; the viewer cannot detect it.</p><p>Technical background: <a href="https://paulbourke.org/stereoscopy/stereorender/" target="_blank" rel="noopener">Paul Bourke, Calculating Stereo Pairs</a>.</p></dialog>
+<dialog id="math"><button id="closeMath" class="close-dialog">Close</button><h2>Circles above points on a sphere</h2><p>Write a point of S³ as (z₁,z₂) in C², with |z₁|² + |z₂|² = 1. This viewer uses the Hopf map</p><div class="equation">H(z₁,z₂) = (2 Re(z̄₁z₂), 2 Im(z̄₁z₂), |z₁|² − |z₂|²).</div><p>Multiplying both complex coordinates by the same phase eⁱᵗ leaves H unchanged. The points (eⁱᵗz₁,eⁱᵗz₂) trace one circular fiber in S³. Distinct fibers are linked once. The dots in the longitude/latitude chart are base points on S²; highlighting a dot selects its fiber.</p><h3>Bringing S³ into view</h3><p>With (x₀,x₁,x₂,x₃) = (Re z₁, Im z₁, Re z₂, Im z₂), stereographic projection from the pole (+1,0,0,0) is</p><div class="equation">(x₀,x₁,x₂,x₃) ↦ (x₁,x₂,x₃)/(1 − x₀).</div><p>A fiber avoiding the projection pole becomes a circle in R³. The one fiber through the pole becomes a straight line. Choose Circle & exceptional line to see that case. A line is the image of the fiber minus the removed projection point; it is not a broken Hopf circle.</p><p>The viewer clips the unbounded R³ picture to a sphere of radius 3.8 before uniformly fitting the chosen geometry into the view. Large circles can therefore have clipped ends. Changing presets refits the visible geometry. Tube thickness is a drawing aid, not part of the Hopf map.</p><h3>What the presets sample</h3><p>One torus uses base points around the equator. Three nested tori use three latitudes. The belt samples latitudes with −0.8 &lt; n_z &lt; 0.8, avoiding the projection singularity. The first scene contains only two fibers, so the linking is easy to follow.</p><p>Beads follow the common S³ phase and are transformed with the same 3D rotation as the fibers. They can move nonuniformly in the stereographic picture and disappear outside the clipping window. The fiber itself stays fixed under a common phase change.</p></dialog>
+<script id="embeddedExperiment" type="application/json">null</script><script>const HopfMath=(()=>{
+'use strict';
+const PI=Math.PI,TAU=PI*2,clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),add=(a,b)=>a.map((x,i)=>x+b[i]),sub=(a,b)=>a.map((x,i)=>x-b[i]),mul=(a,s)=>a.map(x=>x*s),dot=(a,b)=>a.reduce((s,x,i)=>s+x*b[i],0),norm=a=>Math.hypot(...a),unit=a=>mul(a,1/(norm(a)||1)),cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+function defaults(){return {mode:'orbit',scene:'hopf',preset:'link',count:24,samples:192,depth:.8,pairWidth:32,gap:6,eyeSeparation:64,viewDistance:60,zoom:1,yaw:.55,pitch:-.3,beads:true,autoOrbit:false,phaseSpeed:.45,lineWidth:.035,marks:true,gray:false,wiggleGain:3,selected:-1,preferredStereo:'parallel',calibration:{pxPerMm:96/25.4,calibrated:false,dpr:1,reference:50}};}
+// H(z1,z2)=(2 Re(conj(z1)z2),2 Im(conj(z1)z2),|z1|²−|z2|²).
+function section(n){if(n[2]>-.999999999){const a=Math.sqrt((1+n[2])/2),d=2*a;return [a,0,n[0]/d,n[1]/d];}return [0,0,1,0];}
+function phase(q,t){const c=Math.cos(t),s=Math.sin(t);return [c*q[0]-s*q[1],s*q[0]+c*q[1],c*q[2]-s*q[3],s*q[2]+c*q[3]];}
+function hopf(q){return [2*(q[0]*q[2]+q[1]*q[3]),2*(q[0]*q[3]-q[1]*q[2]),q[0]**2+q[1]**2-q[2]**2-q[3]**2];}
+function projectS3(q){const d=1-q[0];return d<1e-12?null:[q[1]/d,q[2]/d,q[3]/d];}
+function inverseStereographic(p){const s=dot(p,p);return [(s-1)/(s+1),2*p[0]/(s+1),2*p[1]/(s+1),2*p[2]/(s+1)];}
+function pointOnFiber(n,t){return projectS3(phase(section(n),t));}
+function circle(n){
+ if(n[2]>1-1e-10)return {line:true,axis:[1,0,0]};
+ const q=section(n),A=projectS3(phase(q,.17)),B=projectS3(phase(q,TAU/3+.17)),C=projectS3(phase(q,2*TAU/3+.17)),a=sub(B,A),b=sub(C,A),normal=cross(a,b),nn=dot(normal,normal),offset=mul(add(mul(cross(b,normal),dot(a,a)),mul(cross(normal,a),dot(b,b))),1/(2*nn)),center=add(A,offset),radius=norm(offset),e1=unit(sub(A,center)),e2=unit(cross(unit(normal),e1));return {line:false,center,radius,e1,e2,normal:unit(normal)};
+}
+function sampleFiber(n,samples=192,limit=3.8){
+ const c=circle(n);if(c.line)return {circle:c,closed:false,clipped:true,points:Array.from({length:samples+1},(_,i)=>[-limit+2*limit*i/samples,0,0])};
+ const a=dot(c.center,c.e1),b=dot(c.center,c.e2),amp=Math.hypot(a,b);let t0=0,t1=TAU,clipped=false;
+ if(amp>1e-10){const threshold=(limit*limit-dot(c.center,c.center)-c.radius*c.radius)/(2*c.radius*amp);if(threshold<=-1)return {circle:c,closed:false,clipped:true,points:[]};if(threshold<1){const angle=Math.acos(clamp(threshold,-1,1)),phase=Math.atan2(b,a);t0=phase+angle;t1=phase+TAU-angle;clipped=true;}}
+ else if(dot(c.center,c.center)+c.radius*c.radius>limit*limit)return {circle:c,closed:false,clipped:true,points:[]};
+ const points=Array.from({length:samples+1},(_,i)=>{const t=t0+(t1-t0)*i/samples;return add(c.center,mul(add(mul(c.e1,Math.cos(t)),mul(c.e2,Math.sin(t))),c.radius));});return {circle:c,closed:!clipped,clipped,points};
+}
+function basePoints(preset,count=24){
+ if(preset==='link')return [[1,0,0],[-1,0,0]];
+ if(preset==='exceptional')return [[0,0,1],[0,0,-1]];
+ if(preset==='tori'){const per=Math.max(2,Math.round(count/3)),result=[];for(const z of [-.5,0,.5])for(let i=0;i<per;i++){const t=TAU*i/per+z*.3,r=Math.sqrt(1-z*z);result.push([r*Math.cos(t),r*Math.sin(t),z]);}return result;}
+ if(preset==='belt'){return Array.from({length:count},(_,i)=>{const z=-.8+1.6*(i+.5)/count,t=PI*(3-Math.sqrt(5))*i,r=Math.sqrt(1-z*z);return [r*Math.cos(t),r*Math.sin(t),z];});}
+ return Array.from({length:count},(_,i)=>[Math.cos(TAU*i/count),Math.sin(TAU*i/count),0]);
+}
+function hsl(h,s,l){const a=s*Math.min(l,1-l),f=n=>{const k=(n+h*12)%12;return l-a*Math.max(-1,Math.min(k-3,9-k,1));};return [f(0),f(8),f(4)];}
+function color(n,i,preset){if(preset==='link'||preset==='exceptional')return i===0?[.96,.72,.34]:[.28,.84,.76];return hsl((Math.atan2(n[1],n[0])/TAU+1)%1,.62,.59);}
+function geometry(settings){const normals=basePoints(settings.preset,settings.count),fibers=normals.map((n,i)=>({n,index:i,color:color(n,i,settings.preset),...sampleFiber(n,settings.samples)}));let max=0;for(const f of fibers)for(const p of f.points)max=Math.max(max,norm(p));return {fibers,scale:2.05/(max||1),limit:3.8};}
+function rotate(p,yaw,pitch){const cy=Math.cos(yaw),sy=Math.sin(yaw),cp=Math.cos(pitch),sp=Math.sin(pitch),x=cy*p[0]+sy*p[2],z=-sy*p[0]+cy*p[2];return [x,cp*p[1]-sp*z,sp*p[1]+cp*z];}
+function rotationMatrix(yaw,pitch){const cy=Math.cos(yaw),sy=Math.sin(yaw),cp=Math.cos(pitch),sp=Math.sin(pitch);return [cy,sp*sy,-cp*sy,0,cp,sp,sy,-sp*cy,cp*cy];}
+// Parallel, shifted frusta. No toe-in; all eyes share exactly the same vertical projection.
+function cameraProject(p,eye,focal,D=7){const d=D-p[2];return [focal*((p[0]-eye)/d+eye/D),focal*p[1]/d,d];}
+function baseline(disparityPx,focal,bound=2.5,D=7){return disparityPx/(focal*(1/(D-bound)-1/D));}
+function layout(width,height,s){const ppm=s.calibration.pxPerMm,pair=s.mode==='parallel'||s.mode==='cross';if(pair){const gap=s.gap*ppm,w=Math.max(30,Math.min(s.pairWidth*ppm,(width-30-gap)/2,height-135)),h=w,left=(width-2*w-gap)/2,top=(height-h)/2-5;return {pair:true,panels:[{x:left,y:top,w,h,eye:s.mode==='cross'?1:-1},{x:left+w+gap,y:top,w,h,eye:s.mode==='cross'?-1:1}],actualWidth:w/ppm,centerSeparation:(w+gap)/ppm,fitted:w/ppm<s.pairWidth-.1};}const h=Math.min(height-85,width*.72),w=Math.min(width-35,h*1.38),x=(width-w)/2,y=(height-h)/2-4;return {pair:false,panels:[{x,y,w,h,eye:0}],actualWidth:w/ppm,centerSeparation:0,fitted:false};}
+function eyePlan(mode,phase=0,gain=3){if(mode==='parallel')return [-1,1];if(mode==='cross')return [1,-1];if(mode==='anaglyph')return [-1,1];if(mode==='wiggle')return [Math.sin(phase*TAU*.55)*gain];return [0];}
+function apparentDepth(separationMm,eyeMm,distanceMm){return separationMm>=eyeMm?null:eyeMm*distanceMm/(eyeMm-separationMm);}
+return {PI,TAU,clamp,add,sub,mul,dot,norm,unit,cross,defaults,section,phase,hopf,projectS3,inverseStereographic,pointOnFiber,circle,sampleFiber,basePoints,color,geometry,rotate,rotationMatrix,cameraProject,baseline,layout,eyePlan,apparentDepth};
+})();
+if(typeof module!=='undefined'&&module.exports)module.exports=HopfMath;
+</script><script>const HopfRender=(()=>{
+'use strict';const H=HopfMath;
+function tubes(geometry,radius=.035,sides=8){const vertices=[],indices=[];for(const fiber of geometry.fibers){const points=fiber.points,start=vertices.length/10;for(let i=0;i<points.length;i++){const p=points[i],u=fiber.circle.line?[0,1,0]:H.unit(H.sub(p,fiber.circle.center)),v=fiber.circle.line?[0,0,1]:fiber.circle.normal;for(let j=0;j<sides;j++){const t=H.TAU*j/sides,normal=H.add(H.mul(u,Math.cos(t)),H.mul(v,Math.sin(t))),pos=H.add(p,H.mul(normal,radius));vertices.push(...pos,...normal,...fiber.color,fiber.index);}}
+ for(let i=0;i<points.length-1;i++)for(let j=0;j<sides;j++){const a=start+i*sides+j,b=start+i*sides+(j+1)%sides,c=a+sides,d=b+sides;indices.push(a,b,c,b,d,c);}}return {vertices:new Float32Array(vertices),indices:new Uint32Array(indices)};}
+function spheres(items,lat=12,lon=18){const vertices=[],indices=[];for(const item of items){const start=vertices.length/10;for(let i=0;i<=lat;i++)for(let j=0;j<=lon;j++){const a=Math.PI*i/lat,b=H.TAU*j/lon,n=[Math.sin(a)*Math.cos(b),Math.cos(a),Math.sin(a)*Math.sin(b)],p=H.add(item.center,H.mul(n,item.radius));vertices.push(...p,...n,...item.color,-1);}for(let i=0;i<lat;i++)for(let j=0;j<lon;j++){const a=start+i*(lon+1)+j,b=a+lon+1;indices.push(a,b,a+1,a+1,b,b+1);}}return {vertices:new Float32Array(vertices),indices:new Uint32Array(indices)};}
+const trainingItems=[{center:[-.8,.3,.9],radius:.19,color:[.96,.72,.34]},{center:[0,-.45,0],radius:.19,color:[.8,.87,.9]},{center:[.8,.3,-.9],radius:.19,color:[.28,.84,.76]}];
+class GLRenderer{
+ constructor(canvas){this.canvas=canvas;const gl=canvas.getContext('webgl2',{antialias:true,alpha:false,preserveDrawingBuffer:true});if(!gl)throw Error('WebGL 2 is unavailable');this.gl=gl;const vertex=`#version 300 es
+ precision highp float;layout(location=0) in vec3 aPosition;layout(location=1) in vec3 aNormal;layout(location=2) in vec3 aColor;layout(location=3) in float aFiber;
+ uniform mat3 uRotation;uniform float uScale;uniform float uObjectScale;uniform vec3 uOffset;uniform float uEye;uniform vec2 uFocal;uniform float uSelected;uniform vec3 uTint;
+ out vec3 vNormal;out vec3 vColor;out float vDepth;
+ void main(){vec3 p=uRotation*(aPosition*uObjectScale+uOffset)*uScale;float d=7.0-p.z;vec2 xy=vec2(uFocal.x*(p.x-uEye*p.z/7.0),uFocal.y*p.y);float clipZ=((30.0+0.1)/(30.0-0.1))*d-2.0*30.0*0.1/(30.0-0.1);gl_Position=vec4(xy,clipZ,d);vNormal=uRotation*aNormal;float selected=uSelected<-.5?1.0:(abs(aFiber-uSelected)<.1?1.15:.56);vColor=aColor*uTint*selected;vDepth=d;}`;
+ const fragment=`#version 300 es
+ precision highp float;in vec3 vNormal;in vec3 vColor;in float vDepth;uniform bool uGray;out vec4 fragColor;
+ void main(){vec3 n=normalize(vNormal);float diffuse=max(0.0,dot(n,normalize(vec3(-.5,.7,1.0))));float rim=pow(1.0-abs(n.z),2.0);vec3 c=vColor*(.36+.62*diffuse)+vec3(.08)*rim;c*=clamp(1.12-.025*vDepth,.75,1.0);if(uGray){float y=dot(c,vec3(.2126,.7152,.0722));c=vec3(y);}fragColor=vec4(c,1.0);}`;
+ const shader=(type,source)=>{const s=gl.createShader(type);gl.shaderSource(s,source);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s;};const program=gl.createProgram();gl.attachShader(program,shader(gl.VERTEX_SHADER,vertex));gl.attachShader(program,shader(gl.FRAGMENT_SHADER,fragment));gl.linkProgram(program);if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(program));this.program=program;this.uniform={};for(const key of ['Rotation','Scale','ObjectScale','Offset','Eye','Focal','Selected','Tint','Gray'])this.uniform[key]=gl.getUniformLocation(program,`u${key}`);this.training=this.upload(spheres(trainingItems));this.bead=this.upload(spheres([{center:[0,0,0],radius:1,color:[1,1,1]}],10,14));gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);this.label='WebGL · depth-tested tubes';
+ }
+ upload(data){const gl=this.gl,vao=gl.createVertexArray(),vbo=gl.createBuffer(),ibo=gl.createBuffer();gl.bindVertexArray(vao);gl.bindBuffer(gl.ARRAY_BUFFER,vbo);gl.bufferData(gl.ARRAY_BUFFER,data.vertices,gl.STATIC_DRAW);gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ibo);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,data.indices,gl.STATIC_DRAW);for(const [loc,size,offset]of [[0,3,0],[1,3,12],[2,3,24],[3,1,36]]){gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,size,gl.FLOAT,false,40,offset);}return {vao,vbo,ibo,count:data.indices.length};}
+ dispose(mesh){if(!mesh)return;const gl=this.gl;gl.deleteVertexArray(mesh.vao);gl.deleteBuffer(mesh.vbo);gl.deleteBuffer(mesh.ibo);}
+ rebuild(geometry,radius){this.dispose(this.mesh);this.mesh=this.upload(tubes(geometry,radius));}
+ drawMesh(mesh,scale=1,offset=[0,0,0],tint=[1,1,1]){const gl=this.gl;gl.uniform1f(this.uniform.ObjectScale,scale);gl.uniform3fv(this.uniform.Offset,offset);gl.uniform3fv(this.uniform.Tint,tint);gl.bindVertexArray(mesh.vao);gl.drawElements(gl.TRIANGLES,mesh.count,gl.UNSIGNED_INT,0);}
+ render(state,geometry,layout,clock,dpr){const gl=this.gl;gl.useProgram(this.program);gl.disable(gl.SCISSOR_TEST);gl.colorMask(true,true,true,true);gl.clearColor(.027,.055,.079,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.uniformMatrix3fv(this.uniform.Rotation,false,new Float32Array(state.scene==='target'?H.rotationMatrix(0,0):H.rotationMatrix(state.yaw,state.pitch)));gl.uniform1f(this.uniform.Scale,state.scene==='target'?1:geometry.scale*state.zoom);
+ const draw=(panel,eye,anaglyph=false)=>{const rect=[Math.round(panel.x*dpr),Math.round(this.canvas.height-(panel.y+panel.h)*dpr),Math.round(panel.w*dpr),Math.round(panel.h*dpr)];gl.viewport(...rect);gl.enable(gl.SCISSOR_TEST);gl.scissor(...rect);const focal=.5*panel.h/Math.tan(25*Math.PI/180),bound=state.scene==='target'?1.2:2.2*state.zoom,B=H.baseline(state.depth*state.calibration.pxPerMm,focal,bound);gl.uniform1f(this.uniform.Eye,eye*B/2);gl.uniform2f(this.uniform.Focal,2*focal/panel.w,2*focal/panel.h);gl.uniform1i(this.uniform.Gray,state.gray||anaglyph?1:0);gl.uniform1f(this.uniform.Selected,state.selected);
+ if(state.scene==='target'){if(state.depth>0){gl.uniform1f(this.uniform.Selected,-1);this.drawMesh(this.training);}}else{if(this.mesh)this.drawMesh(this.mesh);if(state.beads){gl.uniform1f(this.uniform.Selected,-1);for(const fiber of geometry.fibers){if(state.selected>=0&&fiber.index!==state.selected)continue;const t=clock*state.phaseSpeed+fiber.index*1.7,p=H.pointOnFiber(fiber.n,t);if(!p||H.norm(p)>geometry.limit-.1)continue;this.drawMesh(this.bead,state.lineWidth*2.1,p,fiber.color.map(v=>Math.min(1,v+.18)));}}}};
+ if(layout.pair){for(const panel of layout.panels)draw(panel,panel.eye);}else if(state.mode==='anaglyph'){const panel=layout.panels[0];gl.clearColor(0,0,0,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.colorMask(true,false,false,true);draw(panel,-1,true);gl.clear(gl.DEPTH_BUFFER_BIT);gl.colorMask(false,true,true,true);draw(panel,1,true);gl.colorMask(true,true,true,true);}else draw(layout.panels[0],H.eyePlan(state.mode,clock,state.wiggleGain)[0]);gl.disable(gl.SCISSOR_TEST);
+ }
+}
+class PainterRenderer{
+ constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.label='Canvas fallback · approximate overlap';}
+ rebuild(){}
+ drawEye(ctx,state,geometry,panel,eye,clock){const focal=.5*panel.h/Math.tan(25*Math.PI/180),bound=state.scene==='target'?1.2:2.2*state.zoom,B=H.baseline(state.depth*state.calibration.pxPerMm,focal,bound),transform=p=>state.scene==='target'?p:H.mul(H.rotate(p,state.yaw,state.pitch),geometry.scale*state.zoom),project=p=>{const q=H.cameraProject(transform(p),eye*B/2,focal);return [panel.x+panel.w/2+q[0],panel.y+panel.h/2-q[1],q[2]];};ctx.save();ctx.beginPath();ctx.rect(panel.x,panel.y,panel.w,panel.h);ctx.clip();ctx.fillStyle='#07151e';ctx.fillRect(panel.x,panel.y,panel.w,panel.h);const segments=[];if(state.scene==='hopf'){for(const fiber of geometry.fibers)for(let i=1;i<fiber.points.length;i++){const a=project(fiber.points[i-1]),b=project(fiber.points[i]),depth=(a[2]+b[2])/2;segments.push({a,b,depth,color:fiber.color,selected:state.selected<0||state.selected===fiber.index});}segments.sort((a,b)=>b.depth-a.depth);ctx.lineCap='round';for(const seg of segments){let c=seg.color;if(state.gray){const v=c[0]*.2126+c[1]*.7152+c[2]*.0722;c=[v,v,v];}ctx.strokeStyle=`rgb(${c.map(v=>Math.round(v*255*(seg.selected?1:.45))).join(',')})`;ctx.lineWidth=Math.max(.7,2*focal*state.lineWidth*geometry.scale*state.zoom/seg.depth);ctx.beginPath();ctx.moveTo(seg.a[0],seg.a[1]);ctx.lineTo(seg.b[0],seg.b[1]);ctx.stroke();}if(state.beads)for(const fiber of geometry.fibers){if(state.selected>=0&&state.selected!==fiber.index)continue;const p=H.pointOnFiber(fiber.n,clock*state.phaseSpeed+fiber.index*1.7);if(!p||H.norm(p)>geometry.limit)continue;const a=project(p);ctx.beginPath();ctx.arc(a[0],a[1],Math.max(1.4,focal*state.lineWidth*2.1*geometry.scale*state.zoom/a[2]),0,H.TAU);ctx.fillStyle='#fff0cd';ctx.fill();}}
+ else if(state.depth>0){for(const item of [...trainingItems].sort((a,b)=>a.center[2]-b.center[2])){const p=project(item.center);ctx.beginPath();ctx.arc(p[0],p[1],focal*item.radius/p[2],0,H.TAU);const lum=H.dot(item.color,[.2126,.7152,.0722]),c=state.gray?[lum,lum,lum]:item.color;ctx.fillStyle=`rgb(${c.map(v=>Math.round(v*255)).join(',')})`;ctx.fill();}}ctx.restore();}
+ render(state,geometry,layout,clock,dpr){const ctx=this.ctx;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='#07131b';ctx.fillRect(0,0,this.canvas.width/dpr,this.canvas.height/dpr);if(layout.pair){for(const p of layout.panels)this.drawEye(ctx,state,geometry,p,p.eye,clock);}else if(state.mode==='anaglyph'){const p=layout.panels[0],W=Math.max(1,Math.round(p.w)),Ht=Math.max(1,Math.round(p.h)),images=[];for(const eye of [-1,1]){const c=document.createElement('canvas');c.width=W;c.height=Ht;const cx=c.getContext('2d');this.drawEye(cx,{...state,gray:true},geometry,{x:0,y:0,w:W,h:Ht},eye,clock);images.push(cx.getImageData(0,0,W,Ht));}const output=images[0];for(let i=0;i<output.data.length;i+=4){output.data[i+1]=images[1].data[i+1];output.data[i+2]=images[1].data[i+2];output.data[i+3]=255;}const c=document.createElement('canvas');c.width=W;c.height=Ht;c.getContext('2d').putImageData(output,0,0);ctx.drawImage(c,p.x,p.y,p.w,p.h);}else this.drawEye(ctx,state,geometry,layout.panels[0],H.eyePlan(state.mode,clock,state.wiggleGain)[0],clock);}
+}
+function create(canvas){try{return new GLRenderer(canvas);}catch(error){const replacement=canvas.cloneNode();canvas.replaceWith(replacement);return {fallbackCanvas:replacement,error,create:()=>new PainterRenderer(replacement)};}}
+return {create,tubes,spheres,trainingItems};
+})();
 
-      <div class="viewer" id="viewer">
-        <div class="stereo" id="stereoRow">
-          <canvas id="leftCanvas"></canvas>
-          <canvas id="rightCanvas"></canvas>
-        </div>
-        <canvas id="monoCanvas" class="mono"></canvas>
-      </div>
-
-      <p class="hint">
-        Choose <b>Parallel</b> if you can't cross your eyes (left canvas &larr; left camera, right &larr; right).
-        Switch to <b>Cross‑eye</b> to mirror the pair. Uncheck <b>Stereo</b> for a mono view.
-      </p>
-
-      <details>
-        <summary>Math notes (quick)</summary>
-        <div class="small">
-          We sample base points <em>n</em> on S^2 and use a standard Hopf section:
-          z1 = sqrt((1+n_z)/2), z2 = (n_x + i n_y)/sqrt(2(1+n_z)). The fiber over n is
-          ( e^(i·theta) · z1 , e^(i·theta) · z2 ) ⊂ S^3. We embed S^3 → R^3 by stereographic projection from (-1,0,0,0):
-          (x0,x1,x2,x3) → (x1, x2, x3)/(1 - x0). Varying theta draws each circular fiber. Colors encode base directions.
-        </div>
-      </details>
-    </div>
-  </div>
-
-  <script>
-    // ----------------- Params -----------------
-    const params = {
-      fibers: 120,
-      samplesPerFiber: 128,
-      ipd: 0.06,
-      orbitSpeed: 0.15,
-      phaseSpeed: 0.7,
-      opacity: 0.82,
-      showBeads: false,
-      beadCount: 64,
-      beadSize: 0.02,
-      radiusScale: 0.9,
-      runTests: true,
-      stereo: true,
-      viewMode: 'parallel', // 'parallel' or 'cross'
-    };
-
-    // ----------------- DOM -----------------
-    const elFibers = document.getElementById('fibers');
-    const elSamples = document.getElementById('samples');
-    const elIpd = document.getElementById('ipd');
-    const elPhase = document.getElementById('phase');
-    const elOpacity = document.getElementById('opacity');
-    const elRadius = document.getElementById('radius');
-    const elStereo = document.getElementById('stereo');
-    const elBeads = document.getElementById('beads');
-    const elViewMode = document.getElementById('viewMode');
-
-    const elFibersVal = document.getElementById('fibersVal');
-    const elSamplesVal = document.getElementById('samplesVal');
-    const elIpdVal = document.getElementById('ipdVal');
-    const elPhaseVal = document.getElementById('phaseVal');
-    const elOpacityVal = document.getElementById('opacityVal');
-    const elRadiusVal = document.getElementById('radiusVal');
-
-    const viewer = document.getElementById('viewer');
-    const stereoRow = document.getElementById('stereoRow');
-    const leftCanvas = document.getElementById('leftCanvas');
-    const rightCanvas = document.getElementById('rightCanvas');
-    const monoCanvas = document.getElementById('monoCanvas');
-
-    // ----------------- THREE setup -----------------
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0a0a0a);
-    const group = new THREE.Group();
-    scene.add(group);
-    const beadsGroup = new THREE.Group();
-    scene.add(beadsGroup);
-
-    const ambient = new THREE.AmbientLight(0xffffff, 0.9);
-    scene.add(ambient);
-    const dir = new THREE.DirectionalLight(0xffffff, 0.3);
-    dir.position.set(2,3,4);
-    scene.add(dir);
-
-    const leftRenderer = new THREE.WebGLRenderer({ canvas: leftCanvas, antialias: true });
-    const rightRenderer = new THREE.WebGLRenderer({ canvas: rightCanvas, antialias: true });
-    const monoRenderer = new THREE.WebGLRenderer({ canvas: monoCanvas, antialias: true });
-
-    // Cameras
-    const camL = new THREE.PerspectiveCamera(55, 1, 0.01, 100);
-    const camR = new THREE.PerspectiveCamera(55, 1, 0.01, 100);
-    camL.position.set(-params.ipd, 0.1, 3.5);
-    camR.position.set( params.ipd, 0.1, 3.5);
-
-    // ----------------- Math utils -----------------
-    function fibonacciSphere(samples, jitter=0.0) {
-      const pts = [];
-      const phi = Math.PI * (3 - Math.sqrt(5));
-      for (let i = 0; i < samples; i++) {
-        const y = 1 - (i / Math.max(1, samples - 1)) * 2;
-        const radius = Math.sqrt(Math.max(0, 1 - y*y));
-        const theta = phi * i + (jitter ? (Math.random() - 0.5) * jitter : 0);
-        const x = Math.cos(theta) * radius;
-        const z = Math.sin(theta) * radius;
-        const v = new THREE.Vector3(x, y, z).normalize();
-        pts.push(v);
-      }
-      return pts;
-    }
-
-    function hopfSection(n) {
-      const nx = n.x, ny = n.y, nz = n.z;
-      if (nz > -0.999999) {
-        const denom = Math.sqrt(2 * (1 + nz));
-        const z1 = new THREE.Vector2(Math.sqrt((1 + nz)/2), 0);
-        const z2 = new THREE.Vector2(nx/denom, ny/denom);
-        return { z1, z2 };
-      }
-      return { z1: new THREE.Vector2(0,1), z2: new THREE.Vector2(0,0) };
-    }
-
-    function c2_to_r4(z1, z2) {
-      return { x0: z1.x, x1: z1.y, x2: z2.x, x3: z2.y };
-    }
-
-    function globalPhase(z1, z2, phi) {
-      const c = Math.cos(phi), s = Math.sin(phi);
-      const z1p = new THREE.Vector2(c*z1.x - s*z1.y, s*z1.x + c*z1.y);
-      const z2p = new THREE.Vector2(c*z2.x - s*z2.y, s*z2.x + c*z2.y);
-      return { z1: z1p, z2: z2p };
-    }
-
-    function stereoR4toR3(r4) {
-      const denom = 1 - r4.x0;
-      return new THREE.Vector3(r4.x1/denom, r4.x2/denom, r4.x3/denom);
-    }
-
-    function fiberPolyline(n, M, phi, radiusScale=1.0) {
-      const { z1, z2 } = hopfSection(n);
-      const pts = [];
-      for (let k=0; k<=M; k++) {
-        const theta = (2*Math.PI*k)/M + phi;
-        const { z1:zz1, z2:zz2 } = globalPhase(z1, z2, theta);
-        const r4 = c2_to_r4(zz1, zz2);
-        const p = stereoR4toR3(r4).multiplyScalar(radiusScale);
-        pts.push(p);
-      }
-      return pts;
-    }
-
-    function makeLine(points, color=0xffffff, opacity=1.0) {
-      const geom = new THREE.BufferGeometry().setFromPoints(points);
-      const mat = new THREE.LineBasicMaterial({ color, transparent: opacity < 1.0, opacity });
-      return new THREE.Line(geom, mat);
-    }
-
-    function colorFromNormal(n) {
-      const h = ((Math.atan2(n.z, n.x) / (2*Math.PI)) + 0.5) % 1;
-      const l = 0.5 * (n.y * 0.5 + 0.5) + 0.35;
-      const s = 0.8;
-      const color = new THREE.Color();
-      color.setHSL(h, s, l);
-      return color;
-    }
-
-    function chooseCameras(mode, camL, camR) {
-      // 'parallel' => left<-L, right<-R ; 'cross' => left<-R, right<-L
-      if (mode === 'cross') return { left: camR, right: camL };
-      return { left: camL, right: camR };
-    }
-
-    // ----------------- Build geometry -----------------
-    function buildHopfGeometry() {
-      group.clear();
-      beadsGroup.clear();
-
-      const basePts = fibonacciSphere(params.fibers, 0.0);
-      const M = params.samplesPerFiber;
-      const phi0 = 0;
-
-      for (const n of basePts) {
-        const pts = fiberPolyline(n, M, phi0, params.radiusScale);
-        const col = colorFromNormal(n);
-        const line = makeLine(pts, col.getHex(), params.opacity);
-        group.add(line);
-      }
-
-      // beads optional
-      if (params.showBeads) {
-        const beadGeom = new THREE.SphereGeometry(params.beadSize, 12, 12);
-        for (let i=0;i<params.beadCount;i++) {
-          const idx = Math.floor(Math.random()*basePts.length);
-          const n = basePts[idx];
-          const t0 = Math.random()*2*Math.PI;
-          const mat = new THREE.MeshStandardMaterial({ color: colorFromNormal(n), metalness: 0.1, roughness: 0.4 });
-          const m = new THREE.Mesh(beadGeom, mat);
-          m.userData = { n, t0 };
-          const pts = fiberPolyline(n, 64, t0, params.radiusScale);
-          m.position.copy(pts[0]);
-          beadsGroup.add(m);
-        }
-      }
-
-      // faint torus reference
-      const torus = new THREE.Mesh(
-        new THREE.TorusGeometry(1.2*params.radiusScale, 0.45*params.radiusScale, 2, 100),
-        new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.05, wireframe: true })
-      );
-      group.add(torus);
-    }
-
-    function animateBeads(t) {
-      beadsGroup.children.forEach(m => {
-        const { n, t0 } = m.userData;
-        const pts = fiberPolyline(n, 1, t0 + t * params.phaseSpeed, params.radiusScale);
-        m.position.copy(pts[0]);
-      });
-    }
-
-    // ----------------- Self tests -----------------
-    function runSelfTests() {
-      const tests = [];
-
-      tests.push({
-        name: "fibonacciSphere count & norm",
-        run: () => {
-          const k = 37;
-          const pts = fibonacciSphere(k);
-          const countOk = pts.length === k;
-          const normsOk = pts.every(v => Math.abs(v.length() - 1) < 1e-6);
-          return countOk && normsOk;
-        }
-      });
-
-      tests.push({
-        name: "hopfSection normalization",
-        run: () => {
-          for (let i=0;i<20;i++) {
-            const n = fibonacciSphere(1)[0];
-            const { z1, z2 } = hopfSection(n);
-            const s = z1.x*z1.x + z1.y*z1.y + z2.x*z2.x + z2.y*z2.y;
-            if (Math.abs(s-1) > 1e-6) return false;
-          }
-          return true;
-        }
-      });
-
-      tests.push({
-        name: "fiberPolyline closure",
-        run: () => {
-          const n = new THREE.Vector3(0.3, 0.8, 0.5).normalize();
-          const pts = fiberPolyline(n, 128, 0.0, 1.0);
-          const a = pts[0], b = pts[pts.length-1];
-          return a.distanceTo(b) < 1e-4;
-        }
-      });
-
-      tests.push({
-        name: "stereographic finite",
-        run: () => {
-          const { z1, z2 } = hopfSection(new THREE.Vector3(0,0,1));
-          const r4 = c2_to_r4(z1, z2);
-          const p = stereoR4toR3(r4);
-          return Number.isFinite(p.x) && Number.isFinite(p.y) && Number.isFinite(p.z);
-        }
-      });
-
-      tests.push({
-        name: "globalPhase identity & 2π",
-        run: () => {
-          const z1 = new THREE.Vector2(0.8, 0.1);
-          const z2 = new THREE.Vector2(-0.2, 0.56);
-          const a = globalPhase(z1, z2, 0);
-          const b = globalPhase(z1, z2, 2*Math.PI);
-          const eq = (u,v) => Math.hypot(u.x-v.x, u.y-v.y) < 1e-6;
-          return eq(a.z1, z1) && eq(a.z2, z2) && eq(b.z1, z1) && eq(b.z2, z2);
-        }
-      });
-
-      tests.push({
-        name: "globalPhase quarter-turn",
-        run: () => {
-          const z = new THREE.Vector2(1, 0);
-          const { z1 } = globalPhase(z, z, 0.5*Math.PI);
-          return Math.abs(z1.x) < 1e-6 && Math.abs(z1.y - 1) < 1e-6;
-        }
-      });
-
-      tests.push({
-        name: "camera baseline matches IPD (initial)",
-        run: () => {
-          return Math.abs(camL.position.x + camR.position.x) < 1e-6 &&
-                 Math.abs(camR.position.x - (-camL.position.x) - 2*params.ipd) < 1e-3;
-        }
-      });
-
-      tests.push({
-        name: "makeLine point count",
-        run: () => {
-          const pts = [new THREE.Vector3(), new THREE.Vector3(1,0,0), new THREE.Vector3(1,1,0)];
-          const line = makeLine(pts, 0xffffff, 1.0);
-          const pos = line.geometry.getAttribute('position');
-          return pos && pos.count === pts.length;
-        }
-      });
-
-      tests.push({
-        name: "radiusScale zero collapses",
-        run: () => {
-          const n = new THREE.Vector3(0,0,1);
-          const pts = fiberPolyline(n, 16, 0, 0);
-          return pts.every(p => p.length() < 1e-12);
-        }
-      });
-
-      tests.push({
-        name: "chooseCameras mapping",
-        run: () => {
-          const dummyL = { id: 'L' };
-          const dummyR = { id: 'R' };
-          const par = chooseCameras('parallel', dummyL, dummyR);
-          const cro = chooseCameras('cross', dummyL, dummyR);
-          return par.left.id === 'L' && par.right.id === 'R' && cro.left.id === 'R' && cro.right.id === 'L';
-        }
-      });
-
-      const results = tests.map(t => ({ name: t.name, ok: !!t.run() }));
-      const allOk = results.every(r => r.ok);
-      console.groupCollapsed('Hopf Viewer self-tests');
-      results.forEach(r => console.log(`${r.ok ? '✅' : '❌'} ${r.name}`));
-      console.log('All OK:', allOk);
-      console.groupEnd();
-    }
-
-    // ----------------- Resize handling -----------------
-    function setSizes() {
-      const containerWidth = viewer.clientWidth;
-      const h = Math.max(300, Math.floor(containerWidth * 9 / 16));
-      const halfW = Math.floor(containerWidth/2) - 4; // gap
-
-      if (params.stereo) {
-        leftCanvas.style.display = 'inline-block';
-        rightCanvas.style.display = 'inline-block';
-        monoCanvas.style.display = 'none';
-
-        leftCanvas.width = halfW; leftCanvas.height = h;
-        rightCanvas.width = halfW; rightCanvas.height = h;
-        leftCanvas.style.width = halfW + 'px'; leftCanvas.style.height = h + 'px';
-        rightCanvas.style.width = halfW + 'px'; rightCanvas.style.height = h + 'px';
-
-        camL.aspect = halfW / h; camL.updateProjectionMatrix();
-        camR.aspect = halfW / h; camR.updateProjectionMatrix();
-        leftRenderer.setSize(halfW, h, false);
-        rightRenderer.setSize(halfW, h, false);
-      } else {
-        leftCanvas.style.display = 'none';
-        rightCanvas.style.display = 'none';
-        monoCanvas.style.display = 'block';
-
-        monoCanvas.width = containerWidth; monoCanvas.height = h;
-        monoCanvas.style.width = containerWidth + 'px'; monoCanvas.style.height = h + 'px';
-
-        camL.aspect = containerWidth / h; camL.updateProjectionMatrix();
-        monoRenderer.setSize(containerWidth, h, false);
-      }
-    }
-
-    window.addEventListener('resize', setSizes);
-
-    // ----------------- Controls wiring -----------------
-    elFibers.addEventListener('input', () => {
-      params.fibers = parseInt(elFibers.value, 10);
-      elFibersVal.textContent = String(params.fibers);
-      buildHopfGeometry();
-    });
-    elSamples.addEventListener('input', () => {
-      params.samplesPerFiber = parseInt(elSamples.value, 10);
-      elSamplesVal.textContent = String(params.samplesPerFiber);
-      buildHopfGeometry();
-    });
-    elIpd.addEventListener('input', () => {
-      params.ipd = parseFloat(elIpd.value);
-      elIpdVal.textContent = params.ipd.toFixed(3);
-      camL.position.x = -params.ipd;
-      camR.position.x =  params.ipd;
-    });
-    elPhase.addEventListener('input', () => {
-      params.phaseSpeed = parseFloat(elPhase.value);
-      elPhaseVal.textContent = params.phaseSpeed.toFixed(2);
-    });
-    elOpacity.addEventListener('input', () => {
-      params.opacity = parseFloat(elOpacity.value);
-      elOpacityVal.textContent = params.opacity.toFixed(2);
-      buildHopfGeometry();
-    });
-    elRadius.addEventListener('input', () => {
-      params.radiusScale = parseFloat(elRadius.value);
-      elRadiusVal.textContent = params.radiusScale.toFixed(2);
-      buildHopfGeometry();
-    });
-    elStereo.addEventListener('change', () => {
-      params.stereo = elStereo.checked;
-      setSizes();
-    });
-    elBeads.addEventListener('change', () => {
-      params.showBeads = elBeads.checked;
-      buildHopfGeometry();
-    });
-    elViewMode.addEventListener('change', () => {
-      params.viewMode = elViewMode.value; // 'parallel' or 'cross'
-    });
-
-    // ----------------- Animation loop -----------------
-    const clock = new THREE.Clock();
-    function render() {
-      const t = clock.getElapsedTime();
-
-      // gentle rotation
-      group.rotation.y = 0.25 * t * params.orbitSpeed;
-      group.rotation.x = 0.15 * Math.sin(0.5 * t * params.orbitSpeed);
-
-      if (params.showBeads) animateBeads(t);
-
-      camL.lookAt(0,0,0);
-      camR.lookAt(0,0,0);
-
-      if (params.stereo) {
-        const cams = chooseCameras(params.viewMode, camL, camR);
-        leftRenderer.render(scene, cams.left);
-        rightRenderer.render(scene, cams.right);
-      } else {
-        monoRenderer.render(scene, camL);
-      }
-      requestAnimationFrame(render);
-    }
-
-    // ----------------- Init -----------------
-    buildHopfGeometry();
-    setSizes();
-    if (params.runTests) runSelfTests();
-    render();
-  </script>
-</body>
-</html>
+if(typeof module!=='undefined'&&module.exports)module.exports=HopfRender;
+</script><script>(()=>{
+'use strict';const H=HopfMath,$=id=>document.getElementById(id),copy=x=>JSON.parse(JSON.stringify(x)),presetNames={link:'Two linked fibers',ring:'One torus of fibers',tori:'Three nested tori',belt:'A belt of base points',exceptional:'Circle & exceptional line'},modeNames={orbit:'Orbit',parallel:'Parallel',cross:'Cross-eye',anaglyph:'Red/cyan',wiggle:'Wiggle'};
+let state=H.defaults(),geometry=null,renderer=null,sceneCanvas=$('sceneCanvas'),overlay=$('overlayCanvas'),stage=$('stage'),base=$('baseCanvas'),playing=false,clock=0,lastFrame=0,lastPaint=0,lastReadout=0,dirty=true,drag=null,rebuildTimer=null,toastTimer=null,seenStereo=false,layout=null,currentDpr=1;
+const fmt=(x,d=1)=>Number.isFinite(x)?x.toFixed(d):'—';
+function notify(message){$('toast').textContent=message;$('toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').hidden=true,4000);}
+function initRenderer(){const candidate=HopfRender.create(sceneCanvas);if(candidate.fallbackCanvas){console.warn('Hopf WebGL fallback:',candidate.error?.message||candidate.error);sceneCanvas=candidate.fallbackCanvas;renderer=candidate.create();$('geometryWarning').hidden=false;$('geometryWarning').textContent='WebGL is unavailable. The Canvas fallback uses approximate overlap; the camera alignment is the same.';}else renderer=candidate;$('rendererStatus').textContent=renderer.label+' · no external libraries';}
+function loadCalibration(){try{const data=JSON.parse(localStorage.getItem('hopf-stereo-screen-v1')||'null');if(data&&typeof data.pxPerMm==='number'&&data.pxPerMm>1&&data.pxPerMm<15&&Number.isFinite(data.dpr)&&[50,53.98,85.6].includes(data.reference))state.calibration=data;}catch(e){}}
+function validScale(){return state.calibration.calibrated&&Math.abs((devicePixelRatio||1)-state.calibration.dpr)<.02;}
+function scaleStatus(){const valid=validScale(),cal=state.calibration;$('scaleBadge').textContent=valid?'Screen calibrated':cal.calibrated?'Recheck screen scale':'Scale estimated';$('scaleBadge').classList.toggle('estimate',!valid);$('scaleNote').textContent=valid?'Sizes use your saved scale. Recheck after changing monitor or browser zoom.':cal.calibrated?'Display scale or zoom changed. Match the ruler again before relying on the millimeter labels.':'Physical sizes are estimates until you match the ruler to your monitor.';}
+function syncUI(){
+ document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===state.mode));$('sceneTarget').setAttribute('aria-pressed',state.scene==='target');$('sceneHopf').setAttribute('aria-pressed',state.scene==='hopf');$('pairControls').hidden=!['parallel','cross'].includes(state.mode);
+ for(const [key,value]of Object.entries({depth:state.depth,pairWidth:state.pairWidth,gap:state.gap,eyeSeparation:state.eyeSeparation,viewDistance:state.viewDistance,zoom:state.zoom,preset:state.preset,count:state.count,samples:state.samples,lineWidth:state.lineWidth,phaseSpeed:state.phaseSpeed}))$(key).value=value;
+ $('depthOut').value=`${fmt(state.depth,2)} mm`;$('pairWidthOut').value=`${fmt(state.pairWidth,0)} mm`;$('gapOut').value=`${fmt(state.gap,0)} mm`;$('eyeOut').value=`${fmt(state.eyeSeparation,0)} mm`;$('distanceOut').value=`${fmt(state.viewDistance,0)} cm`;$('zoomOut').value=`${fmt(state.zoom,2)}×`;$('lineWidthOut').value=fmt(state.lineWidth,3);$('phaseOut').value=fmt(state.phaseSpeed,2);$('countOut').value=`${geometry?.fibers.length||state.count}`;
+ for(const key of ['beads','autoOrbit','marks','gray'])$(key).checked=state[key];$('gray').disabled=state.mode==='anaglyph';$('countControl').hidden=['link','exceptional'].includes(state.preset);$('playBtn').textContent=playing?'Pause':'Animate';$('sceneTitle').textContent=state.scene==='target'?'A target for finding fusion':presetNames[state.preset];$('sceneSubtitle').textContent=state.scene==='target'?(state.depth===0?'Identical camera views · one stroke per eye':'Amber nearer · teal farther · reference dot between them'):`${geometry?.fibers.length||2} fibers · ${state.samples} samples per circle`;
+ const instructions={orbit:'Drag to rotate. This single view needs no eye fusion.',parallel:'Left eye to left panel, right eye to right panel. Keep the pair small; look gently past the screen.',cross:'Right eye to left panel, left eye to right panel. Bring the two inner targets together in front of the screen.',anaglyph:'Use red/cyan glasses: red over the left eye, cyan over the right. All fibers use luminance.',wiggle:'A single moving viewpoint gives motion parallax. No eye fusion needed; motion gain is 3×.'};$('modeInstruction').textContent=instructions[state.mode];$('continueBtn').hidden=state.scene!=='target';$('targetAgainBtn').hidden=state.scene==='target';$('overlayCanvas').setAttribute('aria-label',`${modeNames[state.mode]} view of ${state.scene==='target'?'a fusion target':presetNames[state.preset]}. ${state.scene==='hopf'?'Drag or use arrow keys to rotate.':''}`);
+ scaleStatus();dirty=true;updateReadouts();
+}
+function rebuild(immediate=false){clearTimeout(rebuildTimer);const perform=()=>{geometry=H.geometry(state);if(state.selected>=geometry.fibers.length)state.selected=-1;renderer.rebuild(geometry,state.lineWidth);const select=$('selectedFiber');select.replaceChildren();for(const [value,label]of [[-1,'All fibers'],...geometry.fibers.map(f=>[f.index,`Fiber ${f.index+1}${f.circle.line?' · exceptional line':''}`])]){const o=document.createElement('option');o.value=value;o.textContent=label;select.append(o);}select.value=state.selected;syncUI();drawBase();dirty=true;};if(immediate)perform();else rebuildTimer=setTimeout(perform,100);}
+function setMode(mode,keepScene=false){state.mode=mode;if(['parallel','cross'].includes(mode)){state.preferredStereo=mode;if(!seenStereo&&!keepScene){state.scene='target';state.depth=0;playing=false;}seenStereo=true;}if(mode==='wiggle'){playing=true;if(state.depth===0)state.depth=.8;}syncUI();}
+function showTarget(){if(!['parallel','cross','anaglyph'].includes(state.mode))state.mode=state.preferredStereo;state.scene='target';state.depth=0;playing=false;seenStereo=true;syncUI();}
+function showFibers(){state.scene='hopf';if(state.depth===0)state.depth=.8;playing=false;syncUI();}
+function initSizes(){const r=stage.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2),width=Math.max(1,Math.round(r.width*dpr)),height=Math.max(1,Math.round(r.height*dpr));for(const c of [sceneCanvas,overlay])if(c.width!==width||c.height!==height){c.width=width;c.height=height;}currentDpr=dpr;layout=H.layout(r.width,r.height,state);return {width:r.width,height:r.height,dpr};}
+function render(){const size=initSizes();renderer.render(state,geometry,layout,clock,size.dpr);drawOverlay(size);drawBase();}
+function drawOverlay(size){const ctx=overlay.getContext('2d');ctx.setTransform(size.dpr,0,0,size.dpr,0,0);ctx.clearRect(0,0,size.width,size.height);for(const panel of layout.panels){ctx.strokeStyle=layout.pair?'#8ba4b350':'#67859435';ctx.lineWidth=1;ctx.strokeRect(panel.x+.5,panel.y+.5,panel.w-1,panel.h-1);if(layout.pair){ctx.font='12px system-ui';ctx.fillStyle='#aac0cc';ctx.textAlign='center';ctx.fillText(panel.eye<0?'Left-eye view':'Right-eye view',panel.x+panel.w/2,panel.y+panel.h+23);if(state.marks){ctx.beginPath();ctx.arc(panel.x+panel.w/2,panel.y-17,2.5,0,H.TAU);ctx.fillStyle='#f5dfae';ctx.fill();}}if(state.scene==='target'){const x=panel.x+panel.w/2,y=panel.y+panel.h/2,r=Math.max(9,Math.min(22,panel.w*.13)),stroke=(eye,color)=>{ctx.strokeStyle=color;ctx.lineWidth=1.6;ctx.beginPath();ctx.arc(x,y,r,0,H.TAU);ctx.stroke();ctx.beginPath();if(eye<=0){ctx.moveTo(x-r*.65,y);ctx.lineTo(x+r*.65,y);}if(eye>=0){ctx.moveTo(x,y-r*.65);ctx.lineTo(x,y+r*.65);}ctx.stroke();};if(state.mode==='anaglyph'){stroke(-1,'#ff5555');stroke(1,'#55eeee');}else stroke(layout.pair?panel.eye:0,'#f1e4bd');}}
+ ctx.font='12px system-ui';ctx.fillStyle='#87a5b6';ctx.textAlign='left';ctx.fillText(state.scene==='target'?(state.depth===0?'Find one middle circle containing a complete +':'Amber is nearer; teal is farther'):'Drag to rotate · arrow keys also work',17,size.height-17);if(state.mode==='wiggle'){ctx.textAlign='right';ctx.fillText(playing?'Motion parallax · running':'Motion parallax · paused',size.width-17,25);}
+}
+function updateReadouts(){if(!geometry)return;const r=stage.getBoundingClientRect();layout=H.layout(r.width,r.height,state);const panel=layout.panels[0],focal=.5*panel.h/Math.tan(25*Math.PI/180),bound=state.scene==='target'?1.2:2.2*state.zoom,B=H.baseline(state.depth*state.calibration.pxPerMm,focal,bound),points=state.scene==='target'?HopfRender.trainingItems.map(v=>v.center):geometry.fibers.flatMap(f=>f.points.filter((p,i)=>i%8===0).map(p=>H.mul(H.rotate(p,state.yaw,state.pitch),geometry.scale*state.zoom)));let min=0,max=0;for(const p of points){const L=H.cameraProject(p,-B/2,focal),R=H.cameraProject(p,B/2,focal),d=(R[0]-L[0])/state.calibration.pxPerMm;min=Math.min(min,d);max=Math.max(max,d);}
+ $('disparityReadout').textContent=state.mode==='orbit'?'0 mm':`${fmt(min*(state.mode==='wiggle'?3:1),2)} to +${fmt(max*(state.mode==='wiggle'?3:1),2)} mm`;$('spacingReadout').textContent=layout.pair?`${fmt(layout.centerSeparation)} mm`:'Single view';$('spacingNote').textContent=layout.pair?`${fmt(layout.actualWidth)} mm per image${validScale()?'':' · estimated scale'}`:state.mode==='anaglyph'?'Two eye views share the same screen area.':state.mode==='wiggle'?'One viewpoint rocks between the eye positions.':'Rotate and inspect with ordinary viewing.';
+ $('fitNote').textContent=layout.pair&&layout.fitted?`Available space fits ${fmt(layout.actualWidth)} mm per image. Widen the browser for the requested width.`:layout.pair?`Image-center spacing is ${fmt(layout.centerSeparation)} mm.`:'';
+ const separation=layout.pair?(state.mode==='cross'?-layout.centerSeparation:layout.centerSeparation):0,vergence=H.apparentDepth(separation,state.eyeSeparation,state.viewDistance*10);$('vergenceReadout').textContent=vergence===null?'Beyond parallel':`${fmt(vergence/10,0)} cm from eyes`;
+ const divergence=state.mode==='parallel'&&layout.centerSeparation+max>=state.eyeSeparation;$('geometryWarning').hidden=!divergence&&!renderer.label.startsWith('Canvas');$('geometryWarning').classList.toggle('warning',divergence);$('geometryWarning').textContent=divergence?'The corresponding features reach or exceed the chosen eye spacing. Use a smaller pair or try cross-eye mode. This check uses your current screen-scale estimate.':renderer.label.startsWith('Canvas')?'Canvas fallback: curve overlap is approximate. The camera alignment remains the same.':'';
+ const clipped=geometry.fibers.filter(f=>f.clipped).length,selected=geometry.fibers[state.selected];$('fiberNote').textContent=selected?`Fiber ${selected.index+1} · base n = (${selected.n.map(x=>fmt(x,2)).join(', ')})${selected.circle.line?' · projects to a line':selected.clipped?' · circle clipped by the finite window':' · complete circle'}`:`Longitude / latitude chart of S². Click a dot to highlight its fiber. ${clipped?`${clipped} projected fiber${clipped===1?' is':'s are'} clipped by the finite window.`:'All selected circles fit the projection window.'}`;
+}
+function drawBase(){if(!geometry)return;const rect=base.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);if(base.width!==Math.round(rect.width*dpr)||base.height!==Math.round(rect.height*dpr)){base.width=Math.round(rect.width*dpr);base.height=Math.round(rect.height*dpr);}const ctx=base.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,rect.width,rect.height);const b={x:40,y:17,w:rect.width-60,h:rect.height-47},screen=n=>[b.x+(Math.atan2(n[1],n[0])/H.TAU+.5)*b.w,b.y+(Math.acos(H.clamp(n[2],-1,1))/Math.PI)*b.h];base._screen=screen;ctx.fillStyle='#0c1e2a';ctx.fillRect(b.x,b.y,b.w,b.h);ctx.lineWidth=1;for(let i=0;i<=4;i++){ctx.strokeStyle='#66899839';ctx.beginPath();ctx.moveTo(b.x+b.w*i/4,b.y);ctx.lineTo(b.x+b.w*i/4,b.y+b.h);ctx.moveTo(b.x,b.y+b.h*i/4);ctx.lineTo(b.x+b.w,b.y+b.h*i/4);ctx.stroke();}ctx.font='11px system-ui';ctx.fillStyle='#9db5c4';ctx.textAlign='right';ctx.fillText('+90°',b.x-5,b.y+4);ctx.fillText('0°',b.x-5,b.y+b.h/2+4);ctx.fillText('−90°',b.x-5,b.y+b.h+4);ctx.textAlign='center';ctx.fillText('−180°',b.x,b.y+b.h+19);ctx.fillText('longitude',b.x+b.w/2,b.y+b.h+19);ctx.fillText('180°',b.x+b.w,b.y+b.h+19);
+ for(const f of geometry.fibers){const p=screen(f.n);ctx.beginPath();ctx.arc(p[0],p[1],state.selected===f.index?5.8:3.5,0,H.TAU);ctx.fillStyle=`rgb(${f.color.map(x=>Math.round(x*255)).join(',')})`;ctx.fill();if(state.selected===f.index){ctx.strokeStyle='#fff3cb';ctx.lineWidth=1.5;ctx.stroke();}}}
+function openCalibration(){const dialog=$('calibration'),max=Math.max(100,Math.min(600,window.innerWidth-75));$('calibrationReference').value=state.calibration.reference;$('rulerSize').max=max;$('rulerSize').value=H.clamp(state.calibration.pxPerMm*state.calibration.reference,90,max);syncRuler();dialog.showModal();}
+function syncRuler(){$('ruler').style.width=`${$('rulerSize').value}px`;$('rulerLabel').textContent=`${fmt(+$('calibrationReference').value,2)} mm`;}
+function persistCalibration(){try{localStorage.setItem('hopf-stereo-screen-v1',JSON.stringify(state.calibration));return true;}catch(e){return false;}}
+function saveCalibration(){state.calibration={pxPerMm:+$('rulerSize').value/+$('calibrationReference').value,calibrated:true,dpr:devicePixelRatio||1,reference:+$('calibrationReference').value};const saved=persistCalibration();$('calibration').close();syncUI();notify(saved?'Screen scale saved in this browser.':'Screen scale applied for this visit. Browser storage is unavailable.');}
+function resetCalibration(){state.calibration={pxPerMm:96/25.4,calibrated:false,dpr:devicePixelRatio||1,reference:50};persistCalibration();$('calibration').close();syncUI();notify('Using an estimated screen scale.');}
+function snapshot(){return {format:'hopf-stereo-lab',version:1,savedAt:new Date().toISOString(),state:copy(state),clock};}
+function validate(data){if(data?.format!=='hopf-stereo-lab'||data.version!==1||!data.state)throw Error('Choose a Hopf Stereo Lab setup file.');const p=data.state,s=H.defaults(),n=(v,a,b,key)=>{if(typeof v!=='number'||!Number.isFinite(v)||v<a||v>b)throw Error(`Invalid ${key}.`);return v;};if(!Object.keys(modeNames).includes(p.mode)||!['target','hopf'].includes(p.scene)||!Object.keys(presetNames).includes(p.preset))throw Error('Unknown viewing mode or scene.');s.mode=p.mode;s.scene=p.scene;s.preset=p.preset;for(const [key,a,b]of [['count',6,72],['samples',128,256],['depth',0,3],['pairWidth',20,75],['gap',2,20],['eyeSeparation',50,78],['viewDistance',35,100],['zoom',.7,1.4],['yaw',-1000,1000],['pitch',-1.45,1.45],['phaseSpeed',.1,1.2],['lineWidth',.02,.075],['selected',-1,100]])s[key]=n(p[key],a,b,key);if(!Number.isInteger(s.count)||!Number.isInteger(s.samples)||!Number.isInteger(s.selected))throw Error('Invalid geometry count.');for(const k of ['beads','autoOrbit','marks','gray'])s[k]=!!p[k];s.preferredStereo=p.preferredStereo==='cross'?'cross':'parallel';s.calibration={pxPerMm:n(p.calibration?.pxPerMm,1,15,'screen scale'),calibrated:!!p.calibration?.calibrated,dpr:n(p.calibration?.dpr,.1,8,'display scale'),reference:n(p.calibration?.reference,50,85.6,'ruler reference')};return {state:s,clock:n(data.clock,0,1e9,'phase clock')};}
+function restore(data){const saved=validate(data);state=saved.state;clock=saved.clock;playing=false;seenStereo=['parallel','cross'].includes(state.mode);rebuild(true);syncUI();notify('Setup restored paused. Recheck screen scale if you changed displays.');}
+function download(filename,content,type){const blob=content instanceof Blob?content:new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),3000);$('fileMenu').open=false;}
+function exportPNG(){render();const canvas=document.createElement('canvas');canvas.width=sceneCanvas.width;canvas.height=sceneCanvas.height+100;const ctx=canvas.getContext('2d');ctx.fillStyle='#07131b';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(sceneCanvas,0,0);ctx.drawImage(overlay,0,0);ctx.fillStyle='#cee1e7';ctx.font='18px system-ui';ctx.fillText(`Hopf Stereo Lab · ${modeNames[state.mode]} · ${state.scene==='target'?'Fusion target':presetNames[state.preset]}`,20,canvas.height-63);ctx.fillStyle='#9db9c7';ctx.font='14px system-ui';ctx.fillText(layout.pair?`Intended image width ${fmt(layout.actualWidth)} mm; image-center spacing ${fmt(layout.centerSeparation)} mm. Preserve display scale.`:`Disparity cap ${fmt(state.depth,2)} mm${state.mode==='wiggle'?' · motion gain 3×':''}.`,20,canvas.height-30);canvas.toBlob(blob=>{if(blob)download('hopf-stereo-view.png',blob,'image/png');});}
+function exportCSV(){const rows=[['fiber','base_x','base_y','base_z','sample','x','y','z','closed_in_window']];for(const f of geometry.fibers)f.points.forEach((p,i)=>rows.push([f.index+1,...f.n,i,...p,f.closed]));download('hopf-fibers.csv',rows.map(r=>r.join(',')).join('\r\n')+'\r\n','text/csv');}
+function offline(){const clone=document.documentElement.cloneNode(true);clone.querySelector('#embeddedExperiment').textContent=JSON.stringify(snapshot()).replaceAll('<','\\u003c');for(const dialog of clone.querySelectorAll('dialog'))dialog.removeAttribute('open');clone.querySelector('#fileMenu').removeAttribute('open');clone.querySelector('#toast').hidden=true;download('hopf-stereo-lab.html','<!doctype html>\n'+clone.outerHTML,'text/html');}
+function bind(){document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));for(const id of ['calibrateBtn','screenStep'])$(id).onclick=openCalibration;for(const id of ['targetStep','sceneTarget','targetAgainBtn'])$(id).onclick=showTarget;for(const id of ['hopfStep','sceneHopf','continueBtn'])$(id).onclick=showFibers;$('wiggleBtn').onclick=()=>{state.scene='hopf';setMode('wiggle',true);};$('flatBtn').onclick=()=>{state.depth=0;syncUI();};$('gentleBtn').onclick=()=>{state.depth=1;syncUI();};$('smallPairBtn').onclick=()=>{state.pairWidth=22;state.gap=4;state.depth=0;state.scene='target';playing=false;syncUI();};$('normalPairBtn').onclick=()=>{state.pairWidth=32;state.gap=6;syncUI();};
+ for(const key of ['depth','pairWidth','gap','eyeSeparation','viewDistance','zoom','phaseSpeed'])$(key).oninput=()=>{state[key]=+$(key).value;syncUI();};$('preset').onchange=()=>{state.preset=$('preset').value;state.scene='hopf';state.selected=-1;playing=false;rebuild(true);};$('count').oninput=()=>{state.count=+$('count').value;state.selected=-1;$('countOut').value=state.count;rebuild();};$('samples').onchange=()=>{state.samples=+$('samples').value;rebuild(true);};$('lineWidth').oninput=()=>{state.lineWidth=+$('lineWidth').value;$('lineWidthOut').value=fmt(state.lineWidth,3);rebuild();};$('selectedFiber').onchange=()=>{state.selected=+$('selectedFiber').value;updateReadouts();dirty=true;};for(const key of ['beads','autoOrbit','marks','gray'])$(key).onchange=()=>{state[key]=$(key).checked;dirty=true;};$('playBtn').onclick=()=>{playing=!playing;syncUI();};$('resetViewBtn').onclick=()=>{state.yaw=.55;state.pitch=-.3;state.zoom=1;syncUI();};
+ const position=e=>{const r=overlay.getBoundingClientRect();return [e.clientX-r.left,e.clientY-r.top];};overlay.addEventListener('pointerdown',e=>{if(state.scene!=='hopf')return;drag={point:position(e),yaw:state.yaw,pitch:state.pitch};overlay.setPointerCapture(e.pointerId);overlay.style.cursor='grabbing';});overlay.addEventListener('pointermove',e=>{if(!drag)return;const p=position(e);state.yaw=drag.yaw+(p[0]-drag.point[0])*.007;state.pitch=H.clamp(drag.pitch+(p[1]-drag.point[1])*.007,-1.45,1.45);dirty=true;});for(const event of ['pointerup','pointercancel'])overlay.addEventListener(event,()=>{drag=null;overlay.style.cursor='grab';updateReadouts();});overlay.addEventListener('keydown',e=>{const moves={ArrowLeft:[-.08,0],ArrowRight:[.08,0],ArrowUp:[0,-.08],ArrowDown:[0,.08]};if(moves[e.key]){e.preventDefault();state.yaw+=moves[e.key][0];state.pitch=H.clamp(state.pitch+moves[e.key][1],-1.45,1.45);dirty=true;updateReadouts();}else if(e.code==='Space'){e.preventDefault();playing=!playing;syncUI();}});
+ base.addEventListener('pointerdown',e=>{if(!base._screen)return;const r=base.getBoundingClientRect(),p=[e.clientX-r.left,e.clientY-r.top];let nearest=-1,d=14;for(const f of geometry.fibers){const q=base._screen(f.n),dd=Math.hypot(q[0]-p[0],q[1]-p[1]);if(dd<d){nearest=f.index;d=dd;}}state.selected=nearest;$('selectedFiber').value=nearest;updateReadouts();dirty=true;});
+ $('calibrationReference').onchange=()=>{const ref=+$('calibrationReference').value;$('rulerSize').value=H.clamp(state.calibration.pxPerMm*ref,90,+$('rulerSize').max);syncRuler();};$('rulerSize').oninput=syncRuler;$('saveCalibration').onclick=saveCalibration;$('resetCalibration').onclick=resetCalibration;$('closeCalibration').onclick=()=>$('calibration').close();for(const [button,dialog,close]of [['guideBtn','guide','closeGuide'],['mathBtn','math','closeMath']]){$(button).onclick=()=>$(dialog).showModal();$(close).onclick=()=>$(dialog).close();}
+ $('saveBtn').onclick=()=>download('hopf-stereo-setup.json',JSON.stringify(snapshot(),null,2),'application/json');$('openBtn').onclick=()=>{$('fileMenu').open=false;$('fileInput').click();};$('fileInput').onchange=async()=>{const file=$('fileInput').files[0];if(!file)return;try{if(file.size>1e6)throw Error('Setup file is too large.');restore(JSON.parse(await file.text()));}catch(e){notify(e.message||'Could not read the setup.');}$('fileInput').value='';};$('pngBtn').onclick=exportPNG;$('csvBtn').onclick=exportCSV;$('offlineBtn').onclick=offline;new ResizeObserver(()=>{dirty=true;scaleStatus();updateReadouts();}).observe(stage);window.addEventListener('resize',()=>{scaleStatus();dirty=true;});document.addEventListener('visibilitychange',()=>lastFrame=0);
+ const mobile=matchMedia('(max-width:760px)');$('controlsDisclosure').open=!mobile.matches;mobile.addEventListener('change',e=>$('controlsDisclosure').open=!e.matches);
+}
+function animate(stamp){if(!lastFrame)lastFrame=stamp;const dt=Math.min(.1,(stamp-lastFrame)/1000);lastFrame=stamp;if(playing&&!document.hidden&&!drag){clock+=dt;if(state.autoOrbit&&state.scene==='hopf')state.yaw+=dt*.12;dirty=true;}if(dirty&&stamp-lastPaint>32){render();dirty=false;lastPaint=stamp;}if(stamp-lastReadout>300){lastReadout=stamp;updateReadouts();}requestAnimationFrame(animate);}
+loadCalibration();initRenderer();bind();let embedded=null;try{embedded=JSON.parse($('embeddedExperiment').textContent);}catch(e){}
+if(embedded){try{restore(embedded);}catch(e){notify('Could not restore the embedded setup. Starting with defaults.');state=H.defaults();rebuild(true);syncUI();}}else{rebuild(true);syncUI();}requestAnimationFrame(animate);
+})();
+</script></body></html>
