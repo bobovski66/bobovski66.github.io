@@ -1,417 +1,32 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Fractal Synth Lab — Addressed-Fractal Wavetable Instrument</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet" />
-<style>
-:root{
-  --bg:#0b0d0f;
-  --bg-1:#111417;
-  --bg-2:#171a1e;
-  --bg-3:#1d2126;
-  --line:#2b3138;
-  --line-soft:#1f242a;
-  --ink:#e8e3d4;
-  --ink-dim:#9aa0a6;
-  --ink-faint:#6b7178;
-  --amber:#e2a85a;
-  --amber-glow:#f3c074;
-  --crt:#9bd6a8;
-  --rose:#d68a93;
-  --violet:#9088c0;
-}
-*{box-sizing:border-box}
-html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased}
-body{background-image:
-  linear-gradient(rgba(255,255,255,.012) 1px,transparent 1px),
-  linear-gradient(90deg,rgba(255,255,255,.012) 1px,transparent 1px);
-  background-size:32px 32px,32px 32px;
-  background-position:-1px -1px,-1px -1px;
-  min-height:100vh}
-
-/* ================ HEADER ================ */
-header{padding:28px 28px 18px;border-bottom:1px solid var(--line);max-width:1400px;margin:0 auto}
-.title-row{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap}
-h1{margin:0;font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:500;font-size:clamp(2.2rem,4vw,3.4rem);letter-spacing:-.01em;line-height:1;color:var(--ink)}
-h1 .accent{color:var(--amber);font-style:normal}
-.tagline{color:var(--ink-dim);font-size:.84rem;letter-spacing:.04em;text-transform:uppercase}
-.subtitle{color:var(--ink-dim);font-size:.86rem;margin-top:14px;max-width:64ch;line-height:1.6}
-.subtitle code{color:var(--amber);background:transparent;font-family:inherit}
-.meta-strip{display:flex;gap:24px;margin-top:14px;flex-wrap:wrap;font-size:.74rem;color:var(--ink-faint);letter-spacing:.06em;text-transform:uppercase}
-.meta-strip span{display:flex;align-items:center;gap:6px}
-.meta-strip span::before{content:'';display:inline-block;width:6px;height:6px;background:var(--amber);border-radius:0;margin-right:4px}
-
-/* ================ MAIN ================ */
-main{max-width:1400px;margin:0 auto;padding:18px 28px 28px;display:grid;grid-template-columns:380px 1fr;gap:22px}
-@media(max-width:1000px){main{grid-template-columns:1fr}}
-
-/* ================ PANELS ================ */
-.panel{background:var(--bg-1);border:1px solid var(--line);position:relative}
-.panel + .panel{margin-top:14px}
-.panel-head{padding:11px 16px 9px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;background:var(--bg-2)}
-.panel-head h2{margin:0;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);font-weight:500}
-.panel-head .panel-tag{font-size:.66rem;color:var(--ink-faint);letter-spacing:.1em}
-.panel-body{padding:14px 16px}
-
-/* ================ CONTROLS ================ */
-.row{margin-bottom:11px}
-.row:last-child{margin-bottom:0}
-.row-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-label{display:flex;justify-content:space-between;align-items:baseline;gap:8px;color:var(--ink-dim);font-size:.74rem;letter-spacing:.04em;margin-bottom:5px}
-label .name{text-transform:uppercase;letter-spacing:.08em}
-label .value{color:var(--ink);font-variant-numeric:tabular-nums}
-input[type=range]{width:100%;-webkit-appearance:none;appearance:none;background:transparent;height:18px;cursor:pointer}
-input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--line);border-radius:0}
-input[type=range]::-moz-range-track{height:2px;background:var(--line);border-radius:0}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:10px;height:14px;background:var(--amber);border-radius:0;margin-top:-6px;cursor:pointer;box-shadow:0 0 0 1px var(--bg)}
-input[type=range]::-moz-range-thumb{width:10px;height:14px;background:var(--amber);border:0;border-radius:0;cursor:pointer}
-select{width:100%;padding:7px 10px;background:var(--bg-2);color:var(--ink);border:1px solid var(--line);border-radius:0;font-family:inherit;font-size:.78rem;outline:none;cursor:pointer;appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--ink-dim) 50%),linear-gradient(135deg,var(--ink-dim) 50%,transparent 50%);background-position:calc(100% - 14px) 50%,calc(100% - 9px) 50%;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:24px}
-select:hover{border-color:var(--amber)}
-
-button{appearance:none;background:var(--bg-2);color:var(--ink);border:1px solid var(--line);padding:8px 11px;font-family:inherit;font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .12s ease;border-radius:0}
-button:hover{border-color:var(--amber);color:var(--amber)}
-button.primary{background:transparent;border-color:var(--amber);color:var(--amber)}
-button.primary:hover{background:var(--amber);color:var(--bg)}
-button.active{background:var(--amber);color:var(--bg);border-color:var(--amber)}
-.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
-.btn-row.three{grid-template-columns:1fr 1fr 1fr}
-
-/* ================ VISUALIZATIONS ================ */
-.vis-grid{display:grid;grid-template-rows:auto;gap:14px;position:sticky;top:18px;align-self:start}
-.canvas-wrap{padding:0;position:relative}
-canvas{width:100%;display:block;background:#06080a;image-rendering:pixelated;height:520px}
-canvas.hidden{display:none}
-@media(max-width:1000px){canvas{height:380px}}
-.canvas-overlay{position:absolute;top:8px;left:12px;color:var(--ink-faint);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;pointer-events:none}
-.canvas-overlay.hidden{display:none}
-.canvas-overlay.right{left:auto;right:12px;text-align:right}
-
-/* ================ TABS ================ */
-.viewer-head{padding:0;display:flex;align-items:stretch}
-.viewer-head .panel-tag{padding:0 14px;display:flex;align-items:center}
-.tab-row{display:flex;flex:1;align-items:stretch}
-.tab{appearance:none;background:transparent;color:var(--ink-dim);border:0;border-right:1px solid var(--line);padding:11px 14px 9px;font-family:inherit;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:color .12s ease,background .12s ease;border-radius:0;font-weight:400}
-.tab:hover{color:var(--ink);border-color:var(--line)}
-.tab.active{color:var(--amber);background:var(--bg-1);box-shadow:inset 0 -2px 0 var(--amber)}
-.tab .tab-eq{color:var(--ink-faint);text-transform:none;letter-spacing:.02em;font-size:.78em;margin-left:6px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.95em}
-.tab.active .tab-eq{color:var(--ink-dim)}
-
-/* ================ ADDRESS STRIP ================ */
-.address-strip{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:10px 16px;background:var(--bg-2);border-top:1px solid var(--line)}
-.address-label{color:var(--amber);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase}
-.address-display{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--crt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:.05em}
-.address-display .greek{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--amber);font-size:1.05rem;margin-right:6px}
-
-/* ================ STATUS ================ */
-.status-line{padding:8px 16px;border-top:1px solid var(--line);font-size:.74rem;color:var(--ink-dim);min-height:34px;background:var(--bg-2)}
-.status-line .ok{color:var(--crt)}
-.status-line .err{color:var(--rose)}
-
-/* ================ MODE INFO ================ */
-.mode-info{padding:14px 16px;border-top:1px solid var(--line);background:var(--bg-2)}
-.mode-info .info-row{display:grid;grid-template-columns:auto 1fr;gap:14px;font-size:.78rem;line-height:1.6;align-items:start}
-.mode-info .info-key{color:var(--amber);text-transform:uppercase;font-size:.68rem;letter-spacing:.12em;padding-top:2px}
-.mode-info .info-val{color:var(--ink-dim)}
-.mode-info .info-val .math{color:var(--ink);font-variant-numeric:tabular-nums}
-.mode-info .info-val .glyph{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--amber);font-size:1.1em}
-.mode-info .info-row + .info-row{margin-top:8px}
-
-.warn-box{margin-top:10px;padding:6px 10px;background:var(--bg-3);border-left:2px solid var(--rose);font-size:.72rem;color:var(--rose);letter-spacing:.02em;display:none}
-.warn-box.visible{display:block}
-
-/* ================ FOOTER ================ */
-footer{max-width:1400px;margin:0 auto;padding:18px 28px 28px;border-top:1px solid var(--line-soft);color:var(--ink-faint);font-size:.72rem;letter-spacing:.05em}
-footer .pill-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
-footer .pill{display:inline-block;padding:3px 9px;border:1px solid var(--line);color:var(--ink-dim);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase}
-.note{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.92rem;color:var(--ink-dim);max-width:60ch}
-
-/* fine details */
-::selection{background:var(--amber);color:var(--bg)}
-::-webkit-scrollbar{width:8px;height:8px}
-::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:var(--line);border:1px solid var(--bg)}
-::-webkit-scrollbar-thumb:hover{background:var(--amber)}
-</style>
-</head>
-<body>
-
-<header>
-  <div class="title-row">
-    <h1>Fractal Synth <span class="accent">Lab</span></h1>
-    <div class="tagline">Φ : 𝒞 → ℝⁿ &nbsp;·&nbsp; addressed-fractal wavetable instrument</div>
-  </div>
-  <div class="subtitle">
-    Each mode is an addressed fractal: a symbolic space <code>𝒞</code> equipped with a realization map <code>Φ</code>. The wavetable is the realization of the period circle into the realized fractal <code>K = Φ(𝒞)</code>. MIDI plays it; pitch bend bends pitch; the mod wheel sweeps the moduli of <code>Φ</code>.
-  </div>
-  <div class="meta-strip">
-    <span>WebAudio</span>
-    <span>Web MIDI</span>
-    <span>Periodic-wave oscillators</span>
-    <span>Per-voice envelope filter</span>
-  </div>
-</header>
-
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="A two-source fractal wavetable synthesizer with patch memory, continuous morphing, an address sequencer, MIDI, and WAV export. Works offline.">
+<meta name="theme-color" content="#0c1115"><title>Fractal Synth Lab</title><style>:root{color-scheme:dark;--bg:#0c1115;--panel:#12191f;--raised:#192229;--line:#2b373f;--ink:#ecede6;--muted:#a4b3b9;--faint:#768991;--amber:#efb967;--mint:#9fd9c2;--rose:#f29d9e;--violet:#b6a8eb;--radius:12px;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:16px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);line-height:1.5}button,input,select{font:inherit}button,select,input[type=text]{border:1px solid var(--line);background:var(--raised);color:var(--ink);border-radius:7px}button{cursor:pointer;padding:.55rem .8rem;font-size:.875rem;line-height:1.25;transition:border-color .15s,background .15s;white-space:normal}button:hover,select:hover{border-color:var(--amber)}button:disabled{opacity:.4;cursor:default}button:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--mint);outline-offset:3px}.primary{background:var(--amber);color:#171613;border-color:var(--amber);font-weight:650}.primary:hover{background:#ffca7c}.quiet{background:transparent}.small{font-size:.8125rem;padding:.4rem .6rem}.danger{color:var(--rose)}button[aria-pressed=true]{color:#0b1914;background:var(--mint);border-color:var(--mint)}button[hidden],canvas[hidden],[hidden]{display:none!important}select,input[type=text]{width:100%;padding:.55rem .65rem;min-width:0;font-size:.875rem}select{appearance:none;padding-right:1.8rem;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 15px) 50%,calc(100% - 10px) 50%;background-size:5px 5px;background-repeat:no-repeat}label{font-size:.875rem;color:var(--muted);display:flex;justify-content:space-between;gap:.5rem;margin-bottom:.35rem}output{color:var(--ink);font-size:.8125rem;font-variant-numeric:tabular-nums}input[type=range]{appearance:none;width:100%;height:24px;background:transparent;margin:0;cursor:pointer;accent-color:var(--amber)}input[type=range]::-webkit-slider-runnable-track{height:4px;background:var(--line);border-radius:4px}input[type=range]::-webkit-slider-thumb{appearance:none;width:13px;height:18px;background:var(--amber);border:2px solid #151c21;border-radius:4px;margin-top:-7px}input[type=range]::-moz-range-track{height:4px;background:var(--line);border-radius:4px}input[type=range]::-moz-range-thumb{width:12px;height:16px;border:2px solid #151c21;background:var(--amber);border-radius:4px}.masthead{max-width:1700px;margin:auto;padding:22px 28px 18px;display:flex;align-items:center;gap:32px}.eyebrow{font-size:.6875rem;letter-spacing:.15em;color:var(--mint);margin-bottom:6px}h1{font:normal clamp(1.9rem,3vw,2.6rem)/1.05 Georgia,serif;letter-spacing:-.04em;margin:0}h1 em{color:var(--amber);font-weight:normal}h2{font-size:.9375rem;font-weight:600;margin:0}h3{font-size:1.05rem;color:var(--amber)}.masthead p{color:var(--muted);font-size:.875rem;margin:0;line-height:1.5}.masthead>button{margin-left:auto}.transport{position:sticky;top:0;z-index:20;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:10px 28px;background:#10171df5;border-top:1px solid var(--line);border-bottom:1px solid var(--line);backdrop-filter:blur(15px)}.transport-main,.transport-side{display:flex;align-items:center;gap:8px}.transport-side{gap:20px}.transport .control{width:130px;margin:0}.transport .control label{font-size:.6875rem;margin:0;text-transform:uppercase;letter-spacing:.05em}.transport .control input{height:18px}.audio-state{color:var(--faint);font-size:.8125rem;white-space:nowrap}.audio-state.ready{color:var(--mint)}main{max-width:1700px;margin:auto;padding:18px 28px}.patchbar{display:flex;align-items:end;gap:8px;margin-bottom:18px;background:var(--panel);border:1px solid var(--line);padding:12px 14px;border-radius:var(--radius)}.patch-select{min-width:0;flex:1.15}.patch-name{min-width:0;flex:1}.patchbar label{font-size:.8125rem}.patchbar>button,.file-menu>summary{min-height:39px}.patchbar #dirtyMark{color:var(--amber);font-size:.75rem}.file-menu{position:relative}.file-menu>summary{border:1px solid var(--line);border-radius:7px;padding:.55rem .8rem;font-size:.875rem;cursor:pointer;white-space:nowrap;list-style:none}.file-menu>summary::after{content:' +';color:var(--amber)}.file-menu[open]>summary::after{content:' −'}.file-actions{position:absolute;right:0;top:calc(100% + 8px);z-index:35;display:grid;gap:5px;width:265px;padding:10px;background:#1b252d;border:1px solid #42515a;border-radius:9px;box-shadow:0 12px 48px #0008}.file-actions button{text-align:left;border-color:transparent;background:transparent}.file-actions button:hover{background:var(--line)}.file-actions hr{border:0;border-top:1px solid var(--line);width:100%;margin:5px 0}.file-actions p{font-size:.75rem;color:var(--muted);margin:5px}.studio{display:grid;grid-template-columns:280px minmax(0,1fr) 272px;gap:16px;align-items:start}.rack{max-height:755px;overflow:auto;scrollbar-width:thin;scrollbar-color:var(--line) transparent}.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:clip}.rack>.panel+.panel,.instrument>.panel+.panel{margin-top:12px}.panel-head{padding:12px 15px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:8px}.panel-body{padding:15px}.control{margin-bottom:13px}.control:last-child{margin-bottom:0}.pair{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}.pair .control{min-width:0}.pair label{font-size:.8125rem;flex-wrap:wrap;column-gap:4px;row-gap:0}.pair label output{margin-left:auto}.hint{font-size:.8125rem;color:var(--muted);line-height:1.5;margin:5px 0 12px}.meta{font:normal .75rem/1.4 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--muted)}.source-tabs{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--line)}.source-tabs button{border:0;border-radius:0;background:transparent;text-align:left;font-weight:650;color:var(--muted);padding:11px 15px}.source-tabs span{display:block;font-size:.75rem;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:105px}.source-tabs button.selected{background:#efb9670b;color:var(--amber);box-shadow:inset 0 -2px var(--amber)}.source-tabs button[data-source=b].selected{color:var(--mint);background:#9fd9c20a;box-shadow:inset 0 -2px var(--mint)}.button-pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}.text-button{padding:.2rem 0;border:0;background:transparent;color:var(--muted);font-size:.8125rem;text-decoration:underline;text-underline-offset:3px}.sample-panel .panel-head{display:block}.sample-panel .meta{display:block;margin-top:3px;color:var(--amber)}.sample-panel .text-button{margin-top:10px}details.panel>summary{cursor:pointer;padding:12px 15px;color:var(--muted);font-size:.875rem}details.panel[open]>summary{border-bottom:1px solid var(--line)}.source-notes .info-row{font-size:.8125rem;margin-bottom:12px;color:var(--muted)}.source-notes .info-key{font-size:.6875rem;letter-spacing:.06em;text-transform:uppercase;color:var(--amber);margin-bottom:3px}.source-notes .math{color:var(--ink)}.viewer-head{display:flex;background:#151e25;border-bottom:1px solid var(--line)}.view-tab{border:0;border-right:1px solid var(--line);border-radius:0;padding:12px 13px;background:transparent;color:var(--muted);font-size:.8125rem}.view-tab.selected{color:var(--amber);box-shadow:inset 0 -2px var(--amber);background:var(--panel)}.canvas-stage{position:relative;background:#080e12;overflow:hidden;height:315px}.canvas-stage canvas{display:block;width:100%;height:100%;touch-action:none}.canvas-top,.canvas-bottom{position:absolute;left:14px;right:14px;display:flex;justify-content:space-between;gap:8px;pointer-events:none;font-size:.6875rem;color:var(--muted)}.canvas-top{top:12px}.canvas-bottom{bottom:10px}.canvas-top #canvasReadout{font-family:ui-monospace,monospace;color:var(--faint);text-align:right}.address-readout{display:grid;grid-template-columns:1fr 1fr .7fr;gap:12px;padding:10px 15px;border-top:1px solid var(--line)}.readout-label{display:block;font-size:.6875rem;color:var(--muted);margin-bottom:3px}.address-readout strong{font:normal .9375rem ui-monospace,Consolas,monospace;color:var(--mint)}.source-addresses{display:flex;justify-content:space-between;gap:12px;padding:7px 15px;background:#182229;font:normal .6875rem ui-monospace,Consolas,monospace;color:var(--muted);overflow:hidden}.source-addresses>span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:50%}.source-addresses b{color:var(--amber);margin-right:6px}.source-addresses>span+span b{color:var(--mint)}.morph-panel{padding:12px 15px}.morph-title{display:flex;align-items:center;gap:10px;margin-bottom:8px}.morph-title #morphReadout{color:var(--amber);font:normal .875rem ui-monospace,monospace}.morph-title button{margin-left:auto}.morph-names,.morph-caption{display:flex;justify-content:space-between;gap:10px;font-size:.8125rem;color:var(--muted)}.morph-names span:first-child{color:var(--amber)}.morph-names span:last-child{color:var(--mint)}#morph{height:26px}#morph::-webkit-slider-runnable-track{height:6px;background:linear-gradient(90deg,var(--amber),var(--mint));opacity:.8}#morph::-webkit-slider-thumb{background:var(--ink);height:21px;width:13px;margin-top:-8px}.morph-caption{font-size:.6875rem}.morph-caption #morphHint{color:var(--muted);text-align:center}.keyboard-head{padding:8px 12px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line);font-size:.6875rem;color:var(--amber)}.keyboard-head .hint{font-size:.6875rem;margin:0}.octave-controls{margin-left:auto;display:flex;align-items:center;gap:6px}.octave-controls button{padding:1px 7px;font-size:.875rem}.octave-controls output{font-size:.6875rem}.keyboard{height:100px;position:relative;margin:10px;display:flex;isolation:isolate}.piano-key{position:absolute;bottom:0;top:0;padding:0 0 8px;border-radius:0 0 5px 5px;display:flex;align-items:end;justify-content:center;user-select:none;touch-action:none;font-size:.6875rem}.piano-key.white{background:#dce1dc;color:#606b66;border:1px solid #0e171b;z-index:1}.piano-key.black{background:linear-gradient(#151f25,#253038);color:#91a4a9;border:1px solid #0a1115;height:62%;z-index:2;box-shadow:0 3px 3px #0007}.piano-key.white.pressed{background:var(--amber)}.piano-key.black.pressed{background:#b58a50;color:#171613}.subhead{font-size:.6875rem;text-transform:uppercase;letter-spacing:.08em;color:var(--amber);border-top:1px solid var(--line);padding-top:12px;margin:2px 0 10px}.inner-details>summary{cursor:pointer;font-size:.8125rem;color:var(--muted);padding:7px 0 13px}.inner-details[open]>summary{color:var(--amber)}.midi-panel button{margin-bottom:8px}.sequencer{margin-top:18px}.sequencer-head .hint{margin:3px 0 0;max-width:70ch}.sequencer-head>div{min-width:0}.sequence-controls{display:grid;grid-template-columns:1.05fr 1.5fr 1fr;padding:14px 15px 0;gap:18px}.sequence-group{display:grid;grid-template-columns:1fr 1fr;gap:0 10px;align-items:start;min-width:0}.sequence-group:last-child{grid-template-columns:1fr 1fr}.sequence-group:last-child>.control:first-child{grid-column:1/-1}.sequence-group .control{min-width:0}.sequence-group label{font-size:.8125rem}.step-scroll{overflow:auto;padding:0 15px 12px;scrollbar-width:thin;scrollbar-color:var(--line) transparent}.steps{display:grid;grid-template-columns:repeat(16,minmax(49px,1fr));gap:5px;min-width:min-content}.step{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:49px;padding:8px 5px;background:#172129;border-color:#2a3840;border-radius:6px;position:relative;overflow:hidden}.step .index{font-size:.625rem;color:var(--faint);align-self:start}.step .word{font:normal .75rem ui-monospace,monospace;color:var(--mint)}.step .pitch{font-size:.6875rem;color:var(--muted)}.step .level{height:3px;border-radius:2px;background:linear-gradient(90deg,var(--amber),var(--mint));width:100%;transform-origin:left}.step.rest{background:#0f171c;opacity:.45}.step.current{border-color:var(--amber);background:#efb96713;box-shadow:inset 0 0 0 1px var(--amber)}.step.current .index{color:var(--amber)}.sequence-foot{display:flex;align-items:center;gap:18px;padding:0 15px 12px;font-size:.75rem;color:var(--muted)}.sequence-foot>span{flex:1}.statusbar{margin:14px 0;display:flex;align-items:center;gap:12px;min-height:25px;font-size:.8125rem;color:var(--mint)}.statusbar.error{color:var(--rose)}#undoBtn{font-size:.75rem;padding:4px 8px}footer{display:flex;justify-content:space-between;gap:16px;color:var(--faint);font-size:.75rem;padding:8px 0 15px;border-top:1px solid var(--line)}dialog{max-width:640px;width:calc(100% - 28px);max-height:85vh;overflow:auto;background:var(--panel);color:var(--ink);border:1px solid #45545c;border-radius:14px;padding:24px;box-shadow:0 20px 100px #0008}dialog::backdrop{background:#03090dbe;backdrop-filter:blur(5px)}.dialog-head{display:flex;justify-content:space-between;align-items:center;gap:12px}.dialog-head h2{font:normal 1.6rem Georgia,serif}.guide p{color:var(--muted);font-size:.9375rem}.guide em{color:var(--ink);font-style:normal}.guide h3{margin-bottom:6px;margin-top:24px}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}::selection{background:var(--amber);color:var(--bg)}
+@media(min-width:1500px){.studio{grid-template-columns:310px minmax(0,1fr) 300px}.canvas-stage{height:365px}.rack{max-height:810px}}
+@media(max-width:1150px){.studio{grid-template-columns:255px minmax(0,1fr)}.voice-rack{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:16px;max-height:none}.voice-rack>.panel+.panel{margin:0}.voice-rack>.panel:first-child>.panel-body{display:grid;grid-template-columns:1fr 1fr;gap:0 15px}.voice-rack .subhead{grid-column:1/-1}.voice-rack .inner-details{grid-column:1/-1}.rack.source-rack{max-height:760px}.transport{padding:10px 20px}.audio-state{display:none}.transport-side{gap:0}main{padding:16px 20px}.masthead{padding:20px}.sequence-controls{grid-template-columns:1fr 1fr}.sequence-group:last-child{grid-column:1/-1;grid-template-columns:1fr 1fr 1fr}.sequence-group:last-child>.control:first-child{grid-column:auto}}
+@media(max-width:760px){.masthead{padding:18px 15px;gap:14px;align-items:center}.masthead p{display:none}.masthead>button{font-size:.75rem;padding:.4rem .55rem}.eyebrow{font-size:.5625rem;letter-spacing:.08em}.transport{padding:9px 12px;flex-wrap:wrap;gap:8px;position:relative}.transport-main{width:100%;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}.transport-main button{font-size:.8125rem}.transport-side{width:100%;justify-content:space-between}.transport .control{width:150px}.audio-state{display:inline}.transport-side .audio-state{font-size:.75rem}main{padding:12px}.patchbar{flex-wrap:wrap;padding:10px;gap:8px}.patch-select{flex:1 1 75%}.patch-name{flex:1 1 60%}.file-menu{margin-left:auto}.patchbar #savePatchBtn{flex:0 0 auto}.file-menu>summary{font-size:.8125rem;min-height:32px;padding:.4rem .6rem}.studio{grid-template-columns:minmax(0,1fr);gap:12px}.instrument{grid-row:1}.source-rack{grid-row:2;max-height:none!important}.source-rack>.panel:first-child>.panel-body{display:grid;grid-template-columns:1fr 1fr;column-gap:16px}.source-rack #sourceKind{grid-column:1/-1;margin-top:-8px;grid-row:2}.source-rack>.panel:first-child>.panel-body>.control:first-child{grid-column:1/-1}.source-rack .button-pair{grid-column:1/-1}.source-rack .pair{grid-column:1/-1}.source-rack .source-tabs span{max-width:100%;display:inline;padding-left:8px}.voice-rack{grid-template-columns:1fr;gap:12px}.voice-rack>.panel:first-child>.panel-body{display:block}.voice-rack .pair{grid-template-columns:1fr 1fr}.canvas-stage{height:270px}.view-tab{font-size:.75rem;padding:11px 10px;flex:1}.viewer-head{overflow-x:auto}.canvas-top #canvasReadout{max-width:40%}.keyboard-head .hint{display:none}.address-readout{gap:8px;padding:10px 12px}.address-readout strong{font-size:.8125rem}.source-addresses{font-size:.625rem;padding:7px 12px}.morph-caption{font-size:.625rem}.sequence-controls{display:block;padding:12px 12px 0}.sequence-group{gap:0 12px}.sequence-group:last-child{grid-template-columns:1fr 1fr}.sequence-group:last-child>.control:first-child{grid-column:1/-1}.sequencer-head{display:block}.sequencer-head .meta{display:block;margin-top:6px}.sequence-foot{flex-wrap:wrap;gap:8px 16px}.sequence-foot>span{flex:1 1 100%}footer{flex-direction:column;gap:4px}.file-actions{width:260px}.morph-title{gap:8px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style></head><body>
+<header class="masthead"><div><div class="eyebrow">AN INSTRUMENT FOR EXPLORING SELF-SIMILARITY</div><h1>Fractal Synth <em>Lab</em></h1></div><p>Grow a waveform. Blend two worlds.<br>Find a pattern worth keeping.</p><button id="helpBtn" class="quiet">A little orientation</button></header>
+<div class="transport" aria-label="Transport"><div class="transport-main"><button id="audioBtn" class="primary">Enable audio</button><button id="noteBtn">Test note</button><button id="droneBtn" aria-pressed="false">Drone</button><button id="playBtn" aria-pressed="false">Play sequence</button><button id="panicBtn" class="danger">All sound off</button></div><div class="transport-side"><span id="audioStatus" class="audio-state">Audio off</span><div class="control "><label for="volume">Volume<output id="volumeValue">0.45</output></label><input id="volume" type="range" min="0" max="0.8" step="0.01" value="0.45"></div></div></div>
 <main>
-  <!-- =========== LEFT: CONTROLS =========== -->
-  <section>
-
-    <div class="panel">
-      <div class="panel-head"><h2>Transport</h2><span class="panel-tag">§ 0.0</span></div>
-      <div class="panel-body">
-        <div class="btn-row">
-          <button id="startBtn" class="primary">Start Audio + MIDI</button>
-          <button id="droneBtn">Drone · Off</button>
-        </div>
-        <div class="btn-row" style="margin-top:8px">
-          <button id="noteBtn">Test Note</button>
-          <button id="randomBtn">Random Patch</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-head"><h2>Address Space &nbsp;𝒞</h2><span class="panel-tag">§ 1</span></div>
-      <div class="panel-body">
-        <div class="row">
-          <label><span class="name">Fractal Mode</span><span class="value" id="modeAlphabet"></span></label>
-          <select id="mode">
-            <option value="cantor">Cantor &nbsp;· {0,2}^ℕ</option>
-            <option value="koch">Koch &nbsp;· {0,1,2,3}^ℕ</option>
-            <option value="weierstrass">Weierstrass &nbsp;· lacunary series</option>
-            <option value="julia">Julia &nbsp;· z² + c orbit</option>
-            <option value="sierpinski">Sierpiński Gasket &nbsp;· {0,1,2}^ℕ</option>
-            <option value="fern">Barnsley Fern &nbsp;· {1,2,3,4}^ℕ_p</option>
-            <option value="lplant">Plant L-System &nbsp;· F→F[+F]F[-F]F</option>
-            <option value="dragon">Heighway Dragon &nbsp;· {L,R}^ℕ</option>
-            <option value="hilbert">Hilbert Curve &nbsp;· {0,1,2,3}^ℕ</option>
-            <option value="newton">Newton Basins &nbsp;· z³ - 1</option>
-          </select>
-        </div>
-        <div class="row">
-          <label><span class="name">Refinement Depth</span><span class="value" id="depthVal"></span></label>
-          <input id="depth" type="range" min="1" max="9" value="5" step="1" />
-        </div>
-        <div class="row">
-          <label><span class="name" id="modALabel">Moduli A</span><span class="value" id="modAVal"></span></label>
-          <input id="modA" type="range" min="0" max="1" value="0.333" step="0.001" />
-        </div>
-        <div class="row">
-          <label><span class="name" id="modBLabel">Moduli B</span><span class="value" id="modBVal"></span></label>
-          <input id="modB" type="range" min="0" max="1" value="0.5" step="0.001" />
-        </div>
-        <div class="warn-box" id="modeWarn"></div>
-      </div>
-      <div class="mode-info" id="modeInfo">
-        <!-- populated dynamically -->
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-head"><h2>Realization &nbsp;Φ</h2><span class="panel-tag">§ 2</span></div>
-      <div class="panel-body">
-        <div class="row-pair">
-          <div class="row" style="margin-bottom:0">
-            <label><span class="name">Smoothing</span><span class="value" id="smoothVal"></span></label>
-            <input id="smooth" type="range" min="0" max="0.95" value="0.30" step="0.01" />
-          </div>
-          <div class="row" style="margin-bottom:0">
-            <label><span class="name">Drive</span><span class="value" id="driveVal"></span></label>
-            <input id="drive" type="range" min="0" max="1" value="0.20" step="0.01" />
-          </div>
-        </div>
-        <div class="btn-row" style="margin-top:14px">
-          <button id="useSelectionBtn">Stretch Selection</button>
-          <button id="usePrimitiveBtn">As Recursive Primitive</button>
-        </div>
-        <div class="btn-row" style="margin-top:8px">
-          <button id="refreshPrimitiveBtn">Refresh Primitive</button>
-          <button id="clearSelectionBtn">Clear Selection</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-head"><h2>Voice</h2><span class="panel-tag">§ 3</span></div>
-      <div class="panel-body">
-        <div class="row">
-          <label><span class="name">Voice Filter</span><span class="value" id="filterTypeLabel">Lowpass</span></label>
-          <select id="filterType">
-            <option value="lowpass">Lowpass</option>
-            <option value="highpass">Highpass</option>
-            <option value="bandpass">Bandpass</option>
-            <option value="notch">Notch</option>
-          </select>
-        </div>
-        <div class="row-pair">
-          <div class="row" style="margin-bottom:0">
-            <label><span class="name">Cutoff</span><span class="value" id="voiceCutoffVal"></span></label>
-            <input id="voiceCutoff" type="range" min="80" max="12000" value="2400" step="1" />
-          </div>
-          <div class="row" style="margin-bottom:0">
-            <label><span class="name">Q</span><span class="value" id="voiceResVal"></span></label>
-            <input id="voiceRes" type="range" min="0.1" max="24" value="2" step="0.1" />
-          </div>
-        </div>
-        <div class="row-pair" style="margin-top:11px">
-          <div class="row" style="margin-bottom:0">
-            <label><span class="name">Amp A</span><span class="value" id="ampAVal"></span></label>
-            <input id="ampA" type="range" min="0.001" max="2" value="0.02" step="0.001" />
-          </div>
-          <div class="row" style="margin-bottom:0">
-            <label><span class="name">Amp D</span><span class="value" id="ampDVal"></span></label>
-            <input id="ampD" type="range" min="0.001" max="3" value="0.18" step="0.001" />
-          </div>
-        </div>
-        <div class="row-pair">
-          <div class="row" style="margin-bottom:0">
-            <label><span class="name">Amp S</span><span class="value" id="ampSVal"></span></label>
-            <input id="ampS" type="range" min="0" max="1" value="0.72" step="0.01" />
-          </div>
-          <div class="row" style="margin-bottom:0">
-            <label><span class="name">Amp R</span><span class="value" id="ampRVal"></span></label>
-            <input id="ampR" type="range" min="0.005" max="5" value="0.35" step="0.005" />
-          </div>
-        </div>
-        <div class="row-pair" style="margin-top:11px">
-          <div class="row" style="margin-bottom:0">
-            <label><span class="name">Filter A</span><span class="value" id="filterAVal"></span></label>
-            <input id="filterA" type="range" min="0.001" max="2" value="0.03" step="0.001" />
-          </div>
-          <div class="row" style="margin-bottom:0">
-            <label><span class="name">Filter D</span><span class="value" id="filterDVal"></span></label>
-            <input id="filterD" type="range" min="0.001" max="3" value="0.25" step="0.001" />
-          </div>
-        </div>
-        <div class="row-pair">
-          <div class="row" style="margin-bottom:0">
-            <label><span class="name">Filter S</span><span class="value" id="filterSVal"></span></label>
-            <input id="filterS" type="range" min="0" max="1" value="0.35" step="0.01" />
-          </div>
-          <div class="row" style="margin-bottom:0">
-            <label><span class="name">Filter R</span><span class="value" id="filterRVal"></span></label>
-            <input id="filterR" type="range" min="0.005" max="5" value="0.35" step="0.005" />
-          </div>
-        </div>
-        <div class="row" style="margin-top:11px">
-          <label><span class="name">Filter Env Amount</span><span class="value" id="filterEnvAmtVal"></span></label>
-          <input id="filterEnvAmt" type="range" min="-8000" max="8000" value="2400" step="10" />
-        </div>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-head"><h2>Master</h2><span class="panel-tag">§ 4</span></div>
-      <div class="panel-body">
-        <div class="row-pair">
-          <div class="row" style="margin-bottom:0">
-            <label><span class="name">Drone Freq</span><span class="value" id="freqVal"></span></label>
-            <input id="freq" type="range" min="35" max="880" value="110" step="1" />
-          </div>
-          <div class="row" style="margin-bottom:0">
-            <label><span class="name">Volume</span><span class="value" id="gainVal"></span></label>
-            <input id="gain" type="range" min="0" max="0.6" value="0.25" step="0.01" />
-          </div>
-        </div>
-        <div class="row-pair" style="margin-top:11px">
-          <div class="row" style="margin-bottom:0">
-            <label><span class="name">Master Cutoff</span><span class="value" id="cutoffVal"></span></label>
-            <input id="cutoff" type="range" min="200" max="14000" value="5400" step="1" />
-          </div>
-          <div class="row" style="margin-bottom:0">
-            <label><span class="name">Master Q</span><span class="value" id="resVal"></span></label>
-            <input id="resonance" type="range" min="0.1" max="16" value="1" step="0.1" />
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-head"><h2>MIDI</h2><span class="panel-tag">§ 5</span></div>
-      <div class="panel-body">
-        <div class="row">
-          <label><span class="name">MIDI Input</span><span class="value" id="midiStatus">Not connected</span></label>
-          <select id="midiSelect">
-            <option value="">No MIDI devices detected</option>
-          </select>
-        </div>
-        <div class="row-pair">
-          <div class="row" style="margin-bottom:0">
-            <label><span class="name">Bend Range</span><span class="value" id="bendRangeVal"></span></label>
-            <input id="bendRange" type="range" min="1" max="12" value="2" step="1" />
-          </div>
-          <div class="row" style="margin-bottom:0">
-            <label><span class="name">CC1 → Φ</span><span class="value" id="midiModDepthVal"></span></label>
-            <input id="midiModDepth" type="range" min="0" max="1" value="0.5" step="0.01" />
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </section>
-
-  <!-- =========== RIGHT: VISUALIZATIONS (tabbed) =========== -->
-  <section class="vis-grid">
-
-    <div class="panel">
-      <div class="panel-head viewer-head">
-        <div class="tab-row">
-          <button class="tab active" data-view="wave">Wave <span class="tab-eq">w(t) = Φ(c(t))</span></button>
-          <button class="tab" data-view="fractal">Realized Fractal <span class="tab-eq">K = Φ(𝒞)</span></button>
-          <button class="tab" data-view="spectrum">Spectrum <span class="tab-eq">|FFT|</span></button>
-        </div>
-        <span class="panel-tag" id="viewerTag">§ 2.1</span>
-      </div>
-      <div class="canvas-wrap">
-        <canvas id="waveCanvas"></canvas>
-        <canvas id="fractalCanvas" class="hidden"></canvas>
-        <canvas id="specCanvas" class="hidden"></canvas>
-        <div class="canvas-overlay" id="waveOverlay">drag to select →</div>
-      </div>
-      <div class="address-strip">
-        <span class="address-label">cylinder</span>
-        <span class="address-display"><span class="greek">Φ</span><span id="addressDisplay">[ — ]</span></span>
-        <span class="address-label" id="addressMeta"></span>
-      </div>
-      <div class="status-line" id="status">Press Start Audio + MIDI. Chrome or Edge for Web MIDI.</div>
-    </div>
-
-  </section>
+<section class="patchbar" aria-label="Patch library"><div class="patch-select"><label for="patchSelect">Patch library</label><select id="patchSelect"></select></div><button id="loadPatchBtn">Load</button><div class="patch-name"><label for="patchName">Patch name <span id="dirtyMark"></span></label><input id="patchName" type="text" maxlength="64" value="Cantor lantern" autocomplete="off"></div><button id="savePatchBtn" class="primary">Save patch</button><details class="file-menu"><summary>Files & exports</summary><div class="file-actions"><button id="exportPatchBtn">Export this patch</button><button id="exportBankBtn">Export saved bank</button><button id="importBtn">Import patch or bank</button><hr><button id="waveWavBtn">Wavetable WAV</button><button id="waveJsonBtn">Wavetable JSON</button><button id="renderBtn">Render sequence WAV</button><button id="offlineBtn">Download offline instrument</button><p>Wavetables: one cycle, 2,048 samples.<br>Sequence: two cycles, plus its sound tail.</p></div></details><input id="importFile" type="file" accept=".json,application/json" hidden></section>
+<div class="studio">
+<aside class="rack source-rack" aria-label="Source editor"><section class="panel"><div class="panel-head"><h2>Source material</h2><button id="randomBtn" class="small quiet">Surprise me</button></div><div class="source-tabs" role="tablist" aria-label="Edit source"><button id="sourceABtn" role="tab" aria-selected="true" class="selected" data-source="a">A <span id="sourceATab">Cantor</span></button><button id="sourceBBtn" role="tab" aria-selected="false" data-source="b">B <span id="sourceBTab">Weierstrass</span></button></div><div class="panel-body"><div class="control"><label for="mode">Fractal family</label><select id="mode"><option value="cantor">Cantor set</option><option value="koch">Koch curve</option><option value="weierstrass">Weierstrass series</option><option value="julia">Julia set</option><option value="sierpinski">Sierpiński gasket</option><option value="fern">Barnsley fern</option><option value="lplant">L-system plant</option><option value="dragon">Heighway dragon</option><option value="hilbert">Hilbert curve</option><option value="newton">Newton basins</option></select></div><div id="sourceKind" class="hint">Fractal generator</div><div class="control "><label for="depth">Refinement<output id="depthValue">5</output></label><input id="depth" type="range" min="1" max="9" step="1" value="5"></div><div class="control"><label for="modA"><span id="modALabel">Keep ratio α</span><output id="modAValue"></output></label><input id="modA" type="range" min="0" max="1" step="0.001" value="0.629"></div><div class="control"><label for="modB"><span id="modBLabel">Indicator / staircase</span><output id="modBValue"></output></label><input id="modB" type="range" min="0" max="1" step="0.001" value="0"></div><div class="pair"><div class="control "><label for="smooth">Smoothing<output id="smoothValue">0.3</output></label><input id="smooth" type="range" min="0" max="0.95" step="0.01" value="0.3"></div> <div class="control "><label for="drive">Drive<output id="driveValue">0.2</output></label><input id="drive" type="range" min="0" max="1" step="0.01" value="0.2"></div></div><div class="button-pair"><button id="resetSourceBtn" class="small">Reset source</button><button id="captureBtn" class="small">Capture blend</button></div></div></section>
+<section class="panel sample-panel"><div class="panel-head"><h2>Shape a new source</h2><span id="selectionStatus" class="meta">Drag on waveform</span></div><div class="panel-body"><p class="hint">Drag across part of the wave, then stretch that region into a full cycle or use it as a recursive building block.</p><div class="button-pair"><button id="stretchBtn" class="small" disabled>Stretch region</button><button id="primitiveBtn" class="small" disabled>Make recursive</button></div><button id="clearSelectionBtn" class="text-button">Clear selection</button></div></section>
+<details class="panel source-notes"><summary>Inside this fractal</summary><div class="panel-body" id="sourceInfo"></div></details></aside>
+<section class="instrument" aria-label="Sound and geometry"><div class="panel viewer"><div class="viewer-head" role="tablist" aria-label="Visualization"><button role="tab" aria-selected="true" class="view-tab selected" data-view="wave">Waveform</button><button role="tab" aria-selected="false" class="view-tab" data-view="fractal">Fractal</button><button role="tab" aria-selected="false" class="view-tab" data-view="tree">Address tree</button><button role="tab" aria-selected="false" class="view-tab" data-view="spectrum">Spectrum</button></div><div class="canvas-stage"><canvas id="waveCanvas" aria-label="Blended waveform; click to audition an address or drag to select a region"></canvas><canvas id="fractalCanvas" aria-label="Selected source fractal" hidden></canvas><canvas id="treeCanvas" aria-label="Address tree with current control word highlighted" hidden></canvas><canvas id="spectrumCanvas" aria-label="Waveform harmonic spectrum" hidden></canvas><div class="canvas-top"><span id="viewCaption">A + B · the audible waveform</span><span id="canvasReadout">2,048 samples</span></div><div class="canvas-bottom" id="canvasHint">Click to audition an address · drag to select a region</div></div><div class="address-readout"><div><span class="readout-label">Control word</span><strong id="controlWord">0000</strong></div><div><span class="readout-label">Coordinate</span><strong id="coordinateValue">u = 0.000</strong></div><div><span class="readout-label">Note</span><strong id="currentNote">C3</strong></div></div><div class="source-addresses"><span><b>A</b> <span id="addressA"></span></span><span><b>B</b> <span id="addressB"></span></span></div></div>
+<section class="panel morph-panel"><div class="morph-title"><h2>Morph</h2><span id="morphReadout">25% B</span><button id="swapBtn" class="small quiet">Swap A / B</button></div><div class="morph-names"><span id="morphA">A · Cantor</span><span id="morphB">B · Weierstrass</span></div><label class="sr-only" for="morph">Blend from source A to source B</label><input id="morph" type="range" min="0" max="1" value="0.25" step="0.001"><div class="morph-caption"><span>A</span><span id="morphHint">A continuous blend of the two waveforms</span><span>B</span></div></section>
+<section class="panel keyboard-panel"><div class="keyboard-head"><span>PLAY</span><span class="hint">A W S E D F T G Y H U J K · Z / X octave</span><div class="octave-controls"><button id="octaveDown" class="small" aria-label="Lower keyboard octave">−</button><output id="octaveValue">C3</output><button id="octaveUp" class="small" aria-label="Raise keyboard octave">+</button></div></div><div id="keyboard" class="keyboard" aria-label="Piano keyboard"></div></section></section>
+<aside class="rack voice-rack" aria-label="Voice and effects"><section class="panel"><div class="panel-head"><h2>Voice & space</h2><span class="meta" id="voiceCount">0 voices</span></div><div class="panel-body"><div class="control"><label for="filterType">Voice filter</label><select id="filterType"><option value="lowpass">Lowpass</option><option value="highpass">Highpass</option><option value="bandpass">Bandpass</option><option value="notch">Notch</option></select></div> <div class="control "><label for="voiceCutoff">Cutoff<output id="voiceCutoffValue">2400</output></label><input id="voiceCutoff" type="range" min="80" max="14000" step="1" value="2400"></div><div class="pair"><div class="control "><label for="voiceRes">Resonance<output id="voiceResValue">1.4</output></label><input id="voiceRes" type="range" min="0.1" max="12" step="0.1" value="1.4"></div> <div class="control "><label for="droneNote">Drone note<output id="droneNoteValue">48</output></label><input id="droneNote" type="range" min="24" max="84" step="1" value="48"></div></div><div class="subhead">Amplitude envelope</div><div class="pair"><div class="control "><label for="ampA">Attack<output id="ampAValue">0.02</output></label><input id="ampA" type="range" min="0.003" max="2" step="0.001" value="0.02"></div> <div class="control "><label for="ampD">Decay<output id="ampDValue">0.18</output></label><input id="ampD" type="range" min="0.005" max="3" step="0.005" value="0.18"></div> <div class="control "><label for="ampS">Sustain<output id="ampSValue">0.65</output></label><input id="ampS" type="range" min="0" max="1" step="0.01" value="0.65"></div> <div class="control "><label for="ampR">Release<output id="ampRValue">0.5</output></label><input id="ampR" type="range" min="0.01" max="5" step="0.01" value="0.5"></div></div><div class="subhead">Space</div><div class="pair"><div class="control "><label for="echo">Echo<output id="echoValue">0.18</output></label><input id="echo" type="range" min="0" max="0.65" step="0.01" value="0.18"></div> <div class="control "><label for="space">Reverb<output id="spaceValue">0.12</output></label><input id="space" type="range" min="0" max="0.6" step="0.01" value="0.12"></div></div><p class="hint">Echo follows the sequence tempo.</p><details class="inner-details"><summary>Filter envelope & output</summary><div class="pair"><div class="control "><label for="filterA">Attack<output id="filterAValue">0.03</output></label><input id="filterA" type="range" min="0.003" max="2" step="0.001" value="0.03"></div> <div class="control "><label for="filterD">Decay<output id="filterDValue">0.25</output></label><input id="filterD" type="range" min="0.005" max="3" step="0.005" value="0.25"></div> <div class="control "><label for="filterS">Sustain<output id="filterSValue">0.35</output></label><input id="filterS" type="range" min="0" max="1" step="0.01" value="0.35"></div> <div class="control "><label for="filterR">Release<output id="filterRValue">0.35</output></label><input id="filterR" type="range" min="0.01" max="5" step="0.01" value="0.35"></div></div><div class="control "><label for="filterEnvAmt">Envelope amount<output id="filterEnvAmtValue">2400</output></label><input id="filterEnvAmt" type="range" min="-8000" max="8000" step="10" value="2400"></div> <div class="control "><label for="cutoff">Output cutoff<output id="cutoffValue">8000</output></label><input id="cutoff" type="range" min="200" max="18000" step="1" value="8000"></div></details></div></section><details class="panel midi-panel"><summary>MIDI connection</summary><div class="panel-body"><button id="midiBtn">Connect MIDI</button><p id="midiStatus" class="hint">Connect when you are ready.</p><label for="midiSelect">Input device</label><select id="midiSelect"><option value="">No device connected</option></select><div class="control"><label for="midiTarget">Mod wheel target</label><select id="midiTarget"><option value="morph">Morph A / B</option><option value="modA">Source parameter A</option><option value="modB">Source parameter B</option><option value="cutoff">Output cutoff</option></select></div> <div class="control "><label for="bendRange">Pitch bend<output id="bendRangeValue">2</output></label><input id="bendRange" type="range" min="1" max="12" step="1" value="2"></div><p class="hint">CC 1: chosen target · CC 74: output cutoff · CC 71: resonance · CC 64: sustain.</p></div></details></aside>
+</div>
+<section class="panel sequencer" aria-label="Address sequencer"><div class="panel-head sequencer-head"><div><h2>Address sequencer</h2><p class="hint">A word becomes a coordinate. The coordinate becomes a note, a blend, and a path through the tree.</p></div><span id="sequenceInfo" class="meta">16 steps</span></div><div class="sequence-controls"><div class="sequence-group"><div class="control"><label for="walk">Walk</label><select id="walk"><option value="count">Count</option><option value="gray">Reflected Gray</option><option value="reverse">Reverse digits</option><option value="seeded">Seeded walk</option></select></div> <div class="control"><label for="radix">Base</label><select id="radix"><option value="2">2 · binary</option><option value="3">3 · ternary</option><option value="4">4 · quaternary</option></select></div> <div class="control"><label for="wordDepth">Digits</label><select id="wordDepth"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select></div> <div class="control"><label for="length">Steps</label><select id="length"><option value="4">4</option><option value="8">8</option><option value="16">16</option><option value="32">32</option></select></div></div><div class="sequence-group"><div class="control"><label for="root">Root</label><select id="root"><option value="24">C1</option><option value="25">C♯1</option><option value="26">D1</option><option value="27">E♭1</option><option value="28">E1</option><option value="29">F1</option><option value="30">F♯1</option><option value="31">G1</option><option value="32">A♭1</option><option value="33">A1</option><option value="34">B♭1</option><option value="35">B1</option><option value="36">C2</option><option value="37">C♯2</option><option value="38">D2</option><option value="39">E♭2</option><option value="40">E2</option><option value="41">F2</option><option value="42">F♯2</option><option value="43">G2</option><option value="44">A♭2</option><option value="45">A2</option><option value="46">B♭2</option><option value="47">B2</option><option value="48">C3</option><option value="49">C♯3</option><option value="50">D3</option><option value="51">E♭3</option><option value="52">E3</option><option value="53">F3</option><option value="54">F♯3</option><option value="55">G3</option><option value="56">A♭3</option><option value="57">A3</option><option value="58">B♭3</option><option value="59">B3</option><option value="60">C4</option><option value="61">C♯4</option><option value="62">D4</option><option value="63">E♭4</option><option value="64">E4</option><option value="65">F4</option><option value="66">F♯4</option><option value="67">G4</option><option value="68">A♭4</option><option value="69">A4</option><option value="70">B♭4</option><option value="71">B4</option><option value="72">C5</option><option value="73">C♯5</option><option value="74">D5</option><option value="75">E♭5</option><option value="76">E5</option><option value="77">F5</option><option value="78">F♯5</option><option value="79">G5</option><option value="80">A♭5</option><option value="81">A5</option><option value="82">B♭5</option><option value="83">B5</option><option value="84">C6</option></select></div> <div class="control"><label for="scale">Scale</label><select id="scale"><option value="minorPent">Minor pentatonic</option><option value="majorPent">Major pentatonic</option><option value="dorian">Dorian</option><option value="minor">Natural minor</option><option value="major">Major</option><option value="whole">Whole tone</option><option value="chromatic">Chromatic</option></select></div> <div class="control"><label for="span">Range</label><select id="span"><option value="1">1 octave</option><option value="2">2 octaves</option><option value="3">3 octaves</option></select></div> <div class="control"><label for="route">Address controls</label><select id="route"><option value="pitchMorph">Pitch + morph</option><option value="pitch">Pitch</option><option value="morph">Morph</option><option value="pitchCutoff">Pitch + cutoff</option></select></div></div><div class="sequence-group"><div class="control "><label for="bpm">Tempo<output id="bpmValue">100</output></label><input id="bpm" type="range" min="40" max="200" step="1" value="100"></div> <div class="control"><label for="division">Step duration</label><select id="division"><option value="4">Quarter note</option><option value="8">Eighth note</option><option value="16">Sixteenth note</option></select></div> <div class="control "><label for="gate">Gate<output id="gateValue">0.7</output></label><input id="gate" type="range" min="0.1" max="0.95" step="0.01" value="0.7"></div></div></div><div class="step-scroll"><div id="steps" class="steps"></div></div><div class="sequence-foot"><span id="stepHint">Click a step to rest it. Space starts or stops the sequence.</span><button id="clearRestsBtn" class="text-button">Restore all steps</button><button id="seedBtn" class="text-button">New walk seed</button></div></section>
+<div class="statusbar"><span id="status" role="status" aria-live="polite">Ready to explore. Enable audio or play a key to begin.</span><button id="undoBtn" hidden>Undo</button></div>
+<footer><span>Built from ten fractal families. Every sound stays in your browser.</span><span>Space: sequence · Esc: all sound off</span></footer>
 </main>
-
-<footer>
-  <div class="pill-row">
-    <span class="pill">CC 1 → moduli sweep</span>
-    <span class="pill">CC 74 → master cutoff</span>
-    <span class="pill">CC 71 → master Q</span>
-    <span class="pill">CC 120/123 → all notes off</span>
-    <span class="pill">⌨ V → cycle view · Space → drone · N → note · R → random</span>
-  </div>
-  <div class="note">
-    The visible fractal is the simpler half of the picture. The richer half is the symbolic refinement that produced it.
-  </div>
-</footer>
-
-<script>
-'use strict';
-
-/* ============================================================
- *  Fractal Synth Lab  ·  v2
- *  An addressed-fractal wavetable instrument
- *
- *  Every mode is an object with a uniform contract:
- *    { name, alphabet, paramA, paramB, depthMax, validity?,
- *      wave(depth,a,b)    -> Float32Array of length N  (the realization Φ on the period circle)
- *      visualize(ctx,W,H,depth,a,b) -> draws the realized fractal
- *      address(t,depth,a,b) -> string  (the cylinder address at parameter t in [0,1])
- *      info: { ... mode-specific exposition ... }
- *    }
- * ============================================================ */
-
-const N = 2048;              // wavetable length
+<dialog id="helpDialog"><div class="dialog-head"><h2>A little orientation</h2><button id="closeHelpBtn" aria-label="Close orientation">Close</button></div><div class="guide"><p>Start with a factory patch and play the keyboard. Then change a source or move the morph slider while holding a note.</p><h3>Two sources, one sound</h3><p>A and B each produce a sampled waveform. The morph slider blends their amplitudes point by point. Source shapes are normalized individually; cancellation between them is part of the sound. <em>Capture blend</em> turns the result into material you can reshape.</p><h3>Play an address</h3><p>The sequencer builds a finite word in base 2, 3, or 4. Read as a number and divided by the largest word of that length, it gives a coordinate u between 0 and 1. The same coordinate chooses a scale note, controls the selected sequence targets, and highlights a path in the address tree. A and B also show their own fractal-specific addresses at that coordinate. These may use different alphabets.</p><h3>Keep what you find</h3><p><em>Save patch</em> stores both sources, envelopes, effects, morph position, and sequence in this browser. Export a patch or bank to carry it elsewhere. Custom sampled regions travel with the patch. Your current edits also recover after reloading; audio always starts stopped.</p><h3>Take the sound elsewhere</h3><p>Wavetable WAV exports a single mono cycle at 48 kHz; a 2,048-sample cycle has a reference pitch of 23.4375 Hz when played directly. Wavetable JSON includes samples and Fourier coefficients. Sequence WAV renders two passes using the same voice and effects, with a tail for release and echoes. Download the whole instrument for offline use.</p><p class="hint">These are finite sampled realizations and sonifications. A plotted geometric set, the scan used to make its waveform, and its sound are related views, not identical objects. No network or MIDI connection is needed to play.</p></div></dialog>
+<script>const N = 2048;              // wavetable length
 const TWO_PI = Math.PI * 2;
 const $ = id => document.getElementById(id);
 
@@ -431,7 +46,7 @@ function normalize(w){
 }
 function smoothWave(w,a){
   let out = Float32Array.from(w);
-  const passes = Math.floor(1 + a*12);
+  const passes = Math.round(a*14);
   for(let p=0;p<passes;p++){
     const next = new Float32Array(out.length);
     for(let i=0;i<out.length;i++){
@@ -442,6 +57,7 @@ function smoothWave(w,a){
   return out;
 }
 function applyDrive(w,d){
+  if(d <= 0) return w;
   const k = 1 + d*12;
   const denom = Math.tanh(k) || 1;
   for(let i=0;i<w.length;i++) w[i] = Math.tanh(k*w[i])/denom;
@@ -449,10 +65,10 @@ function applyDrive(w,d){
 }
 function sampleAt(src,u){
   u = fract(u);
-  const pos = u*(src.length-1);
+  const pos = u*src.length;
   const j = Math.floor(pos);
   const t = pos - j;
-  return lerp(src[j], src[Math.min(j+1, src.length-1)], t);
+  return lerp(src[j], src[(j+1)%src.length], t);
 }
 
 /* deterministic PRNG (mulberry32) */
@@ -1470,766 +1086,452 @@ const FRACTALS = {
   },
 };
 
-/* ============================================================
- *  AUDIO ENGINE
- * ============================================================ */
-const els = {};
-['startBtn','droneBtn','noteBtn','randomBtn','useSelectionBtn','usePrimitiveBtn','refreshPrimitiveBtn','clearSelectionBtn',
- 'mode','depth','modA','modB','modALabel','modBLabel','smooth','drive',
- 'cutoff','resonance','filterType','voiceCutoff','voiceRes',
- 'ampA','ampD','ampS','ampR','filterEnvAmt','filterA','filterD','filterS','filterR',
- 'freq','gain','midiSelect','bendRange','midiModDepth',
- 'modAVal','modBVal','depthVal','smoothVal','driveVal',
- 'cutoffVal','resVal','voiceCutoffVal','voiceResVal',
- 'ampAVal','ampDVal','ampSVal','ampRVal','filterEnvAmtVal','filterAVal','filterDVal','filterSVal','filterRVal',
- 'freqVal','gainVal','bendRangeVal','midiModDepthVal','filterTypeLabel',
- 'modeAlphabet','modeInfo','modeWarn','status','midiStatus',
- 'waveCanvas','specCanvas','fractalCanvas',
- 'addressDisplay','addressMeta','viewerTag','waveOverlay',
-].forEach(k => els[k] = $(k));
 
-let audioCtx=null, masterGain=null, filter=null, analyser=null;
-let currentPeriodicWave=null;
-let droneOsc=null, droneOn=false;
-let currentWave = new Float32Array(N);
-let baseModeWave = new Float32Array(N);
-let midiAccess=null, selectedMidiInput=null;
-let activeVoices = new Map();
-let pitchBend = 0;
-let modWheelBaseA = null, modWheelBaseB = null;
-let animationId = null;
-let currentView = 'wave';   /* 'wave' | 'fractal' | 'spectrum' */
-
-const VIEW_TAGS = { wave:'§ 2.1', fractal:'§ 1.2', spectrum:'|FFT|' };
-
-function setView(v){
-  currentView = v;
-  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === v));
-  els.waveCanvas.classList.toggle('hidden', v !== 'wave');
-  els.fractalCanvas.classList.toggle('hidden', v !== 'fractal');
-  els.specCanvas.classList.toggle('hidden', v !== 'spectrum');
-  els.waveOverlay.classList.toggle('hidden', v !== 'wave');
-  els.viewerTag.textContent = VIEW_TAGS[v] || '';
-  /* redraw the now-visible canvas (spectrum self-draws via the animation loop) */
-  if(v === 'wave') drawWave();
-  else if(v === 'fractal') drawFractal();
-  else if(v === 'spectrum') drawSpectrum();
-}
-
-/* selection feature */
-let selection = { active:false, dragging:false, startX:0, endX:0, startIndex:0, endIndex:0, sourceWave:null };
-let primitiveWave = null, primitiveActive = false;
-let cropWaveBase  = null, cropActive = false;
-
-function getParams(){
-  return {
-    mode: els.mode.value,
-    freq: +els.freq.value,
-    gain: +els.gain.value,
-    depth: +els.depth.value,
-    modA: +els.modA.value,
-    modB: +els.modB.value,
-    smooth: +els.smooth.value,
-    drive: +els.drive.value,
-    cutoff: +els.cutoff.value,
-    resonance: +els.resonance.value,
-    filterType: els.filterType.value,
-    voiceCutoff: +els.voiceCutoff.value,
-    voiceRes: +els.voiceRes.value,
-    ampA: +els.ampA.value, ampD: +els.ampD.value, ampS: +els.ampS.value, ampR: +els.ampR.value,
-    filterEnvAmt: +els.filterEnvAmt.value,
-    filterA: +els.filterA.value, filterD: +els.filterD.value, filterS: +els.filterS.value, filterR: +els.filterR.value,
-    bendRange: +els.bendRange.value,
-    midiModDepth: +els.midiModDepth.value,
-  };
-}
-
-function updateLabels(){
-  const p = getParams();
-  const f = FRACTALS[p.mode];
-  els.modeAlphabet.textContent = f.alphabet;
-  els.modALabel.textContent = f.paramA.label;
-  els.modBLabel.textContent = f.paramB.label;
-  els.modAVal.textContent = f.paramA.transform(p.modA);
-  els.modBVal.textContent = f.paramB.transform(p.modB);
-  els.depthVal.textContent = p.depth;
-  els.smoothVal.textContent = p.smooth.toFixed(2);
-  els.driveVal.textContent  = p.drive.toFixed(2);
-  els.cutoffVal.textContent = p.cutoff.toFixed(0)+' Hz';
-  els.resVal.textContent    = p.resonance.toFixed(1);
-  els.filterTypeLabel.textContent = els.filterType.options[els.filterType.selectedIndex].text;
-  els.voiceCutoffVal.textContent  = p.voiceCutoff.toFixed(0)+' Hz';
-  els.voiceResVal.textContent     = p.voiceRes.toFixed(1);
-  els.ampAVal.textContent = p.ampA.toFixed(3)+' s';
-  els.ampDVal.textContent = p.ampD.toFixed(3)+' s';
-  els.ampSVal.textContent = p.ampS.toFixed(2);
-  els.ampRVal.textContent = p.ampR.toFixed(3)+' s';
-  els.filterEnvAmtVal.textContent = p.filterEnvAmt.toFixed(0)+' Hz';
-  els.filterAVal.textContent = p.filterA.toFixed(3)+' s';
-  els.filterDVal.textContent = p.filterD.toFixed(3)+' s';
-  els.filterSVal.textContent = p.filterS.toFixed(2);
-  els.filterRVal.textContent = p.filterR.toFixed(3)+' s';
-  els.freqVal.textContent = p.freq.toFixed(0)+' Hz';
-  els.gainVal.textContent = p.gain.toFixed(2);
-  els.bendRangeVal.textContent = p.bendRange+' st';
-  els.midiModDepthVal.textContent = p.midiModDepth.toFixed(2);
-}
-
-function updateModeInfo(){
-  const p = getParams();
-  const f = FRACTALS[p.mode];
-  let html = '';
-  for(const [k,v] of Object.entries(f.info)){
-    html += `<div class="info-row"><div class="info-key">${k}</div><div class="info-val">${v}</div></div>`;
-  }
-  els.modeInfo.innerHTML = html;
-  /* validity warning */
-  if(f.validity){
-    const v = f.validity(p.modA, p.modB);
-    if(!v.ok){
-      els.modeWarn.classList.add('visible');
-      els.modeWarn.textContent = `Hardy condition violated: ab = ${v.ab.toFixed(3)} ≤ ${v.bound.toFixed(3)}. Function is differentiable; not a true Weierstrass fractal.`;
-    } else {
-      els.modeWarn.classList.remove('visible');
+/* Fractal Synth Lab · instrument state, sound, and addressed performance. */
+'use strict';
+const APP_VERSION = 3;
+const STORAGE_BANK = 'fractalSynth.bank.v3';
+const STORAGE_WORK = 'fractalSynth.working.v3';
+const SCALE = {minorPent:[0,3,5,7,10],majorPent:[0,2,4,7,9],dorian:[0,2,3,5,7,9,10],minor:[0,2,3,5,7,8,10],major:[0,2,4,5,7,9,11],whole:[0,2,4,6,8,10],chromatic:[0,1,2,3,4,5,6,7,8,9,10,11]};
+const NOTE_NAMES = ['C','C♯','D','E♭','E','F','F♯','G','A♭','A','B♭','B'];
+const copy = value => JSON.parse(JSON.stringify(value));
+function sourceDefaults(mode){const f=FRACTALS[mode];return {mode,depth:f.defaults.depth,modA:f.defaults.modA,modB:f.defaults.modB,smooth:.3,drive:.12,kind:'fractal',sample:null};}
+function defaultSettings(){return {sources:{a:sourceDefaults('cantor'),b:sourceDefaults('weierstrass')},morph:.25,volume:.45,droneNote:48,filterType:'lowpass',voiceCutoff:2400,voiceRes:1.4,ampA:.02,ampD:.18,ampS:.65,ampR:.5,filterA:.03,filterD:.25,filterS:.35,filterR:.35,filterEnvAmt:2400,cutoff:8000,echo:.18,space:.12,bendRange:2,midiTarget:'morph',keyboardOctave:3,seq:{walk:'gray',radix:2,wordDepth:4,length:16,root:48,scale:'minorPent',span:2,route:'pitchMorph',bpm:100,division:16,gate:.7,seed:1986,rests:[]}};}
+const NUMERIC = {morph:[0,1],volume:[0,.8],droneNote:[24,84,1],voiceCutoff:[80,14000],voiceRes:[.1,12],ampA:[.003,2],ampD:[.005,3],ampS:[0,1],ampR:[.01,5],filterA:[.003,2],filterD:[.005,3],filterS:[0,1],filterR:[.01,5],filterEnvAmt:[-8000,8000],cutoff:[200,18000],echo:[0,.65],space:[0,.6],bendRange:[1,12,1],keyboardOctave:[1,6,1]};
+const SEQ_NUMERIC={radix:[2,4,1],wordDepth:[1,6,1],length:[4,32,1],root:[24,84,1],span:[1,3,1],bpm:[40,200],division:[4,16,1],gate:[.1,.95],seed:[0,4294967295,1]};
+function numberValue(value, fallback, limits){if(value===undefined)return fallback;if(typeof value!=='number'||!Number.isFinite(value))throw Error('A patch contains an invalid number.');const n=clamp(value,limits[0],limits[1]);return limits[2]?Math.round(n):n;}
+function enumValue(value,fallback,values){if(value===undefined)return fallback;if(!values.includes(value))throw Error('A patch uses an unknown setting.');return value;}
+function validateSettings(input){
+  if(!input||typeof input!=='object'||Array.isArray(input))throw Error('This file does not contain instrument settings.');
+  const d=defaultSettings(),out=copy(d);
+  for(const [k,limits]of Object.entries(NUMERIC))out[k]=numberValue(input[k],d[k],limits);
+  out.filterType=enumValue(input.filterType,d.filterType,['lowpass','highpass','bandpass','notch']);
+  out.midiTarget=enumValue(input.midiTarget,d.midiTarget,['morph','modA','modB','cutoff']);
+  for(const slot of ['a','b']){
+    const src=input.sources?.[slot];if(!src||typeof src!=='object')throw Error('A patch needs sources A and B.');
+    const mode=enumValue(src.mode,d.sources[slot].mode,Object.keys(FRACTALS));
+    const s=sourceDefaults(mode);
+    for(const [k,limits]of Object.entries({depth:[1,9,1],modA:[0,1],modB:[0,1],smooth:[0,.95],drive:[0,1]}))s[k]=numberValue(src[k],s[k],limits);
+    s.kind=enumValue(src.kind,'fractal',['fractal','sample','primitive']);
+    if(s.kind!=='fractal'){
+      if(!Array.isArray(src.sample)||src.sample.length!==N||src.sample.some(v=>typeof v!=='number'||!Number.isFinite(v)||Math.abs(v)>4))throw Error('A custom source needs 2,048 finite samples.');
+      s.sample=src.sample.slice();
     }
-  } else {
-    els.modeWarn.classList.remove('visible');
+    out.sources[slot]=s;
   }
-  /* update address display */
-  updateAddressDisplay();
+  const q=input.seq||{};
+  for(const[k,limits]of Object.entries(SEQ_NUMERIC))out.seq[k]=numberValue(q[k],d.seq[k],limits);
+  out.seq.walk=enumValue(q.walk,d.seq.walk,['count','gray','reverse','seeded']);
+  out.seq.scale=enumValue(q.scale,d.seq.scale,Object.keys(SCALE));
+  out.seq.route=enumValue(q.route,d.seq.route,['pitchMorph','pitch','morph','pitchCutoff']);
+  if(![4,8,16,32].includes(out.seq.length)||![4,8,16].includes(out.seq.division))throw Error('Unsupported sequence length or duration.');
+  if(q.rests!==undefined&&(!Array.isArray(q.rests)||q.rests.length>32||q.rests.some(v=>!Number.isInteger(v)||v<0||v>31)))throw Error('Invalid rest pattern.');
+  out.seq.rests=[...new Set(q.rests||[])];return out;
 }
-
-function updateAddressDisplay(){
-  const p = getParams();
-  const f = FRACTALS[p.mode];
-  /* sample at the centre of the wavetable t = 0.5 (mid-cycle) */
-  const t = 0.5;
-  const addr = f.address(t, p.depth, p.modA, p.modB);
-  els.addressDisplay.textContent = `[${addr}…]`;
-  els.addressMeta.textContent = `t = 0.500  ·  depth ${p.depth}`;
+function validatePatch(input){
+  if(input?.format!=='fractal-synth-patch'||input.version!==APP_VERSION)throw Error('Choose a Fractal Synth Lab v3 patch or bank.');
+  return {format:'fractal-synth-patch',version:APP_VERSION,id:typeof input.id==='string'?input.id.slice(0,80):uid(),name:typeof input.name==='string'?(input.name.trim().slice(0,64)||'Imported patch'):'Imported patch',settings:validateSettings(input.settings)};
 }
+function uid(){return 'p-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,9);}
+function noteName(n){return NOTE_NAMES[((n%12)+12)%12]+(Math.floor(n/12)-1);}
+function midiHz(n){return 440*Math.pow(2,(n-69)/12);}
+function recursivePrimitive(src,depth,a,b){
+  const out=new Float32Array(N),branches=2+Math.floor(a*6),decay=lerp(.18,.78,b),phase=.137+a*.33;
+  for(let i=0;i<N;i++){let y=0,weight=0,amp=1;for(let d=0;d<Math.min(depth+1,10);d++){const sign=d%2===0?1:lerp(1,-1,b*.75);y+=amp*sign*sampleAt(src,fract(i/N*Math.pow(branches,d)+phase*d));weight+=amp;amp*=decay;}out[i]=y/(weight||1);}return normalize(out);
+}
+function realizeSource(src){
+  let w=src.kind==='sample'?Float32Array.from(src.sample):src.kind==='primitive'?recursivePrimitive(src.sample,src.depth,src.modA,src.modB):FRACTALS[src.mode].wave(src.depth,src.modA,src.modB);
+  w=normalize(applyDrive(smoothWave(w,src.smooth),src.drive));
+  if(w.length!==N||w.some(x=>!Number.isFinite(x)))throw Error('This source produced an invalid waveform.');return w;
+}
+/* Radix-2 FFT. Web Audio's imaginary coefficient is the sine amplitude,
+   hence the minus sign when converting the forward FFT convention. */
+function fourier(samples){
+  const n=samples.length,re=Float64Array.from(samples),im=new Float64Array(n);
+  for(let i=1,j=0;i<n;i++){let bit=n>>1;for(;j&bit;bit>>=1)j^=bit;j^=bit;if(i<j){const t=re[i];re[i]=re[j];re[j]=t;}}
+  for(let len=2;len<=n;len<<=1){const angle=-TWO_PI/len;for(let base=0;base<n;base+=len){for(let j=0;j<len/2;j++){const c=Math.cos(angle*j),s=Math.sin(angle*j),k=base+j,h=k+len/2,tr=re[h]*c-im[h]*s,ti=re[h]*s+im[h]*c;re[h]=re[k]-tr;im[h]=im[k]-ti;re[k]+=tr;im[k]+=ti;}}}
+  const real=new Float32Array(n/2+1),imag=new Float32Array(n/2+1),mag=new Float32Array(n/2+1);
+  for(let k=1;k<=n/2;k++){const factor=k===n/2?1/n:2/n;real[k]=re[k]*factor;imag[k]=-im[k]*factor;mag[k]=Math.hypot(real[k],imag[k]);}
+  return {real,imag,mag};
+}
+function mixWave(a,b,m){const w=new Float32Array(a.length);for(let i=0;i<w.length;i++)w[i]=lerp(a[i],b[i],m);return w;}
+function digitsOf(index,radix,depth){const digits=new Array(depth).fill(0);for(let i=depth-1;i>=0;i--){digits[i]=index%radix;index=Math.floor(index/radix);}return digits;}
+function reflectedDigits(index,radix,depth){if(!depth)return [];const span=Math.pow(radix,depth-1),head=Math.floor(index/span),tail=index%span;return [head,...reflectedDigits(head%2?span-1-tail:tail,radix,depth-1)];}
+function addressDigits(index,q){const total=Math.pow(q.radix,q.wordDepth);index%=total;if(q.walk==='gray')return reflectedDigits(index,q.radix,q.wordDepth);if(q.walk==='seeded')index=Math.floor(mulberry32((q.seed^Math.imul(index+1,0x9e3779b1))>>>0)()*total);const a=digitsOf(index,q.radix,q.wordDepth);return q.walk==='reverse'?a.reverse():a;}
+function addressValue(digits,radix){return digits.reduce((n,d)=>n*radix+d,0)/(Math.pow(radix,digits.length)-1||1);}
+function pitchFor(u,q){if(q.route==='morph')return q.root;const scale=SCALE[q.scale],i=Math.round(clamp(u,0,1)*(scale.length*q.span-1));return q.root+12*Math.floor(i/scale.length)+scale[i%scale.length];}
+function sequenceSteps(q){return Array.from({length:q.length},(_,i)=>{const digits=addressDigits(i,q),u=addressValue(digits,q.radix);return {i,digits,word:digits.join(''),u,note:pitchFor(u,q),morph:u,cutoff:200*Math.pow(40,u),rest:q.rests.includes(i)};});}
+function stepSeconds(q){return 60/q.bpm*4/q.division;}
+function controlsMorph(q){return q.route==='pitchMorph'||q.route==='morph';}
+function encodeWav(channels,sampleRate=48000){
+  const frames=channels[0].length,count=channels.length,buffer=new ArrayBuffer(44+frames*count*2),v=new DataView(buffer);
+  const str=(at,s)=>{for(let i=0;i<s.length;i++)v.setUint8(at+i,s.charCodeAt(i));};
+  str(0,'RIFF');v.setUint32(4,buffer.byteLength-8,true);str(8,'WAVE');str(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,count,true);v.setUint32(24,sampleRate,true);v.setUint32(28,sampleRate*count*2,true);v.setUint16(32,count*2,true);v.setUint16(34,16,true);str(36,'data');v.setUint32(40,frames*count*2,true);
+  let offset=44;for(let i=0;i<frames;i++)for(let c=0;c<count;c++){const x=clamp(channels[c][i],-1,1);v.setInt16(offset,Math.round(x<0?x*32768:x*32767),true);offset+=2;}return buffer;
+}
+function factoryPatches(){
+  const make=(id,name,fn)=>{const settings=defaultSettings();fn(settings);return {id:'factory:'+id,name,settings};};
+  return [
+    make('lantern','Cantor lantern',s=>{s.sources.a.modB=.3;s.sources.b.depth=4;s.sources.b.modA=.52;s.sources.b.smooth=.55;s.seq.walk='gray';}),
+    make('radio','Rabbit radio',s=>{s.sources.a=sourceDefaults('julia');s.sources.b=sourceDefaults('koch');s.morph=.42;s.voiceCutoff=1700;s.echo=.32;s.space=.2;s.seq.scale='dorian';s.seq.radix=3;s.seq.wordDepth=3;s.seq.bpm=86;s.ampR=.9;}),
+    make('glass','Folded glass',s=>{s.sources.a=sourceDefaults('dragon');s.sources.b=sourceDefaults('hilbert');s.morph=.65;s.voiceCutoff=6200;s.filterEnvAmt=-2300;s.ampA=.005;s.ampD=.22;s.ampS=.15;s.ampR=.8;s.space=.36;s.seq.scale='majorPent';s.seq.walk='reverse';s.seq.bpm=112;}),
+    make('choir','Fern choir',s=>{s.sources.a=sourceDefaults('fern');s.sources.b=sourceDefaults('weierstrass');s.sources.a.smooth=.7;s.sources.b.smooth=.8;s.morph=.3;s.ampA=.45;s.ampD=.7;s.ampS=.75;s.ampR=2;s.space=.48;s.echo=.12;s.voiceCutoff=1800;s.filterEnvAmt=1000;s.seq.division=4;s.seq.bpm=72;s.seq.gate=.9;}),
+    make('organ','Newton organ',s=>{s.sources.a=sourceDefaults('newton');s.sources.b=sourceDefaults('cantor');s.sources.b.modB=1;s.morph=.55;s.voiceCutoff=4000;s.filterEnvAmt=0;s.ampA=.01;s.ampS=.9;s.ampR=.18;s.space=.25;s.echo=0;s.seq.scale='whole';s.seq.route='pitch';}),
+    make('engine','Ternary engine',s=>{s.sources.a=sourceDefaults('sierpinski');s.sources.b=sourceDefaults('lplant');s.morph=.5;s.seq.radix=3;s.seq.wordDepth=3;s.seq.walk='gray';s.seq.length=32;s.seq.bpm=128;s.seq.scale='minor';s.seq.route='pitchMorph';s.ampA=.004;s.ampD=.08;s.ampS=.25;s.ampR=.15;s.echo=.24;s.space=.08;})
+  ];
+}
+/* Exposition describes finite realizations without inferring regularity from
+   the failure of a sufficient nondifferentiability bound. */
+const SOURCE_NOTES={
+cantor:'The keep ratio changes the surviving intervals. The second parameter blends their indicator with a finite approximation to the Cantor distribution function.',
+koch:'A recursive four-segment path. Bump height changes the geometry; parity asymmetry changes alternating refinements. The sound scans the resulting path.',
+weierstrass:'A finite sum of increasingly rapid cosine terms. The bases control decay and frequency growth. Infinite-series regularity theorems do not describe every finite sampled sound.',
+julia:'Iterate z² + c along a sampling path. The picture distinguishes bounded from escaping orbits; the waveform sonifies orbit behavior rather than being the Julia set itself.',
+sierpinski:'Three contractions generate the gasket. Angle and height move the scan used for the waveform; they do not change the gasket’s canonical dimension.',
+fern:'Four affine maps generate the fern with unequal probabilities. The two parameters perturb its dominant map; a deterministic realization keeps the patch repeatable.',
+lplant:'The rule F → F[+F]F[−F]F grows a branching turtle path. Branch angle and contraction change its shape, and that path becomes a sampled cycle.',
+dragon:'A repeated folding rule produces a dragon path. Canonical right-angle turns recover the familiar Heighway shape; finite refinements supply the wavetable.',
+hilbert:'A quaternary recursive path approaches a space-filling map of the square. Here you hear a finite path, with angle perturbation and an added harmonic component.',
+newton:'Newton iteration for z³ − (1 + p) assigns initial points to root basins. The roots rotate and scale with 1 + p; the finite basin scan becomes a waveform.'
+};
 
-/* -------- recursive primitive: substitute the fractal's wave for the alphabet -------- */
-function recursivePrimitiveWave(src, depth, a, b){
-  /* take the source wavetable as the "alphabet symbol" and substitute it
-     into a self-similar refinement scheme: w(t) = Σ_d decay^d · sign · src(branches^d · t + phase) */
-  const out = new Float32Array(N);
-  const branches = 2 + Math.floor(a*6);
-  const decay = lerp(0.18, 0.78, b);
-  const phase = 0.137 + a*0.33;
-  for(let i=0;i<N;i++){
-    const t = i/N;
-    let y = 0, weight = 0, amp = 1;
-    for(let d=0; d<Math.min(depth+1, 10); d++){
-      const u = fract(t * Math.pow(branches, d) + phase*d);
-      const sign = (d%2===0) ? 1 : lerp(1, -1, b*0.75);
-      y += amp * sign * sampleAt(src, u);
-      weight += Math.abs(amp);
-      amp *= decay;
-    }
-    out[i] = y/(weight || 1);
+/* The same graph is used for live sound and OfflineAudioContext rendering. */
+function makeAudioEngine(ctx,settings,sourceCache,offline=false){
+  let p=copy(settings),sources=sourceCache,serial=0,bend=0,stopped=false;
+  const voices=new Map(),byKey=new Map(),morphEvents=[{time:0,value:p.morph}];
+  const input=ctx.createGain(),tone=ctx.createBiquadFilter(),sum=ctx.createGain(),compressor=ctx.createDynamicsCompressor(),master=ctx.createGain(),analyser=ctx.createAnalyser();
+  const delay=ctx.createDelay(2),feedback=ctx.createGain(),echo=ctx.createGain(),convolver=ctx.createConvolver(),space=ctx.createGain();
+  tone.type='lowpass';tone.frequency.value=p.cutoff;master.gain.value=p.volume;echo.gain.value=p.echo;space.gain.value=p.space;delay.delayTime.value=60/p.seq.bpm*.75;input.connect(tone);tone.connect(sum);
+  tone.connect(delay);delay.connect(feedback);feedback.connect(delay);feedback.gain.value=.32;delay.connect(echo);echo.connect(sum);
+  tone.connect(convolver);convolver.connect(space);space.connect(sum);
+  const impulse=ctx.createBuffer(2,Math.floor(ctx.sampleRate*1.8),ctx.sampleRate),rng=mulberry32(27071986);
+  for(let c=0;c<2;c++){const data=impulse.getChannelData(c);for(let i=0;i<data.length;i++)data[i]=(rng()*2-1)*Math.pow(1-i/data.length,3);}
+  convolver.buffer=impulse;compressor.threshold.value=-12;compressor.knee.value=12;compressor.ratio.value=5;compressor.attack.value=.003;compressor.release.value=.12;
+  sum.connect(compressor);compressor.connect(master);master.connect(analyser);analyser.connect(ctx.destination);analyser.fftSize=2048;analyser.smoothingTimeConstant=.75;
+  let periodic={a:null,b:null};
+  function installPeriodic(){for(const slot of ['a','b'])periodic[slot]=ctx.createPeriodicWave(sources[slot].fft.real,sources[slot].fft.imag,{disableNormalization:true});}
+  installPeriodic();
+  const at=(param,value,time=ctx.currentTime,constant=.015)=>param.setTargetAtTime(value,time,constant);
+  function morphAt(t){let value=p.morph;for(const e of morphEvents){if(e.time>t)break;value=e.value;}return value;}
+  function applyBankMorph(bank,m,t){at(bank.nodes[0].gain.gain,1-m,t);at(bank.nodes[1].gain.gain,m,t);}
+  function newBank(v,time,fade=false){
+    const output=ctx.createGain();output.gain.setValueAtTime(fade?0:1,time);if(fade)output.gain.linearRampToValueAtTime(1,time+.025);output.connect(v.filter);
+    const nodes=['a','b'].map(slot=>{const osc=ctx.createOscillator(),gain=ctx.createGain();osc.setPeriodicWave(periodic[slot]);osc.frequency.setValueAtTime(midiHz(v.note)*Math.pow(2,bend*p.bendRange/12),time);osc.connect(gain);gain.connect(output);gain.gain.setValueAtTime(slot==='a'?1-morphAt(time):morphAt(time),time);osc.start(time);return {osc,gain};});
+    const bank={nodes,output,retired:false};for(const e of morphEvents)if(e.time>time)applyBankMorph(bank,e.value,e.time);v.banks.push(bank);return bank;
   }
-  return normalize(out);
-}
-
-function buildWave(){
-  const p = getParams();
-  const f = FRACTALS[p.mode];
-  let w = f.wave(p.depth, p.modA, p.modB);
-  w = applyDrive(smoothWave(w, p.smooth), p.drive);
-  currentWave = normalize(w);
-  baseModeWave = Float32Array.from(currentWave);
-  currentPeriodicWave = makePeriodicWave(currentWave);
-  if(droneOsc && currentPeriodicWave) droneOsc.setPeriodicWave(currentPeriodicWave);
-  activeVoices.forEach(v => v.osc.setPeriodicWave(currentPeriodicWave));
-  drawWave();
-  drawFractal();
-  updateAudioParams();
-  updateModeInfo();
-}
-
-function makePeriodicWave(samples){
-  if(!audioCtx) return null;
-  const H = 128;
-  const real = new Float32Array(H+1);
-  const imag = new Float32Array(H+1);
-  for(let k=1; k<=H; k++){
-    let re=0, im=0;
-    for(let n=0; n<samples.length; n++){
-      const ph = TWO_PI*k*n/samples.length;
-      re += samples[n]*Math.cos(ph);
-      im -= samples[n]*Math.sin(ph);
-    }
-    real[k] = re/samples.length;
-    imag[k] = im/samples.length;
+  function stopBank(bank,time){if(bank.retired)return;bank.retired=true;bank.output.gain.cancelScheduledValues(time);bank.output.gain.setTargetAtTime(0,time,.006);for(const node of bank.nodes){try{node.osc.stop(time+.04);}catch(_){}}setTimeout(()=>{bank.output.disconnect();for(const node of bank.nodes){node.osc.disconnect();node.gain.disconnect();}},80);}
+  function cleanupVoice(v){if(!voices.has(v.id))return;voices.delete(v.id);if(byKey.get(v.key)===v)byKey.delete(v.key);v.filter.disconnect();v.amp.disconnect();for(const bank of v.banks){bank.output.disconnect();for(const node of bank.nodes){node.osc.disconnect();node.gain.disconnect();}}}
+  function hold(param,time){if(param.cancelAndHoldAtTime)param.cancelAndHoldAtTime(time);else{const value=param.value;param.cancelScheduledValues(time);param.setValueAtTime(value,time);}}
+  function release(v,time=ctx.currentTime,fast=false){
+    if(!v||(v.releasing&&!fast))return;v.releasing=true;if(byKey.get(v.key)===v)byKey.delete(v.key);
+    const duration=fast?.025:p.ampR,filterDuration=fast?.025:p.filterR;
+    hold(v.amp.gain,time);v.amp.gain.linearRampToValueAtTime(0,time+duration);
+    hold(v.filter.frequency,time);v.filter.frequency.linearRampToValueAtTime(p.voiceCutoff,time+filterDuration);
+    const end=time+Math.max(duration,filterDuration)+.04;v.end=end;
+    for(const bank of v.banks)for(const node of bank.nodes){try{node.osc.stop(end);}catch(_){}}
   }
-  return audioCtx.createPeriodicWave(real, imag, {disableNormalization:false});
-}
-
-async function initAudio(){
-  if(audioCtx) return;
-  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  masterGain = audioCtx.createGain();
-  filter = audioCtx.createBiquadFilter();
-  analyser = audioCtx.createAnalyser();
-  analyser.fftSize = 2048;
-  filter.type = 'lowpass';
-  filter.connect(analyser);
-  analyser.connect(masterGain);
-  masterGain.connect(audioCtx.destination);
-  buildWave();
-  updateAudioParams();
-  els.startBtn.textContent = 'Audio + MIDI Ready';
-  els.status.innerHTML = '<span class="ok">Audio ready.</span> Play MIDI notes, the test note, or the drone.';
-  startAnimation();
-}
-
-function midiToFreq(n){ return 440*Math.pow(2, (n-69)/12); }
-function bendFactor(){ const p=getParams(); return Math.pow(2, (pitchBend*p.bendRange)/12); }
-
-function updateAudioParams(){
-  updateLabels();
-  if(!audioCtx) return;
-  const p = getParams();
-  const now = audioCtx.currentTime;
-  if(masterGain) masterGain.gain.setTargetAtTime(p.gain, now, 0.02);
-  if(filter){
-    filter.frequency.setTargetAtTime(p.cutoff, now, 0.02);
-    filter.Q.setTargetAtTime(p.resonance, now, 0.02);
+  function noteOn(note,velocity=100,key='note:'+note,time=ctx.currentTime,gate=null){
+    if(stopped)return null;
+    if(byKey.has(key))release(byKey.get(key),Math.max(ctx.currentTime,time),true);
+    if(!offline){const live=[...voices.values()].filter(v=>!v.releasing);if(live.length>=12){const oldest=live.find(v=>v.key!=='drone')||live[0];release(oldest,ctx.currentTime,true);}}
+    const filter=ctx.createBiquadFilter(),amp=ctx.createGain(),v={id:++serial,key,note,start:time,end:Infinity,filter,amp,banks:[],releasing:false};
+    filter.type=p.filterType;filter.Q.value=p.voiceRes;filter.connect(amp);amp.connect(input);
+    const peak=clamp(velocity/127,.01,1)*.24,cut=s=>clamp(p.voiceCutoff+p.filterEnvAmt*s,40,Math.min(18000,ctx.sampleRate*.45));
+    amp.gain.setValueAtTime(0,time);amp.gain.linearRampToValueAtTime(peak,time+p.ampA);amp.gain.linearRampToValueAtTime(peak*p.ampS,time+p.ampA+p.ampD);
+    filter.frequency.setValueAtTime(cut(0),time);filter.frequency.linearRampToValueAtTime(cut(1),time+p.filterA);filter.frequency.linearRampToValueAtTime(cut(p.filterS),time+p.filterA+p.filterD);
+    voices.set(v.id,v);byKey.set(key,v);const bank=newBank(v,time);
+    bank.nodes[0].osc.onended=()=>cleanupVoice(v);
+    if(gate!==null)release(v,time+Math.max(.01,gate));return v;
   }
-  if(droneOsc) droneOsc.frequency.setTargetAtTime(p.freq*bendFactor(), now, 0.02);
-  activeVoices.forEach((v,n) => {
-    v.osc.frequency.setTargetAtTime(midiToFreq(n)*bendFactor(), now, 0.01);
-    if(v.voiceFilter){
-      v.voiceFilter.type = p.filterType;
-      v.voiceFilter.Q.setTargetAtTime(p.voiceRes, now, 0.02);
-    }
-  });
-}
-
-function envCutoff(base, amt, s){ return clamp(base + amt*s, 40, 18000); }
-
-function startVoice(n, vel=100){
-  if(!audioCtx || !currentPeriodicWave) return;
-  if(activeVoices.has(n)) stopVoice(n, true);
-  const p = getParams();
-  const osc = audioCtx.createOscillator();
-  const voiceFilter = audioCtx.createBiquadFilter();
-  const env = audioCtx.createGain();
-  const v = clamp(vel/127, 0.05, 1);
-  const t = audioCtx.currentTime;
-  osc.setPeriodicWave(currentPeriodicWave);
-  osc.frequency.value = midiToFreq(n)*bendFactor();
-  voiceFilter.type = p.filterType;
-  voiceFilter.Q.value = p.voiceRes;
-  voiceFilter.frequency.setValueAtTime(envCutoff(p.voiceCutoff, p.filterEnvAmt, 0), t);
-  env.gain.setValueAtTime(0, t);
-  osc.connect(voiceFilter); voiceFilter.connect(env); env.connect(filter);
-  env.gain.linearRampToValueAtTime(v, t + p.ampA);
-  env.gain.linearRampToValueAtTime(v*p.ampS, t + p.ampA + p.ampD);
-  voiceFilter.frequency.linearRampToValueAtTime(envCutoff(p.voiceCutoff, p.filterEnvAmt, 1), t + p.filterA);
-  voiceFilter.frequency.linearRampToValueAtTime(envCutoff(p.voiceCutoff, p.filterEnvAmt, p.filterS), t + p.filterA + p.filterD);
-  osc.start(t);
-  activeVoices.set(n, { osc, env, voiceFilter, note:n });
-  els.status.innerHTML = `MIDI note <span class="ok">${n}</span> @ ${midiToFreq(n).toFixed(1)} Hz · vel ${vel}`;
-}
-
-function stopVoice(n, fast=false){
-  const v = activeVoices.get(n);
-  if(!v || !audioCtx) return;
-  const p = getParams();
-  const t = audioCtx.currentTime;
-  const rel = fast ? 0.03 : p.ampR;
-  const frel = fast ? 0.03 : p.filterR;
-  try {
-    v.env.gain.cancelScheduledValues(t);
-    v.env.gain.setValueAtTime(Math.max(v.env.gain.value, 0.0001), t);
-    v.env.gain.exponentialRampToValueAtTime(0.0001, t + rel);
-    v.voiceFilter.frequency.cancelScheduledValues(t);
-    v.voiceFilter.frequency.setValueAtTime(v.voiceFilter.frequency.value, t);
-    v.voiceFilter.frequency.linearRampToValueAtTime(clamp(p.voiceCutoff, 40, 18000), t + frel);
-    v.osc.stop(t + Math.max(rel, frel) + 0.05);
-  } catch(e){}
-  activeVoices.delete(n);
-}
-function stopAllVoices(){
-  Array.from(activeVoices.keys()).forEach(n => stopVoice(n, true));
-}
-
-function playNote(d=1.1){
-  if(!audioCtx || !currentPeriodicWave) return;
-  const p = getParams();
-  const n = Math.round(69 + 12*Math.log2(p.freq/440));
-  startVoice(n, 105);
-  setTimeout(() => stopVoice(n), d*1000);
-}
-
-function toggleDrone(){
-  if(!audioCtx || !currentPeriodicWave) return;
-  if(!droneOn){
-    const p = getParams();
-    droneOsc = audioCtx.createOscillator();
-    const droneFilter = audioCtx.createBiquadFilter();
-    droneFilter.type = p.filterType;
-    droneFilter.frequency.value = p.voiceCutoff;
-    droneFilter.Q.value = p.voiceRes;
-    droneOsc._voiceFilter = droneFilter;
-    droneOsc.setPeriodicWave(currentPeriodicWave);
-    droneOsc.frequency.value = p.freq*bendFactor();
-    droneOsc.connect(droneFilter); droneFilter.connect(filter);
-    droneOsc.start();
-    droneOn = true;
-    els.droneBtn.textContent = 'Drone · On';
-    els.droneBtn.classList.add('active');
-    els.status.innerHTML = '<span class="ok">Drone running.</span>';
-  } else {
-    droneOsc.stop(); droneOsc.disconnect(); droneOsc = null;
-    droneOn = false;
-    els.droneBtn.textContent = 'Drone · Off';
-    els.droneBtn.classList.remove('active');
-    els.status.textContent = 'Drone stopped.';
+  function setMorph(value,time=ctx.currentTime){
+    morphEvents.push({time,value});morphEvents.sort((a,b)=>a.time-b.time);
+    if(morphEvents.length>256){let i=morphEvents.findIndex(e=>e.time>=ctx.currentTime);if(i<0)i=morphEvents.length;morphEvents.splice(0,Math.max(0,i-1));}
+    for(const v of voices.values())if(v.end>time)for(const bank of v.banks)if(!bank.retired)applyBankMorph(bank,value,Math.max(time,v.start));
   }
+  function resetAutomation(){const now=ctx.currentTime;morphEvents.length=0;morphEvents.push({time:now,value:p.morph});for(const v of voices.values())for(const bank of v.banks)if(!bank.retired){for(const node of bank.nodes)node.gain.gain.cancelScheduledValues(now);applyBankMorph(bank,p.morph,Math.max(now,v.start));}tone.frequency.cancelScheduledValues(now);at(tone.frequency,p.cutoff,now);}
+  function update(next,changed='all'){
+    p=copy(next);const now=ctx.currentTime;at(master.gain,p.volume,now);at(echo.gain,p.echo,now);at(space.gain,p.space,now);at(delay.delayTime,60/p.seq.bpm*.75,now,.04);
+    if(changed==='cutoff'||changed==='all')at(tone.frequency,p.cutoff,now);
+    for(const v of voices.values())if(!v.releasing){if(changed==='filterType'||changed==='all')v.filter.type=p.filterType;if(changed==='voiceRes'||changed==='all')at(v.filter.Q,p.voiceRes,now);if(changed==='voiceCutoff'||changed==='filterEnvAmt')at(v.filter.frequency,p.voiceCutoff,now);if(v.key==='drone'&&(changed==='droneNote'||changed==='all')){v.note=p.droneNote;for(const bank of v.banks)if(!bank.retired)for(const node of bank.nodes)at(node.osc.frequency,midiHz(v.note)*Math.pow(2,bend*p.bendRange/12),now);}}
+  }
+  function replaceSources(nextSources){
+    sources=nextSources;installPeriodic();const now=ctx.currentTime;
+    for(const v of voices.values())if(!v.releasing&&v.start<=now){const old=v.banks.filter(b=>!b.retired);const bank=newBank(v,now,true);bank.nodes[0].osc.onended=()=>cleanupVoice(v);for(const b of old){b.nodes[0].osc.onended=null;stopBank(b,now);}v.banks=v.banks.filter(b=>!b.retired);}
+  }
+  function pitchBend(value){bend=value;for(const v of voices.values())for(const bank of v.banks)if(!bank.retired)for(const node of bank.nodes)at(node.osc.frequency,midiHz(v.note)*Math.pow(2,bend*p.bendRange/12),Math.max(ctx.currentTime,v.start),.008);}
+  function allOff(){for(const v of voices.values())release(v,Math.max(ctx.currentTime,v.start),true);resetAutomation();}
+  function destroy(){allOff();stopped=true;master.gain.cancelScheduledValues(ctx.currentTime);master.gain.setValueAtTime(0,ctx.currentTime);setTimeout(()=>{try{input.disconnect();tone.disconnect();sum.disconnect();delay.disconnect();feedback.disconnect();echo.disconnect();space.disconnect();convolver.disconnect();compressor.disconnect();master.disconnect();analyser.disconnect();}catch(_){}},100);}
+  update(p);
+  return {ctx,voices,byKey,analyser,noteOn,release,noteOff:(key,time)=>release(byKey.get(key),time),setMorph,resetAutomation,update,replaceSources,pitchBend,allOff,destroy,setCutoff:(value,time)=>at(tone.frequency,value,time),morphAt};
 }
 
-/* ============================================================
- *  MIDI
- * ============================================================ */
-async function initMidi(){
-  if(!navigator.requestMIDIAccess){
-    els.midiStatus.textContent = 'MIDI unsupported';
-    els.status.innerHTML = '<span class="err">No Web MIDI in this browser.</span> Try Chrome or Edge.';
-    return;
+/* CORE_END: the pure transforms above are also exercised outside the UI. */
+const FACTORY=factoryPatches();
+let state=copy(FACTORY[0].settings),activeSource='a',view='wave',patchTitle=FACTORY[0].name,bank=[],selectedPatchId=FACTORY[0].id,dirty=false;
+let sourceCache={},cacheRevision=0,currentWave=new Float32Array(N),currentFFT=null,engine=null,audioPromise=null,midiAccess=null,midiInput=null;
+let playing=false,drone=false,sequenceTimer=null,nextStep=0,nextStepAt=0,visualQueue=[],currentStep=-1,currentU=0,currentWord=[],liveMorph=state.morph;
+let selection={active:false,dragging:false,start:0,end:0,source:null},saveTimer=null,rebuildFrame=null,visualDirty=true,lastUI=0;
+let sustain=false,sustained=new Set(),physicallyHeld=new Set(),pointerVoices=new Map(),lastPointerDown=0,rendering=false;
+const keyboardHeld=new Map(),SYNTH_KEYS={a:0,w:1,s:2,e:3,d:4,f:5,t:6,g:7,y:8,h:9,u:10,j:11,k:12,o:13,l:14,p:15,';':16};
+const SOURCE_IDS=['mode','depth','modA','modB','smooth','drive'];
+const TONE_IDS=['volume','droneNote','filterType','voiceCutoff','voiceRes','ampA','ampD','ampS','ampR','filterA','filterD','filterS','filterR','filterEnvAmt','cutoff','echo','space','bendRange','midiTarget'];
+const SEQ_IDS=['walk','radix','wordDepth','length','root','scale','span','route','bpm','division','gate'];
+let undoState=null;
+function status(message,error=false){$('status').textContent=message;$('status').parentElement.classList.toggle('error',error);}
+function safeStore(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true;}catch(_){return false;}}
+function markDirty(){dirty=true;$('dirtyMark').textContent='edited';clearTimeout(saveTimer);saveTimer=setTimeout(()=>safeStore(STORAGE_WORK,{version:APP_VERSION,name:$('patchName').value.trim()||patchTitle,settings:state}),350);}
+function guard(fn){return async (...args)=>{try{await fn(...args);}catch(err){status(err?.message||'That action could not be completed.',true);}};}
+function buildSources(slots=['a','b']){for(const slot of slots){const wave=realizeSource(state.sources[slot]);sourceCache[slot]={wave,fft:fourier(wave),revision:++cacheRevision};}if(engine)engine.replaceSources(sourceCache);updateMix();}
+function updateMix(){const m=playing&&controlsMorph(state.seq)?liveMorph:state.morph;currentWave=mixWave(sourceCache.a.wave,sourceCache.b.wave,m);currentFFT=fourier(currentWave);visualDirty=true;updateMorphUI(m);}
+function requestRebuild(){if(rebuildFrame)return;rebuildFrame=requestAnimationFrame(()=>{rebuildFrame=null;try{buildSources([activeSource]);updateSourceReadouts();}catch(err){status(err.message,true);}});}
+function patchObject(name=$('patchName').value.trim()||'Untitled patch'){return {format:'fractal-synth-patch',version:APP_VERSION,id:selectedPatchId.startsWith('factory:')?uid():selectedPatchId,name:name.slice(0,64),settings:copy(state)};}
+function saveCurrentPatch(){
+  const name=$('patchName').value.trim().slice(0,64);if(!name){$('patchName').focus();status('Give this patch a name before saving.',true);return;}
+  const previous=bank.find(x=>x.name===name),p=patchObject(name);if(previous)p.id=previous.id;else if(bank.some(x=>x.id===p.id&&x.name!==name))p.id=uid();
+  const index=bank.findIndex(x=>x.id===p.id);if(index<0&&bank.length>=64){status('This bank has 64 patches. Export your current patch, or update an existing patch name.',true);return;}if(index>=0)bank[index]=p;else bank.push(p);selectedPatchId=p.id;patchTitle=name;dirty=false;const saved=safeStore(STORAGE_BANK,{format:'fractal-synth-bank',version:APP_VERSION,patches:bank});safeStore(STORAGE_WORK,{version:APP_VERSION,name,settings:state});renderPatchSelect();$('dirtyMark').textContent='';status(saved?'Saved “'+name+'” in this browser.':'Patch kept for this session. Export it to keep a permanent copy.');
+}
+function renderPatchSelect(){const sel=$('patchSelect');sel.replaceChildren();for(const[label,items]of [['Factory patches',FACTORY],['Your patches',bank]]){if(!items.length)continue;const group=document.createElement('optgroup');group.label=label;for(const p of items){const option=document.createElement('option');option.value=p.id;option.textContent=p.name;group.append(option);}sel.append(group);}sel.value=selectedPatchId;}
+function applySettings(settings,name,id){
+  panic(false);state=validateSettings(settings);patchTitle=name;selectedPatchId=id;dirty=false;undoState=null;$('undoBtn').hidden=true;liveMorph=state.morph;currentU=0;currentWord=digitsOf(0,state.seq.radix,state.seq.wordDepth);currentStep=-1;selection={active:false,dragging:false,start:0,end:0,source:null};buildSources();if(engine){engine.update(state);engine.resetAutomation();}syncAll();updateSelectionUI();safeStore(STORAGE_WORK,{version:APP_VERSION,name,settings:state});status('Loaded “'+name+'”.');
+}
+function download(data,name,type){const blob=data instanceof Blob?data:new Blob([data],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),15000);}
+function slug(){return ($('patchName').value.trim()||'fractal-patch').replace(/[^a-z0-9-]+/gi,'-').replace(/^-|-$/g,'').toLowerCase()||'fractal-patch';}
+function exportJson(value,name){download(JSON.stringify(value,null,2),name,'application/json');}
+async function importPatches(file){
+  if(!file)return;if(file.size>12*1024*1024)throw Error('Choose a patch bank smaller than 12 MB.');
+  const raw=JSON.parse(await file.text());let incoming;
+  if(raw.format==='fractal-synth-bank'){if(raw.version!==APP_VERSION||!Array.isArray(raw.patches)||raw.patches.length>64)throw Error('Choose a v3 bank with up to 64 patches.');incoming=raw.patches.map(validatePatch);}else incoming=[validatePatch(raw)];
+  if(!incoming.length)throw Error('That bank has no patches.');
+  const next=copy(bank);for(const p of incoming){if(p.id.startsWith('factory:'))p.id=uid();const i=next.findIndex(x=>x.id===p.id);if(i>=0)next[i]=p;else next.push(p);}if(next.length>64)throw Error('The combined bank exceeds 64 patches. Export your bank before adding more.');
+  bank=next;const saved=safeStore(STORAGE_BANK,{format:'fractal-synth-bank',version:APP_VERSION,patches:bank});applySettings(incoming[0].settings,incoming[0].name,incoming[0].id);renderPatchSelect();status('Imported '+incoming.length+' patch'+(incoming.length===1?'':'es')+(saved?'.':' for this session. Export the bank to keep it.'));
+}
+
+async function ensureAudio(){
+  if(!engine){
+    if(!audioPromise)audioPromise=(async()=>{const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)throw Error('This browser does not support Web Audio.');const ctx=new Audio({latencyHint:'interactive'});engine=makeAudioEngine(ctx,state,sourceCache);ctx.onstatechange=updateAudioStatus;return engine;})();
+    try{await audioPromise;}catch(err){audioPromise=null;throw err;}
   }
-  try {
-    midiAccess = await navigator.requestMIDIAccess({sysex:false});
-    midiAccess.onstatechange = refreshMidiInputs;
-    refreshMidiInputs();
-  } catch(e){
-    els.midiStatus.textContent = 'MIDI blocked';
-    els.status.innerHTML = '<span class="err">MIDI permission denied.</span>';
+  if(engine.ctx.state!=='running')await engine.ctx.resume();updateAudioStatus();return engine;
+}
+function updateAudioStatus(){const ready=engine?.ctx.state==='running';$('audioStatus').textContent=ready?'Audio ready':engine?'Audio suspended':'Audio off';$('audioStatus').classList.toggle('ready',ready);$('audioBtn').textContent=ready?'Audio enabled':'Enable audio';}
+async function testNote(){await ensureAudio();engine.noteOn(state.droneNote,100,'test:'+Date.now(),engine.ctx.currentTime,.9);status('Playing '+noteName(state.droneNote)+'.');}
+async function toggleDrone(){await ensureAudio();drone=!drone;if(drone){engine.noteOn(state.droneNote,78,'drone');status('Drone on · move the morph slider or edit a source.');}else{engine.noteOff('drone');status('Drone released.');}$('droneBtn').setAttribute('aria-pressed',String(drone));}
+function scheduleSequence(){
+  if(!playing||!engine)return;
+  const q=state.seq,dt=stepSeconds(q),steps=sequenceSteps(q),now=engine.ctx.currentTime;
+  if(nextStepAt<now-.1)nextStepAt=now+.025;
+  while(nextStepAt<now+.1){
+    const index=nextStep%q.length,step=steps[index],time=nextStepAt;
+    if(controlsMorph(q))engine.setMorph(step.morph,time);
+    if(q.route==='pitchCutoff')engine.setCutoff(step.cutoff,time);
+    if(!step.rest)engine.noteOn(step.note,100,'seq:'+nextStep,time,dt*q.gate);
+    visualQueue.push({...step,time,morph:controlsMorph(q)?step.morph:state.morph});nextStep++;nextStepAt+=dt;
   }
 }
-function refreshMidiInputs(){
-  if(!midiAccess) return;
-  const inputs = Array.from(midiAccess.inputs.values());
-  const prev = selectedMidiInput ? selectedMidiInput.id : els.midiSelect.value;
-  els.midiSelect.innerHTML = '';
-  if(!inputs.length){
-    const opt = document.createElement('option');
-    opt.value=''; opt.textContent='No MIDI devices detected';
-    els.midiSelect.appendChild(opt);
-    els.midiStatus.textContent = 'Not connected';
-    selectedMidiInput = null;
-    return;
-  }
-  inputs.forEach(input => {
-    const opt = document.createElement('option');
-    opt.value = input.id;
-    opt.textContent = input.name || `MIDI Input ${input.id}`;
-    els.midiSelect.appendChild(opt);
-  });
-  const chosen = inputs.find(i=>i.id===prev) || inputs[0];
-  els.midiSelect.value = chosen.id;
-  selectMidiInput(chosen.id);
+async function startSequence(){await ensureAudio();if(playing)return;playing=true;currentStep=-1;nextStep=0;nextStepAt=engine.ctx.currentTime+.06;visualQueue=[];liveMorph=state.morph;engine.update(state);engine.resetAutomation();scheduleSequence();sequenceTimer=setInterval(scheduleSequence,25);$('playBtn').textContent='Stop sequence';$('playBtn').setAttribute('aria-pressed','true');updateMorphUI(liveMorph);status('Sequence running · click any step to add a rest.');}
+function stopSequence(announce=true){
+  playing=false;if(sequenceTimer)clearInterval(sequenceTimer);sequenceTimer=null;visualQueue=[];currentStep=-1;
+  if(engine){for(const v of engine.voices.values())if(v.key.startsWith('seq:'))engine.release(v,Math.max(engine.ctx.currentTime,v.start),true);engine.resetAutomation();}
+  $('playBtn').textContent='Play sequence';$('playBtn').setAttribute('aria-pressed','false');liveMorph=state.morph;updateMix();updateStepHighlight();if(announce)status('Sequence stopped.');
 }
-function selectMidiInput(id){
-  if(!midiAccess) return;
-  if(selectedMidiInput) selectedMidiInput.onmidimessage = null;
-  selectedMidiInput = midiAccess.inputs.get(id) || null;
-  if(selectedMidiInput){
-    selectedMidiInput.onmidimessage = handleMidiMessage;
-    els.midiStatus.textContent = selectedMidiInput.name || 'Connected';
-    els.status.innerHTML = `<span class="ok">MIDI connected:</span> ${selectedMidiInput.name||'input'}.`;
-  } else {
-    els.midiStatus.textContent = 'Not connected';
-  }
+function panic(announce=true){
+  stopSequence(false);drone=false;sustain=false;sustained.clear();physicallyHeld.clear();keyboardHeld.clear();pointerVoices.clear();if(engine){const ctx=engine.ctx;engine.destroy();engine=makeAudioEngine(ctx,state,sourceCache);}$('droneBtn').setAttribute('aria-pressed','false');renderKeyHighlights();if(announce)status('All sound stopped, including effect tails.');
 }
-function handleMidiMessage(ev){
-  if(!audioCtx) initAudio();
-  const [s, d1, d2] = ev.data;
-  const cmd = s & 0xf0;
-  if(cmd===0x90){ d2===0 ? stopVoice(d1) : startVoice(d1, d2); }
-  else if(cmd===0x80){ stopVoice(d1); }
-  else if(cmd===0xe0){ pitchBend = (d1 + (d2<<7) - 8192)/8192; updateAudioParams(); }
-  else if(cmd===0xb0){ handleCC(d1, d2); }
+function restartSequence(){if(!playing)return;stopSequence(false);startSequence().catch(err=>status(err.message,true));}
+async function auditionAt(u){
+  await ensureAudio();currentU=clamp(u,0,1);const q=state.seq,note=pitchFor(currentU,q);currentWord=digitsOf(Math.round(currentU*(Math.pow(q.radix,q.wordDepth)-1)),q.radix,q.wordDepth);
+  if(!playing&&controlsMorph(q)){state.morph=currentU;engine.setMorph(state.morph);markDirty();updateMix();}
+  engine.noteOn(note,100,'audition:'+Date.now(),engine.ctx.currentTime,.5);updateAddressUI(note);visualDirty=true;status('Address '+currentWord.join('')+' · '+noteName(note)+'.');
 }
-function handleCC(cc, val){
-  const n = val/127;
-  const p = getParams();
-  if(cc===1){
-    if(modWheelBaseA===null) modWheelBaseA = +els.modA.value;
-    if(modWheelBaseB===null) modWheelBaseB = +els.modB.value;
-    const sweep = (n - 0.5)*p.midiModDepth;
-    els.modA.value = clamp(modWheelBaseA + sweep, 0, 1).toFixed(3);
-    els.modB.value = clamp(modWheelBaseB - sweep*0.65, 0, 1).toFixed(3);
-    buildWave();
-    els.status.innerHTML = `Mod wheel sweeping <span class="ok">Φ moduli</span>: ${(n*100).toFixed(0)}%`;
-  } else if(cc===74){
-    els.cutoff.value = Math.floor(200 + n*13800);
-    updateAudioParams();
-  } else if(cc===71){
-    els.resonance.value = (0.1 + n*15.9).toFixed(1);
-    updateAudioParams();
-  } else if(cc===120 || cc===123){
-    stopAllVoices();
-  }
+async function renderSequenceWav(){
+  if(rendering)return;rendering=true;$('renderBtn').disabled=true;status('Rendering two sequence cycles with release and effects…');
+  try{
+    const snapshot=copy(state),q=snapshot.seq,steps=sequenceSteps(q),dt=stepSeconds(q),body=dt*q.length*2;
+    const tail=Math.max(snapshot.ampR,snapshot.filterR)+(snapshot.space>0?1.8:0)+(snapshot.echo>0?Math.max(.8,60/q.bpm*3):0)+.1;
+    const Offline=window.OfflineAudioContext||window.webkitOfflineAudioContext;if(!Offline)throw Error('Offline audio rendering is unavailable in this browser.');
+    const ctx=new Offline(2,Math.ceil((body+tail)*48000),48000),cache={};
+    for(const slot of ['a','b']){const wave=realizeSource(snapshot.sources[slot]);cache[slot]={wave,fft:fourier(wave)};}
+    const synth=makeAudioEngine(ctx,snapshot,cache,true);
+    for(let i=0;i<q.length*2;i++){const step=steps[i%q.length],time=i*dt;if(controlsMorph(q))synth.setMorph(step.morph,time);if(q.route==='pitchCutoff')synth.setCutoff(step.cutoff,time);if(!step.rest)synth.noteOn(step.note,100,'render:'+i,time,dt*q.gate);}
+    const rendered=await ctx.startRendering();let peak=0;for(let c=0;c<2;c++){const data=rendered.getChannelData(c);for(let i=0;i<data.length;i++)peak=Math.max(peak,Math.abs(data[i]));}
+    const channels=[Float32Array.from(rendered.getChannelData(0)),Float32Array.from(rendered.getChannelData(1))];
+    if(peak>1)for(const channel of channels)for(let i=0;i<channel.length;i++)channel[i]*=.98/peak;
+    download(encodeWav(channels),slug()+'-sequence.wav','audio/wav');status('Rendered '+(rendered.duration).toFixed(1)+' seconds · stereo 48 kHz WAV'+(peak>1?' · peak adjusted to prevent clipping.':'.'));
+  }finally{rendering=false;$('renderBtn').disabled=false;}
 }
 
-/* ============================================================
- *  CANVAS / VIS
- * ============================================================ */
-function resizeCanvas(c){
-  const r = c.getBoundingClientRect();
-  const dpr = window.devicePixelRatio || 1;
-  const w = Math.max(1, Math.floor(r.width*dpr));
-  const h = Math.max(1, Math.floor(r.height*dpr));
-  if(c.width !== w || c.height !== h){ c.width = w; c.height = h; }
-  return {w, h};
+function updateSourceReadouts(){
+  const s=state.sources[activeSource],f=FRACTALS[s.mode];
+  for(const id of SOURCE_IDS)if(id!=='modA'&&id!=='modB')$(id).value=s[id];
+  $('modA').value=s.modA;$('modB').value=s.modB;
+  $('modALabel').textContent=s.kind==='primitive'?'Branch count':f.paramA.label;
+  $('modBLabel').textContent=s.kind==='primitive'?'Recursive decay':s.mode==='dragon'?'Not used by this generator':f.paramB.label;
+  $('modAValue').textContent=s.kind==='primitive'?2+Math.floor(s.modA*6):f.paramA.transform(s.modA);
+  $('modBValue').textContent=s.kind==='primitive'?lerp(.18,.78,s.modB).toFixed(2):f.paramB.transform(s.modB);
+  $('depthValue').textContent=s.depth;$('smoothValue').textContent=s.smooth.toFixed(2);$('driveValue').textContent=s.drive.toFixed(2);
+  const frozen=s.kind==='sample';for(const id of ['depth','modA','modB'])$(id).disabled=frozen||(id==='modB'&&s.mode==='dragon'&&s.kind==='fractal');
+  $('sourceKind').textContent=s.kind==='sample'?'Captured waveform · smoothing and drive remain live':s.kind==='primitive'?'Custom recursive primitive':'Fractal generator';
+  for(const slot of ['a','b']){const src=state.sources[slot],label=src.kind==='fractal'?FRACTALS[src.mode].name:src.kind==='primitive'?'Recursive':'Captured';$('source'+slot.toUpperCase()+'Tab').textContent=label;$('morph'+slot.toUpperCase()).textContent=slot.toUpperCase()+' · '+label;}
+  $('sourceABtn').classList.toggle('selected',activeSource==='a');$('sourceBBtn').classList.toggle('selected',activeSource==='b');$('sourceABtn').setAttribute('aria-selected',String(activeSource==='a'));$('sourceBBtn').setAttribute('aria-selected',String(activeSource==='b'));
+  $('sourceInfo').replaceChildren();
+  const paragraph=document.createElement('p');paragraph.className='hint';paragraph.textContent=SOURCE_NOTES[s.mode];$('sourceInfo').append(paragraph);
+  const alphabet=document.createElement('p');alphabet.className='hint';alphabet.textContent='Address alphabet: '+f.alphabet;$('sourceInfo').append(alphabet);
+  updateAddressUI();visualDirty=true;
 }
-function drawGrid(ctx, w, h){
-  ctx.clearRect(0,0,w,h);
-  ctx.strokeStyle = 'rgba(255,255,255,.04)';
-  ctx.lineWidth = 1;
-  for(let i=1; i<8; i++){
-    const x = i*w/8;
-    ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke();
-  }
-  for(let i=1; i<5; i++){
-    const y = i*h/5;
-    ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke();
-  }
-  /* center axis */
-  ctx.strokeStyle = 'rgba(226,168,90,.13)';
-  ctx.beginPath(); ctx.moveTo(0, h/2); ctx.lineTo(w, h/2); ctx.stroke();
+function updateToneReadouts(){
+  for(const id of TONE_IDS){const el=$(id);if(document.activeElement!==el)el.value=state[id];const out=$(id+'Value');if(!out)continue;const value=state[id];out.textContent=['voiceCutoff','cutoff'].includes(id)?Math.round(value).toLocaleString()+' Hz':id==='droneNote'?noteName(value):id==='voiceRes'?value.toFixed(1):id==='bendRange'?value+' st':id==='filterEnvAmt'?(value>=0?'+':'')+Math.round(value)+' Hz':id.startsWith('amp')||id.startsWith('filter')?(id.endsWith('S')?Math.round(value*100)+'%':value.toFixed(2)+' s'):Math.round(value*100)+'%';}
 }
-
-function drawWave(){
-  if(currentView !== 'wave') return;
-  const {w,h} = resizeCanvas(els.waveCanvas);
-  const ctx = els.waveCanvas.getContext('2d');
-  drawGrid(ctx, w, h);
-  /* selection overlay */
-  if(selection.active || selection.dragging){
-    const x1 = Math.min(selection.startX, selection.endX);
-    const x2 = Math.max(selection.startX, selection.endX);
-    ctx.fillStyle = 'rgba(155,214,168,.10)';
-    ctx.fillRect(x1, 0, Math.max(1, x2-x1), h);
-    ctx.strokeStyle = 'rgba(155,214,168,.6)';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(x1+0.5, 0.5, Math.max(1, x2-x1)-1, h-1);
-  }
-  /* waveform */
-  ctx.lineWidth = Math.max(1.4, w/700);
-  ctx.strokeStyle = 'rgba(226,168,90,.95)';
-  ctx.shadowColor = 'rgba(226,168,90,.45)';
-  ctx.shadowBlur = 8;
-  ctx.beginPath();
-  for(let i=0; i<currentWave.length; i++){
-    const x = i/(currentWave.length-1) * w;
-    const y = h*.5 - currentWave[i]*h*.40;
-    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
-  }
-  ctx.stroke();
-  ctx.shadowBlur = 0;
+function updateMorphUI(m){$('morph').value=m;$('morphReadout').textContent=Math.round(m*100)+'% B';$('morph').disabled=playing&&controlsMorph(state.seq);$('morphHint').textContent=playing&&controlsMorph(state.seq)?'The address sequence is moving the blend':'A continuous blend of the two waveforms';}
+function updateAddressUI(note){
+  const q=state.seq;if(!currentWord.length)currentWord=digitsOf(0,q.radix,q.wordDepth);
+  $('controlWord').textContent=currentWord.join('');$('coordinateValue').textContent='u = '+currentU.toFixed(3);$('currentNote').textContent=noteName(note??pitchFor(currentU,q));
+  for(const slot of ['a','b']){const s=state.sources[slot],f=FRACTALS[s.mode],text=s.kind==='fractal'?f.address(Math.min(currentU,1-1e-10),s.depth,s.modA,s.modB):s.kind==='primitive'?'recursive sample':'captured sample';$('address'+slot.toUpperCase()).textContent=text;}
 }
-
+function syncAll(){
+  $('patchName').value=patchTitle;$('dirtyMark').textContent=dirty?'edited':'';renderPatchSelect();updateSourceReadouts();updateToneReadouts();
+  for(const id of SEQ_IDS)$(id).value=state.seq[id];updateSequenceReadouts();renderSteps();renderKeyboard();updateMix();updateViewUI();
+}
+function updateSequenceReadouts(){const q=state.seq;$('bpmValue').textContent=Math.round(q.bpm)+' BPM';$('gateValue').textContent=Math.round(q.gate*100)+'%';$('sequenceInfo').textContent=q.length+' steps · '+(q.length*stepSeconds(q)).toFixed(1)+' s per cycle';$('seedBtn').disabled=q.walk!=='seeded';$('stepHint').textContent=q.rests.length?q.rests.length+' rest'+(q.rests.length===1?'':'s')+' · click a step to restore it.':'Click a step to rest it. Space starts or stops the sequence.';}
+function renderSteps(){
+  const steps=sequenceSteps(state.seq),container=$('steps');container.replaceChildren();container.style.gridTemplateColumns='repeat('+steps.length+',minmax(49px,1fr))';
+  for(const step of steps){const button=document.createElement('button');button.className='step'+(step.rest?' rest':'');button.dataset.step=step.i;button.setAttribute('aria-label','Step '+(step.i+1)+', address '+step.word+', '+noteName(step.note)+(step.rest?', rest':', playing'));button.setAttribute('aria-pressed',String(!step.rest));button.innerHTML='<span class="index">'+String(step.i+1).padStart(2,'0')+'</span><span class="word">'+step.word+'</span><span class="pitch">'+(step.rest?'rest':noteName(step.note))+'</span><span class="level" style="transform:scaleX('+Math.max(.04,step.u)+')"></span>';button.addEventListener('click',()=>{const rests=state.seq.rests;state.seq.rests=rests.includes(step.i)?rests.filter(n=>n!==step.i):[...rests,step.i];markDirty();renderSteps();updateSequenceReadouts();});container.append(button);}
+  updateStepHighlight();
+}
+function updateStepHighlight(){document.querySelectorAll('.step').forEach(el=>el.classList.toggle('current',+el.dataset.step===currentStep));}
+function renderKeyboard(){
+  const container=$('keyboard');container.replaceChildren();const base=(state.keyboardOctave+1)*12,white=[0,2,4,5,7,9,11,12,14,16,17,19,21,23,24],black=[1,3,6,8,10,13,15,18,20,22],width=100/white.length;
+  function key(offset,isBlack,index){const note=base+offset,button=document.createElement('button');button.className='piano-key '+(isBlack?'black':'white');button.dataset.note=note;button.setAttribute('aria-label','Play '+noteName(note));button.style.left=(isBlack?(index+.68)*width:index*width)+'%';button.style.width=(isBlack?width*.64:width)+'%';button.textContent=offset%12===0?noteName(note):'';
+    button.addEventListener('pointerdown',guard(async e=>{e.preventDefault();lastPointerDown=performance.now();const key='pointer:'+e.pointerId;pointerVoices.set(e.pointerId,{key,note,down:true});button.setPointerCapture(e.pointerId);await ensureAudio();if(pointerVoices.get(e.pointerId)?.down)engine.noteOn(note,106,key);renderKeyHighlights();}));
+    const off=e=>{const held=pointerVoices.get(e.pointerId);if(held){held.down=false;engine?.noteOff(held.key);pointerVoices.delete(e.pointerId);}renderKeyHighlights();};
+    button.addEventListener('pointerup',off);button.addEventListener('pointercancel',off);button.addEventListener('lostpointercapture',off);button.addEventListener('click',guard(async()=>{if(performance.now()-lastPointerDown<700)return;await ensureAudio();engine.noteOn(note,106,'keyclick:'+note,engine.ctx.currentTime,.65);}));container.append(button);
+  }
+  white.forEach((offset,i)=>key(offset,false,i));black.forEach(offset=>{const prev=white.findLastIndex(n=>n<offset);key(offset,true,prev);});$('octaveValue').textContent='C'+state.keyboardOctave;
+}
+function renderKeyHighlights(){const now=engine?.ctx.currentTime||0,live=engine?[...engine.voices.values()].filter(v=>v.start<=now&&v.end>now+.03):[],notes=new Set(live.map(v=>v.note));document.querySelectorAll('.piano-key').forEach(el=>el.classList.toggle('pressed',notes.has(+el.dataset.note)));$('voiceCount').textContent=live.length+' voice'+(live.length===1?'':'s');}
+function updateViewUI(){
+  document.querySelectorAll('.view-tab').forEach(el=>{const yes=el.dataset.view===view;el.classList.toggle('selected',yes);el.setAttribute('aria-selected',String(yes));});
+  for(const[name,id]of Object.entries({wave:'waveCanvas',fractal:'fractalCanvas',tree:'treeCanvas',spectrum:'spectrumCanvas'}))$(id).hidden=name!==view;
+  const s=state.sources[activeSource];$('viewCaption').textContent=view==='wave'?'A + B · blended wavetable':view==='fractal'?'Source '+activeSource.toUpperCase()+' · '+(s.kind==='fractal'?FRACTALS[s.mode].name:'custom waveform'):view==='tree'?'Base '+state.seq.radix+' · '+state.seq.wordDepth+'-digit control words':'Harmonics and live output';
+  $('canvasReadout').textContent=view==='wave'?'2,048 samples':view==='fractal'?(s.kind==='fractal'?'finite realization':'sampled realization'):view==='tree'?Math.pow(state.seq.radix,state.seq.wordDepth)+' possible words':'harmonic amplitude';
+  $('canvasHint').textContent=view==='wave'?'Click to audition an address · drag to select a region':view==='fractal'?'The source readouts below use the selected coordinate u':view==='tree'?'The highlighted path is the current control word':'Amber: harmonic number · mint: frequency in Hz';visualDirty=true;
+}
+function canvasSize(canvas){const r=canvas.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2),w=Math.max(1,Math.round(r.width*dpr)),h=Math.max(1,Math.round(r.height*dpr));if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}return {w,h,dpr};}
+function grid(ctx,w,h){ctx.fillStyle='#080e12';ctx.fillRect(0,0,w,h);ctx.lineWidth=1;ctx.strokeStyle='#1b2932';for(let i=1;i<8;i++){ctx.beginPath();ctx.moveTo(i*w/8,30);ctx.lineTo(i*w/8,h-25);ctx.stroke();}for(let i=1;i<5;i++){ctx.beginPath();ctx.moveTo(0,i*h/5);ctx.lineTo(w,i*h/5);ctx.stroke();}}
+function waveLine(ctx,w,h,data,color,lineWidth=1.5){ctx.strokeStyle=color;ctx.lineWidth=lineWidth;ctx.beginPath();for(let i=0;i<data.length;i++){const x=i/(data.length-1)*w,y=h*.5-data[i]*(h*.36);if(i)ctx.lineTo(x,y);else ctx.moveTo(x,y);}ctx.stroke();}
+function drawWave(){const c=$('waveCanvas'),{w,h,dpr}=canvasSize(c),ctx=c.getContext('2d');grid(ctx,w,h);waveLine(ctx,w,h,sourceCache.a.wave,'#efb96736',dpr);waveLine(ctx,w,h,sourceCache.b.wave,'#9fd9c236',dpr);if(selection.active||selection.dragging){const start=Math.min(selection.start,selection.end)*w,end=Math.max(selection.start,selection.end)*w;ctx.fillStyle='#9fd9c21c';ctx.fillRect(start,0,end-start,h);ctx.strokeStyle='#9fd9c2aa';ctx.strokeRect(start,1,end-start,h-2);}waveLine(ctx,w,h,currentWave,'#efb967',1.5*dpr);const x=currentU*w,y=h*.5-sampleAt(currentWave,Math.min(currentU,1-1/N))*(h*.36);ctx.strokeStyle='#9fd9c266';ctx.setLineDash([4*dpr,4*dpr]);ctx.beginPath();ctx.moveTo(x,25*dpr);ctx.lineTo(x,h-20*dpr);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#9fd9c2';ctx.beginPath();ctx.arc(x,y,3*dpr,0,TWO_PI);ctx.fill();}
+let fractalBuffer=null,fractalRenderKey='';
+function drawFractal(){const c=$('fractalCanvas'),{w,h,dpr}=canvasSize(c),ctx=c.getContext('2d'),s=state.sources[activeSource],key=activeSource+':'+sourceCache[activeSource].revision+':'+w+':'+h;ctx.fillStyle='#080e12';ctx.fillRect(0,0,w,h);if(!fractalBuffer)fractalBuffer=document.createElement('canvas');if(key!==fractalRenderKey){fractalBuffer.width=Math.max(1,Math.round(w-28*dpr));fractalBuffer.height=Math.max(1,Math.round(h-70*dpr));const off=fractalBuffer.getContext('2d');if(s.kind==='fractal')FRACTALS[s.mode].visualize(off,fractalBuffer.width,fractalBuffer.height,s.depth,s.modA,s.modB);else waveLine(off,fractalBuffer.width,fractalBuffer.height,sourceCache[activeSource].wave,'#9fd9c2',1.5*dpr);fractalRenderKey=key;}ctx.drawImage(fractalBuffer,14*dpr,35*dpr);}
+function drawTree(){
+  const c=$('treeCanvas'),{w,h,dpr}=canvasSize(c),ctx=c.getContext('2d'),q=state.seq,depth=Math.min(q.wordDepth,5),top=42*dpr,bottom=h-35*dpr,levelH=(bottom-top)/depth;
+  ctx.fillStyle='#080e12';ctx.fillRect(0,0,w,h);ctx.lineWidth=dpr;
+  function branch(x,y,lo,hi,level,onPath){if(level===depth)return;for(let digit=0;digit<q.radix;digit++){const l=lerp(lo,hi,digit/q.radix),r=lerp(lo,hi,(digit+1)/q.radix),nx=(l+r)/2,ny=y+levelH,active=onPath&&currentWord[level]===digit;ctx.strokeStyle=active?'#efb967':'#263640';ctx.lineWidth=active?2*dpr:dpr;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(nx,ny);ctx.stroke();ctx.fillStyle=active?'#efb967':'#42565f';ctx.beginPath();ctx.arc(nx,ny,active?3*dpr:1.5*dpr,0,TWO_PI);ctx.fill();if(active&&hi-lo>30*dpr){ctx.fillStyle='#9fd9c2';ctx.font=12*dpr+'px ui-monospace,monospace';ctx.fillText(String(digit),(x+nx)/2+5*dpr,(y+ny)/2);}branch(nx,ny,l,r,level+1,active);}}
+  branch(w/2,top,10*dpr,w-10*dpr,0,true);ctx.fillStyle='#9fd9c2';ctx.font=12*dpr+'px ui-monospace,monospace';ctx.textAlign='center';ctx.fillText(q.wordDepth>5?'First five digits shown · full word '+currentWord.join(''):'Word '+currentWord.join(''),w/2,h-13*dpr);ctx.textAlign='left';
+}
+let spectrumData=null;
 function drawSpectrum(){
-  if(currentView !== 'spectrum') return;
-  const {w,h} = resizeCanvas(els.specCanvas);
-  const ctx = els.specCanvas.getContext('2d');
-  drawGrid(ctx, w, h);
-  if(!analyser){ drawStaticSpectrum(ctx, w, h); return; }
-  const data = new Uint8Array(analyser.frequencyBinCount);
-  analyser.getByteFrequencyData(data);
-  const bars = 180, bw = w/bars;
-  for(let i=0; i<bars; i++){
-    const idx = Math.floor(Math.pow(i/bars, 1.65)*data.length);
-    const bh = data[idx]/255 * h*0.92;
-    const m = i/bars;
-    /* amber → soft green gradient */
-    ctx.fillStyle = `rgba(${Math.floor(226 - 71*m)}, ${Math.floor(168 + 46*m)}, ${Math.floor(90 + 78*m)}, 0.78)`;
-    ctx.fillRect(i*bw, h-bh, Math.max(1, bw-1), bh);
-  }
+  const c=$('spectrumCanvas'),{w,h,dpr}=canvasSize(c),ctx=c.getContext('2d');grid(ctx,w,h);const bars=80,left=12*dpr,usable=w-left*2,base=h*.60,height=h*.60-50*dpr;
+  if(engine){if(!spectrumData||spectrumData.length!==engine.analyser.frequencyBinCount)spectrumData=new Uint8Array(engine.analyser.frequencyBinCount);engine.analyser.getByteFrequencyData(spectrumData);}
+  for(let i=0;i<bars;i++){const k=i+1,x=left+i/bars*usable,bw=Math.max(1,usable/bars-1),amp=currentFFT.mag[k],bh=clamp(Math.log10(1+amp*30)/1.5,0,1)*height;ctx.fillStyle='#efb967b3';ctx.fillRect(x,base-bh,bw,bh);}
+  const liveBase=h-44*dpr,liveHeight=h*.20;ctx.strokeStyle='#9fd9c2';ctx.lineWidth=1.5*dpr;ctx.beginPath();for(let i=0;i<160;i++){const value=spectrumData?spectrumData[Math.min(spectrumData.length-1,Math.floor(i/159*(spectrumData.length-1)))]:0,x=left+i/159*usable,y=liveBase-value/255*liveHeight;if(i)ctx.lineTo(x,y);else ctx.moveTo(x,y);}ctx.stroke();
+  ctx.fillStyle='#a4b3b9';ctx.font=10*dpr+'px ui-monospace,monospace';ctx.fillText('Wavetable · harmonics 1–80',left,base+15*dpr);ctx.fillText('Output · 0–'+((engine?.ctx.sampleRate||48000)/2000).toFixed(1)+' kHz',left,liveBase+15*dpr);
 }
-function drawStaticSpectrum(ctx, w, h){
-  for(let k=1; k<=96; k++){
-    let re=0, im=0;
-    for(let n=0; n<currentWave.length; n++){
-      const ph = TWO_PI*k*n/currentWave.length;
-      re += currentWave[n]*Math.cos(ph);
-      im -= currentWave[n]*Math.sin(ph);
-    }
-    const mag = Math.sqrt(re*re + im*im)/currentWave.length;
-    const x = Math.pow(k/96, .72)*w;
-    const bh = clamp(mag*9, 0, 1)*h*0.88;
-    ctx.fillStyle = 'rgba(226,168,90,.7)';
-    ctx.fillRect(x, h-bh, Math.max(2, w/96*0.55), bh);
-  }
+function animate(time){
+  if(playing&&engine){let event=null;while(visualQueue.length&&visualQueue[0].time<=engine.ctx.currentTime)event=visualQueue.shift();if(event){currentStep=event.i;currentU=event.u;currentWord=event.digits;liveMorph=event.morph;updateMix();updateAddressUI(event.note);updateStepHighlight();}}
+  if(time-lastUI>90){renderKeyHighlights();lastUI=time;}
+  if(visualDirty||view==='spectrum'){if(view==='wave')drawWave();else if(view==='fractal')drawFractal();else if(view==='tree')drawTree();else drawSpectrum();visualDirty=false;}
+  requestAnimationFrame(animate);
 }
 
-function drawFractal(){
-  if(currentView !== 'fractal') return;
-  const {w,h} = resizeCanvas(els.fractalCanvas);
-  const ctx = els.fractalCanvas.getContext('2d');
-  ctx.clearRect(0, 0, w, h);
-  ctx.fillStyle = 'rgba(11,13,15,1)';
-  ctx.fillRect(0, 0, w, h);
-  const p = getParams();
-  const f = FRACTALS[p.mode];
-  ctx.save();
-  ctx.translate(0, 0);
-  f.visualize(ctx, w, h, p.depth, p.modA, p.modB);
-  ctx.restore();
+function selectionFraction(event){const r=$('waveCanvas').getBoundingClientRect();return clamp((event.clientX-r.left)/r.width,0,1);}
+function updateSelectionUI(){const yes=selection.active;$('stretchBtn').disabled=!yes;$('primitiveBtn').disabled=!yes;$('selectionStatus').textContent=yes?Math.round(Math.abs(selection.end-selection.start)*N)+' samples selected':'Drag on waveform';}
+function selectedRegion(){if(!selection.active)throw Error('Drag a region across the waveform first.');const lo=Math.min(selection.start,selection.end),hi=Math.max(selection.start,selection.end),src=selection.source,out=new Float32Array(N);for(let i=0;i<N;i++)out[i]=sampleAt(src,lerp(lo,hi,i/(N-1)));return normalize(out);}
+function useRegion(kind){const sample=Array.from(selectedRegion()),s=state.sources[activeSource];undoState=copy(state);s.sample=sample;s.kind=kind;s.smooth=kind==='sample'?0:.2;s.drive=0;selection.active=false;buildSources([activeSource]);markDirty();updateSourceReadouts();updateSelectionUI();updateViewUI();$('undoBtn').hidden=false;status(kind==='sample'?'Selected region stretched into source '+activeSource.toUpperCase()+'.':'Selected region is now a recursive primitive. Change refinement and branch controls.');}
+function resetSource(){const mode=state.sources[activeSource].mode;state.sources[activeSource]=sourceDefaults(mode);buildSources([activeSource]);updateSourceReadouts();updateViewUI();markDirty();status('Source '+activeSource.toUpperCase()+' reset to '+FRACTALS[mode].name+'.');}
+function randomSource(){const modes=Object.keys(FRACTALS),mode=modes[Math.floor(Math.random()*modes.length)],s=sourceDefaults(mode);s.modA=Math.random();s.modB=mode==='dragon'?.5:Math.random();s.depth=2+Math.floor(Math.random()*5);s.smooth=.15+Math.random()*.6;s.drive=Math.random()*.35;state.sources[activeSource]=s;buildSources([activeSource]);updateSourceReadouts();updateViewUI();markDirty();status('New '+FRACTALS[mode].name+' source. Save the patch if it is a keeper.');}
+
+async function connectMidi(){
+  if(!navigator.requestMIDIAccess)throw Error('Web MIDI is unavailable here. You can still use the screen or computer keyboard.');
+  midiAccess=await navigator.requestMIDIAccess({sysex:false});midiAccess.onstatechange=refreshMidi;refreshMidi();
+}
+function refreshMidi(){
+  const inputs=midiAccess?Array.from(midiAccess.inputs.values()).filter(x=>x.state!=='disconnected'):[],previous=midiInput?.id;
+  if(midiInput)midiInput.onmidimessage=null;
+  $('midiSelect').replaceChildren();if(!inputs.length){midiInput=null;const option=document.createElement('option');option.value='';option.textContent='No MIDI device detected';$('midiSelect').append(option);$('midiStatus').textContent='No input connected. Plug in a device, then reconnect.';releaseMidi();return;}
+  for(const input of inputs){const option=document.createElement('option');option.value=input.id;option.textContent=input.name||'MIDI input';$('midiSelect').append(option);}
+  const chosen=inputs.find(x=>x.id===previous)||inputs[0];$('midiSelect').value=chosen.id;selectMidi(chosen.id);
+}
+function releaseMidi(){if(engine)for(const v of engine.voices.values())if(v.key.startsWith('midi:'))engine.release(v,undefined,true);sustain=false;sustained.clear();physicallyHeld.clear();}
+function selectMidi(id){releaseMidi();if(midiInput)midiInput.onmidimessage=null;midiInput=midiAccess?.inputs.get(id)||null;if(midiInput){midiInput.onmidimessage=guard(handleMidi);$('midiStatus').textContent='Connected: '+(midiInput.name||'MIDI input');$('midiBtn').textContent='Reconnect MIDI';}}
+async function handleMidi(event){
+  const [s,d1,d2]=event.data,command=s&0xf0,channel=s&15,key='midi:'+channel+':'+d1;
+  if(command===0x90&&d2>0){physicallyHeld.add(key);await ensureAudio();if(physicallyHeld.has(key)){sustained.delete(key);engine.noteOn(d1,d2,key);}return;}
+  if(command===0x80||(command===0x90&&!d2)){physicallyHeld.delete(key);if(sustain)sustained.add(key);else engine?.noteOff(key);return;}
+  if(command===0xe0){engine?.pitchBend((d1+(d2<<7)-8192)/8192);return;}
+  if(command!==0xb0)return;
+  if(d1===64){sustain=d2>=64;if(!sustain){for(const held of sustained)if(!physicallyHeld.has(held))engine?.noteOff(held);sustained.clear();}return;}
+  if(d1===120||d1===123){panic();return;}
+  const value=d2/127;
+  if(d1===1){const target=state.midiTarget;if(target==='morph'){if(playing&&controlsMorph(state.seq))return;state.morph=value;engine?.update(state,'morph');engine?.setMorph(value);updateMix();}else if(target==='cutoff'){state.cutoff=200*Math.pow(90,value);engine?.update(state,'cutoff');updateToneReadouts();}else{state.sources[activeSource][target]=value;requestRebuild();}markDirty();}
+  else if(d1===74){state.cutoff=200*Math.pow(90,value);engine?.update(state,'cutoff');updateToneReadouts();markDirty();}
+  else if(d1===71){state.voiceRes=.1+11.9*value;engine?.update(state,'voiceRes');updateToneReadouts();markDirty();}
 }
 
-function startAnimation(){
-  if(animationId) return;
-  function tick(){
-    drawSpectrum();
-    animationId = requestAnimationFrame(tick);
-  }
-  tick();
-}
+/* Event wiring. Audio and MIDI are enabled only by an explicit interaction. */
+$('audioBtn').addEventListener('click',guard(async()=>{await ensureAudio();status('Audio ready. Play a key, start the drone, or run the sequence.');}));
+$('noteBtn').addEventListener('click',guard(testNote));$('droneBtn').addEventListener('click',guard(toggleDrone));$('playBtn').addEventListener('click',guard(async()=>playing?stopSequence():startSequence()));$('panicBtn').addEventListener('click',()=>panic());
+$('sourceABtn').addEventListener('click',()=>{activeSource='a';updateSourceReadouts();updateViewUI();});$('sourceBBtn').addEventListener('click',()=>{activeSource='b';updateSourceReadouts();updateViewUI();});
+for(const id of SOURCE_IDS)$(id).addEventListener('input',()=>{if(id==='mode'){state.sources[activeSource]=sourceDefaults($(id).value);selection.active=false;updateSelectionUI();updateSourceReadouts();updateViewUI();}else{state.sources[activeSource][id]=+$(id).value;updateSourceReadouts();}requestRebuild();markDirty();});
+for(const id of TONE_IDS)$(id).addEventListener('input',()=>{state[id]=['filterType','midiTarget'].includes(id)?$(id).value:+$(id).value;engine?.update(state,id);updateToneReadouts();markDirty();});
+$('morph').addEventListener('input',()=>{state.morph=+$('morph').value;engine?.update(state,'morph');engine?.setMorph(state.morph);updateMix();markDirty();});
+for(const id of SEQ_IDS)$(id).addEventListener('input',()=>{state.seq[id]=['walk','scale','route'].includes(id)?$(id).value:+$(id).value;currentWord=digitsOf(Math.round(currentU*(Math.pow(state.seq.radix,state.seq.wordDepth)-1)),state.seq.radix,state.seq.wordDepth);updateSequenceReadouts();renderSteps();updateAddressUI();updateViewUI();engine?.update(state,'sequence');markDirty();restartSequence();});
+$('clearRestsBtn').addEventListener('click',()=>{state.seq.rests=[];markDirty();renderSteps();updateSequenceReadouts();});
+$('seedBtn').addEventListener('click',()=>{state.seq.seed=Math.floor(Math.random()*4294967295);markDirty();renderSteps();restartSequence();status('New repeatable walk seed: '+state.seq.seed+'.');});
+$('randomBtn').addEventListener('click',randomSource);$('resetSourceBtn').addEventListener('click',resetSource);
+$('swapBtn').addEventListener('click',()=>{stopSequence(false);const a=state.sources.a;state.sources.a=state.sources.b;state.sources.b=a;state.morph=1-state.morph;buildSources();engine?.update(state);engine?.resetAutomation();updateSourceReadouts();updateViewUI();markDirty();status('Sources swapped; the blend was reversed to preserve the sound.');});
+$('captureBtn').addEventListener('click',()=>{undoState=copy(state);const s=state.sources[activeSource];s.kind='sample';s.sample=Array.from(currentWave);s.smooth=0;s.drive=0;buildSources([activeSource]);updateSourceReadouts();updateViewUI();markDirty();$('undoBtn').hidden=false;status('The blended waveform is now source '+activeSource.toUpperCase()+'.');});
+$('stretchBtn').addEventListener('click',guard(()=>useRegion('sample')));$('primitiveBtn').addEventListener('click',guard(()=>useRegion('primitive')));
+$('clearSelectionBtn').addEventListener('click',()=>{selection.active=false;selection.dragging=false;updateSelectionUI();visualDirty=true;});
+$('undoBtn').addEventListener('click',()=>{if(undoState){state=undoState;undoState=null;buildSources();engine?.update(state);syncAll();markDirty();$('undoBtn').hidden=true;status('Source change undone.');}});
+$('savePatchBtn').addEventListener('click',saveCurrentPatch);$('patchName').addEventListener('input',markDirty);$('loadPatchBtn').addEventListener('click',guard(()=>{const id=$('patchSelect').value,p=[...FACTORY,...bank].find(x=>x.id===id);if(p)applySettings(p.settings,p.name,p.id);}));
+$('exportPatchBtn').addEventListener('click',()=>{exportJson(patchObject(),slug()+'.json');status('Patch exported with both sources and the sequence.');});
+$('exportBankBtn').addEventListener('click',()=>{const patches=bank.length?bank:[patchObject()];exportJson({format:'fractal-synth-bank',version:APP_VERSION,patches:copy(patches)},'fractal-synth-bank.json');status('Exported '+patches.length+' patch'+(patches.length===1?'':'es')+'.');});
+$('importBtn').addEventListener('click',()=>$('importFile').click());$('importFile').addEventListener('change',guard(async()=>{const file=$('importFile').files[0];try{await importPatches(file);}finally{$('importFile').value='';}}));
+$('waveWavBtn').addEventListener('click',()=>{download(encodeWav([currentWave]),slug()+'-cycle.wav','audio/wav');status('Exported one mono cycle · 2,048 samples · 48 kHz.');});
+$('waveJsonBtn').addEventListener('click',()=>{const fft=fourier(currentWave);exportJson({format:'fractal-synth-wavetable',version:APP_VERSION,sampleRate:48000,length:N,morph:playing&&controlsMorph(state.seq)?liveMorph:state.morph,samples:Array.from(currentWave),fourier:{real:Array.from(fft.real),imag:Array.from(fft.imag),convention:'sum(real[k]*cos(2πkt) + imag[k]*sin(2πkt))'},patch:patchObject()},slug()+'-wavetable.json');status('Wavetable exported with samples, Fourier coefficients, and the patch.');});
+$('renderBtn').addEventListener('click',guard(renderSequenceWav));
+$('offlineBtn').addEventListener('click',()=>{const clone=document.documentElement.cloneNode(true);clone.querySelector('#embeddedPatch')?.remove();const embedded=document.createElement('script');embedded.type='application/json';embedded.id='embeddedPatch';embedded.textContent=JSON.stringify({name:$('patchName').value.trim()||patchTitle,settings:state}).replace(/</g,'\\u003c');clone.querySelector('head').append(embedded);clone.querySelectorAll('dialog[open],details.file-menu[open]').forEach(el=>el.removeAttribute('open'));download('<!doctype html>\n'+clone.outerHTML,'fractal_synth_lab.html','text/html');status('Downloaded the offline instrument with your current patch. Export the bank separately to carry all saved patches.');});
+$('helpBtn').addEventListener('click',()=>$('helpDialog').showModal());$('closeHelpBtn').addEventListener('click',()=>$('helpDialog').close());
+$('midiBtn').addEventListener('click',guard(connectMidi));$('midiSelect').addEventListener('change',()=>selectMidi($('midiSelect').value));
+document.querySelectorAll('.view-tab').forEach(button=>button.addEventListener('click',()=>{view=button.dataset.view;updateViewUI();}));
+const waveCanvas=$('waveCanvas');
+waveCanvas.addEventListener('pointerdown',e=>{selection={active:false,dragging:true,start:selectionFraction(e),end:selectionFraction(e),source:Float32Array.from(currentWave)};waveCanvas.setPointerCapture(e.pointerId);visualDirty=true;});
+waveCanvas.addEventListener('pointermove',e=>{if(!selection.dragging)return;selection.end=selectionFraction(e);visualDirty=true;});
+waveCanvas.addEventListener('pointerup',guard(async e=>{if(!selection.dragging)return;selection.end=selectionFraction(e);selection.dragging=false;selection.active=Math.abs(selection.end-selection.start)*N>=12;updateSelectionUI();visualDirty=true;if(!selection.active)await auditionAt(selection.start);}));
+waveCanvas.addEventListener('pointercancel',()=>{selection.dragging=false;selection.active=false;updateSelectionUI();visualDirty=true;});
+for(const[id,delta]of [['octaveDown',-1],['octaveUp',1]])$(id).addEventListener('click',()=>{for(const held of keyboardHeld.values())engine?.noteOff(held.key);keyboardHeld.clear();state.keyboardOctave=clamp(state.keyboardOctave+delta,1,6);renderKeyboard();markDirty();});
+window.addEventListener('keydown',guard(async e=>{
+  if(e.key==='Escape'){panic();return;}
+  if(e.target.closest('input,select,textarea,summary,dialog'))return;
+  if(e.code==='Space'&&e.target.closest('button'))return;
+  if(e.ctrlKey||e.metaKey||e.altKey||e.repeat)return;
+  if(e.code==='Space'){e.preventDefault();if(playing)stopSequence();else await startSequence();return;}
+  const key=e.key.toLowerCase();if(key==='z'||key==='x'){e.preventDefault();$(key==='z'?'octaveDown':'octaveUp').click();return;}
+  if(!(key in SYNTH_KEYS))return;e.preventDefault();const note=(state.keyboardOctave+1)*12+SYNTH_KEYS[key],voiceKey='computer:'+e.code;keyboardHeld.set(e.code,{key:voiceKey,note});await ensureAudio();if(keyboardHeld.has(e.code))engine.noteOn(note,108,voiceKey);
+}));
+window.addEventListener('keyup',e=>{const held=keyboardHeld.get(e.code);if(held){engine?.noteOff(held.key);keyboardHeld.delete(e.code);}});
+window.addEventListener('blur',()=>{for(const held of keyboardHeld.values())engine?.noteOff(held.key);keyboardHeld.clear();for(const held of pointerVoices.values())engine?.noteOff(held.key);pointerVoices.clear();});
+window.addEventListener('resize',()=>{visualDirty=true;});
+if(window.ResizeObserver)new ResizeObserver(()=>{visualDirty=true;}).observe(document.querySelector('.canvas-stage'));
+document.addEventListener('pointerdown',e=>{const menu=document.querySelector('.file-menu');if(menu.open&&!menu.contains(e.target))menu.open=false;});
+window.addEventListener('pagehide',()=>{safeStore(STORAGE_WORK,{version:APP_VERSION,name:$('patchName').value.trim()||patchTitle,settings:state});panic(false);});
 
-/* ============================================================
- *  WAVE-SELECTION FEATURE
- * ============================================================ */
-function canvasXToIndex(canvas, clientX){
-  const r = canvas.getBoundingClientRect();
-  const x = clamp(clientX - r.left, 0, r.width);
-  return Math.round(x/r.width * (N-1));
+function boot(){
+  let recovered=false;
+  try{const stored=JSON.parse(localStorage.getItem(STORAGE_BANK)||'null');if(stored?.format==='fractal-synth-bank'&&stored.version===APP_VERSION&&Array.isArray(stored.patches))bank=stored.patches.slice(0,64).map(validatePatch);}catch(_){bank=[];}
+  try{const work=JSON.parse(localStorage.getItem(STORAGE_WORK)||'null');if(work?.version===APP_VERSION){state=validateSettings(work.settings);patchTitle=String(work.name||'Recovered patch').slice(0,64);selectedPatchId=bank.find(p=>p.name===patchTitle)?.id||FACTORY.find(p=>p.name===patchTitle)?.id||FACTORY[0].id;recovered=true;}}catch(_){}
+  try{const embedded=$('embeddedPatch');if(embedded){const p=JSON.parse(embedded.textContent);state=validateSettings(p.settings);patchTitle=String(p.name||'Offline patch').slice(0,64);recovered=true;}}catch(_){}
+  $('playBtn').textContent='Play sequence';$('playBtn').setAttribute('aria-pressed','false');$('droneBtn').setAttribute('aria-pressed','false');updateAudioStatus();
+  currentWord=digitsOf(0,state.seq.radix,state.seq.wordDepth);liveMorph=state.morph;buildSources();syncAll();updateSelectionUI();requestAnimationFrame(animate);if(recovered)status('Recovered your last setup. Audio is stopped; enable it when ready.');
 }
-function canvasXToDrawX(canvas, clientX){
-  const r = canvas.getBoundingClientRect();
-  const scale = canvas.width/r.width;
-  return clamp((clientX - r.left)*scale, 0, canvas.width);
-}
-function resampleSegment(src, i0, i1){
-  i0 = clamp(Math.min(i0, i1), 0, src.length-2);
-  i1 = clamp(Math.max(i0+2, Math.max(i0, i1)), 1, src.length-1);
-  const len = i1 - i0 + 1;
-  const out = new Float32Array(N);
-  for(let i=0; i<N; i++){
-    const pos = i0 + (i/(N-1))*(len-1);
-    const j = Math.floor(pos);
-    const t = pos - j;
-    out[i] = lerp(src[j], src[Math.min(j+1, src.length-1)], t);
-  }
-  return normalize(out);
-}
-function installWave(w, msg){
-  currentWave = normalize(w);
-  currentPeriodicWave = makePeriodicWave(currentWave);
-  if(droneOsc && currentPeriodicWave) droneOsc.setPeriodicWave(currentPeriodicWave);
-  activeVoices.forEach(v => v.osc.setPeriodicWave(currentPeriodicWave));
-  if(msg) els.status.textContent = msg;
-  drawWave();
-  drawFractal();
-}
-function processSelectedWave(src){
-  const p = getParams();
-  let w = Float32Array.from(src);
-  w = smoothWave(w, p.smooth);
-  w = applyDrive(w, p.drive);
-  return normalize(w);
-}
-function refreshCropWave(msg){
-  if(!cropWaveBase){ els.status.textContent = 'No selected waveform patch active.'; return; }
-  cropActive = true; primitiveActive = false;
-  installWave(processSelectedWave(cropWaveBase), msg || 'Selected waveform patch refreshed with current Smoothing and Drive.');
-}
-function getSelectedSegment(){
-  if(!selection.active) return null;
-  const i0 = Math.min(selection.startIndex, selection.endIndex);
-  const i1 = Math.max(selection.startIndex, selection.endIndex);
-  if(i1-i0 < 8) return null;
-  const src = selection.sourceWave || currentWave;
-  return { wave: resampleSegment(src, i0, i1), i0, i1 };
-}
-function applySelectionAsWave(){
-  const seg = getSelectedSegment();
-  if(!seg){ els.status.textContent = 'Drag a wider region across the wave first.'; return; }
-  primitiveActive = false; primitiveWave = null;
-  cropWaveBase = Float32Array.from(seg.wave);
-  cropActive = true;
-  refreshCropWave(`Selected samples ${seg.i0}–${seg.i1} stretched across the period.`);
-}
-function applySelectionAsPrimitive(){
-  const seg = getSelectedSegment();
-  if(!seg){ els.status.textContent = 'Drag a wider region across the wave first.'; return; }
-  cropActive = false; cropWaveBase = null;
-  primitiveWave = Float32Array.from(seg.wave);
-  primitiveActive = true;
-  refreshPrimitiveWave(`Selected samples ${seg.i0}–${seg.i1} promoted to recursive primitive.`);
-}
-function refreshPrimitiveWave(msg){
-  if(!primitiveWave){ els.status.textContent = 'No recursive primitive yet — drag-select a waveform region first.'; return; }
-  const p = getParams();
-  primitiveActive = true;
-  installWave(recursivePrimitiveWave(primitiveWave, p.depth, p.modA, p.modB),
-              msg || 'Recursive primitive refreshed with current depth and moduli.');
-}
-function clearSelection(){
-  selection = { active:false, dragging:false, startX:0, endX:0, startIndex:0, endIndex:0, sourceWave:null };
-  primitiveActive = false; primitiveWave = null;
-  cropActive = false; cropWaveBase = null;
-  buildWave();
-  els.status.textContent = 'Selection cleared. Returned to the selected fractal mode.';
-}
-function initWaveSelection(){
-  const c = els.waveCanvas;
-  c.addEventListener('pointerdown', e => {
-    selection.dragging = true; selection.active = false;
-    selection.sourceWave = Float32Array.from(currentWave);
-    selection.startX = canvasXToDrawX(c, e.clientX);
-    selection.endX = selection.startX;
-    selection.startIndex = canvasXToIndex(c, e.clientX);
-    selection.endIndex = selection.startIndex;
-    c.setPointerCapture(e.pointerId);
-    drawWave();
-  });
-  c.addEventListener('pointermove', e => {
-    if(!selection.dragging) return;
-    selection.endX = canvasXToDrawX(c, e.clientX);
-    selection.endIndex = canvasXToIndex(c, e.clientX);
-    drawWave();
-  });
-  c.addEventListener('pointerup', e => {
-    if(!selection.dragging) return;
-    selection.dragging = false;
-    selection.endX = canvasXToDrawX(c, e.clientX);
-    selection.endIndex = canvasXToIndex(c, e.clientX);
-    selection.active = Math.abs(selection.endIndex - selection.startIndex) >= 8;
-    if(selection.active){
-      const a = Math.min(selection.startIndex, selection.endIndex);
-      const b = Math.max(selection.startIndex, selection.endIndex);
-      els.status.textContent = `Selected samples ${a}–${b}. Press Stretch Selection or As Recursive Primitive.`;
-    } else {
-      els.status.textContent = 'Selection too small — drag a wider region.';
-    }
-    drawWave();
-  });
-}
-
-/* ============================================================
- *  WIRING
- * ============================================================ */
-[els.mode, els.freq, els.gain, els.depth, els.modA, els.modB,
- els.smooth, els.drive, els.cutoff, els.resonance, els.filterType,
- els.voiceCutoff, els.voiceRes,
- els.ampA, els.ampD, els.ampS, els.ampR,
- els.filterEnvAmt, els.filterA, els.filterD, els.filterS, els.filterR,
- els.bendRange, els.midiModDepth].forEach(el => {
-  el.addEventListener('input', () => {
-    /* params that don't require wave rebuild */
-    const audioOnly = [els.gain, els.freq, els.cutoff, els.resonance, els.filterType,
-                       els.voiceCutoff, els.voiceRes,
-                       els.ampA, els.ampD, els.ampS, els.ampR,
-                       els.filterEnvAmt, els.filterA, els.filterD, els.filterS, els.filterR,
-                       els.bendRange, els.midiModDepth];
-    if(audioOnly.includes(el)){ updateAudioParams(); return; }
-    /* rebuild needed */
-    if(el === els.modA || el === els.modB){
-      modWheelBaseA = +els.modA.value;
-      modWheelBaseB = +els.modB.value;
-    }
-    if(el === els.mode){
-      primitiveActive = false; primitiveWave = null;
-      cropActive = false; cropWaveBase = null;
-      /* apply per-mode defaults so each fractal opens at its iconic form */
-      const f = FRACTALS[els.mode.value];
-      if(f && f.defaults){
-        els.modA.value = f.defaults.modA;
-        els.modB.value = f.defaults.modB;
-        if(f.defaults.depth !== undefined) els.depth.value = f.defaults.depth;
-        modWheelBaseA = f.defaults.modA;
-        modWheelBaseB = f.defaults.modB;
-      }
-      clearSelection();
-    } else if(primitiveActive && primitiveWave){
-      refreshPrimitiveWave();
-    } else if(cropActive && cropWaveBase){
-      refreshCropWave();
-    } else {
-      buildWave();
-    }
-  });
-});
-
-els.startBtn.addEventListener('click', async () => {
-  await initAudio();
-  if(audioCtx.state === 'suspended') await audioCtx.resume();
-  await initMidi();
-});
-els.noteBtn.addEventListener('click', async () => {
-  await initAudio();
-  if(audioCtx.state === 'suspended') await audioCtx.resume();
-  playNote();
-});
-els.droneBtn.addEventListener('click', async () => {
-  await initAudio();
-  if(audioCtx.state === 'suspended') await audioCtx.resume();
-  toggleDrone();
-});
-els.useSelectionBtn.addEventListener('click', applySelectionAsWave);
-els.usePrimitiveBtn.addEventListener('click', applySelectionAsPrimitive);
-els.refreshPrimitiveBtn.addEventListener('click', () => refreshPrimitiveWave());
-els.clearSelectionBtn.addEventListener('click', clearSelection);
-
-els.randomBtn.addEventListener('click', () => {
-  primitiveActive = false; primitiveWave = null;
-  cropActive = false; cropWaveBase = null;
-  const modes = Object.keys(FRACTALS);
-  els.mode.value = modes[Math.floor(Math.random()*modes.length)];
-  els.freq.value = Math.floor(55 + Math.random()*330);
-  els.depth.value = Math.floor(2 + Math.random()*7);
-  els.modA.value = Math.random().toFixed(3);
-  els.modB.value = Math.random().toFixed(3);
-  modWheelBaseA = +els.modA.value;
-  modWheelBaseB = +els.modB.value;
-  els.smooth.value = (Math.random()*0.7).toFixed(2);
-  els.drive.value  = (Math.random()*0.6).toFixed(2);
-  els.cutoff.value = Math.floor(900 + Math.random()*10500);
-  els.resonance.value = (0.5 + Math.random()*5).toFixed(1);
-  buildWave();
-  els.status.innerHTML = '<span class="ok">Random patch loaded.</span>';
-});
-els.midiSelect.addEventListener('change', () => selectMidiInput(els.midiSelect.value));
-window.addEventListener('resize', () => { drawWave(); drawSpectrum(); drawFractal(); });
-
-/* tab switching */
-document.querySelectorAll('.tab').forEach(tab => {
-  tab.addEventListener('click', () => setView(tab.dataset.view));
-});
-
-/* keyboard shortcuts: space = drone, n = test note, r = random, v = cycle view */
-window.addEventListener('keydown', e => {
-  if(e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
-  if(e.code === 'Space'){ e.preventDefault(); els.droneBtn.click(); }
-  else if(e.code === 'KeyN'){ e.preventDefault(); els.noteBtn.click(); }
-  else if(e.code === 'KeyR'){ e.preventDefault(); els.randomBtn.click(); }
-  else if(e.code === 'KeyV'){
-    e.preventDefault();
-    const order = ['wave','fractal','spectrum'];
-    setView(order[(order.indexOf(currentView)+1) % order.length]);
-  }
-});
-
-/* boot — apply the initial mode's defaults so it opens at its iconic form */
-(function applyInitialDefaults(){
-  const f = FRACTALS[els.mode.value];
-  if(f && f.defaults){
-    els.modA.value = f.defaults.modA;
-    els.modB.value = f.defaults.modB;
-    if(f.defaults.depth !== undefined) els.depth.value = f.defaults.depth;
-    modWheelBaseA = f.defaults.modA;
-    modWheelBaseB = f.defaults.modB;
-  }
-})();
-updateLabels();
-buildWave();
-initWaveSelection();
-if(navigator.requestMIDIAccess) initMidi();
-</script>
-</body>
-</html>
+boot();
+</script></body></html>
