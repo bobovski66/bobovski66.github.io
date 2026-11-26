@@ -1,93 +1,449 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trippy Cosmic Zeros</title>
-    <style>
-        body {
-            background: radial-gradient(circle, #0e0b16, #1a1a2e);
-            color: #e0e0e0;
-            font-family: 'Courier New', Courier, monospace;
-            text-align: center;
-            padding: 20px;
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0b101b"><meta name="description" content="Explore polynomial root clouds, move complex coefficients, and trace root braids and monodromy around branch values."><title>Polynomial Roots · Clouds, Coefficients & Braids</title><style>:root{color-scheme:dark;--bg:#0b101b;--panel:#111a27;--raised:#172332;--line:#29394b;--ink:#edf2f3;--muted:#a4b6c6;--faint:#738da4;--cyan:#83dce3;--pink:#ef9dbb;--gold:#f0c27a;--violet:#baa8f0;--green:#9cd5b3;--radius:12px;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 0,#142334 0,transparent 55%),var(--bg);color:var(--ink);line-height:1.5}button,input,select{font:inherit}button{cursor:pointer;border:1px solid var(--line);border-radius:7px;background:var(--raised);color:var(--ink);font-size:.875rem;padding:.55rem .75rem;line-height:1.3}button:hover,select:hover{border-color:var(--cyan)}button:disabled{opacity:.4;cursor:default}button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible,a:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}.primary{background:var(--cyan);border-color:var(--cyan);color:#09242b;font-weight:650}.primary:hover{background:#a4f1f5}.quiet{background:transparent}.wide{width:100%}.spaced{margin-top:12px}select,input[type=number]{border:1px solid var(--line);border-radius:7px;background:var(--raised);color:var(--ink);padding:.55rem .65rem;min-width:0;width:100%;font-size:.875rem}select{appearance:none;padding-right:1.8rem;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 15px) 50%,calc(100% - 10px) 50%;background-size:5px 5px;background-repeat:no-repeat}input[type=number]{font-variant-numeric:tabular-nums}label{font-size:.875rem;color:var(--muted);display:flex;justify-content:space-between;gap:8px;margin-bottom:6px}.check{justify-content:start;align-items:center;gap:9px;font-size:.8125rem;margin:12px 0}.check input{accent-color:var(--cyan);width:16px;height:16px;margin:0;flex-shrink:0}output{font:normal .8125rem ui-monospace,Consolas,monospace;color:var(--ink);font-variant-numeric:tabular-nums}input[type=range]{appearance:none;width:100%;height:24px;margin:0;background:transparent;cursor:pointer}input[type=range]::-webkit-slider-runnable-track{height:4px;background:var(--line);border-radius:4px}input[type=range]::-webkit-slider-thumb{appearance:none;width:13px;height:18px;background:var(--cyan);border:2px solid #111e2b;border-radius:4px;margin-top:-7px}input[type=range]::-moz-range-track{height:4px;background:var(--line)}input[type=range]::-moz-range-thumb{width:12px;height:16px;border:2px solid var(--panel);background:var(--cyan);border-radius:4px}[hidden]{display:none!important}.masthead{max-width:1660px;margin:auto;padding:25px 28px 21px;display:flex;gap:36px;align-items:center}.eyebrow{font-size:.6875rem;letter-spacing:.16em;color:var(--cyan);margin-bottom:8px}h1{font:normal clamp(2rem,3vw,2.9rem)/1 Georgia,serif;letter-spacing:-.04em;margin:0}h1 em{color:var(--cyan);font-weight:normal}.masthead p{font-size:.875rem;color:var(--muted);line-height:1.6;margin:0}.masthead>button{margin-left:auto}h2{font-size:.9375rem;font-weight:600;margin:0}h3{color:var(--cyan);font-size:1.05rem;margin:25px 0 7px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 28px;background:#0d1723ed;border-top:1px solid var(--line);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:25;backdrop-filter:blur(14px)}.mode-tabs,.top-actions{display:flex;align-items:center;gap:7px}.mode-tabs button{background:transparent;border-color:transparent;color:var(--muted);padding:.65rem .9rem}.mode-tabs button.active{background:#83dce313;color:var(--cyan);border-color:#83dce345}.top-actions>button{background:transparent}.file-menu{position:relative}.file-menu summary{border:1px solid var(--line);border-radius:7px;padding:.55rem .75rem;font-size:.875rem;cursor:pointer;list-style:none}.file-menu summary::after{content:' +';color:var(--cyan)}.file-menu[open] summary::after{content:' −'}.file-actions{position:absolute;right:0;top:calc(100% + 9px);z-index:40;background:#1b2b3d;border:1px solid #41576e;border-radius:9px;padding:8px;width:235px;display:grid;gap:5px;box-shadow:0 18px 45px #0007}.file-actions button{text-align:left;border-color:transparent;background:transparent}.file-actions button:hover{background:#294259}main{max-width:1660px;margin:auto;padding:20px 28px}.workspace{display:grid;grid-template-columns:268px minmax(0,1fr) 268px;gap:16px;align-items:start}.side{max-height:850px;overflow:auto;scrollbar-width:thin;scrollbar-color:var(--line) transparent}.panel{border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);overflow:clip}.panel-head{padding:13px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:7px}.panel-body{padding:14px}.tag{font:normal .6875rem ui-monospace,monospace;color:var(--faint);white-space:nowrap}.control{margin-bottom:15px}.control:last-child{margin:0}.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}.pair label{font-size:.8125rem}.hint{font-size:.8125rem;color:var(--muted);margin:7px 0 14px;line-height:1.55}.numeric-note{font:normal .6875rem/1.65 ui-monospace,Consolas,monospace;color:var(--faint);overflow-wrap:anywhere}.subhead{font-size:.6875rem;color:var(--cyan);text-transform:uppercase;letter-spacing:.08em;border-top:1px solid var(--line);padding-top:12px;margin:18px 0 10px}.button-pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}.button-pair button{font-size:.8125rem}.degree-picks{display:flex;gap:6px;margin-bottom:16px}.degree-choice{margin:0;flex:1;position:relative;cursor:pointer}.degree-choice input{position:absolute;opacity:0;pointer-events:none}.degree-choice span{width:100%;text-align:center;border:1px solid var(--line);border-radius:6px;background:var(--raised);padding:7px;font:normal .875rem ui-monospace,monospace;color:var(--faint)}.degree-choice input:checked+span{background:color-mix(in srgb,var(--degree-color) 14%,var(--panel));border-color:var(--degree-color);color:var(--degree-color)}.degree-choice input:focus-visible+span{outline:2px solid var(--cyan)}.d2{--degree-color:var(--gold)}.d3{--degree-color:var(--cyan)}.d4{--degree-color:var(--violet)}.d5{--degree-color:var(--pink)}.d6{--degree-color:var(--green)}.plot-head{padding:14px 16px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}.plot-head p{font-size:.75rem;color:var(--muted);margin:4px 0 0}.canvas-wrap{position:relative;background:#070e18;height:490px}.canvas-wrap>canvas{display:block;width:100%;height:100%;touch-action:none}.plot-corner{position:absolute;right:13px;top:10px;pointer-events:none;color:var(--faint);font:normal .6875rem ui-monospace,monospace}.plot-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:35px;text-align:center;background:#070e1899;color:var(--muted);pointer-events:none;font-size:.9375rem}.plot-footer{display:flex;justify-content:space-between;gap:10px;padding:9px 13px;border-top:1px solid var(--line);font-size:.6875rem;color:var(--muted)}#pointerReadout{font-family:ui-monospace,monospace}.legend{display:flex;gap:15px;padding:9px 13px;background:#172230;flex-wrap:wrap}.legend span{font-size:.6875rem;color:var(--muted);display:flex;align-items:center;gap:6px}.legend i{width:7px;height:7px;border-radius:50%;display:inline-block}.readouts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:12px 0}.readouts>div{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:11px 14px;min-width:0}.readouts span{font-size:.6875rem;color:var(--muted);display:block;margin-bottom:4px}.readouts strong{font:normal 1.18rem/1.2 ui-monospace,Consolas,monospace;color:var(--cyan);overflow-wrap:anywhere}.status-line{font-size:.8125rem;color:var(--cyan);display:flex;align-items:start;gap:10px;margin:12px 2px;min-height:38px}.status-line.error{color:var(--pink)}.text-button{padding:0;border:0;background:transparent;color:var(--muted);text-decoration:underline;text-underline-offset:3px;white-space:nowrap}.empty-mark{font:italic 2rem Georgia,serif;color:#83dce35c;text-align:center;padding:22px 0 12px}.polynomial{font:normal 1.15rem/1.7 Georgia,serif;color:var(--ink);overflow-wrap:anywhere}.polynomial sup,.mini-formula sup{font-size:.7em}.root-table{font:normal .75rem ui-monospace,Consolas,monospace}.root-row{display:grid;grid-template-columns:26px 1fr;gap:6px;align-items:center;border-bottom:1px solid #243449;padding:9px 0}.root-row:last-child{border-bottom:0}.root-row b{font-weight:500;color:var(--root-color)}.root-row span{font-variant-numeric:tabular-nums;color:var(--muted);overflow-wrap:anywhere}.root-row.selected{background:#83dce310}.callout{padding:10px;border-left:2px solid var(--pink);background:#ef9dbb0b;color:var(--pink);font-size:.8125rem}.coeff-head{display:grid;grid-template-columns:42px 1fr 1fr;gap:6px;color:var(--faint);font-size:.625rem;margin:14px 0 5px}.coeff-head span:first-child{font-size:.5625rem}.coeff-row{display:grid;grid-template-columns:42px 1fr 1fr;gap:6px;margin-bottom:7px;border-radius:6px}.coeff-row input{width:100%;padding:6px 5px;font-size:.8125rem}.coeff-row button{padding:3px;font-size:.8125rem;background:transparent;color:var(--muted)}.coeff-row.selected button{border-color:var(--cyan);color:var(--cyan)}.mini-title{display:flex;justify-content:space-between;gap:8px;font-size:.75rem;color:var(--muted);margin:14px 0 7px}.mini-canvas{display:block;width:100%;height:185px;background:#070e18;border:1px solid var(--line);border-radius:8px;margin-bottom:13px;touch-action:none}.parameter{height:220px}.pink{color:var(--pink)}.mini-formula{font:normal 1.1rem Georgia,serif;color:var(--cyan);line-height:1.7;overflow-wrap:anywhere}.equation-panel{padding:12px 16px;display:flex;align-items:baseline;gap:12px}.equation-panel>span{font:italic 1rem Georgia,serif;color:var(--muted);white-space:nowrap}#labPolynomial{font:normal 1.15rem Georgia,serif;line-height:1.7;overflow-wrap:anywhere}.segmented{display:flex;gap:3px;flex-shrink:0}.segmented button{padding:5px 8px;font-size:.75rem;background:transparent;border-color:transparent;color:var(--muted)}.segmented button.active{border-color:var(--line);color:var(--cyan);background:var(--raised)}.playback{padding:12px 15px}.playback-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.playback-actions button{font-size:.8125rem}.playback-actions label{font-size:.6875rem;margin:0 0 0 auto}.playback-actions select{width:65px;font-size:.75rem;padding:5px 20px 5px 6px}.playback-actions output{font-size:.75rem}.playback>input{margin-top:10px}.playback .hint{margin:4px 0 0;font-size:.75rem}.permutation{color:var(--gold);font:normal 1.55rem/1.5 ui-monospace,monospace;padding:5px 0 8px;overflow-wrap:anywhere}.endpoint-map{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin:4px 0 12px}.endpoint-map span{font:normal .8125rem ui-monospace,monospace;padding:5px;background:var(--raised);border-radius:5px;color:var(--root-color)}.winding-readout{font:normal 2rem ui-monospace,monospace;color:var(--pink);margin:5px 0}.mono{font:normal 1.1rem ui-monospace,monospace;color:var(--cyan)}.gallery{margin:24px 0 15px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:16px 0}.gallery>summary{color:var(--muted);font-size:.875rem;cursor:pointer}.gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px}.gallery figure{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden}.gallery img{width:100%;display:block;aspect-ratio:1.2;object-fit:contain;background:#fff}.gallery figcaption{font-size:.75rem;color:var(--muted);padding:9px 12px}footer{display:flex;justify-content:space-between;gap:20px;font-size:.75rem;color:var(--faint);padding:8px 0 20px}a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}dialog{width:calc(100% - 28px);max-width:650px;max-height:85vh;overflow:auto;background:var(--panel);color:var(--ink);border:1px solid #435c72;border-radius:14px;padding:24px;box-shadow:0 20px 90px #0008}dialog::backdrop{background:#030914bf;backdrop-filter:blur(5px)}.dialog-head{display:flex;justify-content:space-between;align-items:center;gap:15px}.dialog-head h2{font:normal 1.65rem Georgia,serif}.guide p{font-size:.9375rem;color:var(--muted);line-height:1.7}.guide em{font-style:normal;color:var(--ink)}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}::selection{background:var(--cyan);color:var(--bg)}
+@media(min-width:1500px){.workspace{grid-template-columns:292px minmax(0,1fr) 285px}.canvas-wrap{height:560px}}
+@media(max-width:1120px){.workspace{grid-template-columns:250px minmax(0,1fr)}.inspector{grid-column:1/-1;max-height:none}.inspector>.panel>.panel-body{display:grid;grid-template-columns:1fr 1fr;gap:0 24px}.inspector .subhead,.inspector .callout{grid-column:1/-1}.canvas-wrap{height:460px}.topbar{padding:10px 20px}.masthead{padding:22px 20px}main{padding:18px 20px}}
+@media(max-width:740px){.masthead{padding:18px 14px;gap:15px}.masthead p{display:none}.masthead>button{font-size:.75rem;padding:.4rem .6rem}.eyebrow{font-size:.5625rem;letter-spacing:.1em}.topbar{position:relative;display:block;padding:8px 12px}.mode-tabs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px}.mode-tabs button{padding:10px 6px;font-size:.8125rem}.top-actions{margin-top:8px;justify-content:end;gap:6px}.top-actions>button,.file-menu>summary{font-size:.75rem;padding:7px 9px}main{padding:12px}.workspace{grid-template-columns:minmax(0,1fr);gap:12px}.center{grid-row:1}.controls{grid-row:2}.side{max-height:none}.inspector{grid-column:auto}.inspector>.panel>.panel-body{display:block}.plot-head{padding:12px}.plot-head p{font-size:.6875rem}.plot-head h2{font-size:.875rem}.canvas-wrap{height:370px}.plot-footer{font-size:.625rem;flex-direction:column;gap:3px}.readouts{gap:7px}.readouts>div{padding:9px 10px}.readouts strong{font-size:1rem}.readouts span{font-size:.625rem}.legend{gap:10px;font-size:.625rem}.controls .panel-body>.control{margin-bottom:14px}.controls .mini-canvas{height:235px}.coeff-row{grid-template-columns:50px 1fr 1fr}.coeff-head{grid-template-columns:50px 1fr 1fr}.coeff-row input{font-size:.875rem;padding:8px}.gallery-grid{grid-template-columns:1fr 1fr;gap:10px}footer{display:block}footer a{display:block;margin-top:8px}.playback-actions{gap:6px}.playback-actions output{margin-left:auto}.playback-actions label{margin-left:0}.segmented button{font-size:.6875rem;padding:4px 6px}.file-actions{width:220px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style></head><body>
+<header class="masthead"><div><div class="eyebrow">A COMPLEX PLANE TO GET LOST IN</div><h1>Polynomial <em>roots</em></h1></div><p>Generate a field of zeros.<br>Move a coefficient. Follow what comes back.</p><button id="helpBtn" class="quiet">A little orientation</button></header>
+<nav class="topbar" aria-label="Explorer"><div class="mode-tabs" role="tablist" aria-label="Exploration mode"><button role="tab" aria-selected="true" data-mode="cloud" class="active">Root clouds</button><button role="tab" aria-selected="false" data-mode="lab">Coefficients</button><button role="tab" aria-selected="false" data-mode="braid">Root braids</button></div><div class="top-actions"><button id="fitBtn">Fit view</button><button id="pngBtn">Save image</button><details class="file-menu"><summary>Experiments</summary><div class="file-actions"><button id="saveBtn">Save experiment</button><button id="openBtn">Open experiment</button><button id="csvBtn">Export root data CSV</button><button id="offlineBtn">Download explorer</button></div></details><input id="openFile" type="file" accept=".json,application/json" hidden></div></nav>
+<main><div class="workspace">
+<aside class="side controls">
+<section class="panel" data-for="cloud"><div class="panel-head"><h2>The polynomial family</h2><span class="tag">P(z) = 0</span></div><div class="panel-body"><div class="control"><label for="cloudPreset">Start somewhere</label><select id="cloudPreset"><option value="integer">Small integer coefficients</option><option value="littlewood">Littlewood · ±1</option><option value="ternary">Ternary · −1, 0, 1</option><option value="grid">A finer real grid</option><option value="real">Continuous real coefficients</option><option value="complex">Complex coefficients</option></select></div><label>Degrees</label><div class="degree-picks"><label class="degree-choice d2"><input type="checkbox" name="degree" value="2" checked><span>2</span></label><label class="degree-choice d3"><input type="checkbox" name="degree" value="3" checked><span>3</span></label><label class="degree-choice d4"><input type="checkbox" name="degree" value="4" checked><span>4</span></label><label class="degree-choice d5"><input type="checkbox" name="degree" value="5"><span>5</span></label><label class="degree-choice d6"><input type="checkbox" name="degree" value="6"><span>6</span></label></div><div class="control"><label for="bound">Coefficient bound <output id="boundValue">2</output></label><input id="bound" type="range" min="1" max="5" value="2" step="1"></div><div id="gridControl" class="control" hidden><label for="gridStep">Grid spacing</label><select id="gridStep"><option value="0.5">0.5</option><option value="0.2" selected>0.2</option><option value="0.1">0.1</option></select></div><label class="check"><input id="monic" type="checkbox">Monic · leading coefficient 1</label><label class="check"><input id="nonzero" type="checkbox" checked>Nonzero constant term</label><div class="control"><label for="cloudCount">Maximum polynomials</label><select id="cloudCount"><option value="2000">2,000</option><option value="8000" selected>8,000</option><option value="16000">16,000</option><option value="20000">20,000</option></select></div><p id="familyEstimate" class="hint">2,480 polynomials in the complete finite family.</p><div class="button-pair"><button id="generateBtn" class="primary">Generate cloud</button><button id="newSeedBtn">New sample</button></div><div class="subhead">Appearance</div><div class="control"><label for="pointSize">Point size <output id="pointSizeValue">1.1</output></label><input id="pointSize" type="range" min="0.5" max="3" step="0.1" value="1.1"></div><div class="control"><label for="exposure">Exposure <output id="exposureValue">55%</output></label><input id="exposure" type="range" min="0.1" max="1" step="0.01" value="0.55"></div><label class="check"><input id="density" type="checkbox" checked>Add overlapping light</label><p class="hint">Scroll to zoom. Drag to pan. Select a point to reveal the polynomial that put it there.</p></div></section>
+<section class="panel" data-for="lab" hidden><div class="panel-head"><h2>Move the coefficients</h2><span class="tag">monic</span></div><div class="panel-body"><div class="control"><label for="labPreset">A starting polynomial</label><select id="labPreset"><option value="custom">Custom polynomial</option><option value="cubic" selected>Three real roots · z³ − 3z + 1</option><option value="unity">Roots of unity · zⁿ − 1</option><option value="double">A repeated root · (z − 1)²(z + 1)</option><option value="complex">A complex quartic</option></select></div><div class="control"><label for="labDegree">Degree</label><select id="labDegree"><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option></select></div><label class="check"><input id="realLock" type="checkbox" checked>Keep coefficients real</label><div class="coeff-head"><span>Coefficient</span><span>Real</span><span>Imaginary</span></div><div id="coefficients" class="coefficients"></div><p class="hint">Pick a coefficient, then drag its point in the plane below. You can also drag roots in the large plot.</p><div class="mini-title"><span id="coefficientTitle">Constant coefficient</span><span>ℂ</span></div><canvas id="coefficientCanvas" class="mini-canvas" aria-label="Complex plane for the selected coefficient"></canvas><div class="button-pair"><button id="undoLabBtn" disabled>Undo change</button><button id="clearTrailsBtn">Clear trails</button></div><label class="check spaced"><input id="showTrails" type="checkbox" checked>Leave root trails</label><button id="labToBraidBtn" class="wide">Use this family in Braids</button></div></section>
+<section class="panel" data-for="braid" hidden><div class="panel-head"><h2>A loop in coefficient space</h2><span class="tag">Q(z) − c</span></div><div class="panel-body"><div class="control"><label for="braidPreset">Choose an experiment</label><select id="braidPreset"><option value="square">Two sheets exchange · z² − c</option><option value="pure">Two turns · a pure braid</option><option value="cube">Three sheets · z³ − c</option><option value="oneBranch">One cubic branch value</option><option value="bothBranches">Both cubic branch values</option><option value="four">Four sheets · z⁴ − c</option><option value="eight">Cubic figure eight</option><option value="custom" hidden>Family from coefficient lab</option></select></div><div id="braidFormula" class="mini-formula">z² − c = 0</div><div class="mini-title"><span>Parameter c</span><span class="pink">× branch value</span></div><canvas id="parameterCanvas" class="mini-canvas parameter" aria-label="Coefficient parameter plane; drag to move a loop or draw a custom path"></canvas><div class="control"><label for="pathType">Loop shape</label><select id="pathType"><option value="circle">Circle</option><option value="figure8">Figure eight</option><option value="drawn">Draw a loop</option></select></div><div class="pair"><div class="control"><label for="centerRe">Center · Re</label><input id="centerRe" type="number" value="0" step="0.1"></div><div class="control"><label for="centerIm">Center · Im</label><input id="centerIm" type="number" value="0" step="0.1"></div></div><div class="control"><label for="radius">Radius <output id="radiusValue">1.20</output></label><input id="radius" type="range" min="0.1" max="5" value="1.2" step="0.01"></div><div class="control"><label for="winding">Turns</label><select id="winding"><option value="1">One counterclockwise</option><option value="2">Two counterclockwise</option><option value="3">Three counterclockwise</option><option value="-1">One clockwise</option><option value="-2">Two clockwise</option></select></div><button id="traceBtn" class="primary wide">Trace the loop</button><p id="loopHint" class="hint">Drag in the small plane to move the loop. Keep it away from the pink branch values.</p></div></section>
+</aside>
+<section class="center"><div class="panel plot-panel"><div class="plot-head"><div><h2 id="plotTitle">A field of possible roots</h2><p id="plotSubtitle">Integer coefficients · degrees 2, 3, and 4</p></div><div id="braidViewButtons" class="segmented" hidden><button id="viewBraidBtn" class="active">Braid</button><button id="viewPlaneBtn">Root plane</button></div></div><div class="canvas-wrap"><canvas id="mainCanvas" aria-label="Polynomial roots in the complex plane"></canvas><div id="plotEmpty" class="plot-empty" hidden></div><div class="plot-corner" id="plotCorner">Re z / Im z</div></div><div class="plot-footer"><span id="pointerReadout">ℂ · equal units on both axes</span><span id="canvasHint">Select a root · drag to pan · scroll to zoom</span></div><div id="degreeLegend" class="legend"></div></div>
+<div class="readouts"><div><span id="metric1Label">Polynomials</span><strong id="metric1">—</strong></div><div><span id="metric2Label">Roots</span><strong id="metric2">—</strong></div><div><span id="metric3Label">Family</span><strong id="metric3">Complete</strong></div></div>
+<div id="labEquation" class="panel equation-panel" hidden><span>P(z) =</span><div id="labPolynomial"></div></div>
+<section id="playback" class="panel playback" hidden><div class="playback-actions"><button id="playBtn" class="primary">Play loop</button><button id="resetTimeBtn">Start again</button><label for="speed">Speed</label><select id="speed"><option value="0.5">½×</option><option value="1" selected>1×</option><option value="2">2×</option></select><output id="timeValue">t = 0.000</output></div><label class="sr-only" for="timeSlider">Loop progress</label><input id="timeSlider" type="range" min="0" max="1" value="0" step="0.001"><p id="playbackHint" class="hint">The coefficient returns to its starting value. The root labels may arrive somewhere else.</p></section>
+<div class="status-line"><span id="status" role="status" aria-live="polite">Preparing the first root cloud…</span><button id="cancelBtn" class="text-button" hidden>Cancel</button></div>
+</section>
+<aside class="side inspector">
+<section class="panel" data-for="cloud"><div class="panel-head"><h2>The polynomial behind a point</h2></div><div class="panel-body"><div id="cloudInspectorEmpty"><div class="empty-mark">P(z) = 0</div><p class="hint">Every dot is a zero of an actual polynomial in the chosen family. Select one to see its coefficients and all its roots.</p></div><div id="cloudInspector" hidden><div id="selectedPolynomial" class="polynomial"></div><div id="selectedMeta" class="hint"></div><div id="cloudRoots" class="root-table"></div><p id="overlapInfo" class="hint"></p><button id="nextOverlapBtn" class="wide" hidden>Another polynomial here</button><button id="openInLabBtn" class="primary wide spaced">Open in coefficient lab</button></div><div class="subhead">What the cloud records</div><p id="cloudDescription" class="hint">The cloud counts roots with multiplicity. Repeated locations accumulate brightness.</p><p id="cloudNumerics" class="numeric-note"></p></div></section>
+<section class="panel" data-for="lab" hidden><div class="panel-head"><h2>Current roots</h2><span class="tag" id="labQuality">resolved</span></div><div class="panel-body"><div id="labRoots" class="root-table"></div><p id="labResidual" class="numeric-note"></p><div class="subhead">Moving roots, moving coefficients</div><p class="hint">Dragging a root rebuilds P(z) as the product of its linear factors. With real coefficients locked, a nonreal root moves with its conjugate; real roots stay on the real axis.</p><p id="collisionNote" class="callout" hidden>Roots are close or coincident. Their individual labels are numerically ambiguous here.</p></div></section>
+<section class="panel" data-for="braid" hidden><div class="panel-head"><h2>What returns?</h2><span id="traceQuality" class="tag">ready to trace</span></div><div class="panel-body"><label>Endpoint permutation</label><div id="permutation" class="permutation">—</div><div id="endpointMap" class="endpoint-map"></div><p id="permutationNote" class="hint">Follow the colors from the start plane to the end plane.</p><div class="subhead">Discriminant winding</div><div class="winding-readout" id="discriminantWinding">—</div><p class="hint">Signed turns of ∏(rᵢ − rⱼ)². An identity permutation can still carry a nonzero winding.</p><div class="subhead">Closest root separation</div><strong id="minimumGap" class="mono">—</strong><p id="braidNumerics" class="numeric-note"></p><div class="subhead">Branch values</div><div id="branchValues" class="hint"></div><p class="hint">These are Q(z*) where Q′(z*) = 0. A root collision occurs when c reaches one of them.</p></div></section>
+</aside></div>
+<details class="gallery"><summary>Browse the original image gallery</summary><div class="gallery-grid"><figure><a href="https://bobovski66.github.io/PolyRoots/output(31).png" target="_blank" rel="noopener"><img src="https://bobovski66.github.io/PolyRoots/output(31).png" loading="lazy" alt="Degrees 2, 3, and 4"></a><figcaption>Degrees 2, 3, and 4</figcaption></figure><figure><a href="https://bobovski66.github.io/PolyRoots/output(30).png" target="_blank" rel="noopener"><img src="https://bobovski66.github.io/PolyRoots/output(30).png" loading="lazy" alt="Degrees 2 and 3"></a><figcaption>Degrees 2 and 3</figcaption></figure><figure><a href="https://bobovski66.github.io/PolyRoots/output(29).png" target="_blank" rel="noopener"><img src="https://bobovski66.github.io/PolyRoots/output(29).png" loading="lazy" alt="Radially weighted markers"></a><figcaption>Radially weighted markers</figcaption></figure><figure><a href="https://bobovski66.github.io/PolyRoots/output(28).png" target="_blank" rel="noopener"><img src="https://bobovski66.github.io/PolyRoots/output(28).png" loading="lazy" alt="Fine marker structure"></a><figcaption>Fine marker structure</figcaption></figure><figure><a href="https://bobovski66.github.io/PolyRoots/output(27).png" target="_blank" rel="noopener"><img src="https://bobovski66.github.io/PolyRoots/output(27).png" loading="lazy" alt="Integer coefficient study"></a><figcaption>Integer coefficient study</figcaption></figure><figure><a href="https://bobovski66.github.io/PolyRoots/output(26).png" target="_blank" rel="noopener"><img src="https://bobovski66.github.io/PolyRoots/output(26).png" loading="lazy" alt="Higher-resolution root cloud"></a><figcaption>Higher-resolution root cloud</figcaption></figure><figure><a href="https://bobovski66.github.io/PolyRoots/output(25).png" target="_blank" rel="noopener"><img src="https://bobovski66.github.io/PolyRoots/output(25).png" loading="lazy" alt="Finer coefficient spacing"></a><figcaption>Finer coefficient spacing</figcaption></figure><figure><a href="https://bobovski66.github.io/PolyRoots/output(24).png" target="_blank" rel="noopener"><img src="https://bobovski66.github.io/PolyRoots/output(24).png" loading="lazy" alt="Root cloud detail"></a><figcaption>Root cloud detail</figcaption></figure><figure><a href="https://bobovski66.github.io/PolyRoots/output(23).png" target="_blank" rel="noopener"><img src="https://bobovski66.github.io/PolyRoots/output(23).png" loading="lazy" alt="Low-degree detail"></a><figcaption>Low-degree detail</figcaption></figure><figure><a href="https://bobovski66.github.io/PolyRoots/output(22).png" target="_blank" rel="noopener"><img src="https://bobovski66.github.io/PolyRoots/output(22).png" loading="lazy" alt="A closer view"></a><figcaption>A closer view</figcaption></figure></div></details>
+<footer><span>A root cloud, a coefficient map, and a braid are three ways into the same equation.</span><a href="../index.html">More mathematical experiments</a></footer></main>
+<dialog id="helpDialog"><div class="dialog-head"><h2>A little orientation</h2><button id="closeHelpBtn">Close</button></div><div class="guide"><h3>Root clouds</h3><p>Choose a family of polynomials and plot every root of every chosen polynomial. When a finite family fits within the budget, the explorer enumerates it completely. Larger or continuous families use a repeatable seeded sample, balancing degrees where their family sizes permit. The default includes every degree-2, -3, and -4 polynomial with integer coefficients in [−2, 2], with nonzero leading and constant terms.</p><p>A nonzero constant term excludes z = 0. A bounded discrete coefficient set can also leave a visible neighborhood around zero empty. Change the coefficient family to see which patterns persist. Clouds from real coefficients are conjugation-symmetric; arbitrary complex coefficients need not be.</p><h3>Coefficients</h3><p>The leading coefficient is fixed at 1. Edit real and imaginary parts, drag the selected coefficient in its small complex plane, or drag a root in the main plot. Root dragging reconstructs the polynomial from its linear factors. Select a cloud point and open it here to manipulate the same roots.</p><h3>Root braids</h3><p>Hold Q fixed and solve Q(z) − c = 0 while c follows a closed path. Local root labels are continued along the path using adaptive subdivision and a minimum-cost assignment. The endpoint permutation tells you which starting location receives each label. In the braid view, the third coordinate is progress along the loop; drag to rotate it.</p><p>Try <em>Two turns · a pure braid</em>. Each root comes home, yet the discriminant winds twice. Thus the permutation alone does not capture the whole braid. A loop that crosses a branch value has a collision and is rejected.</p><h3>Numerical meaning</h3><p>Root solutions are checked both by a scaled polynomial residual and by reconstructing their coefficients. These are numerical checks, not certified error bounds. Multiple or very close roots are ill-conditioned and are flagged. A continuation that does not resolve its labels is marked uncertain rather than presented as a reliable permutation.</p><p>Cloud generation and braid tracing run in background workers. Saved experiments retain the coefficient family, sample seed, polynomial, and loop; the data are regenerated when opened. The explorer needs no account or external library. The original gallery images remain online assets.</p></div></dialog>
+<script id="math-core">/* Complex polynomial arithmetic, root solving, finite families, continuation.
+   Coefficients are ordered from the leading term to the constant term. */
+const PolyMath = (() => {
+  'use strict';
+  const TAU=2*Math.PI;
+  const C=(re=0,im=0)=>({re,im});
+  const add=(a,b)=>C(a.re+b.re,a.im+b.im),sub=(a,b)=>C(a.re-b.re,a.im-b.im);
+  const mul=(a,b)=>C(a.re*b.re-a.im*b.im,a.re*b.im+a.im*b.re);
+  const scale=(a,x)=>C(a.re*x,a.im*x),abs=a=>Math.hypot(a.re,a.im),conj=a=>C(a.re,-a.im);
+  function div(a,b){if(Math.abs(b.re)>=Math.abs(b.im)){const r=b.im/b.re,d=b.re+b.im*r;return C((a.re+a.im*r)/d,(a.im-a.re*r)/d);}const r=b.re/b.im,d=b.im+b.re*r;return C((a.re*r+a.im)/d,(a.im*r-a.re)/d);}
+  function sqrt(a){const r=abs(a),x=Math.sqrt(Math.max(0,(r+a.re)/2)),y=Math.sqrt(Math.max(0,(r-a.re)/2));return C(x,a.im<0?-y:y);}
+  const finite=a=>Number.isFinite(a.re)&&Number.isFinite(a.im);
+  const lerp=(a,b,t)=>C(a.re+(b.re-a.re)*t,a.im+(b.im-a.im)*t);
+  const copyCoeffs=a=>a.map(z=>C(z.re,z.im));
+  function monic(a){if(!a.length||abs(a[0])===0)throw Error('The leading coefficient must be nonzero.');return a.map(z=>div(z,a[0]));}
+  function evaluate(a,z){let p=C(a[0].re,a[0].im),d=C();for(let i=1;i<a.length;i++){d=add(mul(d,z),p);p=add(mul(p,z),a[i]);}return {p,d};}
+  function residual(a,z){let bound=abs(a[0]),r=abs(z);for(let i=1;i<a.length;i++)bound=bound*r+abs(a[i]);return abs(evaluate(a,z).p)/Math.max(bound,1e-300);}
+  function fromRoots(roots){let a=[C(1)];for(const r of roots){const next=Array.from({length:a.length+1},()=>C());for(let i=0;i<a.length;i++){next[i]=add(next[i],a[i]);next[i+1]=sub(next[i+1],mul(a[i],r));}a=next;}return a;}
+  function derivative(a){const n=a.length-1;return a.slice(0,-1).map((z,i)=>scale(z,n-i));}
+  function minSeparation(roots){let min=Infinity;for(let i=0;i<roots.length;i++)for(let j=0;j<i;j++)min=Math.min(min,abs(sub(roots[i],roots[j])));return min;}
+  function quality(a,roots){const normalized=monic(a),recovered=fromRoots(roots),bound=1+Math.max(...normalized.map(abs));return {residual:Math.max(0,...roots.map(z=>residual(a,z))),vietaError:Math.max(...recovered.map((z,i)=>abs(sub(z,normalized[i]))))/bound};}
+  function quadratic(a){const b=a[1],c=a[2],disc=sqrt(sub(mul(b,b),scale(c,4))),x=scale(add(scale(b,-1),disc),.5),y=scale(sub(scale(b,-1),disc),.5),q=abs(x)>=abs(y)?x:y;return abs(q)>1e-150?[q,div(c,q)]:[x,y];}
+  function repairClusters(a,roots){
+    let result=copyCoeffs(roots),score=quality(a,result).vietaError;const used=new Set();
+    for(let i=0;i<roots.length;i++){
+      if(used.has(i))continue;const group=[i];used.add(i);
+      for(let k=0;k<group.length;k++)for(let j=0;j<roots.length;j++)if(!used.has(j)&&abs(sub(roots[group[k]],roots[j]))<.02*(1+Math.max(abs(roots[j]),abs(roots[group[k]])))){used.add(j);group.push(j);}
+      if(group.length<2)continue;let center=scale(group.reduce((s,j)=>add(s,roots[j]),C()),1/group.length),d=a;for(let k=1;k<group.length;k++)d=derivative(d);
+      for(let k=0;k<12;k++){const value=evaluate(d,center);if(abs(value.d)<1e-20)break;const correction=div(value.p,value.d);if(!finite(correction)||abs(correction)>.1*(1+abs(center)))break;center=sub(center,correction);if(abs(correction)<1e-14)break;}
+      const candidate=copyCoeffs(result);for(const j of group)candidate[j]=C(center.re,center.im);const q=quality(a,candidate);
+      if(q.vietaError<score*.2&&q.residual<1e-10){result=candidate;score=q.vietaError;}
+    }return result;
+  }
+  function solve(coeffs,warm=null){
+    let a=monic(coeffs),zeros=0;
+    while(a.length>1&&abs(a[a.length-1])===0){a.pop();zeros++;}
+    const n=a.length-1;let roots=[],iterations=0;
+    if(n===1)roots=[scale(a[1],-1)];
+    else if(n===2)roots=quadratic(a);
+    else if(n>2){
+      const center=scale(a[1],-1/n),radius=Math.max(.1,Math.min(1+Math.max(...a.slice(1).map(abs)),2*Math.max(...a.slice(1).map((z,i)=>Math.pow(abs(z),1/(i+1))))));
+      let best=null,bestScore=Infinity;
+      for(let attempt=0;attempt<3;attempt++){
+        let z=attempt===0&&warm?.length===n&&minSeparation(warm)>1e-8?copyCoeffs(warm):Array.from({length:n},(_,k)=>add(center,C(radius*(1+attempt*.14)*Math.cos(TAU*(k+.37+attempt*.17)/n),radius*(1+attempt*.14)*Math.sin(TAU*(k+.37+attempt*.17)/n))));
+        for(let step=0;step<140;step++){
+          iterations++;let movement=0;
+          const next=z.map((x,i)=>{
+            const {p,d}=evaluate(a,x);if(abs(p)<1e-300)return x;
+            if(abs(d)<1e-280)return add(x,C(1e-8*(i+1),-1e-8));
+            const newton=div(p,d);let repulsion=C();
+            for(let j=0;j<n;j++)if(i!==j){let delta=sub(x,z[j]);if(abs(delta)<1e-14)delta=add(delta,C(1e-12*(i+1),1e-12*(j+1)));repulsion=add(repulsion,div(C(1),delta));}
+            const denominator=sub(C(1),mul(newton,repulsion));let correction=abs(denominator)<1e-15?newton:div(newton,denominator);
+            if(!finite(correction))correction=C(1e-5*(i+1),1e-5);
+            const limit=2*(1+abs(x));if(abs(correction)>limit)correction=scale(correction,limit/abs(correction));
+            movement=Math.max(movement,abs(correction)/(1+abs(x)));return sub(x,correction);
+          });
+          z=next;if(movement<3e-13)break;
         }
-        h1 {
-            font-size: 3em;
-            text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff;
-        }
-        .image-container {
-            margin: 50px auto;
-            max-width: 800px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 0 15px #00ffff;
-        }
-        img {
-            width: 100%;
-            border-radius: 10px;
-            box-shadow: 0 0 15px #ff00ff;
-        }
-        p {
-            font-size: 1.2em;
-            line-height: 1.6;
-            text-shadow: 0 0 5px #00ffff;
-        }
-    </style>
-</head>
-<body>
-    <h1>Trippy Cosmic Zeros of Polynomials</h1>
-    <p>Welcome, traveler! You've stumbled upon the fractal-infused, psychedelic geometry of polynomial zeros, where algebra meets the cosmos.</p>
+        for(let i=0;i<n;i++)for(let k=0;k<5;k++){const ev=evaluate(a,z[i]);if(abs(ev.d)<1e-16)break;const delta=div(ev.p,ev.d);if(!finite(delta)||abs(delta)>.2*(1+abs(z[i])))break;const candidate=sub(z[i],delta);if(residual(a,candidate)<=residual(a,z[i]))z[i]=candidate;else break;}
+        z=repairClusters(a,z);const q=quality(a,z),score=Math.max(q.residual,q.vietaError);if(score<bestScore){bestScore=score;best=z;}
+        if(q.residual<1e-11&&q.vietaError<1e-9)break;
+      }
+      roots=best||[];
+    }
+    roots.push(...Array.from({length:zeros},()=>C()));
+    roots.sort((x,y)=>Math.abs(x.re-y.re)>1e-9?x.re-y.re:x.im-y.im);
+    const q=quality(coeffs,roots),minGap=minSeparation(roots),good=roots.length===coeffs.length-1&&roots.every(finite)&&q.residual<1e-8&&q.vietaError<1e-6;
+    return {roots,...q,minGap,good,iterations,clustered:minGap<1e-5*(1+Math.max(0,...roots.map(abs)))};
+  }
+  function match(previous,next){
+    const n=previous.length,size=1<<n,dp=new Float64Array(size).fill(Infinity),parent=new Int16Array(size).fill(-1),choice=new Int8Array(size);dp[0]=0;
+    for(let mask=0;mask<size;mask++){
+      if(!Number.isFinite(dp[mask]))continue;let row=0;for(let b=mask;b;b>>=1)row+=b&1;if(row===n)continue;
+      for(let col=0;col<n;col++)if(!(mask&(1<<col))){const cost=abs(sub(previous[row],next[col])),target=mask|(1<<col),value=dp[mask]+cost*cost;if(value<dp[target]){dp[target]=value;parent[target]=mask;choice[target]=col;}}
+    }
+    const permutation=new Array(n);let mask=size-1;for(let row=n-1;row>=0;row--){permutation[row]=choice[mask];mask=parent[mask];}return permutation;
+  }
+  function matchRoots(previous,next){const assignment=match(previous,next);return assignment.map(i=>next[i]);}
+  function cycles(permutation){const seen=new Set(),out=[];for(let i=0;i<permutation.length;i++){if(seen.has(i))continue;const cycle=[];let j=i;while(!seen.has(j)){seen.add(j);cycle.push(j+1);j=permutation[j];}out.push(cycle);}return out;}
+  function rng(seed){let s=seed>>>0;return ()=>{s=(s+0x6D2B79F5)|0;let t=s;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return ((t^(t>>>14))>>>0)/4294967296;};}
+  function finiteValues(config){if(config.family==='littlewood')return [-1,1];if(config.family==='ternary')return [-1,0,1];if(config.family==='integer')return Array.from({length:2*config.bound+1},(_,i)=>i-config.bound);if(config.family==='grid'){const count=Math.round(config.bound/config.step);return Array.from({length:count*2+1},(_,i)=>(i-count)*config.step);}return null;}
+  function familySize(degree,config){const values=finiteValues(config);if(!values)return Infinity;const leading=config.monic?[1]:values.filter(x=>x!==0),constant=config.nonzero?values.filter(x=>x!==0):values;return leading.length*Math.pow(values.length,degree-1)*constant.length;}
+  function indexedPolynomial(index,degree,config){const values=finiteValues(config),leading=config.monic?[1]:values.filter(x=>x!==0),constant=config.nonzero?values.filter(x=>x!==0):values,coeffs=new Array(degree+1);coeffs[degree]=C(constant[index%constant.length]);index=Math.floor(index/constant.length);for(let i=degree-1;i>=1;i--){coeffs[i]=C(values[index%values.length]);index=Math.floor(index/values.length);}coeffs[0]=C(leading[index%leading.length]);return coeffs;}
+  function quotas(sizes,budget){const allocation=sizes.map(()=>0);let remaining=budget,active=sizes.map((_,i)=>i);while(remaining>0&&active.length){const amount=Math.max(1,Math.floor(remaining/active.length));let used=0;for(const i of active){const add=Math.min(amount,sizes[i]-allocation[i],remaining-used);allocation[i]+=add;used+=add;if(used===remaining)break;}remaining-=used;active=active.filter(i=>allocation[i]<sizes[i]);if(!used)break;}return allocation;}
+  function sampleIndices(total,count,random){if(count>=total)return Array.from({length:total},(_,i)=>i);const result=new Set();for(let i=total-count;i<total;i++){const k=Math.floor(random()*(i+1));result.add(result.has(k)?i:k);}return [...result].sort((a,b)=>a-b);}
+  function randomPolynomial(degree,config,random){const next=()=>config.family==='complex'?C((random()*2-1)*config.bound,(random()*2-1)*config.bound):C((random()*2-1)*config.bound);const coeffs=Array.from({length:degree+1},next);coeffs[0]=config.monic?C(1):next();if(abs(coeffs[0])<1e-8)coeffs[0]=C(config.bound||1);if(config.nonzero&&abs(coeffs[degree])===0)coeffs[degree]=C(config.bound||1);return coeffs;}
+  function cloud(config,progress=()=>{}){
+    const degrees=config.degrees,sizes=degrees.map(n=>familySize(n,config)),total=sizes.reduce((a,b)=>a+b,0),complete=Number.isFinite(total)&&total<=config.count,allocation=complete?sizes:quotas(sizes,config.count),random=rng(config.seed),polynomials=[];let failed=0,done=0,maxResidual=0;
+    const planned=allocation.reduce((a,b)=>a+b,0);
+    for(let k=0;k<degrees.length;k++){
+      const degree=degrees[k],indices=Number.isFinite(sizes[k])?sampleIndices(sizes[k],allocation[k],random):Array.from({length:allocation[k]},()=>null);
+      for(const index of indices){const coeffs=index===null?randomPolynomial(degree,config,random):indexedPolynomial(index,degree,config),solution=solve(coeffs);done++;if(solution.good){maxResidual=Math.max(maxResidual,solution.residual);polynomials.push({degree,coeffs,roots:solution.roots,residual:solution.residual,clustered:solution.clustered});}else failed++;if(done%200===0)progress({done,total:planned});}
+    }
+    const count=polynomials.reduce((n,p)=>n+p.degree,0),xy=new Float64Array(count*2),polyIndex=new Int32Array(count),rootIndex=new Uint8Array(count),degreeIndex=new Uint8Array(count);let j=0;
+    polynomials.forEach((p,i)=>p.roots.forEach((z,r)=>{xy[2*j]=z.re;xy[2*j+1]=z.im;polyIndex[j]=i;rootIndex[j]=r;degreeIndex[j]=p.degree;j++;}));
+    return {polynomials,xy,polyIndex,rootIndex,degreeIndex,complete,totalFamily:Number.isFinite(total)?total:null,planned,failed,maxResidual,config};
+  }
+  function criticalValues(q){const solution=solve(derivative(q)),values=[];for(const root of solution.roots){const c=evaluate(q,root).p,existing=values.find(x=>abs(sub(x.c,c))<1e-6*(1+abs(c)));if(existing)existing.multiplicity++;else values.push({c,root,multiplicity:1});}return {values,good:solution.good};}
+  function loopPoint(t,config){
+    const angle=TAU*config.winding*t+(config.phase||0),center=config.center||C();
+    if(config.path==='figure8')return add(center,C(config.radius*Math.sin(angle),config.radius*.42*Math.sin(2*angle)));
+    if(config.path==='drawn'){const points=config.points,n=points.length-1,u=Math.min(1,Math.max(0,t))*n,i=Math.min(n-1,Math.floor(u));return lerp(points[i],points[i+1],u-i);}
+    return add(center,C(config.radius*Math.cos(angle),config.radius*Math.sin(angle)));
+  }
+  function segmentDistance(p,a,b){const delta=sub(b,a),den=delta.re**2+delta.im**2;if(!den)return abs(sub(p,a));const u=Math.max(0,Math.min(1,((p.re-a.re)*delta.re+(p.im-a.im)*delta.im)/den));return abs(sub(p,lerp(a,b,u)));}
+  function withParameter(q,c){const a=copyCoeffs(q);a[a.length-1]=sub(a[a.length-1],c);return a;}
+  function trace(q,config,progress=()=>{}){
+    const critical=criticalValues(q),steps=480,path=Array.from({length:steps+1},(_,i)=>loopPoint(i/steps,config));
+    if(abs(sub(path[0],path[path.length-1]))>1e-8*(1+config.radius))throw Error('Close the coefficient path before tracing roots.');
+    let distance=Infinity;for(let k=1;k<path.length;k++)for(const item of critical.values)distance=Math.min(distance,segmentDistance(item.c,path[k-1],path[k]));
+    const threshold=2e-6*(1+Math.max(...path.map(abs)));
+    if(distance<threshold)throw Error('This loop reaches a branch value. Move its center, change its radius, or redraw it to avoid a root collision.');
+    const first=solve(withParameter(q,path[0]));if(!first.good||first.clustered)throw Error('The starting polynomial has unresolved or coincident roots. Move the loop away from the branch values.');
+    const frames=[{t:0,c:path[0],roots:first.roots}],initial=copyCoeffs(first.roots);let roots=initial,minGap=minSeparation(roots),uncertain=!critical.good,maxResidual=first.residual,subdivisions=0;
+    function follow(c0,c1,t0,t1,previous,depth){
+      const delta=sub(c1,c0),predicted=previous.map(z=>{const d=evaluate(q,z).d;return abs(d)>1e-12?add(z,div(delta,d)):z;}),solution=solve(withParameter(q,c1),predicted),next=matchRoots(previous,solution.roots);
+      const gap=Math.min(minSeparation(previous),minSeparation(next)),motion=Math.max(...next.map((z,i)=>abs(sub(z,previous[i]))));
+      if((!solution.good||motion>.20*gap)&&depth<9){subdivisions++;const cm=lerp(c0,c1,.5),tm=(t0+t1)/2,middle=follow(c0,cm,t0,tm,previous,depth+1);return follow(cm,c1,tm,t1,middle,depth+1);}
+      if(!solution.good||motion>.35*gap||gap<1e-7)uncertain=true;
+      minGap=Math.min(minGap,gap);maxResidual=Math.max(maxResidual,solution.residual);frames.push({t:t1,c:c1,roots:next});return next;
+    }
+    for(let k=1;k<=steps;k++){roots=follow(path[k-1],path[k],(k-1)/steps,k/steps,roots,0);if(k%80===0)progress({done:k,total:steps});}
+    const permutation=match(roots,initial),endpointError=Math.max(...roots.map((z,i)=>abs(sub(z,initial[permutation[i]]))));
+    if(endpointError>1e-5*(1+Math.max(...initial.map(abs))))uncertain=true;
+    let turn=0;for(let k=1;k<frames.length;k++)for(let i=0;i<initial.length;i++)for(let j=0;j<i;j++){const a=sub(frames[k-1].roots[i],frames[k-1].roots[j]),b=sub(frames[k].roots[i],frames[k].roots[j]),ratio=mul(b,conj(a));turn+=2*Math.atan2(ratio.im,ratio.re);}
+    const winding=turn/TAU;if(Math.abs(winding-Math.round(winding))>1e-5)uncertain=true;
+    return {frames,initial,permutation,cycles:cycles(permutation),discriminantWinding:Math.round(winding),minGap,minCriticalDistance:distance,maxResidual,endpointError,uncertain,subdivisions,critical:critical.values,q:copyCoeffs(q),config};
+  }
+  function resampleLoop(points,count=241){
+    const p=points.map(x=>C(x.re,x.im));if(p.length<4)throw Error('Draw a loop with at least four points.');p.push(C(p[0].re,p[0].im));const cumulative=[0];for(let i=1;i<p.length;i++)cumulative.push(cumulative[i-1]+abs(sub(p[i],p[i-1])));const total=cumulative.at(-1);if(total<1e-5)throw Error('Draw a larger loop.');let edge=1;return Array.from({length:count},(_,i)=>{const distance=i/(count-1)*total;while(edge<cumulative.length-1&&cumulative[edge]<distance)edge++;const length=cumulative[edge]-cumulative[edge-1];return lerp(p[edge-1],p[edge],length?(distance-cumulative[edge-1])/length:0);});
+  }
+  return {C,add,sub,mul,div,scale,abs,conj,sqrt,finite,lerp,monic,evaluate,residual,fromRoots,derivative,minSeparation,solve,match,matchRoots,cycles,rng,familySize,finiteValues,indexedPolynomial,quotas,cloud,criticalValues,loopPoint,withParameter,trace,resampleLoop,copyCoeffs,segmentDistance};
+})();
+if(typeof module!=='undefined'&&module.exports)module.exports=PolyMath;
+</script><script>'use strict';
+const M=PolyMath,$=id=>document.getElementById(id),clone=x=>JSON.parse(JSON.stringify(x));
+const COLORS=['#83dce3','#f0c27a','#ef9dbb','#baa8f0','#9cd5b3','#f2a16f','#93b7f2','#d5d485'];
+const DEGREE_COLORS={2:'#f0c27a',3:'#83dce3',4:'#baa8f0',5:'#ef9dbb',6:'#9cd5b3'};
+const VERSION=1;
+function initialState(){return {mode:'cloud',cloud:{family:'integer',bound:2,step:.2,monic:false,nonzero:true,degrees:[2,3,4],count:8000,seed:1975},appearance:{size:1.1,exposure:.55,density:true},lab:{coeffs:[M.C(1),M.C(),M.C(-3),M.C(1)],real:true,selected:2,trails:true},braid:{q:[M.C(1),M.C(),M.C()],config:{path:'circle',center:M.C(),radius:1.2,winding:1,phase:0,points:[]},preset:'square',view:'braid',speed:1},views:{cloud:{cx:0,cy:0,span:2.4},lab:{cx:0,cy:0,span:2.1},braid:{cx:0,cy:0,span:2}},camera:{azimuth:-.65,elevation:.38,zoom:1}};}
+let state=initialState(),cloudData=null,cloudWorker=null,braidWorker=null,jobSerial=0,cloudJob=0,braidJob=0,cloudSelection=null,overlaps=[],overlapPosition=0;
+let labRoots=[],labSolution=null,labTrails=[],labUndo=null,braidData=null,phase=0,playing=false,lastFrame=0,dirty=true,cloudCache=null,cloudCacheKey='',cloudGrid=new Map(),mainDrag=null,miniDrag=null,drawnPoints=[],cloudPending=false,braidPending=false;
+let paramRange={cx:0,cy:0,span:2},coefficientRange={cx:0,cy:0,span:4},lastInspector=0;
+function status(message,error=false){$('status').textContent=message;$('status').parentElement.classList.toggle('error',error);}
+const guard=fn=>async(...args)=>{try{return await fn(...args);}catch(err){status(err?.message||'That action could not be completed.',true);}};
+function fmt(x,digits=4){if(Math.abs(x)<1e-11)x=0;if(x===0)return '0';if(Math.abs(x)>=1e5||Math.abs(x)<1e-4)return x.toExponential(2);return Number(x.toPrecision(digits)).toString();}
+function complex(z,digits=4){if(Math.abs(z.im)<1e-10)return fmt(z.re,digits);if(Math.abs(z.re)<1e-10)return fmt(z.im,digits)+'i';return fmt(z.re,digits)+(z.im<0?' − ':' + ')+fmt(Math.abs(z.im),digits)+'i';}
+function power(k){return k===0?'':k===1?'z':'z<sup>'+k+'</sup>';}
+function polynomialHTML(coeffs,parameter=false){
+  const n=coeffs.length-1,parts=[];
+  for(let i=0;i<coeffs.length;i++){const z=coeffs[i],k=n-i;if(M.abs(z)<1e-10)continue;let body,negative=false;
+    if(Math.abs(z.im)<1e-10){negative=z.re<0;const value=Math.abs(z.re);body=(k&&Math.abs(value-1)<1e-10?'':fmt(value))+power(k);}
+    else body='('+complex(z)+')'+power(k);
+    parts.push((parts.length?(negative?' − ':' + '):(negative?'−':''))+body);
+  }
+  return (parts.join('')||'0')+(parameter?' − c':'');
+}
+function polynomialText(coeffs){return polynomialHTML(coeffs).replace(/<sup>(.*?)<\/sup>/g,'^$1');}
+function setMode(mode){
+  state.mode=mode;playing=false;$('playBtn').textContent='Play loop';
+  document.querySelectorAll('[data-mode]').forEach(el=>{const active=el.dataset.mode===mode;el.classList.toggle('active',active);el.setAttribute('aria-selected',String(active));});
+  document.querySelectorAll('[data-for]').forEach(el=>el.hidden=el.dataset.for!==mode);
+  $('braidViewButtons').hidden=mode!=='braid';$('degreeLegend').hidden=mode!=='cloud';$('labEquation').hidden=mode!=='lab';$('playback').hidden=mode!=='braid';
+  $('mainCanvas').setAttribute('aria-label',mode==='braid'&&state.braid.view==='braid'?'Root braid with progress along the coefficient loop as a third coordinate':'Polynomial roots in the complex plane');
+  $('canvasHint').textContent=mode==='cloud'?'Select a root · drag to pan · scroll to zoom':mode==='lab'?'Drag a root · drag empty space to pan · scroll to zoom':state.braid.view==='braid'?'Drag to rotate · scroll to zoom':'Root paths projected into the complex plane';
+  if(mode==='cloud'){updateCloudHeadline();status(cloudData?'Select a root to inspect its polynomial.':'Generate a cloud to begin.');}
+  if(mode==='lab'){solveLab(false);renderCoefficients();updateLabUI();$('plotTitle').textContent='A polynomial you can move';$('plotSubtitle').textContent='Drag roots or edit coefficients; both views stay linked.';status('Pick a coefficient or drag one of the roots.');}
+  if(mode==='braid'){syncBraidControls();updateBraidUI();if(!braidData&&!braidPending)startTrace();else status('Play the loop, then inspect where the labels finish.');}
+  updateMetrics();dirty=true;updateCancel();
+}
+function updateCancel(){$('cancelBtn').hidden=!(state.mode==='cloud'&&cloudPending||state.mode==='braid'&&braidPending);}
+function worker(kind,payload,onProgress,onResult,onError){
+  const source=$('math-core').textContent+`\nself.onmessage=e=>{try{const {kind,payload}=e.data;const progress=p=>self.postMessage({type:'progress',progress:p});const result=kind==='cloud'?PolyMath.cloud(payload,progress):PolyMath.trace(payload.q,payload.config,progress);if(kind==='cloud')self.postMessage({type:'result',result},[result.xy.buffer,result.polyIndex.buffer,result.rootIndex.buffer,result.degreeIndex.buffer]);else self.postMessage({type:'result',result});}catch(error){self.postMessage({type:'error',message:error.message});}};`;
+  const url=URL.createObjectURL(new Blob([source],{type:'text/javascript'})),w=new Worker(url);URL.revokeObjectURL(url);
+  w.onmessage=e=>{const data=e.data;if(data.type==='progress')onProgress(data.progress);else{w.terminate();if(data.type==='result')onResult(data.result);else onError(data.message);}};
+  w.onerror=e=>{w.terminate();onError(e.message||'The calculation could not be completed.');};w.postMessage({kind,payload});return w;
+}
+function readCloudControls(){
+  state.cloud.family=$('cloudPreset').value;state.cloud.bound=+$('bound').value;state.cloud.step=+$('gridStep').value;state.cloud.monic=$('monic').checked;state.cloud.nonzero=$('nonzero').checked;state.cloud.count=+$('cloudCount').value;
+  const degrees=[...document.querySelectorAll('input[name=degree]:checked')].map(x=>+x.value);if(degrees.length)state.cloud.degrees=degrees;else{document.querySelector('input[name=degree][value="'+state.cloud.degrees[0]+'"]').checked=true;}
+  updateFamilyEstimate();
+}
+function syncCloudControls(){const c=state.cloud;$('cloudPreset').value=c.family;$('bound').value=c.bound;$('gridStep').value=c.step;$('monic').checked=c.monic;$('nonzero').checked=c.nonzero;$('cloudCount').value=c.count;document.querySelectorAll('input[name=degree]').forEach(el=>el.checked=c.degrees.includes(+el.value));$('pointSize').value=state.appearance.size;$('exposure').value=state.appearance.exposure;$('density').checked=state.appearance.density;updateFamilyEstimate();}
+function updateFamilyEstimate(){const c=state.cloud,total=c.degrees.reduce((sum,n)=>sum+M.familySize(n,c),0);$('boundValue').textContent=c.bound;$('gridControl').hidden=c.family!=='grid';$('bound').disabled=['littlewood','ternary'].includes(c.family);$('familyEstimate').textContent=Number.isFinite(total)?total.toLocaleString()+' polynomials in the finite family'+(total<=c.count?'. All fit in the budget.':'. A seeded sample will fit the budget.'):'A repeatable sample from a continuous coefficient family.';$('pointSizeValue').textContent=state.appearance.size.toFixed(1);$('exposureValue').textContent=Math.round(state.appearance.exposure*100)+'%';}
+function startCloud(){
+  if(cloudWorker)cloudWorker.terminate();const config=clone(state.cloud),job=++jobSerial;cloudJob=job;cloudPending=true;$('generateBtn').textContent='Generating…';updateCancel();if(state.mode==='cloud')status('Solving the polynomial family in the background…');
+  cloudWorker=worker('cloud',config,p=>{if(job===cloudJob&&state.mode==='cloud')status('Solved '+p.done.toLocaleString()+' of '+p.total.toLocaleString()+' polynomials…');},result=>{
+    if(job!==cloudJob)return;cloudPending=false;cloudWorker=null;cloudData=result;cloudSelection=null;overlaps=[];cloudCacheKey='';$('generateBtn').textContent='Generate cloud';updateCloudInspector();updateCloudHeadline();updateMetrics();updateCancel();dirty=true;
+    if(state.mode==='cloud')status((result.complete&&result.failed===0?'Complete family':'Calculated family')+' · '+result.polynomials.length.toLocaleString()+' polynomials · '+result.polyIndex.length.toLocaleString()+' roots'+(result.failed?' · '+result.failed+' unresolved polynomials omitted.':'.'));
+  },message=>{if(job!==cloudJob)return;cloudPending=false;cloudWorker=null;$('generateBtn').textContent='Generate cloud';updateCancel();status(message,true);});
+}
+function updateCloudHeadline(){if(state.mode!=='cloud')return;const c=cloudData?.config||state.cloud,families={integer:'Integer coefficients',littlewood:'Littlewood coefficients ±1',ternary:'Coefficients −1, 0, 1',grid:'Real coefficient grid',real:'Continuous real coefficients',complex:'Complex coefficients'};$('plotTitle').textContent='A field of possible roots';$('plotSubtitle').textContent=families[c.family]+' · degrees '+c.degrees.join(', ');$('degreeLegend').replaceChildren();for(const n of c.degrees){const span=document.createElement('span'),dot=document.createElement('i');dot.style.background=DEGREE_COLORS[n];span.append(dot,document.createTextNode('degree '+n));$('degreeLegend').append(span);}}
+function rootRows(target,roots,selected=-1){
+  const box=$(target);box.replaceChildren();roots.forEach((z,i)=>{const row=document.createElement('div');row.className='root-row'+(i===selected?' selected':'');row.style.setProperty('--root-color',COLORS[i%COLORS.length]);const b=document.createElement('b');b.textContent='r'+(i+1);const span=document.createElement('span');span.textContent=complex(z,6);row.append(b,span);box.append(row);});
+}
+function updateCloudInspector(){
+  const p=cloudSelection&&cloudData?.polynomials[cloudSelection.poly];$('cloudInspectorEmpty').hidden=!!p;$('cloudInspector').hidden=!p;
+  if(p){$('selectedPolynomial').innerHTML=polynomialHTML(p.coeffs)+' = 0';$('selectedMeta').textContent='Degree '+p.degree+' · polynomial '+(cloudSelection.poly+1).toLocaleString();rootRows('cloudRoots',p.roots,cloudSelection.root);$('overlapInfo').textContent=overlaps.length>1?overlaps.length+' nearby root records. Select another polynomial at this location.':'All roots of this polynomial are highlighted.';$('nextOverlapBtn').hidden=overlaps.length<2;}
+  if(cloudData){const c=cloudData.config;$('cloudDescription').textContent=(cloudData.complete?'All '+cloudData.planned.toLocaleString()+' coefficient tuples were considered.':'Seed '+c.seed+' · sampled across the selected degrees.')+' Roots are counted with multiplicity; repeated locations accumulate brightness.';$('cloudNumerics').textContent='Max scaled residual '+cloudData.maxResidual.toExponential(2)+(cloudData.failed?' · '+cloudData.failed+' unresolved polynomials omitted.':' · every computed polynomial passed its residual and coefficient reconstruction checks.');}
+}
+function selectCloudRecord(record){cloudSelection={poly:cloudData.polyIndex[record],root:cloudData.rootIndex[record],record};updateCloudInspector();dirty=true;}
+function hitCloud(x,y){const records=[],gx=Math.floor(x/14),gy=Math.floor(y/14);for(let i=gx-1;i<=gx+1;i++)for(let j=gy-1;j<=gy+1;j++)for(const record of cloudGrid.get(i+','+j)||[]){const point=project(M.C(cloudData.xy[record*2],cloudData.xy[record*2+1]),state.views.cloud,mainSize()),distance=Math.hypot(point.x-x,point.y-y);if(distance<11)records.push({record,distance});}records.sort((a,b)=>a.distance-b.distance);const seen=new Set();overlaps=records.filter(x=>{const poly=cloudData.polyIndex[x.record];if(seen.has(poly))return false;seen.add(poly);return true;}).map(x=>x.record);overlapPosition=0;if(overlaps.length)selectCloudRecord(overlaps[0]);else{cloudSelection=null;updateCloudInspector();dirty=true;}}
+function solveLab(append=true){const previous=labRoots,solution=M.solve(state.lab.coeffs,previous);labSolution=solution;labRoots=previous.length===solution.roots.length?M.matchRoots(previous,solution.roots):solution.roots;if(!labTrails.length||labTrails.length!==labRoots.length)labTrails=labRoots.map(z=>[z]);else if(append)labRoots.forEach((z,i)=>{labTrails[i].push(z);if(labTrails[i].length>250)labTrails[i].shift();});updateLabUI();dirty=true;}
+function rememberLab(){labUndo={coeffs:clone(state.lab.coeffs),roots:clone(labRoots)};$('undoLabBtn').disabled=false;}
+function renderCoefficients(){
+  const box=$('coefficients');box.replaceChildren();const n=state.lab.coeffs.length-1;state.lab.selected=Math.max(0,Math.min(n-1,state.lab.selected));
+  for(let index=1;index<=n;index++){
+    const row=document.createElement('div');row.className='coeff-row'+(state.lab.selected===index-1?' selected':'');row.dataset.coefficient=index;
+    const button=document.createElement('button');button.innerHTML='a<sub>'+String(n-index)+'</sub>';button.setAttribute('aria-label','Select coefficient of degree '+(n-index));button.addEventListener('click',()=>{state.lab.selected=index-1;syncLabInputs();dirty=true;});row.append(button);
+    for(const part of ['re','im']){const input=document.createElement('input');input.type='number';input.step='.05';input.value=fmt(state.lab.coeffs[index][part],10);input.dataset.index=index;input.dataset.part=part;input.setAttribute('aria-label',(part==='re'?'Real':'Imaginary')+' part of coefficient a'+(n-index));input.disabled=part==='im'&&state.lab.real;input.addEventListener('focus',rememberLab);input.addEventListener('input',()=>{const value=Number(input.value);if(!Number.isFinite(value)||Math.abs(value)>1e4||input.value==='')return;state.lab.coeffs[index][part]=value;state.lab.selected=index-1;$('labPreset').value='custom';solveLab();syncLabInputs();persist();});row.append(input);}box.append(row);
+  }$('labDegree').value=n;$('realLock').checked=state.lab.real;$('showTrails').checked=state.lab.trails;syncLabInputs();
+}
+function syncLabInputs(){const n=state.lab.coeffs.length-1;document.querySelectorAll('.coeff-row').forEach(row=>row.classList.toggle('selected',+row.dataset.coefficient===state.lab.selected+1));document.querySelectorAll('#coefficients input').forEach(el=>{if(document.activeElement!==el)el.value=fmt(state.lab.coeffs[+el.dataset.index][el.dataset.part],10);el.disabled=el.dataset.part==='im'&&state.lab.real;});const degree=n-state.lab.selected-1;$('coefficientTitle').textContent=degree===0?'Constant coefficient a₀':'Coefficient of z'+(degree===1?'':'^'+degree);const z=state.lab.coeffs[state.lab.selected+1];coefficientRange.span=Math.max(2.2,Math.ceil(M.abs(z)*1.3));}
+function updateLabUI(){if(!labSolution)return;$('labPolynomial').innerHTML=polynomialHTML(state.lab.coeffs);rootRows('labRoots',labRoots);$('labQuality').textContent=labSolution.good?(labSolution.clustered?'clustered':'resolved'):'unresolved';$('collisionNote').hidden=!labSolution.clustered;$('labResidual').textContent='Scaled residual '+labSolution.residual.toExponential(2)+' · coefficient error '+labSolution.vietaError.toExponential(2)+(labSolution.good?'':' · interpret these root locations cautiously.');if(state.mode==='lab')updateMetrics();}
+function loadLab(coeffs,real=true){state.lab.coeffs=M.monic(coeffs);state.lab.real=real;state.lab.selected=state.lab.coeffs.length-2;labRoots=[];labTrails=[];labUndo=null;$('labPreset').value='custom';$('undoLabBtn').disabled=true;solveLab(false);renderCoefficients();fitView();}
+function labPreset(name){if(name==='custom')return;let a;const n=+$('labDegree').value||3;if(name==='unity'){a=Array.from({length:n+1},()=>M.C());a[0]=M.C(1);a[n]=M.C(-1);}else if(name==='double')a=[M.C(1),M.C(-1),M.C(-1),M.C(1)];else if(name==='complex')a=[M.C(1),M.C(.3,.7),M.C(-1,.4),M.C(.2,-.8),M.C(.6,.2)];else a=[M.C(1),M.C(),M.C(-3),M.C(1)];loadLab(a,name!=='complex');$('labPreset').value=name;status('Loaded '+polynomialText(a)+'.');}
+function braidPreset(name){
+  let q=[M.C(1),M.C(),M.C()],config={path:'circle',center:M.C(),radius:1.2,winding:1,phase:0,points:[]};
+  if(name==='pure')config.winding=2;
+  if(name==='cube')q=[M.C(1),M.C(),M.C(),M.C()];
+  if(['oneBranch','bothBranches','eight'].includes(name)){q=[M.C(1),M.C(),M.C(-3),M.C()];if(name==='oneBranch'){config.center=M.C(2);config.radius=.7;}else config.radius=3;if(name==='eight')config.path='figure8';}
+  if(name==='four')q=[M.C(1),M.C(),M.C(),M.C(),M.C()];
+  state.braid.q=q;state.braid.config=config;state.braid.preset=name;braidData=null;phase=0;playing=false;syncBraidControls();startTrace();
+}
+function syncBraidControls(){const b=state.braid,c=b.config;$('braidPreset').value=b.preset;$('pathType').value=c.path;$('centerRe').value=fmt(c.center.re,8);$('centerIm').value=fmt(c.center.im,8);$('radius').value=c.radius;$('radiusValue').textContent=c.radius.toFixed(2);$('winding').value=c.winding;$('speed').value=b.speed;$('braidFormula').innerHTML=polynomialHTML(b.q,true)+' = 0';$('radius').disabled=c.path==='drawn';$('centerRe').disabled=c.path==='drawn';$('centerIm').disabled=c.path==='drawn';$('winding').disabled=c.path==='drawn';$('loopHint').textContent=c.path==='drawn'?'Draw a closed path in the small plane. It closes when you release.':'Drag in the small plane to move the loop. Avoid the pink branch values.';}
+function invalidateBraid(){playing=false;phase=0;braidData=null;if(braidWorker)braidWorker.terminate();braidWorker=null;braidPending=false;braidJob=++jobSerial;$('traceBtn').textContent='Trace the loop';$('playBtn').textContent='Play loop';updateBraidUI();updateCancel();dirty=true;}
+function startTrace(){
+  if(state.braid.config.path==='drawn'&&state.braid.config.points.length<4){invalidateBraid();status('Draw a loop in the small parameter plane.');return;}
+  if(braidWorker)braidWorker.terminate();const job=++jobSerial;braidJob=job;braidPending=true;playing=false;phase=0;braidData=null;$('traceBtn').textContent='Tracing…';$('playBtn').textContent='Play loop';updateCancel();updateBraidUI();if(state.mode==='braid')status('Following each root around the coefficient loop…');
+  braidWorker=worker('braid',{q:clone(state.braid.q),config:clone(state.braid.config)},p=>{if(job===braidJob&&state.mode==='braid')status('Following roots · '+Math.round(p.done/p.total*100)+'%');},result=>{
+    if(job!==braidJob)return;braidWorker=null;braidPending=false;braidData=result;$('traceBtn').textContent='Trace the loop';updateCancel();updateBraidUI();if(state.mode==='braid'){fitView();status(result.uncertain?'Continuation is numerically uncertain. Move the loop farther from branch values.':'Loop traced · endpoint permutation '+cycleText(result.cycles)+' · discriminant winding '+signed(result.discriminantWinding)+'.',result.uncertain);}dirty=true;
+  },message=>{if(job!==braidJob)return;braidPending=false;braidWorker=null;braidData=null;$('traceBtn').textContent='Trace the loop';updateCancel();updateBraidUI();status(message,true);dirty=true;});
+}
+function cycleText(cycles){return cycles.map(c=>'('+c.join(' ')+')').join(' ');}
+const signed=n=>(n>0?'+':'')+n;
+function updateBraidUI(){
+  const b=state.braid;let critical=[];try{critical=M.criticalValues(b.q).values;}catch(_){}
+  $('branchValues').textContent=critical.map(x=>complex(x.c,6)+(x.multiplicity>1?' · multiplicity '+x.multiplicity:'')).join(' ; ');
+  $('permutation').textContent=braidData&&!braidData.uncertain?cycleText(braidData.cycles):'—';$('endpointMap').replaceChildren();
+  if(braidData&&!braidData.uncertain)braidData.permutation.forEach((to,i)=>{const span=document.createElement('span');span.style.setProperty('--root-color',COLORS[i]);span.textContent=(i+1)+' → '+(to+1);$('endpointMap').append(span);});
+  $('discriminantWinding').textContent=braidData&&!braidData.uncertain?signed(braidData.discriminantWinding):'—';$('minimumGap').textContent=braidData?fmt(braidData.minGap,5):'—';$('traceQuality').textContent=braidPending?'tracing':braidData?(braidData.uncertain?'uncertain':'tracked'):'ready to trace';
+  $('braidNumerics').textContent=braidData?braidData.frames.length+' continuation frames · max scaled residual '+braidData.maxResidual.toExponential(2)+' · endpoint error '+braidData.endpointError.toExponential(2):'No root-label continuation has been computed for this loop.';
+  const identity=braidData?.permutation.every((to,i)=>to===i);$('permutationNote').textContent=braidData?(braidData.uncertain?'Labels could not be resolved reliably. The permutation is withheld.':identity?'Every root returns to its starting location. Inspect the winding to distinguish this from doing nothing.':'Label i finishes at the starting location of the label shown on its right.'):'Follow the colors from the start plane to the end plane.';
+  $('plotEmpty').hidden=state.mode!=='braid'||!!braidData;$('plotEmpty').textContent=braidPending?'Tracing the roots…':'Trace a loop to reveal its root paths.';$('timeSlider').value=phase;$('timeValue').textContent='t = '+phase.toFixed(3);$('playBtn').disabled=!braidData;$('viewBraidBtn').classList.toggle('active',b.view==='braid');$('viewPlaneBtn').classList.toggle('active',b.view==='plane');
+  if(state.mode==='braid'){$('mainCanvas').setAttribute('aria-label',b.view==='braid'?'Root braid with progress along the coefficient loop as a third coordinate':'Root paths in the complex plane');$('plotTitle').textContent=b.view==='braid'?'A braid of root labels':'The roots trace paths in ℂ';$('plotSubtitle').textContent='P꜀(z) = '+polynomialText(b.q)+' − c · '+(b.view==='braid'?'vertical direction = loop progress':'colors follow the same labels throughout the loop');$('canvasHint').textContent=b.view==='braid'?'Drag to rotate · scroll to zoom':'Root paths projected into the complex plane';$('plotCorner').textContent=b.view==='braid'?'Re z / Im z / progress':'Re z / Im z';updateMetrics();}dirty=true;
+}
+function updateMetrics(){
+  const labels=state.mode==='cloud'?['Polynomials','Roots, with multiplicity','Family']:state.mode==='lab'?['Degree','Closest root separation','Scaled residual']:['Root labels','Loop progress','Closure components'];
+  labels.forEach((label,i)=>$('metric'+(i+1)+'Label').textContent=label);
+  const values=state.mode==='cloud'?[cloudData?.polynomials.length.toLocaleString()||'—',cloudData?.polyIndex.length.toLocaleString()||'—',cloudData?(cloudData.complete?'Complete':'Sampled'):'—']:state.mode==='lab'?[String(state.lab.coeffs.length-1),labSolution?fmt(labSolution.minGap,3):'—',labSolution?labSolution.residual.toExponential(1):'—']:[String(state.braid.q.length-1),Math.round(phase*100)+'%',braidData&&!braidData.uncertain?String(braidData.cycles.length):'—'];values.forEach((value,i)=>$('metric'+(i+1)).textContent=value);
+  if(state.mode!=='braid'){$('plotEmpty').hidden=true;$('plotCorner').textContent='Re z / Im z';}
+}
+function frameAt(t){if(!braidData)return null;const a=braidData.frames;let lo=0,hi=a.length-1;while(lo+1<hi){const mid=(lo+hi)>>1;if(a[mid].t<=t)lo=mid;else hi=mid;}const span=a[hi].t-a[lo].t,u=span?(t-a[lo].t)/span:0;return {t,c:M.lerp(a[lo].c,a[hi].c,u),roots:a[lo].roots.map((z,i)=>M.lerp(z,a[hi].roots[i],u))};}
+function canvasSize(canvas){const box=canvas.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2),w=box.width,h=box.height;if(canvas.width!==Math.round(w*dpr)||canvas.height!==Math.round(h*dpr)){canvas.width=Math.max(1,Math.round(w*dpr));canvas.height=Math.max(1,Math.round(h*dpr));}const ctx=canvas.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);return {ctx,w,h,dpr};}
+function mainSize(){const r=$('mainCanvas').getBoundingClientRect();return {w:r.width,h:r.height};}
+function project(z,v,size){const factor=size.h/(2*v.span);return {x:size.w/2+(z.re-v.cx)*factor,y:size.h/2-(z.im-v.cy)*factor};}
+function unproject(x,y,v,size){const factor=2*v.span/size.h;return M.C(v.cx+(x-size.w/2)*factor,v.cy-(y-size.h/2)*factor);}
+function eventPoint(e,canvas){const rect=canvas.getBoundingClientRect();return {x:e.clientX-rect.left,y:e.clientY-rect.top};}
+function niceStep(span){const rough=span*2/7,power=Math.pow(10,Math.floor(Math.log10(rough))),value=rough/power;return (value<1.5?1:value<3?2:value<7?5:10)*power;}
+function grid(ctx,w,h,v,label='z'){
+  ctx.fillStyle='#070e18';ctx.fillRect(0,0,w,h);const delta=niceStep(v.span),xspan=v.span*w/h,minX=v.cx-xspan,maxX=v.cx+xspan,minY=v.cy-v.span,maxY=v.cy+v.span;
+  ctx.font='10px ui-monospace,Consolas,monospace';ctx.lineWidth=1;
+  for(let x=Math.ceil(minX/delta)*delta;x<=maxX;x+=delta){const px=project(M.C(x,0),v,{w,h}).x;ctx.strokeStyle=Math.abs(x)<delta*.01?'#36536a':'#182b3c';ctx.beginPath();ctx.moveTo(px,0);ctx.lineTo(px,h);ctx.stroke();ctx.fillStyle='#6f8da6';ctx.fillText(fmt(x,3),px+4,h-8);}
+  for(let y=Math.ceil(minY/delta)*delta;y<=maxY;y+=delta){const py=project(M.C(0,y),v,{w,h}).y;ctx.strokeStyle=Math.abs(y)<delta*.01?'#36536a':'#182b3c';ctx.beginPath();ctx.moveTo(0,py);ctx.lineTo(w,py);ctx.stroke();if(Math.abs(y)>delta*.01){ctx.fillStyle='#6f8da6';ctx.fillText(fmt(y,3)+'i',6,py-4);}}
+}
+function drawPoint(ctx,p,r,color,label=null){ctx.fillStyle=color;ctx.beginPath();ctx.arc(p.x,p.y,r,0,Math.PI*2);ctx.fill();if(label){ctx.font='11px ui-monospace,Consolas,monospace';ctx.fillText(label,p.x+8,p.y-7);}}
+function drawCloud(ctx,w,h,dpr){
+  const v=state.views.cloud,a=state.appearance,key=[w,h,dpr,v.cx,v.cy,v.span,a.size,a.exposure,a.density,cloudData?.config.seed,cloudData?.polynomials.length].join(':');
+  if(!cloudCache)cloudCache=document.createElement('canvas');
+  if(key!==cloudCacheKey){cloudCache.width=Math.round(w*dpr);cloudCache.height=Math.round(h*dpr);const off=cloudCache.getContext('2d');off.setTransform(dpr,0,0,dpr,0,0);grid(off,w,h,v);cloudGrid=new Map();
+    if(cloudData){off.globalCompositeOperation=a.density?'lighter':'source-over';off.globalAlpha=a.exposure;for(let i=0;i<cloudData.polyIndex.length;i++){const p=project(M.C(cloudData.xy[2*i],cloudData.xy[2*i+1]),v,{w,h});if(p.x<0||p.x>w||p.y<0||p.y>h)continue;off.fillStyle=DEGREE_COLORS[cloudData.degreeIndex[i]];off.fillRect(p.x-a.size*.5,p.y-a.size*.5,a.size,a.size);const cell=Math.floor(p.x/14)+','+Math.floor(p.y/14);if(!cloudGrid.has(cell))cloudGrid.set(cell,[]);cloudGrid.get(cell).push(i);}off.globalAlpha=1;off.globalCompositeOperation='source-over';}cloudCacheKey=key;
+  }ctx.drawImage(cloudCache,0,0,w,h);
+  if(cloudSelection&&cloudData){const poly=cloudData.polynomials[cloudSelection.poly];for(let i=0;i<poly.roots.length;i++){const p=project(poly.roots[i],v,{w,h});ctx.strokeStyle=i===cloudSelection.root?'#ffffff':DEGREE_COLORS[poly.degree];ctx.lineWidth=i===cloudSelection.root?2:1.4;ctx.beginPath();ctx.arc(p.x,p.y,i===cloudSelection.root?8:5,0,Math.PI*2);ctx.stroke();if(i===cloudSelection.root){ctx.fillStyle='#ffffff';ctx.font='11px ui-monospace,monospace';ctx.fillText('r'+(i+1),p.x+11,p.y-9);}}}
+}
+function drawLab(ctx,w,h){const v=state.views.lab;grid(ctx,w,h,v);if(state.lab.trails)for(let i=0;i<labTrails.length;i++){ctx.strokeStyle=COLORS[i]+'80';ctx.lineWidth=1.5;ctx.beginPath();labTrails[i].forEach((z,j)=>{const p=project(z,v,{w,h});if(j)ctx.lineTo(p.x,p.y);else ctx.moveTo(p.x,p.y);});ctx.stroke();}labRoots.forEach((z,i)=>{const p=project(z,v,{w,h});ctx.strokeStyle=COLORS[i];ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(p.x,p.y,9,0,Math.PI*2);ctx.stroke();drawPoint(ctx,p,4,COLORS[i],'r'+(i+1));});}
+function drawRootPaths(ctx,w,h){grid(ctx,w,h,state.views.braid);if(!braidData)return;for(let i=0;i<braidData.initial.length;i++){ctx.strokeStyle=COLORS[i]+'70';ctx.lineWidth=1.5;ctx.beginPath();braidData.frames.forEach((f,j)=>{const p=project(f.roots[i],state.views.braid,{w,h});if(j)ctx.lineTo(p.x,p.y);else ctx.moveTo(p.x,p.y);});ctx.stroke();const start=project(braidData.initial[i],state.views.braid,{w,h});ctx.strokeStyle=COLORS[i];ctx.beginPath();ctx.arc(start.x,start.y,9,0,Math.PI*2);ctx.stroke();}const current=frameAt(phase);current.roots.forEach((z,i)=>drawPoint(ctx,project(z,state.views.braid,{w,h}),5,COLORS[i],String(i+1)));}
+function drawBraid(ctx,w,h){
+  ctx.fillStyle='#070e18';ctx.fillRect(0,0,w,h);if(!braidData)return;
+  const bound=Math.max(.7,...braidData.frames.flatMap(f=>f.roots.map(M.abs))),height=bound*3.0,cam=state.camera,factor=Math.min(w/(bound*3.4),h/(height+bound*1.5))*.88*cam.zoom,ca=Math.cos(cam.azimuth),sa=Math.sin(cam.azimuth),ce=Math.cos(cam.elevation),se=Math.sin(cam.elevation);
+  function projected(z,t){const x=z.re*ca-z.im*sa,y=z.re*sa+z.im*ca,ztime=(t-.5)*height;return {x:w*.5+x*factor,y:h*.51+(y*se-ztime*ce)*factor,depth:y*ce+ztime*se};}
+  function line(points,color,width=1){ctx.strokeStyle=color;ctx.lineWidth=width;ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.stroke();}
+  for(const t of [0,1]){const corners=[M.C(-bound,-bound),M.C(bound,-bound),M.C(bound,bound),M.C(-bound,bound),M.C(-bound,-bound)].map(z=>projected(z,t));line(corners,'#284154');line([projected(M.C(-bound,0),t),projected(M.C(bound,0),t)],'#1a3041');line([projected(M.C(0,-bound),t),projected(M.C(0,bound),t)],'#1a3041');ctx.fillStyle='#91aabe';ctx.font='11px ui-monospace,monospace';const label=projected(M.C(-bound,-bound),t);ctx.fillText(t===0?'t = 0 · start':'t = 1 · return',Math.max(8,label.x-5),Math.min(h-12,label.y+(t===0?18:-10)));}
+  const segments=[];
+  for(let root=0;root<braidData.initial.length;root++)for(let k=1;k<braidData.frames.length;k++){const a=braidData.frames[k-1],b=braidData.frames[k],p=projected(a.roots[root],a.t),q=projected(b.roots[root],b.t);segments.push({p,q,root,t:b.t,depth:(p.depth+q.depth)*.5});}
+  segments.sort((a,b)=>a.depth-b.depth);for(const segment of segments)line([segment.p,segment.q],COLORS[segment.root]+(segment.t<=phase?'e6':'70'),segment.t<=phase?2.4:1.7);
+  const current=frameAt(phase);current.roots.map((z,i)=>({p:projected(z,phase),i})).sort((a,b)=>a.p.depth-b.p.depth).forEach(({p,i})=>{ctx.fillStyle='#07101a';ctx.beginPath();ctx.arc(p.x,p.y,7,0,Math.PI*2);ctx.fill();drawPoint(ctx,p,4.5,COLORS[i],String(i+1));});
+  for(let i=0;i<braidData.initial.length;i++){const p=projected(braidData.initial[i],0),q=projected(braidData.frames.at(-1).roots[i],1);drawPoint(ctx,p,3,COLORS[i],String(i+1));drawPoint(ctx,q,3,COLORS[i],String(i+1));}
+}
+function drawCoefficient(){const canvas=$('coefficientCanvas'),{ctx,w,h}=canvasSize(canvas),v=miniDrag?.kind==='coefficient'?miniDrag.view:coefficientRange;grid(ctx,w,h,v,'a');const z=state.lab.coeffs[state.lab.selected+1],p=project(z,v,{w,h});ctx.strokeStyle='#83dce35c';const zero=project(M.C(),v,{w,h});ctx.beginPath();ctx.moveTo(zero.x,zero.y);ctx.lineTo(p.x,p.y);ctx.stroke();drawPoint(ctx,p,5,'#83dce3');}
+function computeParameterRange(){const c=state.braid.config;let values=[];try{values=M.criticalValues(state.braid.q).values.map(x=>x.c);}catch(_){}if(c.path==='drawn')values.push(...c.points);else for(let i=0;i<=80;i++)values.push(M.loopPoint(i/80,c));const max=Math.max(.75,...values.map(z=>Math.max(Math.abs(z.re),Math.abs(z.im))));return {cx:0,cy:0,span:max*1.25};}
+function drawParameter(){const canvas=$('parameterCanvas'),{ctx,w,h}=canvasSize(canvas),v=miniDrag?.kind==='parameter'?miniDrag.view:computeParameterRange();paramRange=v;grid(ctx,w,h,v,'c');let values=[];try{values=M.criticalValues(state.braid.q).values;}catch(_){}for(const item of values){const p=project(item.c,v,{w,h});ctx.strokeStyle='#ef9dbb';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(p.x-5,p.y-5);ctx.lineTo(p.x+5,p.y+5);ctx.moveTo(p.x-5,p.y+5);ctx.lineTo(p.x+5,p.y-5);ctx.stroke();}
+  const c=state.braid.config,points=miniDrag?.drawing?drawnPoints:c.path==='drawn'?c.points:Array.from({length:241},(_,i)=>M.loopPoint(i/240,c));ctx.strokeStyle='#83dce3';ctx.lineWidth=1.6;ctx.beginPath();points.forEach((z,i)=>{const p=project(z,v,{w,h});if(i)ctx.lineTo(p.x,p.y);else ctx.moveTo(p.x,p.y);});ctx.stroke();if(c.path!=='drawn'){const center=project(c.center,v,{w,h});ctx.strokeStyle='#739aad';ctx.lineWidth=1;ctx.beginPath();ctx.arc(center.x,center.y,4,0,Math.PI*2);ctx.stroke();}const current=braidData?frameAt(phase)?.c:points[0];if(current)drawPoint(ctx,project(current,v,{w,h}),4.5,'#f0c27a');
+}
+function draw(){const {ctx,w,h,dpr}=canvasSize($('mainCanvas'));if(state.mode==='cloud')drawCloud(ctx,w,h,dpr);else if(state.mode==='lab'){drawLab(ctx,w,h);drawCoefficient();}else{if(state.braid.view==='braid')drawBraid(ctx,w,h);else drawRootPaths(ctx,w,h);drawParameter();}}
+function fitView(){
+  if(state.mode==='braid'&&state.braid.view==='braid'){state.camera={azimuth:-.65,elevation:.38,zoom:1};dirty=true;return;}
+  let roots=state.mode==='cloud'?(cloudData?Array.from({length:cloudData.polyIndex.length},(_,i)=>M.C(cloudData.xy[2*i],cloudData.xy[2*i+1])):[]):state.mode==='lab'?labRoots:braidData?.frames.flatMap(f=>f.roots)||[];if(!roots.length)return;
+  let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;for(const z of roots){minX=Math.min(minX,z.re);maxX=Math.max(maxX,z.re);minY=Math.min(minY,z.im);maxY=Math.max(maxY,z.im);}const size=mainSize(),v=state.views[state.mode];v.cx=(minX+maxX)/2;v.cy=(minY+maxY)/2;v.span=Math.max(.25,(maxY-minY)*.5,(maxX-minX)*.5*size.h/Math.max(1,size.w))*1.3;cloudCacheKey='';dirty=true;
+}
+function animate(time){
+  if(playing&&braidData){const dt=Math.min(.08,(time-lastFrame)/1000);phase=Math.min(1,phase+dt*state.braid.speed/8);if(phase===1){playing=false;$('playBtn').textContent='Play loop';status('Loop complete · '+cycleText(braidData.cycles)+' · discriminant winding '+signed(braidData.discriminantWinding)+'.');}$('timeSlider').value=phase;$('timeValue').textContent='t = '+phase.toFixed(3);if(time-lastInspector>100){updateMetrics();lastInspector=time;}dirty=true;}
+  lastFrame=time;if(dirty){draw();dirty=false;}requestAnimationFrame(animate);
+}
 
-    <div class="image-container">
-        <img src="output(31).png" alt="Zeros of Polynomials Degree 2, 3, and 4">
-        <p>This image reveals the chaotic dance of polynomial zeros of degrees 2, 3, and 4. Notice how higher-degree polynomials bring additional layers of interference, creating a cosmic interference pattern in the complex plane.</p>
-    </div>
-    
-    <div class="image-container">
-        <img src="output(30).png" alt="Zeros of Polynomials Degree 2 and 3">
-        <p>Here, we isolate just degree 2 and 3 polynomials. The delicate symmetry and rotational structures emerge, hinting at hidden order within apparent randomness.</p>
-    </div>
+function download(data,name,type){const blob=data instanceof Blob?data:new Blob([data],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),15000);}
+function experiment(){return {format:'polynomial-roots-experiment',version:VERSION,state:clone(state)};}
+let persistTimer=null;
+function persist(){clearTimeout(persistTimer);persistTimer=setTimeout(()=>{try{localStorage.setItem('polynomialRoots.experiment.v1',JSON.stringify(experiment()));}catch(_){}},400);}
+function validateExperiment(value){
+  if(value?.format!=='polynomial-roots-experiment'||value.version!==VERSION||!value.state)throw Error('Choose a Polynomial Roots experiment file.');
+  const input=value.state,out=initialState();
+  const number=(x,lo,hi,integer=false)=>{if(typeof x!=='number'||!Number.isFinite(x)||x<lo||x>hi||integer&&!Number.isInteger(x))throw Error('An experiment contains an invalid numeric setting.');return x;};
+  const choice=(x,values)=>{if(!values.includes(x))throw Error('An experiment uses an unknown setting.');return x;};
+  const boolean=x=>{if(typeof x!=='boolean')throw Error('An experiment contains an invalid switch.');return x;};
+  const point=x=>{if(!x||typeof x!=='object')throw Error('Invalid complex coordinate.');return M.C(number(x.re,-1e4,1e4),number(x.im,-1e4,1e4));};
+  const coefficients=a=>{if(!Array.isArray(a)||a.length<3||a.length>9)throw Error('Choose a polynomial of degree 2 through 8.');const p=a.map(point);if(M.abs(p[0])<1e-12)throw Error('A polynomial needs a nonzero leading coefficient.');return M.monic(p);};
+  out.mode=choice(input.mode,['cloud','lab','braid']);const c=input.cloud||{};
+  out.cloud.family=choice(c.family,['integer','littlewood','ternary','grid','real','complex']);out.cloud.bound=number(c.bound,1,5,true);out.cloud.step=choice(c.step,[.1,.2,.5]);out.cloud.monic=boolean(c.monic);out.cloud.nonzero=boolean(c.nonzero);out.cloud.count=choice(c.count,[2000,8000,16000,20000]);out.cloud.seed=number(c.seed,0,4294967295,true);
+  if(!Array.isArray(c.degrees)||!c.degrees.length||c.degrees.length>5)throw Error('Select at least one supported cloud degree.');out.cloud.degrees=[...new Set(c.degrees.map(x=>choice(x,[2,3,4,5,6])))];
+  const a=input.appearance||{};out.appearance={size:number(a.size,.5,3),exposure:number(a.exposure,.1,1),density:boolean(a.density)};
+  const l=input.lab||{};out.lab={coeffs:coefficients(l.coeffs),real:boolean(l.real),selected:number(l.selected,0,l.coeffs.length-2,true),trails:boolean(l.trails)};if(out.lab.real&&out.lab.coeffs.some(z=>Math.abs(z.im)>1e-8))throw Error('A real-locked polynomial has nonreal coefficients.');
+  const b=input.braid||{},q=b.config||{};out.braid.q=coefficients(b.q);out.braid.preset=choice(b.preset,['square','pure','cube','oneBranch','bothBranches','four','eight','custom']);out.braid.view=choice(b.view,['braid','plane']);out.braid.speed=choice(b.speed,[.5,1,2]);
+  out.braid.config={path:choice(q.path,['circle','figure8','drawn']),center:point(q.center),radius:number(q.radius,.1,5),winding:choice(q.winding,[-2,-1,1,2,3]),phase:number(q.phase||0,-100,100),points:[]};
+  if(!Array.isArray(q.points)||q.points.length>2000)throw Error('The loop path is too large.');out.braid.config.points=q.points.map(point);
+  if(out.braid.config.path==='drawn'&&(q.points.length<4||M.abs(M.sub(out.braid.config.points[0],out.braid.config.points.at(-1)))>1e-6))throw Error('A drawn loop must be closed.');
+  for(const mode of ['cloud','lab','braid']){const v=input.views?.[mode];if(v)out.views[mode]={cx:number(v.cx,-1e6,1e6),cy:number(v.cy,-1e6,1e6),span:number(v.span,1e-6,1e5)};}
+  if(input.camera)out.camera={azimuth:number(input.camera.azimuth,-1e6,1e6),elevation:number(input.camera.elevation,-1.2,1.2),zoom:number(input.camera.zoom,.3,3)};return out;
+}
+function applyExperiment(value){
+  const next=validateExperiment(value);cloudWorker?.terminate();braidWorker?.terminate();cloudJob=++jobSerial;braidJob=++jobSerial;cloudPending=false;braidPending=false;cloudData=null;braidData=null;cloudSelection=null;labRoots=[];labTrails=[];state=next;$('labPreset').value='custom';syncCloudControls();solveLab(false);renderCoefficients();syncBraidControls();setMode(state.mode);startCloud();persist();status('Experiment opened. Its root data are being regenerated.');
+}
+function csvCell(value){const text=String(value);return /[",\n]/.test(text)?'"'+text.replace(/"/g,'""')+'"':text;}
+function exportCSV(){
+  let rows,name;
+  if(state.mode==='cloud'){
+    if(!cloudData)throw Error('Generate a cloud before exporting its data.');rows=[['polynomial','degree','root','re','im','scaled_residual','family','seed','coefficients_descending_re_im']];cloudData.polynomials.forEach((p,i)=>p.roots.forEach((z,j)=>rows.push([i+1,p.degree,j+1,z.re,z.im,p.residual,cloudData.config.family,cloudData.config.seed,JSON.stringify(p.coeffs.map(c=>[c.re,c.im]))])));name='polynomial-root-cloud.csv';
+  }else if(state.mode==='lab'){
+    rows=[['root','re','im','scaled_residual','coefficients_descending_re_im']];labRoots.forEach((z,j)=>rows.push([j+1,z.re,z.im,M.residual(state.lab.coeffs,z),JSON.stringify(state.lab.coeffs.map(c=>[c.re,c.im]))]));name='polynomial-roots.csv';
+  }else{
+    if(!braidData)throw Error('Trace a loop before exporting its braid.');rows=[['t','c_re','c_im','root_label','root_re','root_im','scaled_residual']];braidData.frames.forEach(f=>f.roots.forEach((z,j)=>rows.push([f.t,f.c.re,f.c.im,j+1,z.re,z.im,M.residual(M.withParameter(braidData.q,f.c),z)])));name='polynomial-root-braid.csv';
+  }download(rows.map(row=>row.map(csvCell).join(',')).join('\n'),name,'text/csv;charset=utf-8');status('Exported '+(rows.length-1).toLocaleString()+' root records.');
+}
 
-    <div class="image-container">
-        <img src="output(29).png" alt="Radially Weighted Polynomial Zeros">
-        <p>Dots are scaled by their distance from the origin, giving weight to their radial structure. This highlights the deeper fractal-like formations, reminiscent of energy fields in quantum mechanics.</p>
-    </div>
+document.querySelectorAll('[data-mode]').forEach(button=>button.addEventListener('click',()=>{setMode(button.dataset.mode);persist();}));
+for(const id of ['bound','gridStep','monic','nonzero','cloudCount'])$(id).addEventListener('input',()=>{readCloudControls();$('generateBtn').textContent='Generate new cloud';status('Family settings changed. Generate a new cloud to apply them.');persist();});
+document.querySelectorAll('input[name=degree]').forEach(el=>el.addEventListener('change',()=>{readCloudControls();$('generateBtn').textContent='Generate new cloud';persist();}));
+$('cloudPreset').addEventListener('change',()=>{state.cloud.family=$('cloudPreset').value;if(state.cloud.family==='littlewood'){state.cloud.monic=true;state.cloud.nonzero=true;}if(state.cloud.family==='ternary')state.cloud.bound=1;if(['integer','grid','real','complex'].includes(state.cloud.family))state.cloud.bound=2;syncCloudControls();startCloud();persist();});
+$('generateBtn').addEventListener('click',()=>{readCloudControls();startCloud();persist();});$('newSeedBtn').addEventListener('click',()=>{state.cloud.seed=Math.floor(Math.random()*4294967295);readCloudControls();startCloud();persist();});
+for(const id of ['pointSize','exposure','density'])$(id).addEventListener('input',()=>{state.appearance={size:+$('pointSize').value,exposure:+$('exposure').value,density:$('density').checked};updateFamilyEstimate();dirty=true;persist();});
+$('nextOverlapBtn').addEventListener('click',()=>{if(overlaps.length){overlapPosition=(overlapPosition+1)%overlaps.length;selectCloudRecord(overlaps[overlapPosition]);}});
+$('openInLabBtn').addEventListener('click',()=>{if(!cloudSelection||!cloudData)return;const p=cloudData.polynomials[cloudSelection.poly];loadLab(p.coeffs,p.coeffs.every(z=>Math.abs(z.im)<1e-12));setMode('lab');fitView();persist();status('Opened the selected polynomial. Normalizing its leading coefficient leaves its roots unchanged.');});
+$('labPreset').addEventListener('change',()=>{rememberLab();labPreset($('labPreset').value);persist();});
+$('labDegree').addEventListener('change',()=>{rememberLab();const n=+$('labDegree').value,a=Array.from({length:n+1},()=>M.C());a[0]=M.C(1);a[n]=M.C(-1);loadLab(a,true);$('labPreset').value='unity';persist();status('Degree '+n+' · starting from z^'+n+' − 1.');});
+$('realLock').addEventListener('change',()=>{rememberLab();state.lab.real=$('realLock').checked;if(state.lab.real)state.lab.coeffs=state.lab.coeffs.map(z=>M.C(z.re));solveLab();syncLabInputs();persist();});
+$('showTrails').addEventListener('change',()=>{state.lab.trails=$('showTrails').checked;dirty=true;persist();});$('clearTrailsBtn').addEventListener('click',()=>{labTrails=labRoots.map(z=>[z]);dirty=true;});
+$('undoLabBtn').addEventListener('click',()=>{if(!labUndo)return;state.lab.coeffs=clone(labUndo.coeffs);labRoots=clone(labUndo.roots);state.lab.real=state.lab.coeffs.every(z=>Math.abs(z.im)<1e-10);labUndo=null;$('undoLabBtn').disabled=true;solveLab();renderCoefficients();persist();});
+$('labToBraidBtn').addEventListener('click',()=>{const q=clone(state.lab.coeffs),c=M.scale(q.at(-1),-1);q[q.length-1]=M.C();state.braid.q=q;state.braid.config={path:'circle',center:M.sub(c,M.C(1)),radius:1,winding:1,phase:0,points:[]};state.braid.preset='custom';$('braidPreset').querySelector('[value=custom]').hidden=false;invalidateBraid();setMode('braid');persist();});
+$('braidPreset').addEventListener('change',()=>{if($('braidPreset').value!=='custom')braidPreset($('braidPreset').value);persist();});
+for(const id of ['pathType','centerRe','centerIm','radius','winding'])$(id).addEventListener('input',()=>{
+  const c=state.braid.config,center=M.C(Number($('centerRe').value),Number($('centerIm').value));if(!M.finite(center)||M.abs(center)>1e4)return;
+  c.path=$('pathType').value;c.center=center;c.radius=+$('radius').value;c.winding=+$('winding').value;invalidateBraid();syncBraidControls();status(c.path==='drawn'?'Draw a loop in the small parameter plane.':'Loop changed. Trace it to recompute the root paths.');persist();
+});
+$('traceBtn').addEventListener('click',()=>{startTrace();persist();});
+$('viewBraidBtn').addEventListener('click',()=>{state.braid.view='braid';updateBraidUI();persist();});$('viewPlaneBtn').addEventListener('click',()=>{state.braid.view='plane';updateBraidUI();fitView();persist();});
+$('playBtn').addEventListener('click',()=>{if(!braidData)return;playing=!playing;if(playing&&phase>=1)phase=0;$('playBtn').textContent=playing?'Pause':'Play loop';dirty=true;});$('resetTimeBtn').addEventListener('click',()=>{playing=false;phase=0;$('playBtn').textContent='Play loop';$('timeSlider').value=0;$('timeValue').textContent='t = 0.000';updateMetrics();dirty=true;});
+$('timeSlider').addEventListener('input',()=>{playing=false;phase=+$('timeSlider').value;$('playBtn').textContent='Play loop';$('timeValue').textContent='t = '+phase.toFixed(3);updateMetrics();dirty=true;});$('speed').addEventListener('change',()=>{state.braid.speed=+$('speed').value;persist();});
+$('cancelBtn').addEventListener('click',()=>{if(state.mode==='cloud'){cloudWorker?.terminate();cloudWorker=null;cloudPending=false;cloudJob=++jobSerial;$('generateBtn').textContent='Generate cloud';}else{braidWorker?.terminate();braidWorker=null;braidPending=false;braidJob=++jobSerial;$('traceBtn').textContent='Trace the loop';updateBraidUI();}updateCancel();status('Calculation stopped.');});
 
-    <div class="image-container">
-        <img src="output(28).png" alt="Structured Zeros with Small Markers">
-        <p>In this version, smaller dots expose intricate interference structures, revealing a strange lattice of attractors and repellers in polynomial space.</p>
-    </div>
+const canvas=$('mainCanvas');
+canvas.addEventListener('pointerdown',e=>{
+  const p=eventPoint(e,canvas),v=state.views[state.mode];canvas.setPointerCapture(e.pointerId);mainDrag={start:p,last:p,view:clone(v),moved:false,kind:state.mode==='braid'&&state.braid.view==='braid'?'rotate':'pan',camera:clone(state.camera)};
+  if(state.mode==='lab'){
+    let closest=-1,distance=15;labRoots.forEach((z,i)=>{const q=project(z,v,mainSize()),d=Math.hypot(q.x-p.x,q.y-p.y);if(d<distance){distance=d;closest=i;}});
+    if(closest>=0){rememberLab();mainDrag.kind='root';mainDrag.root=closest;mainDrag.original=clone(labRoots);const z=labRoots[closest];mainDrag.partner=-1;if(state.lab.real&&Math.abs(z.im)>1e-6){let best=Infinity;labRoots.forEach((r,i)=>{const dist=M.abs(M.sub(r,M.conj(z)));if(i!==closest&&dist<best){best=dist;mainDrag.partner=i;}});}}
+  }
+});
+canvas.addEventListener('pointermove',e=>{
+  const p=eventPoint(e,canvas),v=state.views[state.mode],world=unproject(p.x,p.y,v,mainSize());$('pointerReadout').textContent=complex(world,6);
+  if(!mainDrag)return;const dx=p.x-mainDrag.start.x,dy=p.y-mainDrag.start.y;mainDrag.moved||=Math.hypot(dx,dy)>3;
+  if(mainDrag.kind==='rotate'){state.camera.azimuth=mainDrag.camera.azimuth+dx*.009;state.camera.elevation=Math.max(-1.2,Math.min(1.2,mainDrag.camera.elevation+dy*.006));}
+  else if(mainDrag.kind==='root'){
+    const index=mainDrag.root,z=unproject(p.x,p.y,mainDrag.view,mainSize()),candidate=M.copyCoeffs(labRoots);if(state.lab.real&&mainDrag.partner<0)z.im=0;candidate[index]=z;if(state.lab.real&&mainDrag.partner>=0)candidate[mainDrag.partner]=M.conj(z);
+    let coeffs=M.fromRoots(candidate);if(coeffs.some(c=>!M.finite(c)||Math.abs(c.re)>1e4||Math.abs(c.im)>1e4)){status('This move makes the coefficients too large for the current explorer.',true);return;}labRoots=candidate;state.lab.coeffs=state.lab.real?coeffs.map(c=>M.C(c.re)):coeffs;$('labPreset').value='custom';const q=M.solve(state.lab.coeffs,labRoots);labSolution=q;labRoots.forEach((r,i)=>{labTrails[i].push(r);if(labTrails[i].length>250)labTrails[i].shift();});syncLabInputs();updateLabUI();
+  }else{const factor=mainDrag.view.span*2/mainSize().h;v.cx=mainDrag.view.cx-dx*factor;v.cy=mainDrag.view.cy+dy*factor;}
+  mainDrag.last=p;dirty=true;
+});
+canvas.addEventListener('pointerup',e=>{if(!mainDrag)return;const p=eventPoint(e,canvas);if(!mainDrag.moved&&state.mode==='cloud')hitCloud(p.x,p.y);if(mainDrag.kind==='root')status('Polynomial rebuilt from the moved roots.');mainDrag=null;persist();dirty=true;});
+canvas.addEventListener('pointercancel',()=>{mainDrag=null;dirty=true;});
+canvas.addEventListener('wheel',e=>{e.preventDefault();if(state.mode==='braid'&&state.braid.view==='braid')state.camera.zoom=Math.max(.3,Math.min(3,state.camera.zoom*Math.exp(-e.deltaY*.001)));else{const v=state.views[state.mode],p=eventPoint(e,canvas),before=unproject(p.x,p.y,v,mainSize());v.span=Math.max(1e-6,Math.min(1e5,v.span*Math.exp(e.deltaY*.001)));const after=unproject(p.x,p.y,v,mainSize());v.cx+=before.re-after.re;v.cy+=before.im-after.im;}dirty=true;persist();},{passive:false});
 
-    <div class="image-container">
-        <img src="output(27).png" alt="Integer Coefficients - Ordered Chaos">
-        <p>Restricting coefficients to integer values between -20 and 20 creates an exquisite geometric pattern. This is where number theory meets algebraic topology in a cosmic dance.</p>
-    </div>
+for(const[id,kind]of [['coefficientCanvas','coefficient'],['parameterCanvas','parameter']]){
+  const mini=$(id);
+  mini.addEventListener('pointerdown',e=>{const p=eventPoint(e,mini),view=clone(kind==='coefficient'?coefficientRange:paramRange);mini.setPointerCapture(e.pointerId);miniDrag={kind,view,drawing:kind==='parameter'&&state.braid.config.path==='drawn'};if(kind==='coefficient')rememberLab();else{invalidateBraid();drawnPoints=[];}moveMini(e,mini);});
+  mini.addEventListener('pointermove',e=>{if(miniDrag?.kind===kind)moveMini(e,mini);});
+  mini.addEventListener('pointerup',guard(()=>{if(!miniDrag||miniDrag.kind!==kind)return;const drawing=miniDrag.drawing;miniDrag=null;if(drawing){state.braid.config.points=M.resampleLoop(drawnPoints);state.braid.config.radius=Math.max(.1,Math.min(5,Math.max(...state.braid.config.points.map(M.abs))));}if(kind==='parameter'){syncBraidControls();startTrace();}persist();dirty=true;}));
+  mini.addEventListener('pointercancel',()=>{miniDrag=null;dirty=true;});
+}
+function moveMini(e,mini){
+  const p=eventPoint(e,mini),rect=mini.getBoundingClientRect(),z=unproject(p.x,p.y,miniDrag.view,{w:rect.width,h:rect.height});
+  if(miniDrag.kind==='coefficient'){if(state.lab.real)z.im=0;if(Math.abs(z.re)>1e4||Math.abs(z.im)>1e4)return;state.lab.coeffs[state.lab.selected+1]=z;$('labPreset').value='custom';solveLab();syncLabInputs();}
+  else if(miniDrag.drawing){if(!drawnPoints.length||M.abs(M.sub(drawnPoints.at(-1),z))>.015)drawnPoints.push(z);}
+  else{state.braid.config.center=z;$('centerRe').value=fmt(z.re,5);$('centerIm').value=fmt(z.im,5);}dirty=true;
+}
+$('fitBtn').addEventListener('click',()=>{fitView();persist();});
+$('pngBtn').addEventListener('click',()=>{draw();canvas.toBlob(blob=>{if(blob){download(blob,'polynomial-roots-'+state.mode+'.png','image/png');status('Saved the current plot as a PNG.');}},'image/png');});
+$('csvBtn').addEventListener('click',guard(exportCSV));
+$('saveBtn').addEventListener('click',()=>{download(JSON.stringify(experiment(),null,2),'polynomial-roots-experiment.json','application/json');status('Experiment saved with its coefficients, family, seed, and loop.');});
+$('openBtn').addEventListener('click',()=>$('openFile').click());$('openFile').addEventListener('change',guard(async()=>{const file=$('openFile').files[0];try{if(!file)return;if(file.size>1024*1024)throw Error('Choose an experiment file smaller than 1 MB.');applyExperiment(JSON.parse(await file.text()));}finally{$('openFile').value='';}}));
+$('offlineBtn').addEventListener('click',()=>{const html=document.documentElement.cloneNode(true);html.querySelector('#embeddedExperiment')?.remove();const data=document.createElement('script');data.type='application/json';data.id='embeddedExperiment';data.textContent=JSON.stringify(experiment()).replace(/</g,'\\u003c');html.querySelector('head').append(data);html.querySelectorAll('dialog[open],.file-menu[open]').forEach(el=>el.removeAttribute('open'));download('<!doctype html>\n'+html.outerHTML,'polynomial-roots-explorer.html','text/html');status('Downloaded the explorer with this experiment embedded. Original gallery images remain online.');});
+$('helpBtn').addEventListener('click',()=>$('helpDialog').showModal());$('closeHelpBtn').addEventListener('click',()=>$('helpDialog').close());
+document.addEventListener('pointerdown',e=>{const menu=document.querySelector('.file-menu');if(menu.open&&!menu.contains(e.target))menu.open=false;});
+window.addEventListener('resize',()=>{dirty=true;cloudCacheKey='';});if(window.ResizeObserver)new ResizeObserver(()=>{dirty=true;cloudCacheKey='';}).observe(document.querySelector('.canvas-wrap'));
+window.addEventListener('keydown',e=>{if(e.key==='Escape'){playing=false;$('playBtn').textContent='Play loop';}if(e.code==='Space'&&state.mode==='braid'&&!e.target.closest('input,select,textarea,button,summary,dialog')){e.preventDefault();$('playBtn').click();}});
+window.addEventListener('pagehide',()=>{try{localStorage.setItem('polynomialRoots.experiment.v1',JSON.stringify(experiment()));}catch(_){}cloudWorker?.terminate();braidWorker?.terminate();});
 
-    <div class="image-container">
-        <img src="output(26).png" alt="Higher Resolution Zeros for Degree 2 and 3">
-        <p>Increasing resolution, we see the zeros of polynomials with coefficients from -2 to 2. Symmetry dominates, with delicate star-like structures emerging.</p>
-    </div>
-
-    <div class="image-container">
-        <img src="output(25).png" alt="Fine-Tuned Polynomial Zeros">
-        <p>Using coefficients spaced by 0.2 instead of whole numbers, new interference bands emerge, revealing a hidden symmetry between algebra and geometry.</p>
-    </div>
-
-    <div class="image-container">
-        <img src="output(24).png" alt="Zoomed-In View of Degree 2, 3, and 4">
-        <p>A closer look at polynomials of degree 2, 3, and 4 reveals even more intricate cosmic patterns—nested waves of algebraic interference.</p>
-    </div>
-
-    <div class="image-container">
-        <img src="output(23).png" alt="Zoomed-In View of Degree 2 and 3">
-        <p>Taking a magnifying glass to degrees 2 and 3, we uncover new levels of periodic structure and recurrence, hinting at a universal mathematical framework.</p>
-    </div>
-
-    <div class="image-container">
-        <img src="output(22).png" alt="Extreme Zoom on Polynomial Zeros">
-        <p>Further zooming into the fractal depths, polynomial zeros look like a galactic explosion. The universe itself may be written in the language of polynomial roots.</p>
-    </div>
-</body>
-</html>
+function boot(){
+  let recovered=false;try{const embedded=$('embeddedExperiment'),raw=embedded?.textContent||localStorage.getItem('polynomialRoots.experiment.v1');if(raw){state=validateExperiment(JSON.parse(raw));recovered=true;}}catch(_){}
+  if(recovered)$('labPreset').value='custom';syncCloudControls();solveLab(false);renderCoefficients();syncBraidControls();$('playBtn').textContent='Play loop';$('traceBtn').textContent='Trace the loop';$('generateBtn').textContent='Generate cloud';setMode(state.mode);startCloud();requestAnimationFrame(animate);if(recovered&&state.mode!=='cloud')status('Recovered the experiment. Regenerating its data.');
+}
+boot();
+</script></body></html>
